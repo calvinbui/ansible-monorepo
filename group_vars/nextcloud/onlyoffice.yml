@@ -1,0 +1,24 @@
+---
+
+onlyoffice_name: onlyoffice
+onlyoffice_image: onlyoffice/documentserver
+onlyoffice_ports: []
+onlyoffice_environment_variables: {}
+
+onlyoffice_docker_additional_options:
+  restart_policy: unless-stopped
+  networks_cli_compatible: true
+  purge_networks: true
+  networks:
+    - name: user
+      ipv4_address: 192.168.2.21
+  dns_servers: 192.168.2.1
+  log_driver: json-file
+  log_options:
+    max-size: "10m"
+  labels:
+    traefik.http.routers.onlyoffice.service: onlyoffice
+    traefik.http.routers.onlyoffice.tls: "true"
+    traefik.http.routers.onlyoffice.tls.certresolver: letsencrypt
+    traefik.http.services.onlyoffice.loadbalancer.server.port: "80"
+    

@@ -1,0 +1,14 @@
+---
+
+- name: Set Docker container parameters
+  set_fact:
+    collabora_container_parameters:
+      name: "{{ collabora_name }}"
+      image: "{{ collabora_image }}"
+      state: started
+      published_ports: "{{ collabora_ports }}"
+      env: "{{ collabora_environment_variables }}"
+
+- name: Create Collabora container
+  docker_container: "{{ collabora_container_parameters | combine(collabora_docker_additional_options) }}"
+  register: collabora_container

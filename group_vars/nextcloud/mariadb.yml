@@ -1,0 +1,32 @@
+---
+
+mariadb_name: nextcloud-mariadb
+mariadb_version: '10'
+mariadb_image: "mariadb:{{ mariadb_version }}"
+mariadb_ports: []
+mariadb_volumes:
+  - "{{ common_directory }}/nextcloud/mariadb:/var/lib/mysql"
+mariadb_environment_variables:
+  MYSQL_ROOT_PASSWORD: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          34393861343432623031643033656336643264646638626632633335393862643965303332643463
+          3839396236373233633036643730646366373536346130360a656461663033396130623435616135
+          37613265663936396433306166373039333530623863326135656236323661396537386265333038
+          6539663361336635310a333437613932363937383838366162623031323265396232396235666336
+          65373662303434363834656234626237336438663531383232313034356234396462
+  MYSQL_DATABASE: nextcloud
+  MYSQL_ROOT_HOST: '%'
+
+mariadb_docker_additional_options:
+  restart_policy: unless-stopped
+  networks_cli_compatible: true
+  purge_networks: true
+  networks:
+    - name: user
+      ipv4_address: 192.168.2.19
+  dns_servers: 192.168.2.1
+  labels:
+    traefik.enable: "false"
+  log_driver: json-file
+  log_options:
+    max-size: "10m"

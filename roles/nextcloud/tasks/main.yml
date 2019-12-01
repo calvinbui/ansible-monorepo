@@ -1,0 +1,40 @@
+---
+
+- name: Create Nextcloud directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ nextcloud_directory }}"
+    - "{{ nextcloud_directory }}/app"
+    - "{{ nextcloud_directory }}/build"
+
+- name: Copy Dockerfile folder
+  copy:
+    src: "{{ nextcloud_build_folder }}"
+    dest: "{{ nextcloud_directory }}/build"
+
+- name: Build Nextcloud Image
+  docker_image:
+    name: "{{ nextcloud_image }}"
+    build:
+      path: "{{ nextcloud_directory }}/build/{{ nextcloud_build_folder }}"
+      pull: true
+    source: build
+    state: present
+  when: nextcloud_build_image
+
+- name: Set Docker container parameters
+  set_fact:
+    nextcloud_container_parameters:
+      name: "{{ nextcloud_name }}"
+      image: "{{ nextcloud_image }}"
+      state: started
+      published_ports: "{{ nextcloud_ports }}"
+      volumes:
+        - "{{ nextcloud_directory }}/app:/var/www/html"
+      env: "{{ nextcloud_environment_variables }}"
+
+- name: Create Nextcloud container
+  docker_container: "{{ nextcloud_container_parameters | combine(nextcloud_docker_additional_options) }}"
+  register: nextcloud_container

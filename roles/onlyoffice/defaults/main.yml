@@ -1,0 +1,12 @@
+---
+
+onlyoffice_name: onlyoffice
+onlyoffice_image: onlyoffice/documentserver
+onlyoffice_ports:
+  - 8080:80
+onlyoffice_environment_variables:
+  ONLYOFFICE_HTTPS_HSTS_ENABLED: "false"
+  SSL_VERIFY_CLIENT: "false"
+
+onlyoffice_docker_additional_options:
+  restart_policy: unless-stopped

@@ -1,0 +1,3 @@
+---
+- src: calvinbui.ansible_pip
+  version: '4.0.0'

@@ -27,3 +27,8 @@ ansible_python_interpreter=/usr/bin/env python3
 homelab-user
 [bookstack:vars]
 ansible_python_interpreter=/usr/bin/env python3
+
+[nextcloud]
+homelab-user
+[nextcloud:vars]
+ansible_python_interpreter=/usr/bin/env python3
