@@ -1,34 +1,34 @@
 [all]
-homelab-user
+homelab
 [all:vars]
 ansible_python_interpreter=/usr/bin/env python3
 
 [setup]
-homelab-user
+homelab
 [setup:vars]
 ansible_python_interpreter=/usr/bin/env python3
 
 [docker_services]
-homelab-user
+homelab
 [docker_services:vars]
 ansible_python_interpreter=/usr/bin/env python3
 
 [blueiris]
-homelab-user
+homelab
 [blueiris:vars]
 ansible_python_interpreter=/usr/bin/env python3
 
 [usenet]
-homelab-user
+homelab
 [usenet:vars]
 ansible_python_interpreter=/usr/bin/env python3
 
 [bookstack]
-homelab-user
+homelab
 [bookstack:vars]
 ansible_python_interpreter=/usr/bin/env python3
 
 [nextcloud]
-homelab-user
+homelab
 [nextcloud:vars]
 ansible_python_interpreter=/usr/bin/env python3

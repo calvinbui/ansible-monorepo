@@ -1,6 +1,6 @@
 ---
 
-- name: Create blueiris config directory
+- name: Create Blue Iris directory
   file:
     path: "{{ blueiris_config_directory }}"
     state: directory
@@ -14,6 +14,11 @@
       published_ports: "{{ blueiris_ports }}"
       volumes: "{{ blueiris_volumes }}"
 
-- name: Create blueiris container
+- name: Template supervisord config
+  template:
+    src: supervisord.conf.j2
+    dest: "{{ blueiris_config_directory }}/supervisord.conf"
+
+- name: Create Blue Iris container
   docker_container: "{{ blueiris_container_parameters | combine(blueiris_docker_additional_options) }}"
   register: blueiris_container
