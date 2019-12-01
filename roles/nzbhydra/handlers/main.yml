@@ -1,0 +1,7 @@
+---
+
+- name: Restart NZBHydra
+  docker_container:
+    name: "{{ nzbhydra_name }}"
+    state: started
+    restart: yes

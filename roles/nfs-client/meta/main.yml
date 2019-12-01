@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  author: calvinbui
+  description: Install NFS Client packages and mounts an NFS share in fstab.
+  company: https://calvin.me
+  license: GPLv3
+  min_ansible_version: 2.7
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+    - name: Fedora
+      versions:
+        - all
+  galaxy_tags:
+    - nfs
+dependencies: []

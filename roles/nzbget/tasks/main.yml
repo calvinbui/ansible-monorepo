@@ -1,0 +1,37 @@
+---
+
+- name: Create NZBGet directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ nzbget_config_directory }}"
+    - "{{ nzbget_download_directory }}"
+
+- name: Set Docker container parameters
+  set_fact:
+    nzbget_container_parameters:
+      name: "{{ nzbget_name }}"
+      image: "{{ nzbget_image }}"
+      state: started
+      published_ports: "{{ nzbget_ports }}"
+      volumes:
+        - "{{ nzbget_config_directory }}:/config"
+        - "{{ nzbget_download_directory }}:/downloads"
+      env: "{{ nzbget_environment_variables }}"
+
+- name: Create NZBGet container
+  docker_container: "{{ nzbget_container_parameters | combine(nzbget_docker_additional_options) }}"
+  register: nzbget_container
+
+- name: Wait for NZBGet config
+  wait_for:
+    path: "{{ nzbget_config_directory }}/nzbget.conf"
+
+- name: Configure NZBget
+  lineinfile:
+    dest: "{{ nzbget_config_directory }}/nzbget.conf"
+    regexp: "^{{ item.key }}="
+    line: "{{ item.key }}={{ item.value }}"
+  loop: "{{ lookup('dict', nzbget_config) }}"
+  notify: Restart NZBGet

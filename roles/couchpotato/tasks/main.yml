@@ -1,0 +1,38 @@
+---
+
+- name: Create CouchPotato directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ couchpotato_config_directory }}"
+
+- name: Set Docker container parameters
+  set_fact:
+    couchpotato_container_parameters:
+      name: "{{ couchpotato_name }}"
+      image: "{{ couchpotato_image }}"
+      state: started
+      published_ports: "{{ couchpotato_ports }}"
+      volumes:
+        - "{{ couchpotato_config_directory }}:/config"
+        - "{{ couchpotato_movie_directory }}:/movies"
+        - "{{ couchpotato_download_directory }}:/downloads"
+      env: "{{ couchpotato_environment_variables }}"
+
+- name: Create CouchPotato container
+  docker_container: "{{ couchpotato_container_parameters | combine(couchpotato_docker_additional_options) }}"
+  register: couchpotato_container
+
+- name: Wait for CouchPotato config file
+  wait_for:
+    path: "{{ couchpotato_config_directory }}/config.ini"
+
+- name: Configure CouchPotato
+  ini_file:
+    path: "{{ couchpotato_config_directory }}/config.ini"
+    section: "{{ item.key.split('.')[0] }}"
+    option: "{{ item.key.split('.')[1] }}"
+    value: "{{ item.value }}"
+  loop: "{{ lookup('dict', couchpotato_config) }}"
+  notify: Restart CouchPotato

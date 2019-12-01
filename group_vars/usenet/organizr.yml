@@ -1,0 +1,24 @@
+---
+
+organizr_name: organizr
+organizr_image: organizrtools/organizr-v2
+organizr_ports: []
+organizr_config_directory: "{{ common_directory }}/organizr"
+organizr_environment_variables:
+  PUID: "{{ common_user_id }}"
+  PGID: "{{ common_group_id }}"
+
+organizr_docker_additional_options:
+  restart_policy: unless-stopped
+  networks_cli_compatible: true
+  purge_networks: true
+  networks:
+    - name: pub
+      ipv4_address: 192.168.4.10
+  dns_servers: 192.168.4.1
+  labels:
+    traefik.http.routers.organizr.rule: "Host(`{{ common_tld }}`)"
+    traefik.http.routers.organizr.service: organizr
+    traefik.http.routers.organizr.tls: "true"
+    traefik.http.routers.organizr.tls.certresolver: letsencrypt
+    traefik.http.services.organizr.loadbalancer.server.port: "80"

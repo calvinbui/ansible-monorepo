@@ -3,11 +3,8 @@
 qbittorrent_name: qbittorrent
 qbittorrent_image: linuxserver/qbittorrent
 qbittorrent_webui_port: '8090' # place in quotes
-qbittorrent_ports:
-  - 6881:6881
-  - 6881:6881/udp
-  - "{{ qbittorrent_webui_port }}:{{ qbittorrent_webui_port }}"
-qbittorrent_config_directory: "{{ common_directory_config }}/qbittorrent"
+qbittorrent_ports: []
+qbittorrent_config_directory: "{{ common_directory }}/qbittorrent"
 qbittorrent_download_directory: "{{ common_directory_download }}"
 qbittorrent_environment_variables:
   PUID: "{{ common_user_id }}"
@@ -18,10 +15,18 @@ qbittorrent_environment_variables:
 
 qbittorrent_docker_additional_options:
   restart_policy: unless-stopped
-  networks: "{{ docker_networks }}"
+  networks_cli_compatible: true
+  purge_networks: true
+  networks:
+    - name: pub
+      ipv4_address: 192.168.4.5
+  dns_servers: 192.168.4.1
   labels:
-    traefik.http.services.service0.loadbalancer.server.port: "{{ qbittorrent_webui_port }}"
-    traefik.http.middlewares.middleware01.basicauth.usersfile: "/htpasswd"
+    traefik.http.routers.qbittorrent.service: qbittorrent
+    traefik.http.routers.qbittorrent.middlewares: "myAuth@file"
+    traefik.http.routers.qbittorrent.tls: "true"
+    traefik.http.routers.qbittorrent.tls.certresolver: letsencrypt
+    traefik.http.services.qbittorrent.loadbalancer.server.port: "8090"
 
 qbittorrent_config:
   Preferences.Downloads\UseIncompleteExtension: 'true'

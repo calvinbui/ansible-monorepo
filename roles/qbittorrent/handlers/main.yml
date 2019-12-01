@@ -1,0 +1,7 @@
+---
+
+- name: Restart qBittorrent
+  docker_container:
+    name: "{{ qbittorrent_name }}"
+    state: started
+    restart: yes

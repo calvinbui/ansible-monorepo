@@ -1,0 +1,23 @@
+---
+
+sonarr_name: sonarr
+sonarr_image: linuxserver/sonarr
+sonarr_ports:
+  - 8989:8989
+  - 9898:9898
+sonarr_config_directory: /tmp/sonarr
+sonarr_tv_directory: /tmp/tv
+sonarr_download_directory: /tmp/downloads
+sonarr_environment_variables:
+  PUID: "1000"
+  PGID: "1000"
+  TZ: Sydney/Australia
+
+sonarr_docker_additional_options:
+  restart_policy: unless-stopped
+
+sonarr_config:
+  ApiKey: "abc123"
+  UrlBase: "example.com"
+  LaunchBrowser: "False"
+  AnalyticsEnabled: "False"

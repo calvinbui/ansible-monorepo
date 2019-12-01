@@ -3,8 +3,8 @@ watchtower_image: containrrr/watchtower
 watchtower_docker_additional_options:
   restart_policy: unless-stopped
   networks:
-    - name: mgmt
-  dns_servers: 192.168.1.1
+    - name: pub
+  dns_servers: 192.168.4.1
   networks_cli_compatible: true
   purge_networks: true
   env:

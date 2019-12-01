@@ -1,0 +1,21 @@
+---
+
+nzbget_name: nzbget
+nzbget_image: calvinbui/docker-nzbget
+nzbget_ports:
+  - 6789:6789
+nzbget_config_directory: /tmp/nzbget/config
+nzbget_download_directory: /tmp/nzbget/downloads
+nzbget_environment_variables:
+  PUID: "1000"
+  PGUID: "1000"
+  TZ: Australia/Sydney
+
+nzbget_docker_additional_options:
+  restart_policy: unless-stopped
+
+nzbget_config:
+  MainDir: '/downloads'
+  ScriptDir: '/config/scripts'
+  LockFile: '/config/nzbget.lock'
+  LogFile: '/config/nzbget.log'

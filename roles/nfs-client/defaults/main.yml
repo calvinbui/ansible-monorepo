@@ -1,0 +1,6 @@
+---
+
+nfs_mount_name: files
+nfs_mount_src: 10.0.0.5/files
+nfs_mount_owner: root
+nfs_mount_group: root

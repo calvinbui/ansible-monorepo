@@ -1,0 +1,13 @@
+---
+
+organizr_name: organizr
+organizr_image: organizrtools/organizr-v2
+organizr_ports:
+  - 9983:80
+organizr_config_directory: "/tmp/organizr"
+organizr_environment_variables:
+  PUID: "1000"
+  PGID: "1000"
+
+organizr_docker_additional_options:
+  restart_policy: unless-stopped

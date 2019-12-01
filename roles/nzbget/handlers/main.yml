@@ -1,0 +1,7 @@
+---
+
+- name: Restart NZBGet
+  docker_container:
+    name: "{{ nzbget_name }}"
+    state: started
+    restart: true

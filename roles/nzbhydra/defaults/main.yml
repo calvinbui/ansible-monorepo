@@ -1,0 +1,44 @@
+---
+
+nzbhydra_name: nzbhydra
+nzbhydra_image: linuxserver/hydra2
+nzbhydra_ports:
+  - 5076:5076
+nzbhydra_config_directory: /tmp/nzbhydra
+nzbhydra_download_directory: /tmp/downloads
+nzbhydra_environment_variables:
+  PUID: "1000"
+  PGID: "1000"
+  TZ: Sydney/Australia
+
+nzbhydra_docker_additional_options:
+  restart_policy: unless-stopped
+
+nzbhydra_config:
+  main.apiKey: "abc123"
+  main.dereferer: ""
+  main.logging.logIpAddresses: "false"
+  main.startupBrowser: "false"
+  main.urlBase: "example.com"
+  main.verifySsl: "false"
+  main.welcomeShown: "true"
+
+nzbhydra_downloaders:
+  - downloadType: "NZB"
+    downloaderType: "SABNZBD"
+    name: "SABnzbd"
+    nzbAddingType: "UPLOAD"
+    url: "http://localhost:8080"
+    enabled: 'true'
+
+nzbhydra_indexers:
+  - apiKey: '123'
+    host: "https://abnzb.com"
+    name: "abnzb"
+    downloadLimit: 25
+    hitLimit: 25
+  - apiKey: "123"
+    host: "https://api.althub.co.za"
+    name: "althub"
+  - host: "https://anizb.org"
+    name: "anizb"

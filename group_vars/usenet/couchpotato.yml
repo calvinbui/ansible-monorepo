@@ -2,9 +2,8 @@
 
 couchpotato_name: couchpotato
 couchpotato_image: linuxserver/couchpotato
-couchpotato_ports:
-  - 5050:5050
-couchpotato_config_directory: "{{ common_directory_config }}/couchpotato"
+couchpotato_ports: []
+couchpotato_config_directory: "{{ common_directory }}/couchpotato"
 couchpotato_movie_directory: "{{ common_directory_movies }}"
 couchpotato_download_directory: "{{ common_directory_download }}"
 couchpotato_environment_variables:
@@ -14,9 +13,18 @@ couchpotato_environment_variables:
 
 couchpotato_docker_additional_options:
   restart_policy: unless-stopped
-  networks: "{{ docker_networks }}"
+  networks_cli_compatible: true
+  purge_networks: true
+  networks:
+    - name: pub
+      ipv4_address: 192.168.4.8
+  dns_servers: 192.168.4.1
   labels:
-    traefik.http.middlewares.middleware01.basicauth.usersfile: "/htpasswd"
+    traefik.http.routers.couchpotato.service: couchpotato
+    traefik.http.routers.couchpotato.middlewares: "myAuth@file"
+    traefik.http.routers.couchpotato.tls: "true"
+    traefik.http.routers.couchpotato.tls.certresolver: letsencrypt
+    traefik.http.services.couchpotato.loadbalancer.server.port: "5050"
 
 couchpotato_config:
   core.api_key: !vault |
@@ -47,7 +55,7 @@ couchpotato_config:
   trailer.enabled: 'True'
   blackhole.enabled: 'False'
   nzbget.enabled: 1
-  nzbget.host: "{{ nzbget_name }}.{{ docker_networks[0].name }}:{{ nzbget_ports[0].split(':')[0] }}"
+  nzbget.host: "{{ nzbget_name }}.{{ common_local_tld }}:6789"
   transmission.enabled: 'False'
   email.starttls: 1
   email.smtp_pass: "{{ common_email_password }}"
@@ -59,7 +67,7 @@ couchpotato_config:
   email.smtp_user: "{{ common_email_username }}"
   newznab.use: 1
   newznab.extra_score: ''
-  newznab.host: "{{ nzbhydra_name }}.{{ docker_networks[0].name }}:{{ nzbhydra_ports[0].split(':')[0] }}"
+  newznab.host: "{{ nzbhydra_name }}.{{ common_local_tld }}:5076"
   newznab.custom_tag: ''
   newznab.api_key: "{{ nzbhydra_config['main.apiKey'] }}"
   kickasstorrents.enabled: 'False'

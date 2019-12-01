@@ -2,9 +2,8 @@
 
 sonarr_name: sonarr
 sonarr_image: linuxserver/sonarr
-sonarr_ports:
-  - 8989:8989
-sonarr_config_directory: "{{ common_directory_config }}/sonarr"
+sonarr_ports: []
+sonarr_config_directory: "{{ common_directory }}/sonarr"
 sonarr_tv_directory: "{{ common_directory_tv }}"
 sonarr_download_directory: "{{ common_directory_download }}"
 sonarr_environment_variables:
@@ -14,9 +13,18 @@ sonarr_environment_variables:
 
 sonarr_docker_additional_options:
   restart_policy: unless-stopped
-  networks: "{{ docker_networks }}"
+  networks_cli_compatible: true
+  purge_networks: true
+  networks:
+    - name: pub
+      ipv4_address: 192.168.4.7
+  dns_servers: 192.168.4.1
   labels:
-    traefik.http.middlewares.middleware01.basicauth.usersfile: "/htpasswd"
+    traefik.http.routers.sonarr.service: sonarr
+    traefik.http.routers.sonarr.middlewares: "myAuth@file"
+    traefik.http.routers.sonarr.tls: "true"
+    traefik.http.routers.sonarr.tls.certresolver: letsencrypt
+    traefik.http.services.sonarr.loadbalancer.server.port: "8989"
 
 sonarr_config:
   ApiKey: !vault |

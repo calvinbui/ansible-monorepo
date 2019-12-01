@@ -1,0 +1,23 @@
+---
+
+- name: Create Organizr directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ organizr_config_directory }}"
+
+- name: Set Docker container parameters
+  set_fact:
+    organizr_container_parameters:
+      name: "{{ organizr_name }}"
+      image: "{{ organizr_image }}"
+      state: started
+      published_ports: "{{ organizr_ports }}"
+      volumes:
+        - "{{ organizr_config_directory }}:/config"
+      env: "{{ organizr_environment_variables }}"
+
+- name: Create Organizr container
+  docker_container: "{{ organizr_container_parameters | combine(organizr_docker_additional_options) }}"
+  register: organizr_container

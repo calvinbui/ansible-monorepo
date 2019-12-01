@@ -1,0 +1,7 @@
+---
+
+- name: Restart CouchPotato
+  docker_container:
+    name: "{{ couchpotato_name }}"
+    state: started
+    restart: true

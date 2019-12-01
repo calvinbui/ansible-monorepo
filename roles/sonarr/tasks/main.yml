@@ -1,0 +1,37 @@
+---
+
+- name: Create Sonarr directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ sonarr_config_directory }}"
+
+- name: Set Docker container parameters
+  set_fact:
+    sonarr_container_parameters:
+      name: "{{ sonarr_name }}"
+      image: "{{ sonarr_image }}"
+      state: started
+      published_ports: "{{ sonarr_ports }}"
+      volumes:
+        - "{{ sonarr_config_directory }}:/config"
+        - "{{ sonarr_tv_directory }}:/tv"
+        - "{{ sonarr_download_directory }}:/downloads"
+      env: "{{ sonarr_environment_variables }}"
+
+- name: Create Sonarr container
+  docker_container: "{{ sonarr_container_parameters | combine(sonarr_docker_additional_options) }}"
+  register: sonarr_container
+
+- name: Wait for Sonarr start
+  wait_for:
+    path: "{{ sonarr_config_directory }}/config.xml"
+
+- name: Configure config.xml
+  xml:
+    path: "{{ sonarr_config_directory }}/config.xml"
+    xpath: "/Config/{{ item.key }}"
+    value: "{{ item.value | string }}"
+  loop: "{{ sonarr_config | dict2items }}"
+  notify: Restart Sonarr

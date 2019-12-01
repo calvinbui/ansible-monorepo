@@ -2,9 +2,8 @@
 
 nzbhydra_name: nzbhydra
 nzbhydra_image: linuxserver/hydra2
-nzbhydra_ports:
-  - 5076:5076
-nzbhydra_config_directory: "{{ common_directory_config }}/nzbhydra"
+nzbhydra_ports: []
+nzbhydra_config_directory: "{{ common_directory }}/nzbhydra"
 nzbhydra_download_directory: "{{ common_directory_download }}"
 nzbhydra_environment_variables:
   PUID: "{{ common_user_id }}"
@@ -13,9 +12,18 @@ nzbhydra_environment_variables:
 
 nzbhydra_docker_additional_options:
   restart_policy: unless-stopped
-  networks: "{{ docker_networks }}"
+  networks_cli_compatible: true
+  purge_networks: true
+  networks:
+    - name: pub
+      ipv4_address: 192.168.4.6
+  dns_servers: 192.168.4.1
   labels:
-    traefik.http.middlewares.middleware01.basicauth.usersfile: "/htpasswd"
+    traefik.http.routers.nzbhydra.service: nzbhydra
+    traefik.http.routers.nzbhydra.middlewares: "myAuth@file"
+    traefik.http.routers.nzbhydra.tls: "true"
+    traefik.http.routers.nzbhydra.tls.certresolver: letsencrypt
+    traefik.http.services.nzbhydra.loadbalancer.server.port: "5076"
 
 nzbhydra_config:
   main.apiKey: !vault |
@@ -38,7 +46,7 @@ nzbhydra_downloaders:
     downloaderType: "NZBGET"
     name: "NZBGet"
     nzbAddingType: "UPLOAD"
-    url: "http://{{ nzbget_name }}.{{ docker_networks[0].name }}:{{ nzbget_ports[0].split(':')[0] }}"
+    url: "http://{{ nzbget_name }}.{{ common_local_tld }}:6789"
     enabled: true
     iconCssClass: ""
 

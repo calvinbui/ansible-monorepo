@@ -1,0 +1,24 @@
+---
+
+- name: Create JDownloader directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ jdownloader_config_directory }}"
+
+- name: Set Docker container parameters
+  set_fact:
+    jdownloader_container_parameters:
+      name: "{{ jdownloader_name }}"
+      image: "{{ jdownloader_image }}"
+      state: started
+      published_ports: "{{ jdownloader_ports }}"
+      volumes:
+        - "{{ jdownloader_config_directory }}:/config"
+        - "{{ jdownloader_download_directory }}:/output"
+      env: "{{ jdownloader_environment_variables }}"
+
+- name: Create JDownloader container
+  docker_container: "{{ jdownloader_container_parameters | combine(jdownloader_docker_additional_options) }}"
+  register: jdownloader_container

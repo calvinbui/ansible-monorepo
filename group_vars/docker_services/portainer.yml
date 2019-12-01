@@ -12,9 +12,10 @@ portainer_docker_additional_options:
   dns_servers: 192.168.1.1
   networks_cli_compatible: true
   purge_networks: true
-  command: '--no-analytics'
+  command: '--no-auth --no-analytics'
   labels:
     traefik.http.routers.portainer.service: portainer
+    traefik.http.routers.portainer.middlewares: "myAuth@file"
     traefik.http.routers.portainer.tls: "true"
     traefik.http.routers.portainer.tls.certresolver: letsencrypt
     traefik.http.services.portainer.loadbalancer.server.port: "9000"

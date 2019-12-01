@@ -2,9 +2,8 @@
 
 nzbget_name: nzbget
 nzbget_image: linuxserver/nzbget
-nzbget_ports:
-  - 6789:6789
-nzbget_config_directory: "{{ common_directory_config }}/nzbget"
+nzbget_ports: []
+nzbget_config_directory: "{{ common_directory }}/nzbget"
 nzbget_download_directory: "{{ common_directory_download }}"
 nzbget_environment_variables:
   PUID: "{{ common_user_id }}"
@@ -13,9 +12,18 @@ nzbget_environment_variables:
 
 nzbget_docker_additional_options:
   restart_policy: unless-stopped
-  networks: "{{ docker_networks }}"
+  networks_cli_compatible: true
+  purge_networks: true
+  networks:
+    - name: pub
+      ipv4_address: 192.168.4.4
+  dns_servers: 192.168.4.1
   labels:
-    traefik.http.middlewares.middleware01.basicauth.usersfile: "/htpasswd"
+    traefik.http.routers.nzbget.service: nzbget
+    traefik.http.routers.nzbget.middlewares: "myAuth@file"
+    traefik.http.routers.nzbget.tls: "true"
+    traefik.http.routers.nzbget.tls.certresolver: letsencrypt
+    traefik.http.services.nzbget.loadbalancer.server.port: "6789"
 
 nzbget_config:
   MainDir: '/downloads'

@@ -1,0 +1,10 @@
+---
+
+- name: Install NFS dependencies
+  apt:
+    name: nfs-common
+    state: present
+  register: result
+  until: result is success
+  retries: 5
+  delay: 5

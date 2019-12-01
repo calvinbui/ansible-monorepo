@@ -1,0 +1,31 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint:
+  name: yamllint
+  options:
+    config-data:
+      line-length: disable
+platforms:
+  - name: ansible-qbittorrent-docker
+    image: geerlingguy/docker-ubuntu1804-ansible
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  options:
+    v: true
+  lint:
+    name: ansible-lint
+    options:
+      x: ["503"]
+scenario:
+  name: default
+verifier:
+  name: testinfra
+  lint:
+    name: flake8
