@@ -1,0 +1,21 @@
+---
+
+- name: Create MariaDB directory
+  file:
+    path: "{{ item.split(':')[0] }}"
+    state: directory
+  loop: "{{ mariadb_volumes }}"
+
+- name: Set Docker container parameters
+  set_fact:
+    mariadb_container_parameters:
+      name: "{{ mariadb_name }}"
+      image: "{{ mariadb_image }}"
+      state: started
+      published_ports: "{{ mariadb_ports | default(omit) }}"
+      volumes: "{{ mariadb_volumes | default(omit) }}"
+      env: "{{ mariadb_environment_variables | default(omit) }}"
+
+- name: Create MariaDB container
+  docker_container: "{{ mariadb_container_parameters | combine(mariadb_docker_additional_options) }}"
+  register: mariadb_container

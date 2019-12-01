@@ -1,0 +1,7 @@
+---
+
+- name: Restart BookStack
+  docker_container:
+    name: "{{ bookstack_name }}"
+    state: started
+    restart: yes

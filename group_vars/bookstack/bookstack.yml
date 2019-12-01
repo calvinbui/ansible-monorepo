@@ -1,0 +1,38 @@
+---
+
+bookstack_name: bookstack
+bookstack_image: linuxserver/bookstack
+bookstack_ports: []
+bookstack_config_directory: "{{ common_directory }}/bookstack/bookstack"
+bookstack_volumes:
+  - "{{ bookstack_config_directory}}:/config"
+bookstack_environment_variables:
+  PUID: "{{ common_user_id }}"
+  PGID: "{{ common_group_id }}"
+  DB_HOST: "bookstack-mariadb.{{ common_local_tld }}"
+  DB_USER: "{{ mariadb_environment_variables.MYSQL_USER }}"
+  DB_PASS: "{{ mariadb_environment_variables.MYSQL_PASSWORD }}"
+  DB_DATABASE: "{{ mariadb_environment_variables.MYSQL_DATABASE }}"
+
+bookstack_docker_additional_options:
+  restart_policy: unless-stopped
+  networks_cli_compatible: true
+  purge_networks: true
+  networks:
+    - name: user
+      ipv4_address: 192.168.2.16
+  dns_servers: 192.168.2.1
+  labels:
+    traefik.http.routers.bookstack.service: bookstack
+    traefik.http.routers.bookstack.tls: "true"
+    traefik.http.routers.bookstack.tls.certresolver: letsencrypt
+    traefik.http.services.bookstack.loadbalancer.server.port: "80"
+
+bookstack_env_options:
+  - WKHTMLTOPDF=/usr/bin/wkhtmltopdf
+  - DRAWIO=true
+  - APP_TIMEZONE="{{ common_timezone }}"
+
+bookstack_php_options:
+  - post_max_size=10M
+  - upload_max_filesize=10M

@@ -1,0 +1,42 @@
+---
+
+- name: Create BookStack directory
+  file:
+    path: "{{ item.split(':')[0] }}"
+    state: directory
+  loop: "{{ bookstack_volumes }}"
+
+- name: Set Docker container parameters
+  set_fact:
+    bookstack_container_parameters:
+      name: "{{ bookstack_name }}"
+      image: "{{ bookstack_image }}"
+      state: started
+      published_ports: "{{ bookstack_ports | default(omit) }}"
+      volumes: "{{ bookstack_volumes | default(omit) }}"
+      env: "{{ bookstack_environment_variables | default(omit) }}"
+
+- name: Create BookStack container
+  docker_container: "{{ bookstack_container_parameters | combine(bookstack_docker_additional_options) }}"
+  register: bookstack_container
+
+- name: Wait for .env file
+  wait_for:
+    path: "{{ bookstack_config_directory }}/www/.env"
+  when: bookstack_container is changed
+
+- name: Configure BookStack .env
+  lineinfile:
+    dest: "{{ bookstack_config_directory }}/www/.env"
+    regexp: "^{{ item.split('=')[0] }}="
+    line: "{{ item }}"
+  loop: "{{ bookstack_env_options }}"
+  notify: Restart BookStack
+
+- name: Configure PHP options
+  lineinfile:
+    dest: "{{ bookstack_config_directory }}/php/php-local.ini"
+    regexp: "^{{ item.split('=')[0] }}="
+    line: "{{ item }}"
+  loop: "{{ bookstack_php_options }}"
+  notify: Restart BookStack

@@ -1,0 +1,27 @@
+---
+
+bookstack_name: bookstack
+bookstack_image: linuxserver/bookstack
+bookstack_ports:
+  - 80:80
+bookstack_config_directory: /tmp/bookstack/config
+bookstack_volumes:
+  - "{{ bookstack_config_directory }}:/config"
+bookstack_environment_variables:
+  PUID: "1000"
+  PGID: "1000"
+  DB_HOST: yourdbhost
+  DB_USER: yourdbuser
+  DB_PASS: yourdbpass
+  DB_DATABASE: bookstackapp
+  APP_URL: http://your.site.here.xyz
+
+bookstack_docker_additional_options:
+  restart_policy: unless-stopped
+
+bookstack_env_options:
+  - WKHTMLTOPDF=/usr/bin/wkhtmltopdf
+
+bookstack_php_options:
+  - post_max_size=10M
+  - upload_max_filesize=10M

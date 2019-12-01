@@ -22,3 +22,8 @@ ansible_python_interpreter=/usr/bin/env python3
 homelab-user
 [usenet:vars]
 ansible_python_interpreter=/usr/bin/env python3
+
+[bookstack]
+homelab-user
+[bookstack:vars]
+ansible_python_interpreter=/usr/bin/env python3
