@@ -1,0 +1,19 @@
+---
+
+- name: Create blueiris config directory
+  file:
+    path: "{{ blueiris_config_directory }}"
+    state: directory
+
+- name: Set Docker container parameters
+  set_fact:
+    blueiris_container_parameters:
+      name: "{{ blueiris_name }}"
+      image: "{{ blueiris_image }}"
+      state: started
+      published_ports: "{{ blueiris_ports }}"
+      volumes: "{{ blueiris_volumes }}"
+
+- name: Create blueiris container
+  docker_container: "{{ blueiris_container_parameters | combine(blueiris_docker_additional_options) }}"
+  register: blueiris_container

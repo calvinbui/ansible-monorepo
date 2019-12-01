@@ -1,0 +1,23 @@
+---
+
+jdownloader_name: jdownloader
+jdownloader_image: jlesage/jdownloader-2
+jdownloader_ports:
+  - 5800:5800
+  - 5900:5900
+  - 3129:3129
+jdownloader_config_directory: "{{ common_directory_config }}/jdownloader"
+jdownloader_download_directory: "{{ common_directory_download }}"
+jdownloader_environment_variables:
+  TZ: "{{ common_timezone }}"
+  USER_ID: "{{ common_user_id }}"
+  GROUP_ID: "{{ common_root_group }}"
+  DISPLAY_WIDTH: "1920"
+  DISPLAY_HEIGHT: "1080"
+
+jdownloader_docker_additional_options:
+  restart_policy: unless-stopped
+  networks: "{{ docker_networks }}"
+  labels:
+    traefik.http.services.service0.loadbalancer.server.port: "{{ jdownloader_ports[0].split(':')[0] }}"
+    traefik.http.middlewares.middleware01.basicauth.usersfile: "/htpasswd"

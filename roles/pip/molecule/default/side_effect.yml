@@ -1,0 +1,14 @@
+---
+
+- name: Side Effect
+  hosts: all
+  become: true
+  tasks:
+    - name: Uninstall setuptools and pip
+      apt:
+        name:
+          - python3-pip
+          - python-pip
+          - python-setuptools
+          - python3-setuptools
+        state: present

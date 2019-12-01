@@ -1,0 +1,10 @@
+---
+
+portainer_name: portainer
+portainer_image: portainer/portainer
+portainer_ports:
+  - 9000:9000
+portainer_config_directory: "/tmp/portainer"
+
+portainer_docker_additional_options:
+  restart_policy: unless-stopped

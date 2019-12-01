@@ -1,0 +1,31 @@
+---
+- hosts: setup
+  become: true
+  pre_tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: true
+        cache_valid_time: 600
+      changed_when: false
+  roles:
+    - authorized-keys
+    - apt
+    - pip
+    - docker
+    - docker-network
+  tasks:
+    - lineinfile:
+        path: /etc/sudoers
+        state: present
+        regexp: "^{{ common_user }}"
+        line: "{{ common_user }} ALL=(ALL) NOPASSWD: ALL"
+        validate: 'visudo -cf %s'
+    - timezone:
+        name: Australia/Sydney
+  post_tasks:
+    - name: Create common directory
+      file:
+        path: "{{ common_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"

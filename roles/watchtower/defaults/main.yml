@@ -1,0 +1,7 @@
+---
+
+watchtower_name: watchtower
+watchtower_image: containrrr/watchtower
+
+watchtower_docker_additional_options:
+  restart_policy: unless-stopped

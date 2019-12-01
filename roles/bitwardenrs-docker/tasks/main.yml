@@ -1,0 +1,20 @@
+---
+
+- name: Create Bitwarden config directory
+  file:
+    path: "{{ bitwardenrs_config_directory }}"
+    state: directory
+
+- name: Set Docker container parameters
+  set_fact:
+    bitwardenrs_container_parameters:
+      name: "{{ bitwardenrs_name }}"
+      image: "{{ bitwardenrs_image }}"
+      state: started
+      published_ports: "{{ bitwardenrs_ports }}"
+      env: "{{ bitwardenrs_environment_variables }}"
+      volumes: "{{ bitwardenrs_volumes }}"
+
+- name: Create Bitwarden RS container
+  docker_container: "{{ bitwardenrs_container_parameters | combine(bitwardenrs_docker_additional_options) }}"
+  register: bitwardenrs_container

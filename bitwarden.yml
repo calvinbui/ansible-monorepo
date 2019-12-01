@@ -1,0 +1,47 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - bitwardenrs-docker
+  vars:
+    bitwardenrs_name: bitwarden
+    bitwardenrs_image: bitwardenrs/server:alpine
+    bitwardenrs_ports: []
+    bitwardenrs_config_directory: "{{ common_directory }}/bitwarden"
+    bitwardenrs_volumes:
+      - "{{ bitwardenrs_config_directory }}:/data"
+    bitwardenrs_environment_variables:
+      ADMIN_TOKEN: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              66613739613330623637326234343739613134323763316439663336336534336137353639326462
+              3366623464653634363164306237366234326164396435610a363934613834613166363135373433
+              37336361666566656364643534346437373937633738663863326430383239666538343662323432
+              3362323139346163330a313664336132623935663361666433393764656463613732326234346137
+              31636661393936656664653463303161653835363939626464623261613037353031386264666466
+              35633861653837353232323936383561656336346539396535636463663638353130646365373762
+              363134643934313733666639313530323764
+      WEBSOCKET_ENABLED: "true"
+      SIGNUPS_ALLOWED: "false"
+      SHOW_PASSWORD_HINT: "false"
+    bitwardenrs_docker_additional_options:
+      restart_policy: unless-stopped
+      networks:
+        - name: user
+          ipv4_address: 192.168.2.8
+      dns_servers: 192.168.2.1
+      networks_cli_compatible: true
+      labels:
+        # https://github.com/dani-garcia/bitwarden_rs/wiki/Proxy-examples#traefik-v2-docker-compose-example-by-hwwilliams
+        # ui routing
+        traefik.http.routers.bitwarden-ui.service: bitwarden-ui
+        traefik.http.routers.bitwarden-ui.tls: "true"
+        traefik.http.routers.bitwarden-ui.tls.certresolver: letsencrypt
+        traefik.http.services.bitwarden-ui.loadbalancer.server.port: "80"
+        # websocket for syncing
+
+        traefik.http.routers.bitwarden-websocket.rule: Host(`bitwarden.{{ common_tld }}`) && Path(`/notifications/hub`)
+        traefik.http.routers.bitwarden-websocket.service: bitwarden-websocket
+        traefik.http.routers.bitwarden-websocket.tls: "true"
+        traefik.http.services.bitwarden-websocket.loadbalancer.server.port: "3012"
+      comparisons:
+        "labels": "strict"

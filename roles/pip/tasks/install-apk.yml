@@ -1,0 +1,10 @@
+---
+
+- name: Install pip3 and setuptools
+  apk:
+    name: "{{ item }}"
+    update_cache: true
+    state: present
+  loop:
+    - python3
+    - py3-setuptools

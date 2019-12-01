@@ -1,0 +1,33 @@
+docker_networks:
+  - name: mgmt
+    driver: macvlan
+    ipam_config:
+      - gateway: 192.168.1.1
+        subnet: 192.168.1.0/24
+        iprange: 192.168.1.128/26
+    driver_options:
+      parent: eno1.10
+  - name: user
+    driver: macvlan
+    ipam_config:
+      - gateway: 192.168.2.1
+        subnet: 192.168.2.0/24
+        iprange: 192.168.2.128/26
+    driver_options:
+      parent: eno1.20
+  - name: iot
+    driver: macvlan
+    ipam_config:
+      - gateway: 192.168.3.1
+        subnet: 192.168.3.0/24
+        iprange: 192.168.3.128/26
+    driver_options:
+      parent: eno1.30
+  - name: pub
+    driver: macvlan
+    ipam_config:
+      - gateway: 192.168.4.1
+        subnet: 192.168.4.0/24
+        iprange: 192.168.4.128/26
+    driver_options:
+      parent: eno1.40

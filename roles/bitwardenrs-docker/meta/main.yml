@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  author: calvinbui
+  description: Bitwarden RS in Docker
+  company: https://calvin.me
+  license: GPLv3
+  min_ansible_version: 2.8
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+  galaxy_tags:
+    - bitwardenrs
+dependencies: []

@@ -1,0 +1,17 @@
+---
+
+blueiris_name: blueiris
+blueiris_image: jshridha/blueiris
+blueiris_ports:
+  - 8080:8080
+  - 5900:5900
+  - 81:81
+blueiris_config_directory: "/tmp/blueiris/"
+blueiris_volumes:
+  - "{{ blueiris_config_directory }}/app:/root/prefix32:rw"
+  - /etc/localtime:/etc/localtime:ro
+
+blueiris_docker_additional_options:
+  restart_policy: unless-stopped
+  comparisons:
+    "labels": "strict"

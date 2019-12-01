@@ -1,0 +1,28 @@
+---
+
+- hosts: usenet
+  become: true
+  pre_tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: true
+        cache_valid_time: 600
+      changed_when: false
+      when: ansible_os_family == 'Debian'
+  roles:
+    - calvinbui.ansible_nfs_client
+    - calvinbui.ansible_docker
+    - calvinbui.ansible_pip
+    - calvinbui.ansible_docker_network
+    - calvinbui.ansible_htpasswd
+    - calvinbui.ansible_traefik
+    - calvinbui.ansible_nzbget_docker
+    - calvinbui.ansible_qbittorrent_docker
+    - calvinbui.ansible_sonarr_docker
+    - calvinbui.ansible_couchpotato_docker
+    - calvinbui.ansible_nzbhydra_docker
+    - calvinbui.ansible_jdownloader_docker
+    - calvinbui.ansible_organizr_docker
+    - calvinbui.ansible_portainer
+    - calvinbui.ansible_watchtower
+    - calvinbui.ansible_datadog

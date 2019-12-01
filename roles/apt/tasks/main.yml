@@ -1,0 +1,10 @@
+---
+- name: Install apt package/s
+  apt:
+    "{{ item }}"
+  register: result
+  until: result is success
+  retries: 5
+  delay: 5
+  loop: "{{ apt_install_packages }}"
+  when: ansible_os_family == 'Debian'

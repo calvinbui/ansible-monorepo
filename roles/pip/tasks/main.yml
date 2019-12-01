@@ -1,0 +1,12 @@
+---
+
+- import_tasks: install-apt.yml
+  when: ansible_os_family == 'Debian'
+
+- import_tasks: install-apk.yml
+  when: ansible_os_family == 'Alpine'
+
+- name: Install pip package/s
+  pip:
+    "{{ item }}"
+  loop: "{{ pip_install_packages }}"

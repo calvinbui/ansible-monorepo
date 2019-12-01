@@ -1,0 +1,25 @@
+---
+
+blueiris_name: blueiris
+blueiris_image: calvinbui/docker-blueiris
+blueiris_ports: []
+blueiris_config_directory: "{{ recording_path }}"
+blueiris_volumes:
+  - "{{ blueiris_config_directory }}/blueiris:/root/prefix32:rw"
+  - /etc/localtime:/etc/localtime:ro
+
+blueiris_docker_additional_options:
+  restart_policy: unless-stopped
+  networks:
+    - name: iot
+      ipv4_address: 192.168.3.2
+  dns_servers: 192.168.3.1
+  networks_cli_compatible: true
+  purge_networks: true
+  labels:
+    traefik.http.routers.blueiris.service: blueiris
+    traefik.http.routers.blueiris.tls: "true"
+    traefik.http.routers.blueiris.tls.certresolver: letsencrypt
+    traefik.http.services.blueiris.loadbalancer.server.port: "81"
+  comparisons:
+    "labels": "strict"

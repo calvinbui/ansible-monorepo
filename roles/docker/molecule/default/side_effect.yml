@@ -1,0 +1,11 @@
+---
+
+- name: Side Effect
+  hosts: all
+  become: true
+  tasks:
+    - name: Uninstall docker
+      apt:
+        name:
+          - docker-ce
+        state: absent

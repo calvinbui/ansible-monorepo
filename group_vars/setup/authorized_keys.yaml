@@ -1,0 +1,7 @@
+authorized_keys_config:
+  - user: root
+    state: present
+    key: https://github.com/calvinbui.keys
+  - user: "{{ common_user }}"
+    state: present
+    key: https://github.com/calvinbui.keys

@@ -1,0 +1,11 @@
+apt_install_packages:
+  - name: vim
+  - name: htop
+  - name: iftop
+  - name: nano
+  - name: tree
+  - name: unzip
+  - name: ncdu
+  - name: curl
+  - name: wget
+  - name: dnsutils

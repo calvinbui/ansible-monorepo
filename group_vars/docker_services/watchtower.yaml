@@ -1,0 +1,13 @@
+watchtower_name: watchtower
+watchtower_image: containrrr/watchtower
+watchtower_docker_additional_options:
+  restart_policy: unless-stopped
+  networks:
+    - name: mgmt
+  dns_servers: 192.168.1.1
+  networks_cli_compatible: true
+  purge_networks: true
+  env:
+    WATCHTOWER_CLEANUP: "true"
+  labels:
+    traefik.enable: "false"

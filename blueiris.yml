@@ -1,0 +1,12 @@
+---
+- hosts: all
+  become: true
+  pre_tasks:
+    - mount:
+        path: "{{ recording_path }}"
+        src: "{{ recording_device }}"
+        fstype: "ext4"
+        boot: true
+        state: present
+  roles:
+    - blueiris

@@ -1,0 +1,5 @@
+---
+- name: Set authorized keys taken from url
+  authorized_key:
+    "{{ item }}"
+  loop: "{{ authorized_keys_config }}"

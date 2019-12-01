@@ -1,0 +1,17 @@
+[providers]
+  [providers.docker]
+    defaultRule = "Host(`{% raw %}{{ normalize .Name }}{% endraw %}.{{ common_tld }}`)"
+  [providers.file]
+    filename = "/dynamic_conf.toml"
+
+[entryPoints.web-secure]
+  address = ":443"
+
+[certificatesResolvers.letsencrypt.acme]
+  email = "{{ acme_email }}"
+  storage = "acme.json"
+  [certificatesResolvers.letsencrypt.acme.dnsChallenge]
+    provider = "cloudflare"
+    delayBeforeCheck = 10
+
+[api]

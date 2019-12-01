@@ -1,0 +1,24 @@
+[all]
+homelab-user
+[all:vars]
+ansible_python_interpreter=/usr/bin/env python3
+
+[setup]
+homelab-user
+[setup:vars]
+ansible_python_interpreter=/usr/bin/env python3
+
+[docker_services]
+homelab-user
+[docker_services:vars]
+ansible_python_interpreter=/usr/bin/env python3
+
+[blueiris]
+homelab-user
+[blueiris:vars]
+ansible_python_interpreter=/usr/bin/env python3
+
+[usenet]
+homelab-user
+[usenet:vars]
+ansible_python_interpreter=/usr/bin/env python3

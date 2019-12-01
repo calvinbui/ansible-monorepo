@@ -1,0 +1,23 @@
+---
+
+# Requires docker installed first
+
+- name: Create user-defined network
+  docker_network:
+    "{{ item }}"
+  loop: "{{ docker_networks }}"
+
+- name: Check vmware tools conf exists
+  stat:
+    path: /etc/vmware-tools/tools.conf
+  register: vmware_tools_conf
+
+- name: Place the new interface in lower priorty in vm tools
+  blockinfile:
+    path: /etc/vmware-tools/tools.conf
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+    block: |
+      [guestinfo]
+      low-priority-nics=br*
+  when: vmware_tools_conf.stat.exists
+  notify: restart vmware-tools

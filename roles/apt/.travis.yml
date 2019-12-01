@@ -1,0 +1,19 @@
+---
+language: python
+services:
+  - docker
+python:
+  - "2.7"
+  - "3.6"
+env:
+  matrix:
+    - UBUNTU_IMAGE_TAG: bionic
+    - UBUNTU_IMAGE_TAG: trusty
+    - UBUNTU_IMAGE_TAG: xenial
+install:
+  - pip install molecule
+  - pip install docker
+script:
+  - molecule test
+notifications:
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/

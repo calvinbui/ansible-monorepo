@@ -1,0 +1,16 @@
+---
+
+bitwardenrs_name: bitwarden
+bitwardenrs_image: bitwardenrs/server:alpine
+bitwardenrs_ports:
+  - 80:80
+  - 3012:3012
+bitwardenrs_volumes:
+  - /tmp/bitwarders:/data
+bitwardenrs_environment_variables:
+  ADMIN_TOKEN: "Keepthistokensecretthisispasswordtoaccessadminareaofyourserver"
+  SIGNUPS_ALLOWED: "false"
+  SHOW_PASSWORD_HINT: "false"
+
+bitwardenrs_docker_additional_options:
+  restart_policy: unless-stopped

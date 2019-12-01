@@ -1,0 +1,6 @@
+---
+
+authorized_keys_config:
+  - user: root
+    state: present
+    key: https://github.com/calvinbui.keys

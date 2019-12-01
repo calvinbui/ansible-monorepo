@@ -1,0 +1,23 @@
+---
+
+- name: Create Portainer directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ portainer_config_directory }}"
+
+- name: Set Docker container parameters
+  set_fact:
+    portainer_container_parameters:
+      name: "{{ portainer_name }}"
+      image: "{{ portainer_image }}"
+      state: started
+      published_ports: "{{ portainer_ports }}"
+      volumes:
+        - "{{ portainer_config_directory }}:/data"
+        - /var/run/docker.sock:/var/run/docker.sock
+
+- name: Create Portainer container
+  docker_container: "{{ portainer_container_parameters | combine(portainer_docker_additional_options) }}"
+  register: portainer_container

@@ -1,0 +1,140 @@
+---
+
+nzbget_name: nzbget
+nzbget_image: linuxserver/nzbget
+nzbget_ports:
+  - 6789:6789
+nzbget_config_directory: "{{ common_directory_config }}/nzbget"
+nzbget_download_directory: "{{ common_directory_download }}"
+nzbget_environment_variables:
+  PUID: "{{ common_user_id }}"
+  PGID: "{{ common_root_group }}"
+  TZ: "{{ common_timezone }}"
+
+nzbget_docker_additional_options:
+  restart_policy: unless-stopped
+  networks: "{{ docker_networks }}"
+  labels:
+    traefik.http.middlewares.middleware01.basicauth.usersfile: "/htpasswd"
+
+nzbget_config:
+  MainDir: '/downloads'
+  DestDir: '${MainDir}'
+  InterDir: '${MainDir}/Intermediate/Incomplete'
+  NzbDir: '${MainDir}/Intermediate/Watch'
+  QueueDir: '${MainDir}/Intermediate/Queue'
+  TempDir: '${MainDir}/Intermediate/Temp'
+  ScriptDir: '/config/scripts'
+  LockFile: '/config/nzbget.lock'
+  LogFile: '/config/nzbget.log'
+  ControlUsername:
+  ControlPassword:
+  DupeCheck: 'no'
+  ArticleCache: '200'
+  WriteBuffer: '1024'
+  PostStrategy: 'sequential'
+  ReorderFiles: 'yes'
+  DownloadRate: '10000'
+  WriteLog: 'rotate'
+  ParBuffer: '128'
+  ParPauseQueue: 'yes'
+  DirectRename: 'yes'
+  UnpackPauseQueue: 'yes'
+  DirectUnpack: 'yes'
+  ScriptPauseQueue: 'yes'
+  Category1.Name: 'Movies'
+  Category1.DestDir: 'Movies'
+  Category1.Aliases: 'movies*'
+  Category2.Name: 'TV'
+  Category2.DestDir: 'TV'
+  Category2.Unpack: 'yes'
+  Category3.Name: 'Games'
+  Category3.DestDir: 'Games'
+  Category3.Aliases: 'Games'
+  Category4.Name: 'Books'
+  Category4.DestDir: 'Books'
+  Category4.Aliases: 'Books'
+  Server1.Active: 'yes'
+  Server1.Name: 'us.newsdemon.com'
+  Server1.Level: '0'
+  Server1.Optional: 'no'
+  Server1.Group: '0'
+  Server1.Host: 'us.newsdemon.com'
+  Server1.Port: '563'
+  Server1.Username: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          62653537646663363862373735643635356662313734313936653762663831613762393664366633
+          3236313266333439336637386566616562353232653939380a623031363839346336313634353230
+          66386563346330366234333035373630366566353466376231316664356138313233336630653838
+          6131633839333236310a666137623239653530313566396366333636373136653438353934393265
+          6231
+  Server1.Password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          30333863383538373963303236356161306164633139643262346631373632316536643836313030
+          6666353834643235326665323334323033653864356331660a306663393534386333643439653464
+          32666430343031396537393236373264373736633837616261663865356537623761346339613761
+          6430333735363466300a646666643161663937643264626531633439336366653334386138346362
+          6562
+  Server1.JoinGroup: 'no'
+  Server1.Encryption: 'yes'
+  Server1.Cipher: 'AES128-SHA'
+  Server1.Connections: '16'
+  Server1.Retention: "{{ common_usenet_retention }}"
+  Server1.IpVersion: 'auto'
+  Server1.Notes: ''
+  Server2.Active: 'yes'
+  Server2.Name: 'nl.newsdemon.com'
+  Server2.Level: '0'
+  Server2.Optional: 'no'
+  Server2.Group: '0'
+  Server2.Host: 'nl.newsdemon.com'
+  Server2.Port: '563'
+  Server2.Username: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          62653537646663363862373735643635356662313734313936653762663831613762393664366633
+          3236313266333439336637386566616562353232653939380a623031363839346336313634353230
+          66386563346330366234333035373630366566353466376231316664356138313233336630653838
+          6131633839333236310a666137623239653530313566396366333636373136653438353934393265
+          6231
+  Server2.Password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          30333863383538373963303236356161306164633139643262346631373632316536643836313030
+          6666353834643235326665323334323033653864356331660a306663393534386333643439653464
+          32666430343031396537393236373264373736633837616261663865356537623761346339613761
+          6430333735363466300a646666643161663937643264626531633439336366653334386138346362
+          6562
+  Server2.JoinGroup: 'no'
+  Server2.Encryption: 'yes'
+  Server2.Cipher: 'AES128-SHA'
+  Server2.Connections: '16'
+  Server2.Retention: "{{ common_usenet_retention }}"
+  Server2.IpVersion: 'auto'
+  Server2.Notes: ''
+  Server3.Active: 'yes'
+  Server3.Name: 'eu.newsdemon.com'
+  Server3.Level: '1'
+  Server3.Optional: 'no'
+  Server3.Group: '0'
+  Server3.Host: 'eu.newsdemon.com'
+  Server3.Port: '563'
+  Server3.Username: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          62653537646663363862373735643635356662313734313936653762663831613762393664366633
+          3236313266333439336637386566616562353232653939380a623031363839346336313634353230
+          66386563346330366234333035373630366566353466376231316664356138313233336630653838
+          6131633839333236310a666137623239653530313566396366333636373136653438353934393265
+          6231
+  Server3.Password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          30333863383538373963303236356161306164633139643262346631373632316536643836313030
+          6666353834643235326665323334323033653864356331660a306663393534386333643439653464
+          32666430343031396537393236373264373736633837616261663865356537623761346339613761
+          6430333735363466300a646666643161663937643264626531633439336366653334386138346362
+          6562
+  Server3.JoinGroup: 'no'
+  Server3.Encryption: 'yes'
+  Server3.Cipher: 'AES128-SHA'
+  Server3.Connections: '16'
+  Server3.Retention: "{{ common_usenet_retention }}"
+  Server3.IpVersion: 'auto'
+  Server3.Notes: ''

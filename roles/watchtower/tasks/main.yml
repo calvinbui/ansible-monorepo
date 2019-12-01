@@ -1,0 +1,14 @@
+---
+
+- name: Set Docker container parameters
+  set_fact:
+    watchtower_container_parameters:
+      name: "{{ watchtower_name }}"
+      image: "{{ watchtower_image }}"
+      state: started
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+
+- name: Create Watchtower container
+  docker_container: "{{ watchtower_container_parameters | combine(watchtower_docker_additional_options) }}"
+  register: watchtower_container

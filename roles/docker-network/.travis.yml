@@ -1,0 +1,14 @@
+---
+language: python
+services:
+  - docker
+python:
+  - "3.6"
+env:
+  - UBUNTU_IMAGE_TAG: bionic
+install:
+  - pip install testinfra molecule docker
+script:
+  - molecule test
+notifications:
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/

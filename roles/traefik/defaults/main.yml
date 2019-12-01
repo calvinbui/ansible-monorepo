@@ -1,0 +1,18 @@
+---
+
+traefik_name: traefik
+traefik_image: traefik:v2.1
+traefik_config_template: traefik.toml.j2
+traefik_config_dynamic_template: dynamic_conf.toml.j2
+traefik_config_directory: "/tmp/traefik"
+traefik_config_file: "{{ traefik_config_directory }}/traefik.toml"
+traefik_config_dynamic: "{{ traefik_config_directory }}/dynamic_conf.toml"
+traefik_config_acme_file: "{{ traefik_config_directory }}/acme.json"
+traefik_ports: []
+traefik_docker_additional_options:
+  restart_policy: always
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - "{{ traefik_config_file }}:/traefik.toml"
+    - "{{ traefik_config_acme_file }}:/acme.json"
+    - "{{ traefik_config_dynamic }}:/dynamic_conf.toml"
