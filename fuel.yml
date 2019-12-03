@@ -1,0 +1,36 @@
+---
+
+- hosts: all
+  become: true
+  vars:
+    fuel_name: fuel
+    fuel_directory: "{{ common_directory }}/fuel"
+    fuel_image: fuel
+  tasks:
+    - name: Clone repo
+      git:
+        repo: https://github.com/freyta/7Eleven-Python
+        dest: "{{ fuel_directory }}"
+    - name: Build image
+      docker_image:
+        build:
+          path: "{{ fuel_directory }}"
+        name: "{{ fuel_image }}"
+    - name: Create 7Eleven Python
+      docker_container:
+        name: "{{ fuel_name }}"
+        image: "{{ fuel_image }}"
+        state: started
+        networks:
+          - name: pub
+        dns_servers: 192.168.4.1
+        networks_cli_compatible: true
+        purge_networks: true
+        restart_policy: unless-stopped
+        env:
+          TZ: "{{ common_timezone }}"
+        labels:
+          traefik.http.routers.fuel.service: "{{ fuel_name }}"
+          traefik.http.routers.fuel.tls: "true"
+          traefik.http.routers.fuel.tls.certresolver: letsencrypt
+          traefik.http.services.fuel.loadbalancer.server.port: "5000"
