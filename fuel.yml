@@ -15,7 +15,9 @@
       docker_image:
         build:
           path: "{{ fuel_directory }}"
+          pull: true
         name: "{{ fuel_image }}"
+        source: build
     - name: Create 7Eleven Python
       docker_container:
         name: "{{ fuel_name }}"
