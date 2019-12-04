@@ -13,6 +13,7 @@
       state: started
       published_ports: "{{ blueiris_ports }}"
       volumes: "{{ blueiris_volumes }}"
+      pull: true
 
 - name: Template supervisord config
   template:

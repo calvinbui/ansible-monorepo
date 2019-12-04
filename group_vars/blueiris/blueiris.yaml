@@ -11,16 +11,16 @@ blueiris_volumes:
 
 blueiris_docker_additional_options:
   restart_policy: unless-stopped
+  networks_cli_compatible: true
+  purge_networks: true
+  comparisons:
+    "labels": "strict"
+  dns_servers: 192.168.3.1
   networks:
     - name: iot
       ipv4_address: 192.168.3.2
-  dns_servers: 192.168.3.1
-  networks_cli_compatible: true
-  purge_networks: true
   labels:
     traefik.http.routers.blueiris.service: blueiris
     traefik.http.routers.blueiris.tls: "true"
     traefik.http.routers.blueiris.tls.certresolver: letsencrypt
     traefik.http.services.blueiris.loadbalancer.server.port: "81"
-  comparisons:
-    "labels": "strict"
