@@ -1,0 +1,5 @@
+---
+
+apt_install_packages:
+  - name: libwww-perl
+  - name: libjson-perl

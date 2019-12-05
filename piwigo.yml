@@ -1,0 +1,31 @@
+---
+- hosts: piwigo
+  become: true
+  pre_tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: true
+        cache_valid_time: 600
+      changed_when: false
+      when: ansible_os_family == 'Debian'
+  roles:
+    - mariadb
+    - piwigo
+    - apt
+  post_tasks:
+    - name: Symlink Photos folder to Piwigo's Galleries (paths are within container)
+      file:
+        src: "/photos"
+        dest: "{{ common_directory_config }}/piwigo/www/gallery/photos"
+        state: link
+        force: true
+    - name: Copy Quick Sync plugin (https://br.piwigo.org/ext/extension_view.php?eid=855)
+      copy:
+        src: files/piwigo_refresh.pl
+        dest: "{{ common_directory_config }}/piwigo_refresh.pl"
+    - name: Create cronjob for Quick Sync
+      cron:
+        name: "Sync Gallery"
+        special_time: "hourly"
+        job: "perl {{ common_directory_config }}/piwigo_refresh.pl --base_url=https://{{ common_tld }} --user={{ common_user }} --password={{ mariadb_environment_variables.MYSQL_ROOT_PASSWORD }} --directory='./photos/'"
+        state: present

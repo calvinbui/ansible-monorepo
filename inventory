@@ -32,3 +32,8 @@ ansible_python_interpreter=/usr/bin/env python3
 homelab
 [nextcloud:vars]
 ansible_python_interpreter=/usr/bin/env python3
+
+[piwigo]
+homelab
+[piwigo:vars]
+ansible_python_interpreter=/usr/bin/env python3
