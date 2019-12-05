@@ -1,0 +1,27 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Create Unifi config folder
+      file:
+        path: "{{ common_directory }}/unifi"
+        state: directory
+    - name: Create Unifi Container
+      docker_container:
+        name: unifi
+        image: linuxserver/unifi-controller:LTS
+        state: started
+        env:
+          PUID: "{{ common_user_id }}"
+          PGID: "{{ common_root_group }}"
+        volumes:
+          - "{{ common_directory }}/unifi:/config"
+        restart_policy: unless-stopped
+        networks_cli_compatible: true
+        purge_networks: true
+        networks:
+          - name: user
+            ipv4_address: 192.168.2.3
+        dns_servers: 192.168.2.1
+        labels:
+          traefik.enabled: "false"
