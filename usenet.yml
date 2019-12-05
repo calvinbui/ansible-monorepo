@@ -10,7 +10,6 @@
       changed_when: false
   roles:
     - pip
-    - nfs-client
     - nzbget
     - qbittorrent
     - nzbhydra

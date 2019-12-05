@@ -13,6 +13,7 @@
     - pip
     - docker
     - docker-network
+    - nfs-client
   tasks:
     - lineinfile:
         path: /etc/sudoers
