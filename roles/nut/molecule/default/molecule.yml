@@ -1,0 +1,33 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint:
+  name: yamllint
+  options:
+    config-data:
+      line-length: disable
+platforms:
+  - name: ansible-nut
+    image: geerlingguy/docker-ubuntu1804-ansible
+    command: ""
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  options:
+    v: false
+  lint:
+    name: ansible-lint
+  playbooks:
+    prepare: prepare.yml
+    converge: playbook.yml
+scenario:
+  name: default
+verifier:
+  name: testinfra
+  lint:
+    name: flake8

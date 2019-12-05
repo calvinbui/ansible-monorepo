@@ -1,0 +1,11 @@
+---
+
+- name: Restart NUT
+  service:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - nut-driver
+    - nut-monitor
+    - nut-server
+  become: true

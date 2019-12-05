@@ -1,0 +1,27 @@
+---
+
+nut_host: localhost
+nut_max_retry: 3
+nut_mode: netserver
+
+nut_user_master_name: monuser
+nut_user_master_password: monpassword
+
+nut_user_slave_name: monuserslave
+nut_user_slave_password: monslavepassword
+
+nut_ups_devices:
+  - |
+    [OR600ELCDRM1U]
+      driver = usbhid-ups
+      port   = auto
+      ignorelb
+      override.battery.charge.low = 80
+
+nut_ups_monitors:
+  - "MONITOR OR600ELCDRM1U@localhost 1 {{ nut_user_master_name }} {{ nut_user_master_password }} master"
+
+nut_ups_listen: |
+  LISTEN 127.0.0.1 3493
+  LISTEN {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }} 3493
+  LISTEN ::1 3493
