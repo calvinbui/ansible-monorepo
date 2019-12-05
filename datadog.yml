@@ -1,0 +1,34 @@
+---
+- hosts: all
+  become: true
+  vars:
+    datadog_api_key: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              33333135353537653962663836373139633837323337373763663561336233346534396234396533
+              6633306166353430623631336430623431633861653262330a383961653039373135396563646530
+              65386332353239656232666237303963613766323836306336313963336236353462636266633562
+              3364353636373064370a353464626334653963396465383966663333363964653533363064346639
+              31646435626133663634653463313462346430656235613838643932323762303036663862313731
+              3835613166343664346131656662323562343065356463396532
+  tasks:
+    - name: Create Datadog container
+      docker_container:
+        name: datadog
+        image: datadog/agent:latest
+        state: started
+        trust_image_content: true
+        env:
+          DD_API_KEY: "{{ datadog_api_key }}"
+          DD_PROCESS_AGENT_ENABLED: "true"
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+          - /proc/:/host/proc/:ro
+          - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+        restart_policy: unless-stopped
+        networks_cli_compatible: true
+        purge_networks: true
+        networks:
+          - name: pub
+        dns_servers: 192.168.4.1
+        labels:
+          traefik.enabled: "false"
