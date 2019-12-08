@@ -1,9 +1,10 @@
 ---
-- hosts: all
+- hosts: bitwarden
   become: true
   roles:
     - bitwardenrs-docker
   vars:
+    network: "{{ networks.user }}"
     bitwardenrs_name: bitwarden
     bitwardenrs_image: bitwardenrs/server:alpine
     bitwardenrs_ports: []
@@ -25,11 +26,12 @@
       SHOW_PASSWORD_HINT: "false"
     bitwardenrs_docker_additional_options:
       restart_policy: unless-stopped
-      networks:
-        - name: user
-          ipv4_address: 192.168.2.8
-      dns_servers: 192.168.2.1
       networks_cli_compatible: true
+      purge_networks: true
+      networks:
+        - name: "{{ network.name }}"
+          ipv4_address: "{{ network.prefix }}.8"
+      dns_servers: "{{ network.dns }}"
       labels:
         # https://github.com/dani-garcia/bitwarden_rs/wiki/Proxy-examples#traefik-v2-docker-compose-example-by-hwwilliams
         # ui routing

@@ -26,4 +26,7 @@ piwigo ansible_host=homelab
 nut ansible_host=homelab
 
 [datadog]
-nut ansible_host=homelab
+datadog ansible_host=homelab
+
+[bitwarden]
+bitwarden ansible_host=homelab
