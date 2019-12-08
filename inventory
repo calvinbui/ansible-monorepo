@@ -23,4 +23,7 @@ nextcloud ansible_host=homelab
 piwigo ansible_host=homelab
 
 [nut]
-nut ansible_host=homelabab
+nut ansible_host=homelab
+
+[datadog]
+nut ansible_host=homelab

@@ -1,7 +1,8 @@
 ---
-- hosts: all
+- hosts: datadog
   become: true
   vars:
+    network: "{{ networks.pub }}"
     datadog_api_key: !vault |
               $ANSIBLE_VAULT;1.1;AES256
               33333135353537653962663836373139633837323337373763663561336233346534396234396533
@@ -28,7 +29,7 @@
         networks_cli_compatible: true
         purge_networks: true
         networks:
-          - name: pub
-        dns_servers: 192.168.4.1
+          - name: "{{ network.name }}"
+        dns_servers: "{{ network.dns }}"
         labels:
           traefik.enabled: "false"
