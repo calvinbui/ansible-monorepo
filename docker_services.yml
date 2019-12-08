@@ -1,6 +1,16 @@
 ---
-- hosts: all
+- hosts: docker_services
   become: true
+  vars:
+    network: "{{ networks.mgmt }}"
+  module_defaults:
+    docker_container:
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      dns_servers: "{{ network.dns }}"
+      networks:
+        - name: "{{ network.name }}"
   roles:
     - traefik
     - watchtower

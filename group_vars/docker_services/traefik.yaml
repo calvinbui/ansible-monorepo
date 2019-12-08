@@ -8,13 +8,9 @@ traefik_config_dynamic: "{{ traefik_config_directory }}/dynamic_conf.toml"
 traefik_config_acme_file: "{{ traefik_config_directory }}/acme.json"
 traefik_ports: []
 traefik_docker_additional_options:
-  restart_policy: always
-  networks_cli_compatible: true
-  purge_networks: true
   networks:
-    - name: mgmt
-      ipv4_address: 192.168.1.10
-  dns_servers: 192.168.1.1
+    - name: "{{ network.name }}"
+      ipv4_address: "{{ network.prefix }}.10"
   labels:
     traefik.enable: "false"
   volumes:

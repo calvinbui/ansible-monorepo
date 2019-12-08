@@ -1,0 +1,39 @@
+---
+
+networks:
+  mgmt:
+    name: mgmt
+    subnet: /24
+    gateway: 192.168.1.1
+    dns: 192.168.1.1
+    iprange: 192.168.1.128/26
+    prefix: 192.168.1
+    parent: eno1.10
+    driver: macvlan
+  user:
+    name: user
+    subnet: /24
+    gateway: 192.168.2.1
+    dns: 192.168.2.1
+    iprange: 192.168.2.128/26
+    prefix: 192.168.1
+    parent: eno1.20
+    driver: macvlan
+  iot:
+    name: iot
+    subnet: /24
+    gateway: 192.168.3.1
+    dns: 192.168.3.1
+    iprange: 192.168.3.128/26
+    prefix: 192.168.1
+    parent: eno1.30
+    driver: macvlan
+  pub:
+    name: pub
+    subnet: /24
+    gateway: 192.168.4.1
+    dns: 192.168.4.1
+    iprange: 192.168.4.128/26
+    prefix: 192.168.1
+    parent: eno1.40
+    driver: macvlan

@@ -1,12 +1,9 @@
 watchtower_name: watchtower
 watchtower_image: containrrr/watchtower
 watchtower_docker_additional_options:
-  restart_policy: unless-stopped
   networks:
-    - name: pub
-  dns_servers: 192.168.4.1
-  networks_cli_compatible: true
-  purge_networks: true
+    - name: "{{ networks.pub.name }}"
+  dns_servers: "{{ networks.pub.dns }}"
   env:
     WATCHTOWER_CLEANUP: "true"
   labels:

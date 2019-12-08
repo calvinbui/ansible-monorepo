@@ -7,9 +7,9 @@ portainer_config_directory: "{{ common_directory }}/portainer"
 portainer_docker_additional_options:
   restart_policy: unless-stopped
   networks:
-    - name: mgmt
-      ipv4_address: 192.168.1.9
-  dns_servers: 192.168.1.1
+    - name: "{{ network.name }}"
+      ipv4_address: "{{ network.prefix }}.9"
+  dns_servers: "{{ network.dns }}"
   networks_cli_compatible: true
   purge_networks: true
   command: '--no-auth --no-analytics'
