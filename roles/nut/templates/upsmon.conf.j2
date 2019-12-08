@@ -101,7 +101,7 @@
 # for this to make sense!  See big-servers.txt in the docs subdirectory
 # for more information and ideas on how to use this feature.
 
-MINSUPPLIES 0
+MINSUPPLIES 1
 
 # --------------------------------------------------------------------------
 # SHUTDOWNCMD "<command>"
@@ -168,7 +168,7 @@ POLLFREQALERT 5
 # This "wait for FSD" is done to avoid races where the status changes
 # to critical and back between polls by the master.
 
-HOSTSYNC 15
+HOSTSYNC 180
 
 # --------------------------------------------------------------------------
 # DEADTIME - Interval to wait before declaring a stale ups "dead"
@@ -201,7 +201,7 @@ DEADTIME 15
 # [[UPS_shutdown]] "Configuring automatic shutdowns for low battery events"
 # or refer to the online version.
 
-POWERDOWNFLAG /etc/killpower
+POWERDOWNFLAG /etc/nut/killpower
 
 # --------------------------------------------------------------------------
 # NOTIFYMSG - change messages sent by upsmon when certain events occur
@@ -301,7 +301,7 @@ NOCOMMWARNTIME 300
 # Note: If FINALDELAY on the slave is greater than HOSTSYNC on the master,
 # the master will give up waiting for the slave to disconnect.
 
-FINALDELAY 5
+FINALDELAY 30
 
 # --------------------------------------------------------------------------
 # CERTPATH - path to certificates (database directory or directory with CA's)
