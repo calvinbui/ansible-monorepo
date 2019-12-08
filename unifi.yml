@@ -1,6 +1,8 @@
 ---
-- hosts: all
+- hosts: unifi
   become: true
+  vars:
+    network: "{{ networks.user }}"
   tasks:
     - name: Create Unifi config folder
       file:
@@ -20,8 +22,8 @@
         networks_cli_compatible: true
         purge_networks: true
         networks:
-          - name: user
-            ipv4_address: 192.168.2.3
-        dns_servers: 192.168.2.1
+          - name: "{{ network.name }}"
+            ipv4_address: "{{ network.prefix }}.3"
+        dns_servers: "{{ network.dns }}"
         labels:
           traefik.enabled: "false"

@@ -36,3 +36,6 @@ blueiris ansible_host=homelab
 
 [fuel]
 fuel ansible_host=homelab
+
+[unifi]
+unifi ansible_host=homelab
