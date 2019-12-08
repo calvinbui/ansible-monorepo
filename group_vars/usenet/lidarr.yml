@@ -1,0 +1,36 @@
+---
+
+lidarr_name: lidarr
+lidarr_image: linuxserver/lidarr
+lidarr_ports: []
+lidarr_config_directory: "{{ common_directory }}/lidarr"
+lidarr_music_directory: "{{ common_directory_music }}"
+lidarr_download_directory: "{{ common_directory_download }}"
+lidarr_environment_variables:
+  PUID: "{{ common_user_id }}"
+  PGID: "{{ common_root_group }}"
+  TZ: "{{ common_timezone }}"
+
+lidarr_docker_additional_options:
+  networks:
+    - name: "{{ network.name }}"
+      ipv4_address: "{{ network.prefix }}.12"
+  dns_servers: "{{ network.dns }}"
+  labels:
+    traefik.http.routers.lidarr.service: lidarr
+    traefik.http.routers.lidarr.middlewares: "myAuth@file"
+    traefik.http.routers.lidarr.tls: "true"
+    traefik.http.routers.lidarr.tls.certresolver: letsencrypt
+    traefik.http.services.lidarr.loadbalancer.server.port: "8686"
+
+lidarr_config:
+  ApiKey: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          36633732303232393233306531613533373665356135323465616438366563613438323163313732
+          3138366663363636613762373339363238363065646366380a623131663731316133306630626165
+          31343532343637383032653637616632373939373863363039323735646662386531666639353236
+          3633663662616466650a353631616532393633313239326434383732663732363033333362643535
+          61396266373039623038653132613963373561346432363566656461613136343161643562646631
+          6231373862316633333633346363346435373735353565363566
+  LaunchBrowser: "False"
+  AnalyticsEnabled: "False"

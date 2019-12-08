@@ -1,0 +1,7 @@
+---
+
+- name: Restart Lidarr
+  docker_container:
+    name: "{{ lidarr_name }}"
+    state: started
+    restart: true

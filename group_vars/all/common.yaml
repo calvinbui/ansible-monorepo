@@ -28,6 +28,7 @@ common_directory_tv: "{{ common_directory_nfs }}/TV"
 common_directory_movies: "{{ common_directory_nfs }}/Movies"
 common_directory_books: "{{ common_directory_nfs }}/Books"
 common_directory_photos: "{{ common_directory_nfs }}/Photos"
+common_directory_music: "{{ common_directory_nfs }}/Music"
 
 common_email_username: !vault |
           $ANSIBLE_VAULT;1.1;AES256

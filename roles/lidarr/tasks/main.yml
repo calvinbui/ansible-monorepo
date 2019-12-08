@@ -1,0 +1,37 @@
+---
+
+- name: Create Lidarr directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ lidarr_config_directory }}"
+
+- name: Set Docker container parameters
+  set_fact:
+    lidarr_container_parameters:
+      name: "{{ lidarr_name }}"
+      image: "{{ lidarr_image }}"
+      state: started
+      published_ports: "{{ lidarr_ports }}"
+      volumes:
+        - "{{ lidarr_config_directory }}:/config"
+        - "{{ lidarr_music_directory }}:/music "
+        - "{{ lidarr_download_directory }}:/downloads"
+      env: "{{ lidarr_environment_variables }}"
+
+- name: Create Lidarr container
+  docker_container: "{{ lidarr_container_parameters | combine(lidarr_docker_additional_options) }}"
+  register: lidarr_container
+
+- name: Wait for Lidarr start
+  wait_for:
+    path: "{{ lidarr_config_directory }}/config.xml"
+
+- name: Configure config.xml
+  xml:
+    path: "{{ lidarr_config_directory }}/config.xml"
+    xpath: "/Config/{{ item.key }}"
+    value: "{{ item.value | string }}"
+  loop: "{{ lidarr_config | dict2items }}"
+  notify: Restart Lidarr
