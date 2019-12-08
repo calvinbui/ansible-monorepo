@@ -30,3 +30,9 @@ datadog ansible_host=homelab
 
 [bitwarden]
 bitwarden ansible_host=homelab
+
+[blueiris]
+blueiris ansible_host=homelab
+
+[fuel]
+fuel ansible_host=homelab

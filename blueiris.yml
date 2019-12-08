@@ -1,6 +1,35 @@
 ---
-- hosts: all
+- hosts: blueiris
   become: true
+  vars:
+    network: "{{ networks.iot }}"
+    recording_device: LABEL=recordings
+    recording_path: /mnt/recordings
+
+    blueiris_name: blueiris
+    blueiris_image: jshridha/blueiris
+    blueiris_ports: []
+    blueiris_config_directory: "{{ recording_path }}"
+    blueiris_volumes:
+      - "{{ blueiris_config_directory }}/blueiris:/root/prefix32:rw"
+      - /etc/localtime:/etc/localtime:ro
+      - "{{ blueiris_config_directory }}/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf"
+    blueiris_docker_additional_options:
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      comparisons:
+        "labels": "strict"
+      dns_servers: "{{ network.dns }}"
+      networks:
+        - name: "{{ network.name }}"
+          ipv4_address: "{{ network.prefix }}.2"
+      labels:
+        traefik.http.routers.blueiris.service: blueiris
+        traefik.http.routers.blueiris.tls: "true"
+        traefik.http.routers.blueiris.tls.certresolver: letsencrypt
+        traefik.http.services.blueiris.loadbalancer.server.port: "81"
+
   pre_tasks:
     - mount:
         path: "{{ recording_path }}"

@@ -1,6 +1,6 @@
 ---
 
-- hosts: all
+- hosts: fuel
   become: true
   vars:
     fuel_name: fuel
@@ -24,8 +24,8 @@
         image: "{{ fuel_image }}"
         state: started
         networks:
-          - name: pub
-        dns_servers: 192.168.4.1
+          - name: "{{ networks.pub.name }}"
+        dns_servers: "{{ networks.pub.dns }}"
         networks_cli_compatible: true
         purge_networks: true
         restart_policy: unless-stopped
