@@ -9,13 +9,10 @@ organizr_environment_variables:
   PGID: "{{ common_group_id }}"
 
 organizr_docker_additional_options:
-  restart_policy: unless-stopped
-  networks_cli_compatible: true
-  purge_networks: true
   networks:
-    - name: pub
-      ipv4_address: 192.168.4.10
-  dns_servers: 192.168.4.1
+    - name: "{{ network.name }}"
+      ipv4_address: "{{ network.prefix }}.10"
+  dns_servers: "{{ network.dns }}"
   labels:
     traefik.http.routers.organizr.rule: "Host(`{{ common_tld }}`)"
     traefik.http.routers.organizr.service: organizr
