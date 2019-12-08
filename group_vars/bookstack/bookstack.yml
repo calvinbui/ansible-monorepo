@@ -15,13 +15,9 @@ bookstack_environment_variables:
   DB_DATABASE: "{{ mariadb_environment_variables.MYSQL_DATABASE }}"
 
 bookstack_docker_additional_options:
-  restart_policy: unless-stopped
-  networks_cli_compatible: true
-  purge_networks: true
   networks:
-    - name: user
-      ipv4_address: 192.168.2.16
-  dns_servers: 192.168.2.1
+    - name: "{{ network.name }}"
+      ipv4_address: "{{ network.prefix}}.16"
   labels:
     traefik.http.routers.bookstack.service: bookstack
     traefik.http.routers.bookstack.tls: "true"

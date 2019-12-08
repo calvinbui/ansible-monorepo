@@ -27,12 +27,8 @@ mariadb_environment_variables:
           6233356438383331383336343334663837626530646166373437
 
 mariadb_docker_additional_options:
-  restart_policy: unless-stopped
-  networks_cli_compatible: true
-  purge_networks: true
   networks:
-    - name: user
-      ipv4_address: 192.168.2.17
-  dns_servers: 192.168.2.1
+    - name: "{{ network.name }}"
+      ipv4_address: "{{ network.prefix }}.17"
   labels:
     traefik.enable: "false"
