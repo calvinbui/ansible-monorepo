@@ -3,6 +3,7 @@
   become: true
   vars:
     network: "{{ networks.pub }}"
+    datadog_dir: "{{ common_directory }}/datadog"
     datadog_api_key: !vault |
               $ANSIBLE_VAULT;1.1;AES256
               33333135353537653962663836373139633837323337373763663561336233346534396234396533
@@ -12,6 +13,15 @@
               31646435626133663634653463313462346430656235613838643932323762303036663862313731
               3835613166343664346131656662323562343065356463396532
   tasks:
+    - name: Create Datadog directory
+      file:
+        path: "{{ datadog_dir }}"
+        state: directory
+    - name: Copy Datadog files to host
+      copy:
+        src: files/datadog/
+        dest: "{{ datadog_dir }}"
+        mode: '0644'
     - name: Create Datadog container
       docker_container:
         name: datadog
@@ -20,11 +30,11 @@
         trust_image_content: true
         env:
           DD_API_KEY: "{{ datadog_api_key }}"
-          DD_PROCESS_AGENT_ENABLED: "true"
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock:ro
           - /proc/:/host/proc/:ro
           - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+          - "{{ datadog_dir }}/disk.yaml:/etc/datadog-agent/conf.d/disk.yaml:ro"
         restart_policy: unless-stopped
         networks_cli_compatible: true
         purge_networks: true
