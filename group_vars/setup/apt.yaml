@@ -9,3 +9,7 @@ apt_install_packages:
   - name: curl
   - name: wget
   - name: dnsutils
+  - name: popularity-contest
+    state: absent
+  - name: pastebinit
+    state: absent
