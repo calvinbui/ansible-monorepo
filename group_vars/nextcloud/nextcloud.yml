@@ -38,21 +38,14 @@ nextcloud_environment_variables:
   SMTP_SECURE: "ssl"
 
 nextcloud_docker_additional_options:
-  restart_policy: unless-stopped
-  networks_cli_compatible: true
-  purge_networks: true
   networks:
-    - name: user
-      ipv4_address: 192.168.2.18
-  dns_servers: 192.168.2.1
+    - name: "{{ network.name }}"
+      ipv4_address: "{{ network.prefix }}.18"
   labels:
     traefik.http.routers.nextcloud.service: nextcloud
     traefik.http.routers.nextcloud.tls: "true"
     traefik.http.routers.nextcloud.tls.certresolver: letsencrypt
     traefik.http.services.nextcloud.loadbalancer.server.port: "80"
-  log_driver: json-file
-  log_options:
-    max-size: "10m"
 
 nextcloud_build_image: true
 nextcloud_build_folder: "full"

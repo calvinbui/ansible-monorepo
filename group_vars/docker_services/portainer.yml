@@ -5,13 +5,9 @@ portainer_image: portainer/portainer
 portainer_ports: []
 portainer_config_directory: "{{ common_directory }}/portainer"
 portainer_docker_additional_options:
-  restart_policy: unless-stopped
   networks:
     - name: "{{ network.name }}"
       ipv4_address: "{{ network.prefix }}.9"
-  dns_servers: "{{ network.dns }}"
-  networks_cli_compatible: true
-  purge_networks: true
   command: '--no-auth --no-analytics'
   labels:
     traefik.http.routers.portainer.service: portainer

@@ -1,12 +1,16 @@
 ---
 - hosts: nextcloud
   become: true
-  pre_tasks:
-    - name: Update apt cache
-      apt:
-        update_cache: true
-        cache_valid_time: 600
-      changed_when: false
+  vars:
+    network: "{{ networks.user }}"
+  module_defaults:
+    docker_container:
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      dns_servers: "{{ network.dns }}"
+      networks:
+        - name: "{{ network.name }}"
   roles:
     - mariadb
     - nextcloud

@@ -9,18 +9,11 @@ collabora_environment_variables:
   domain: "{{ 'nextcloud.' + common_tld | regex_replace('\\.', '\\\\.') }}"
 
 collabora_docker_additional_options:
-  restart_policy: unless-stopped
-  networks_cli_compatible: true
-  purge_networks: true
   networks:
-    - name: user
-      ipv4_address: 192.168.2.20
-  dns_servers: 192.168.2.1
+    - name: "{{ network.name }}"
+      ipv4_address: "{{ network.prefix }}.20"
   capabilities:
     - MKNOD
-  log_driver: json-file
-  log_options:
-    max-size: "10m"
   labels:
     traefik.http.routers.collabora.service: collabora
     traefik.http.routers.collabora.tls: "true"
