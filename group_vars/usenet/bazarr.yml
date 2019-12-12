@@ -1,0 +1,62 @@
+---
+
+bazarr_name: bazarr
+bazarr_image: linuxserver/bazarr
+bazarr_ports: []
+bazarr_config_directory: "{{ common_directory }}/bazarr"
+bazarr_movie_directory: "{{ common_directory_movies }}"
+bazarr_tv_directory: "{{ common_directory_tv }}"
+bazarr_environment_variables:
+  PUID: "{{ common_user_id }}"
+  PGID: "{{ common_root_group }}"
+  TZ: "{{ common_timezone }}"
+
+bazarr_docker_additional_options:
+  networks:
+    - name: "{{ network.name }}"
+      ipv4_address: "{{ network.prefix }}.8"
+  dns_servers: "{{ network.dns }}"
+  labels:
+    traefik.http.routers.bazarr.service: bazarr
+    traefik.http.routers.bazarr.middlewares: "myAuth@file"
+    traefik.http.routers.bazarr.tls: "true"
+    traefik.http.routers.bazarr.tls.certresolver: letsencrypt
+    traefik.http.services.bazarr.loadbalancer.server.port: "6767"
+
+# defaults at https://github.com/morpheus65535/bazarr/blob/master/bazarr/config.py
+bazarr_config:
+  analytics.enabled: "False"
+
+  general.single_language: "True"
+  general.upgrade_manual: "False"
+  general.upgrade_subs: "False"
+
+  general.use_sonarr: "True"
+  sonarr.ip: "{{ sonarr_name }}.{{ common_local_tld }}"
+  sonarr.apikey: "{{ sonarr_config.ApiKey }}"
+  general.path_mappings: "[['/tv', '/tv'], ['', ''], ['', ''], ['', ''], ['', '']]"
+  general.serie_default_enabled: "True"
+  general.serie_default_language : "['en']"
+
+  general.use_radarr: "True"
+  radarr.apikey: "{{ radarr_config.ApiKey }}"
+  radarr.ip: "{{ radarr_name }}.{{ common_local_tld }}"
+  general.path_mappings_movie: "[['/movies', '/movies'], ['', ''], ['', ''], ['', ''], ['', '']]"
+  general.movie_default_enabled: "True"
+  general.movie_default_language: "['en']"
+
+  general.enabled_providers: "opensubtitles"
+  opensubtitles.username: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          39656539646536396338386439663465373431616138303031306266626561626161636566353636
+          3864373564303438613230316430653464373363336532390a393965333533343939636534323665
+          34306137653730376230363631363966346633326633396634393039376331323165303931313965
+          6430626262393439620a336463633265636533373066323437623662396437643265316430353963
+          3466
+  opensubtitles.password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          39623062646266613831323762336365313433383861393463323337316265353039353232323134
+          3666613430343335326531343338326134616439366566300a616438343763663836653165633731
+          65646133326133643164313231633638613734636533646439336239383962313237353633613131
+          3535326633666365310a333161306131643437643330343934303330613362663434653161653165
+          37336362373337326662333435306333633662343533636636633662613365663330

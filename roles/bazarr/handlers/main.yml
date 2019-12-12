@@ -1,0 +1,7 @@
+---
+
+- name: Restart Bazarr
+  docker_container:
+    name: "{{ bazarr_name }}"
+    state: started
+    restart: true
