@@ -1,0 +1,24 @@
+---
+
+mariadb_name: piwigo-mariadb
+mariadb_version: '10'
+mariadb_image: "mariadb:{{ mariadb_version }}"
+mariadb_ports: []
+mariadb_volumes:
+  - "{{ common_directory }}/piwigo/mariadb:/var/lib/mysql"
+mariadb_environment_variables:
+  MYSQL_ROOT_PASSWORD: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          38333935656237633964633337633365313737356163623761343138323330633766363236363863
+          3530666264353766646336393162306634366234636139650a376561386137366161363461353935
+          37346434306661343632616436336533643530366336353739343633636163646632336336326462
+          3933373064396335610a613035616235383566326264336661656264303330333563316464383538
+          3537
+  MYSQL_DATABASE: piwigo
+
+mariadb_docker_additional_options:
+  networks:
+    - name: "{{ network.name }}"
+      ipv4_address: "{{ network.prefix }}.23"
+  labels:
+    traefik.enable: "false"
