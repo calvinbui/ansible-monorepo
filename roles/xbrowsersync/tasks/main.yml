@@ -1,0 +1,20 @@
+---
+
+- name: Template xBrowserSync config
+  template:
+    src: "{{ xbrowsersync_config_template }}"
+    dest: "{{ xbrowsersync_config_file }}"
+  notify: Restart xBrowserSync
+
+- name: Set Docker container parameters
+  set_fact:
+    xbrowsersync_container_parameters:
+      name: "{{ xbrowsersync_name }}"
+      image: "{{ xbrowsersync_image }}"
+      state: started
+      published_ports: "{{ xbrowsersync_ports }}"
+      volumes:
+        - "{{ xbrowsersync_config_file }}:/usr/src/api/config/settings.json"
+
+- name: Create xBrowserSync container
+  docker_container: "{{ xbrowsersync_container_parameters | combine(xbrowsersync_docker_additional_options) }}"

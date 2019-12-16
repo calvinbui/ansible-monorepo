@@ -39,3 +39,6 @@ fuel ansible_host=homelab
 
 [unifi]
 unifi ansible_host=homelab
+
+[xbrowsersync]
+xbrowsersync ansible_host=homelab

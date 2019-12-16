@@ -1,0 +1,15 @@
+---
+
+mongo_name: mongodb
+mongo_version: 4.2.2
+mongo_image: "mongo:{{ mongo_version }}"
+mongo_ports:
+  - 8081:8081
+mongo_directory: /tmp/mongo
+mongo_environment_variables:
+  MONGO_INITDB_DATABASE: 'yourdb'
+  MONGO_INITDB_ROOT_USERNAME: 'yourdbuser'
+  MONGO_INITDB_ROOT_PASSWORD: 'yourdbpassword'
+
+mongo_docker_additional_options:
+  restart_policy: unless-stopped

@@ -1,0 +1,29 @@
+---
+
+xbrowsersync_name: xbrowsersync
+xbrowsersync_image: xbrowsersync/api
+xbrowsersync_config_directory: "{{ common_directory }}/xbrowsersync"
+xbrowsersync_config_template: settings.json.j2
+xbrowsersync_config_file: "{{ xbrowsersync_config_directory }}/settings.json"
+xbrowsersync_ports: []
+xbrowsersync_docker_additional_options:
+  networks:
+    - name: "{{ network.name }}"
+      ipv4_address: "{{ network.prefix }}.20"
+  dns_servers: "{{ network.dns }}"
+  labels:
+    traefik.http.routers.xbrowsersync.service: xbrowsersync
+    traefik.http.routers.xbrowsersync.tls: "true"
+    traefik.http.routers.xbrowsersync.tls.certresolver: letsencrypt
+    traefik.http.services.xbrowsersync.loadbalancer.server.port: "8080"
+
+# https://github.com/xbrowsersync/api#4-modify-configuration-settings
+xbrowsersync_config:
+  db:
+    host: "{{ mongo_docker_additional_options.networks[0].ipv4_address }}"
+    username: "{{ mongo_environment_variables.MONGO_INITDB_ROOT_USERNAME }}"
+    password: "{{ mongo_environment_variables.MONGO_INITDB_ROOT_PASSWORD }}"
+    name: "{{ mongo_environment_variables.MONGO_INITDB_DATABASE }}"
+  status:
+    message: "Hi {{ common_user }}"
+    allowNewSyncs: "true"

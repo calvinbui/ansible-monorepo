@@ -1,0 +1,24 @@
+---
+
+mongo_name: xbrowsersync-mongo
+mongo_version: 4.2.2
+mongo_image: "mongo:{{ mongo_version }}"
+mongo_ports: []
+mongo_directory: "{{ common_directory }}/xbrowsersync/mongodb"
+mongo_environment_variables:
+  MONGO_INITDB_ROOT_USERNAME: xbrowsersync
+  MONGO_INITDB_ROOT_PASSWORD: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          35303335326561353461653964643033363136646366656539653965303533653534343965303262
+          3335613833376166373532383634336537646563656431620a363133343734303434366464616137
+          35653735666364306633633430373866663061313764656637363864366132343939343130633961
+          3537663937333437390a646634326339366561373465316339373934356365326630616564316332
+          65303066316663663561653438336334626263613730636334313535383264313734
+  MONGO_INITDB_DATABASE: xbrowsersync
+
+mongo_docker_additional_options:
+  networks:
+    - name: "{{ network.name }}"
+      ipv4_address: "{{ network.prefix }}.21"
+  labels:
+    traefik.enable: "false"

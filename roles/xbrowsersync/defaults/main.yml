@@ -1,0 +1,11 @@
+---
+
+xbrowsersync_name: xbrowsersync
+xbrowsersync_image: xbrowsersync/api
+xbrowsersync_config_directory: "/tmp/xbrowsersync"
+xbrowsersync_config_template: settings.json.j2
+xbrowsersync_config_file: "{{ xbrowsersync_config_directory }}/settings.json"
+xbrowsersync_ports:
+  - 8080:8080
+xbrowsersync_docker_additional_options:
+  restart_policy: always
