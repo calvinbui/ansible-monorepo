@@ -39,46 +39,12 @@
 
 ### Downloader config
 
-- name: Grab NZBHydra downloaders
+- name: Configure downloaders
   yedit:
     src: "{{ nzbhydra_config_directory }}/nzbhydra.yml"
     key: "downloading.downloaders"
-    state: list
-  register: nzbhydra_configured_downloaders
-
-- name: Init download configuration list vars for internal use
-  set_fact:
-    nzbhydra_configured_downloaders_index: []
-    nzbhydra_var_downloaders_index: []
-
-- name: Fill nzbhydra_configured_downloaders_index with currently configured downloader indexes
-  set_fact:
-    nzbhydra_configured_downloaders_index: "{{ nzbhydra_configured_downloaders_index + [ ansible_loop.index0 ] }}"
-  loop: "{{ nzbhydra_configured_downloaders.result }}"
-  loop_control:
-    extended: true
-
-- name: Configure NZBHydra downloaders
-  include_tasks: setup-downloaders.yml
-  loop: "{{ nzbhydra_downloaders }}"
-  loop_control:
-    loop_var: nzbhydra_downloader_item
-    index_var: nzbhydra_downloader_index
-
-- name: Find downloaders to delete
-  debug:
-    msg: |
-      "Downloader indexes in vars: {{ nzbhydra_var_downloaders_index }}"
-      "Downloader indexes in nzbhydra2.yml: {{ nzbhydra_configured_downloaders_index }}"
-      "Difference between the two: {{ nzbhydra_configured_downloaders_index | difference(nzbhydra_var_downloaders_index) | sort(reverse=true) }}"
-
-- name: Remove downloaders that no longer configured
-  yedit:
-    src: "{{ nzbhydra_config_directory }}/nzbhydra.yml"
-    key: "downloading.downloaders[{{ item }}]"
-    state: absent
-  loop: "{{ nzbhydra_configured_downloaders_index | difference(nzbhydra_var_downloaders_index) | sort(reverse=true) }}"
-  when: nzbhydra_configured_downloaders_index | difference(nzbhydra_var_downloaders_index) | length > 0
+    value: "{{ nzbhydra_downloaders }}"
+    state: present
 
 #### Indexers config
 
