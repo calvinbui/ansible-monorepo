@@ -11,6 +11,8 @@
       git:
         repo: https://github.com/freyta/7Eleven-Python
         dest: "{{ fuel_directory }}"
+        update: true
+      register: clone_repo
     - name: Build image
       docker_image:
         build:
@@ -18,6 +20,9 @@
           pull: true
         name: "{{ fuel_image }}"
         source: build
+        force_source: true
+        state: present
+      when: clone_repo.changed
     - name: Create 7Eleven Python
       docker_container:
         name: "{{ fuel_name }}"
