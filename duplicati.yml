@@ -1,0 +1,35 @@
+---
+- hosts: duplicati
+  become: true
+  vars:
+    network: "{{ networks.pub }}"
+    duplicati_config_directory: "{{ common_directory }}/duplicati"
+    duplicati_backup_directory: "/backups"
+    duplicati_source_directory: "{{ common_directory }}"
+  module_defaults:
+    docker_container:
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      dns_servers: "{{ network.dns }}"
+      networks:
+        - name: "{{ network.name }}"
+  tasks:
+    - name: Create Duplicati container
+      docker_container:
+        name: duplicati
+        image: linuxserver/duplicati
+        state: started
+        networks:
+          - name: "{{ networks.pub.name }}"
+            ipv4_address: "{{ network.prefix }}.30"
+        env:
+          PUID: "{{ common_user_id }}"
+          PGID: "{{ common_root_group }}"
+          TZ: "{{ common_timezone }}"
+        volumes:
+          - "{{ duplicati_config_directory }}:/config"
+          - "{{ duplicati_backup_directory }}:/backups"
+          - "{{ duplicati_source_directory }}:/source:ro"
+        labels:
+          traefik.enable: "false"

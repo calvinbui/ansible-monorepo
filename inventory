@@ -42,3 +42,6 @@ unifi ansible_host=homelab
 
 [xbrowsersync]
 xbrowsersync ansible_host=homelab
+
+[duplicati]
+duplicati ansible_host=homelab
