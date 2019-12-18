@@ -1,5 +1,5 @@
 ---
-
+# READ https://github.com/ONLYOFFICE/onlyoffice-nextcloud/issues/151
 onlyoffice_name: onlyoffice
 onlyoffice_image: onlyoffice/documentserver
 onlyoffice_ports: []
