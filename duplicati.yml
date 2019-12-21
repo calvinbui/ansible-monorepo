@@ -24,7 +24,7 @@
           - name: "{{ networks.pub.name }}"
             ipv4_address: "{{ network.prefix }}.30"
         env:
-          PUID: "{{ common_user_id }}"
+          PUID: "{{ common_root_id }}"
           PGID: "{{ common_root_group }}"
           TZ: "{{ common_timezone }}"
         volumes:

@@ -4,6 +4,7 @@ common_user: calvin
 common_group: calvin
 common_user_id: "1000" # calvin
 common_group_id: "1000" # calvin
+common_root_id: "0" # root
 common_root_group: "0" # root
 common_timezone: "Australia/Sydney"
 common_directory: "/apps"
