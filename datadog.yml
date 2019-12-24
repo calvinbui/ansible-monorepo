@@ -22,6 +22,7 @@
         src: files/datadog/
         dest: "{{ datadog_dir }}"
         mode: '0644'
+      notify: Restart Datadog container
     - name: Create Datadog container
       docker_container:
         name: datadog
@@ -43,3 +44,8 @@
         dns_servers: "{{ network.dns }}"
         labels:
           traefik.enabled: "false"
+  handlers:
+    - name: Restart Datadog container
+      docker_container:
+        name: datadog
+        restart: true
