@@ -1,7 +1,11 @@
 init_config: null
 instances:
-  - mount_point_blacklist:
-    - /var/lib/docker/(containers|overlay2)/.*/(shm|merged)
-    - /run/docker/netns.*
-    - /sys/kernel/debug/
-    - /run/user/1000/
+  - use_mount: false
+    service_check_rw: true
+    mount_point_blacklist:
+      - /var/lib/docker/(containers|overlay2)/.*/(shm|merged)
+      - /run/docker/netns.*
+    file_system_blacklist:
+      - tmpfs
+      - overlay
+      - shm
