@@ -35,7 +35,7 @@
           - /var/run/docker.sock:/var/run/docker.sock:ro
           - /proc/:/host/proc/:ro
           - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
-          - "{{ datadog_dir }}/disk.yaml:/etc/datadog-agent/conf.d/disk.yaml:ro"
+          - "{{ datadog_dir }}:/conf.d:ro"
         restart_policy: unless-stopped
         networks_cli_compatible: true
         purge_networks: true
