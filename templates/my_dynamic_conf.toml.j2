@@ -14,7 +14,7 @@
     [http.middlewares.redirect.redirectScheme]
         scheme = "https"
     [http.middlewares.myAuth.basicAuth]
-        users = ["calvin:$apr1$WD.JP/Cq$Tl/cV9ZDn0.Y/n8wWbIIF1"]
+        users = ["{{ htpasswd.username }}:{{ htpasswd.password_hashed }}"]
 
 [tls.options]
     [tls.options.myTLSOptions]
