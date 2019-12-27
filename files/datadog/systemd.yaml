@@ -1,0 +1,15 @@
+init_config:
+instances:
+  - unit_names:
+      - nut-driver.service                                                                   loaded active running   Network UPS Tools - power
+      - nut-monitor.service                                                                  loaded active running   Network UPS Tools - power
+      - nut-server.service                                                                   loaded active running   Network UPS Tools - power
+      - nfs-client.target
+      - ssh.service
+      - docker.socket
+      - docker.service
+      - cron.service
+      - containerd.service
+      - lxd-containers.service
+      - mnt-files.mount
+      - mnt.recordings.mount
