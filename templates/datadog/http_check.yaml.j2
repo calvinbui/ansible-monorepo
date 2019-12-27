@@ -61,6 +61,11 @@ instances:
     tls_verify: true
     username: "{{ htpasswd.username }}"
     password: "{{ htpasswd.password }}"
+  - name: traefik
+    url: https://traefik.{{ common_tld }}
+    tls_verify: true
+    username: "{{ htpasswd.username }}"
+    password: "{{ htpasswd.password }}"
 #  - name: blueiris
 #    url: http://blueiris.{{ common_tld }}
   - name: fuel
