@@ -1,0 +1,76 @@
+init_config:
+instances:
+  - name: bookstack
+    url: https://bookstack.{{ common_tld }}
+    tls_verify: true
+  - name: nextcloud
+    url: https://nextcloud.{{ common_tld }}
+    tls_verify: true
+  - name: collabora
+    url: https://collabora.{{ common_tld }}
+    tls_verify: true
+  - name: onlyoffice
+    url: https://onlyoffice.{{ common_tld }}
+    tls_verify: true
+  - name: piwigo
+    url: https://piwigo.{{ common_tld }}
+    tls_verify: true
+  - name: xbrowsersync
+    url: https://xbrowsersync.{{ common_tld }}
+    tls_verify: true
+  - name: bazarr
+    url: https://bazarr.{{ common_tld }}
+    tls_verify: true
+    username: "{{ htpasswd.username }}"
+    password: "{{ htpasswd.password }}"
+  - name: jdownloader
+    url: https://jdownloader.{{ common_tld }}
+    tls_verify: true
+    username: "{{ htpasswd.username }}"
+    password: "{{ htpasswd.password }}"
+  - name: lidarr
+    url: https://lidarr.{{ common_tld }}
+    tls_verify: true
+    username: "{{ htpasswd.username }}"
+    password: "{{ htpasswd.password }}"
+  - name: nzbget
+    url: https://nzbget.{{ common_tld }}
+    tls_verify: true
+    username: "{{ htpasswd.username }}"
+    password: "{{ htpasswd.password }}"
+  - name: nzbhydra
+    url: https://nzbhydra.{{ common_tld }}
+    tls_verify: true
+    username: "{{ htpasswd.username }}"
+    password: "{{ htpasswd.password }}"
+  - name: organizr
+    url: https://{{ common_tld }}
+    tls_verify: true
+  - name: qbittorrent
+    url: https://qbittorrent.{{ common_tld }}
+    tls_verify: true
+    username: "{{ htpasswd.username }}"
+    password: "{{ htpasswd.password }}"
+  - name: radarr
+    url: https://radarr.{{ common_tld }}
+    tls_verify: true
+    username: "{{ htpasswd.username }}"
+    password: "{{ htpasswd.password }}"
+  - name: sonarr
+    url: https://sonarr.{{ common_tld }}
+    tls_verify: true
+    username: "{{ htpasswd.username }}"
+    password: "{{ htpasswd.password }}"
+#  - name: blueiris
+#    url: http://blueiris.{{ common_tld }}
+  - name: fuel
+    url: https://fuel.{{ common_tld }}
+    tls_verify: true
+  - name: duplicati
+    url: http://duplicati.{{ common_local_tld }}:8200
+  - name: bitwarden
+    url: https://bitwarden.{{ common_tld }}
+    tls_verify: true
+  - name: unifi
+    url: https://unifi.{{ common_local_tld }}:8443
+    tls_verify: false

@@ -5,7 +5,7 @@ bookstack_image: linuxserver/bookstack
 bookstack_ports: []
 bookstack_config_directory: "{{ common_directory }}/bookstack/bookstack"
 bookstack_volumes:
-  - "{{ bookstack_config_directory}}:/config"
+  - "{{ bookstack_config_directory }}:/config"
 bookstack_environment_variables:
   PUID: "{{ common_user_id }}"
   PGID: "{{ common_group_id }}"
@@ -17,7 +17,7 @@ bookstack_environment_variables:
 bookstack_docker_additional_options:
   networks:
     - name: "{{ network.name }}"
-      ipv4_address: "{{ network.prefix}}.16"
+      ipv4_address: "{{ network.prefix }}.16"
   labels:
     traefik.http.routers.bookstack.service: bookstack
     traefik.http.routers.bookstack.tls: "true"
