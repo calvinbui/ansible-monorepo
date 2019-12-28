@@ -1,0 +1,8 @@
+init_config:
+
+instances:
+# server: mongodb://<USER>:<PASSWORD>@<HOST>:<PORT>/<DB_NAME>
+{% for yaml in mongo_variables %}
+  - server: mongodb://{{ mongo_servers[yaml].mongo_environment_variables.MONGO_INITDB_ROOT_USERNAME }}:{{ mongo_servers[yaml].mongo_environment_variables.MONGO_INITDB_ROOT_PASSWORD }}@{{ mongo_servers[yaml].mongo_name }}.{{ common_local_tld }}:27017/admin
+    replica_check: false
+{% endfor %}

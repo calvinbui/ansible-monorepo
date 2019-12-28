@@ -1,0 +1,8 @@
+init_config:
+
+instances:
+{% for yaml in mysql_variables %}
+  - server: {{ mysql_servers[yaml].mariadb_name }}.{{ common_local_tld }}
+    user: root
+    pass: {{ mysql_servers[yaml].mariadb_environment_variables.MYSQL_ROOT_PASSWORD }}
+{% endfor %}

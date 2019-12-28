@@ -12,11 +12,41 @@
               3364353636373064370a353464626334653963396465383966663333363964653533363064346639
               31646435626133663634653463313462346430656235613838643932323762303036663862313731
               3835613166343664346131656662323562343065356463396532
+    mysql_variables:
+      - group_vars/piwigo/mariadb.yml
+      - group_vars/nextcloud/mariadb.yml
+    mongo_variables:
+      - group_vars/xbrowsersync/mongo.yaml
   tasks:
     - name: Create Datadog directory
       file:
         path: "{{ datadog_dir }}"
         state: directory
+
+    # MYSQL
+    - name: Load MySQL Servers
+      include_vars:
+        file: "{{ item }}"
+        name: "mysql_servers"
+      loop: "{{ mysql_variables }}"
+      register: mysql_servers
+    - name: Combine MySQL vars into one
+      set_fact:
+        mysql_servers: "{{ dict(mysql_servers.results | json_query('[].[item, ansible_facts.mysql_servers]')) }}"
+    # MYSQL
+
+    # MONGO
+    - name: Load Mongo Servers
+      include_vars:
+        file: "{{ item }}"
+        name: "mongo_servers"
+      loop: "{{ mongo_variables }}"
+      register: mongo_servers
+    - name: Combine Mongo vars into one
+      set_fact:
+        mongo_servers: "{{ dict(mongo_servers.results | json_query('[].[item, ansible_facts.mongo_servers]')) }}"
+    # MONGO
+
     - name: Copy Datadog config templates to host
       template:
         src: "{{ item }}"
