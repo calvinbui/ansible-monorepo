@@ -6,5 +6,6 @@ watchtower_docker_additional_options:
   dns_servers: "{{ networks.pub.dns }}"
   env:
     WATCHTOWER_CLEANUP: "true"
+    WATCHTOWER_REMOVE_VOLUMES: "true"
   labels:
     traefik.enable: "false"
