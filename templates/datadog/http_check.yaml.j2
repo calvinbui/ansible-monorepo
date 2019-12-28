@@ -62,10 +62,7 @@ instances:
     username: "{{ htpasswd.username }}"
     password: "{{ htpasswd.password }}"
   - name: traefik
-    url: https://traefik.{{ common_tld }}
-    tls_verify: true
-    username: "{{ htpasswd.username }}"
-    password: "{{ htpasswd.password }}"
+    url: http://traefik.{{ common_local_tld }}:8080/ping
 #  - name: blueiris
 #    url: http://blueiris.{{ common_tld }}
   - name: fuel
