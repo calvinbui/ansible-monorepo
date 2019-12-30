@@ -45,3 +45,6 @@ xbrowsersync ansible_host=homelab
 
 [duplicati]
 duplicati ansible_host=homelab
+
+[certs]
+certs ansible_host=homelab

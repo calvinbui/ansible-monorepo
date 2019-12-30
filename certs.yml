@@ -1,0 +1,50 @@
+---
+- hosts: certs
+  become: true
+  vars:
+    network: "{{ networks.pub }}"
+  tasks:
+    # https://github.com/Neilpang/acme.sh/wiki/How-to-install
+    - name:
+      apt:
+        name: socat
+        state: present
+    - name: Download Neilpang's acme.sh
+      git:
+        repo: https://github.com/Neilpang/acme.sh.git
+        dest: "{{ acme_repo_dir }}"
+        version: 2.8.3
+    - name: Setup acme.sh
+      shell: |
+        ./acme.sh --install \
+        --home "{{ acme_install_dir }}" \
+        --config-home "{{ acme_config_dir }}" \
+        --cert-home "{{ acme_cert_dir }}" \
+        --accountemail "{{ common_email_username }}"
+      args:
+        chdir: "{{ acme_repo_dir }}"
+        executable: "/bin/bash"
+    - name: Copy scripts
+      copy:
+        src: files/certs/
+        dest: "{{ acme_scripts_dir }}"
+        mode: 0755
+    - name: Setup Cloudflare creds
+      lineinfile:
+        path: "{{ acme_config_dir }}/account.conf"
+        regex: "{{ item.regex }}"
+        line: "{{ item.line }}"
+      loop:
+        - regex: '^SAVED_CF_Key'
+          line: "SAVED_CF_Key='{{ cert_cloudflare_api_token }}'"
+        - regex: '^SAVED_CF_Email'
+          line: "SAVED_CF_Email='{{ cert_cloudflare_email }}'"
+    - name: Generate certs for each domain
+      shell: /bin/bash -ic ". acme.sh.env && acme.sh --force --issue {{ item.method }} --domain {{ item.domain }} --post-hook '{{ item.script }}'"
+      args:
+        chdir: "{{ acme_install_dir }}"
+        executable: /bin/bash
+      register: result
+      loop: "{{ cert_domains }}"
+      failed_when: result.rc == 1 or result.rc == 127
+      changed_when: result.rc == 0
