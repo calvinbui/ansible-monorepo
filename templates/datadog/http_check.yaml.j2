@@ -60,8 +60,10 @@ instances:
     url: https://unifi.{{ common_local_tld }}:8443
   - name: homelab-ipmi
     url: https://homelab-ipmi.{{ common_local_tld }}
+    check_certificate_expiration: false
   - name: freenas-ipmi
     url: https://freenas-ipmi.{{ common_local_tld }}
+    check_certificate_expiration: false
   - name: freenas
     url: https://freenas.{{ common_local_tld }}
   - name: opnsense
