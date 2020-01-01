@@ -48,3 +48,6 @@ duplicati ansible_host=homelab
 
 [certs]
 certs ansible_host=homelab
+
+[jellyfin]
+jellyfin ansible_host=homelab

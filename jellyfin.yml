@@ -1,0 +1,32 @@
+---
+- hosts: jellyfin
+  become: true
+  vars:
+    network: "{{ networks.user }}"
+  tasks:
+    - name: Create Jellyfin config folder
+      file:
+        path: "{{ common_directory }}/jellyfin"
+        state: directory
+    - name: Create Jellyfin Container
+      docker_container:
+        name: jellyfin
+        image: linuxserver/jellyfin
+        state: started
+        env:
+          PUID: "{{ common_user_id }}"
+          PGID: "{{ common_root_group }}"
+          TZ: "{{ common_timezone }}"
+        volumes:
+          - "{{ common_directory }}/jellyfin:/config"
+          - "{{ common_directory_tv }}:/data/tvshows"
+          - "{{ common_directory_movies }}:/data/movies"
+        restart_policy: unless-stopped
+        networks_cli_compatible: true
+        purge_networks: true
+        networks:
+          - name: "{{ network.name }}"
+            ipv4_address: "{{ network.prefix }}.24"
+        dns_servers: "{{ network.dns }}"
+        labels:
+          traefik.enabled: "false"
