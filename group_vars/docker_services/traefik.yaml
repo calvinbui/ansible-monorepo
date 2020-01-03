@@ -1,7 +1,7 @@
 traefik_name: traefik
 traefik_image: traefik:v2.1
-traefik_config_template: my_traefik.toml.j2
-traefik_config_dynamic_template: my_dynamic_conf.toml.j2
+traefik_config_template: traefik/my_traefik.toml.j2
+traefik_config_dynamic_template: traefik/my_dynamic_conf.toml.j2
 traefik_config_directory: "{{ common_directory }}/traefik"
 traefik_config_file: "{{ traefik_config_directory }}/traefik.toml"
 traefik_config_dynamic: "{{ traefik_config_directory }}/dynamic_conf.toml"
