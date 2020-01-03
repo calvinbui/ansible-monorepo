@@ -26,4 +26,4 @@
             ipv4_address: "{{ network.prefix }}.3"
         dns_servers: "{{ network.dns }}"
         labels:
-          traefik.enabled: "false"
+          traefik.enable: "false"

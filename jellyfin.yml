@@ -29,4 +29,4 @@
             ipv4_address: "{{ network.prefix }}.24"
         dns_servers: "{{ network.dns }}"
         labels:
-          traefik.enabled: "false"
+          traefik.enable: "false"
