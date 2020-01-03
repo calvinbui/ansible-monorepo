@@ -40,7 +40,7 @@
         - regex: '^SAVED_CF_Email'
           line: "SAVED_CF_Email='{{ cert_cloudflare_email }}'"
     - name: Generate certs for each domain
-      shell: /bin/bash -ic ". acme.sh.env && acme.sh --force --issue {{ item.method }} --domain {{ item.domain }} --post-hook '{{ item.script }}'"
+      shell: /bin/bash -ic ". acme.sh.env && acme.sh --issue {{ item.method }} --domain {{ item.domain }} --post-hook '{{ item.script }}'"
       args:
         chdir: "{{ acme_install_dir }}"
         executable: /bin/bash

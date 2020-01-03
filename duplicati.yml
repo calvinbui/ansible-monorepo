@@ -15,6 +15,10 @@
       networks:
         - name: "{{ network.name }}"
   tasks:
+    - name: Copy Duplicati run file
+      copy:
+        src: duplicati/run
+        dest: "{{ duplicati_config_directory }}/run"
     - name: Create Duplicati container
       docker_container:
         name: duplicati
@@ -27,9 +31,14 @@
           PUID: "{{ common_root_id }}"
           PGID: "{{ common_root_group }}"
           TZ: "{{ common_timezone }}"
+          CLI_ARGS: "--webservice-sslcertificatefile=/config/cert.pfx --webservice-sslcertificatepassword=pass"
         volumes:
           - "{{ duplicati_config_directory }}:/config"
           - "{{ duplicati_backup_directory }}:/backups"
           - "{{ duplicati_source_directory }}:/source:ro"
+          - "{{ duplicati_config_directory }}/run:/etc/services.d/duplicati/run"
         labels:
           traefik.enable: "false"
+        comparisons:
+          env: strict
+          volumes: strict

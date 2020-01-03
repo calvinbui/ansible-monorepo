@@ -19,3 +19,6 @@ cert_domains:
   - domain: "unifi.{{ common_local_tld }}"
     method: --dns dns_cf
     script: "{{ acme_scripts_dir }}/unifi-docker.sh {{ acme_cert_dir }}/unifi.{{ common_local_tld }}/fullchain.cer {{ acme_cert_dir }}/unifi.{{ common_local_tld }}/unifi.{{ common_local_tld }}.key {{ common_directory }}/unifi/data"
+  - domain: "duplicati.{{ common_local_tld }}"
+    method: --dns dns_cf
+    script: "{{ acme_scripts_dir }}/duplicati.sh {{ acme_cert_dir }}/duplicati.{{ common_local_tld }} {{ common_directory }}/duplicati/cert.pfx"
