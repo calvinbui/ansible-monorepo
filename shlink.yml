@@ -1,0 +1,74 @@
+---
+- hosts: shlink
+  become: true
+  vars:
+    network: "{{ networks.pub }}"
+  module_defaults:
+    docker_container:
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      dns_servers: "{{ network.dns }}"
+    comparisons:
+      labels: strict
+  roles:
+    - mariadb
+  tasks:
+    - name: Create shlink container
+      docker_container:
+        name: shlink
+        image: shlinkio/shlink:stable
+        state: started
+        env:
+          DB_DRIVER: "mysql"
+          DB_HOST: "{{ mariadb_docker_additional_options.networks[0].ipv4_address }}"
+          DB_USER: root
+          DB_PASSWORD: "{{ mariadb_environment_variables.MYSQL_ROOT_PASSWORD }}"
+          DB_NAME: "{{ mariadb_environment_variables.MYSQL_DATABASE }}"
+          SHORT_DOMAIN_HOST: "{{ shlink_domain }}"
+          SHORT_DOMAIN_SCHEMA: "https"
+        restart_policy: unless-stopped
+        networks:
+          - name: "{{ network.name }}"
+            ipv4_address: "{{ network.prefix }}.23"
+        labels:
+          traefik.http.routers.shlink.rule: "Host(`{{ shlink_domain }}`)"
+          traefik.http.routers.shlink.service: shlink
+          traefik.http.routers.shlink.tls: "true"
+          traefik.http.routers.shlink.tls.certresolver: letsencrypt
+          traefik.http.services.shlink.loadbalancer.server.port: "8080"
+    - name: Check if shlink API config exists
+      stat:
+        path: "{{ shlink_web_client_directory }}/servers.json"
+      register: shlink_web_config
+    - name: Create shlink-web-client dir
+      file:
+        path: "{{ shlink_web_client_directory }}"
+        state: directory
+    - name: Generate shlink API key
+      command: docker exec -it shlink shlink api-key:generate --no-interaction --no-ansi
+      register: shlink_api
+      when: shlink_web_config.stat.exists == false
+    - name: Template shlink-web client config
+      template:
+        src: shlink/servers.json.j2
+        dest: "{{ shlink_web_client_directory }}/servers.json"
+      when: shlink_web_config.stat.exists == false
+    - name: Create shlink web client container
+      docker_container:
+        name: shlink-web-client
+        image: shlinkio/shlink-web-client:latest
+        state: started
+        volumes:
+          - "{{ shlink_web_client_directory }}/servers.json:/usr/share/nginx/html/servers.json"
+        restart_policy: unless-stopped
+        networks:
+          - name: "{{ network.name }}"
+            ipv4_address: "{{ network.prefix }}.25"
+        labels:
+          traefik.http.routers.shlink-web-client.rule: "Host(`shlink.{{ common_tld }}`)"
+          traefik.http.routers.shlink-web-client.middlewares: "myAuth@file"
+          traefik.http.routers.shlink-web-client.service: shlink-web-client
+          traefik.http.routers.shlink-web-client.tls: "true"
+          traefik.http.routers.shlink-web-client.tls.certresolver: letsencrypt
+          traefik.http.services.shlink-web-client.loadbalancer.server.port: "80"

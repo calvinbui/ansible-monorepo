@@ -50,8 +50,8 @@ instances:
     url: https://traefik.{{ common_tld }}
     username: "{{ htpasswd.username }}"
     password: "{{ htpasswd.password }}"
-#  - name: blueiris
-#    url: http://blueiris.{{ common_tld }}
+  - name: blueiris
+    url: http://blueiris.{{ common_local_tld }}:8080
   - name: fuel
     url: https://fuel.{{ common_tld }}
   - name: duplicati
@@ -72,3 +72,10 @@ instances:
     url: https://opnsense.{{ common_local_tld }}
   - name: jellyfin
     url: https://jellyfin.{{ common_local_tld }}:8920
+  - name: shlink
+    url: https://{{ shlink_domain }}
+    http_response_status_code: 404
+  - name: shlink-web-client
+    url: https://shlink.{{ common_tld }}
+    username: "{{ htpasswd.username }}"
+    password: "{{ htpasswd.password }}"
