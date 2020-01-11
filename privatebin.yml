@@ -1,0 +1,57 @@
+---
+- hosts: privatebin
+  become: true
+  vars:
+    network: "{{ networks.pub }}"
+    privatebin_url_shortener: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      65386565666238376234393933626533353536383832306166656631303565366335333335353031
+      3166386136336465353136616136653933323638383234660a393466663562643938373262616238
+      31363132353165363861393666383561623531323763643930393632636665356261313565376431
+      3763646430623834350a356639373131616530366639323733613533653033373464366239613563
+      64626563356638336236626362663930346139326233363636353030333265646137303263303339
+      35373635343934323837646666383438326332646562336332656561353664646534613363663231
+      32323763646530643030613763353734323832353837663839343562656133313266636166633266
+      32366635626466623037346666646532313035663361353139366437653732343936626261393831
+      38633834363363383431323437646336656338326666363535396337626234363337
+  tasks:
+    - name: Create PrivateBin config folder
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0700'
+        owner: nobody
+        group: 82 # nobody in alpine
+      loop:
+        - "{{ common_directory }}/privatebin"
+        - "{{ common_directory }}/privatebin/cfg"
+        - "{{ common_directory }}/privatebin/data"
+    - name: Template PrivateBin config
+      template:
+        src: privatebin/conf.php.j2
+        dest: "{{ common_directory }}/privatebin/cfg/conf.php"
+        mode: '0644'
+        owner: nobody
+        group: 82
+    - name: Create PrivateBin container
+      docker_container:
+        name: privatebin
+        image: privatebin/nginx-fpm-alpine
+        state: started
+        volumes:
+          - "{{ common_directory }}/privatebin/data/:/srv/data"
+          - "{{ common_directory }}/privatebin/cfg/:/srv/cfg"
+        restart_policy: unless-stopped
+        networks_cli_compatible: true
+        purge_networks: true
+        networks:
+          - name: "{{ network.name }}"
+        dns_servers: "{{ network.dns }}"
+        labels:
+          traefik.http.routers.privatebin.service: privatebin
+          traefik.http.routers.privatebin.tls: "true"
+          traefik.http.routers.privatebin.tls.certresolver: letsencrypt
+          traefik.http.services.privatebin.loadbalancer.server.port: "8080"
+        comparisons:
+          env: strict
+          labels: strict

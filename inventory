@@ -52,5 +52,8 @@ certs ansible_host=homelab
 [jellyfin]
 jellyfin ansible_host=homelab
 
+[privatebin]
+privatebin ansible_host=homelab
+
 [shlink]
 shlink ansible_host=homelab
