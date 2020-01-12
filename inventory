@@ -57,3 +57,6 @@ privatebin ansible_host=homelab
 
 [shlink]
 shlink ansible_host=homelab
+
+[wikijs]
+wikijs ansible_host=homelab

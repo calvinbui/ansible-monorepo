@@ -1,0 +1,21 @@
+---
+
+- name: Create Postgres data directory
+  file:
+    path: "{{ item.split(':')[0] }}"
+    state: directory
+  loop: "{{ postgres_volumes }}"
+
+- name: Set Docker container parameters
+  set_fact:
+    postgres_container_parameters:
+      name: "{{ postgres_name }}"
+      image: "{{ postgres_image }}"
+      state: started
+      published_ports: "{{ postgres_ports | default(omit) }}"
+      volumes: "{{ postgres_volumes | default(omit) }}"
+      env: "{{ postgres_environment_variables | default(omit) }}"
+
+- name: Create Postgres container
+  docker_container: "{{ postgres_container_parameters | combine(postgres_docker_additional_options) }}"
+  register: postgres_container

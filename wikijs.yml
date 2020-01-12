@@ -1,0 +1,38 @@
+---
+- hosts: wikijs
+  become: true
+  vars:
+    network: "{{ networks.user }}"
+  module_defaults:
+    docker_container:
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      dns_servers: "{{ network.dns }}"
+      networks:
+        - name: "{{ network.name }}"
+  roles:
+    - postgres
+  tasks:
+    - name: Create Wiki.js container
+      docker_container:
+        name: wikijs
+        image: requarks/wiki:2
+        state: started
+        env:
+          DB_TYPE: postgres
+          DB_HOST: "{{ postgres_docker_additional_options.networks[0].ipv4_address }}"
+          DB_PORT: "5432"
+          DB_USER: postgres
+          DB_PASS: "{{ postgres_environment_variables.POSTGRES_PASSWORD }}"
+          DB_NAME: "{{ postgres_environment_variables.POSTGRES_DB }}"
+        networks:
+          - name: "{{ network.name }}"
+            # ipv4_address: "{{ network.prefix }}.25"
+        labels:
+          traefik.http.routers.wikijs.entrypoints: "web"
+          traefik.http.routers.wikijs.middlewares: "redirect@file"
+          traefik.http.routers.wikijs-secure.entrypoints: "web-secure"
+          traefik.http.routers.wikijs-secure.tls: "true"
+          traefik.http.routers.wikijs-secure.tls.certresolver: letsencrypt
+          traefik.http.services.wikijs.loadbalancer.server.port: "3000"
