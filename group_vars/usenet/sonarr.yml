@@ -17,10 +17,12 @@ sonarr_docker_additional_options:
       ipv4_address: "{{ network.prefix }}.7"
   dns_servers: "{{ network.dns }}"
   labels:
-    traefik.http.routers.sonarr.service: sonarr
-    traefik.http.routers.sonarr.middlewares: "myAuth@file"
-    traefik.http.routers.sonarr.tls: "true"
-    traefik.http.routers.sonarr.tls.certresolver: letsencrypt
+    traefik.http.routers.sonarr.entrypoints: "web"
+    traefik.http.routers.sonarr.middlewares: "redirect@file"
+    traefik.http.routers.sonarr-secure.entrypoints: "web-secure"
+    traefik.http.routers.sonarr-secure.middlewares: "myAuth@file"
+    traefik.http.routers.sonarr-secure.tls: "true"
+    traefik.http.routers.sonarr-secure.tls.certresolver: letsencrypt
     traefik.http.services.sonarr.loadbalancer.server.port: "8989"
 
 sonarr_config:

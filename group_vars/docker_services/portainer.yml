@@ -10,8 +10,10 @@ portainer_docker_additional_options:
       ipv4_address: "{{ network.prefix }}.9"
   command: '--no-auth --no-analytics'
   labels:
-    traefik.http.routers.portainer.service: portainer
-    traefik.http.routers.portainer.middlewares: "myAuth@file"
-    traefik.http.routers.portainer.tls: "true"
-    traefik.http.routers.portainer.tls.certresolver: letsencrypt
+    traefik.http.routers.portainer.entrypoints: "web"
+    traefik.http.routers.portainer.middlewares: "redirect@file"
+    traefik.http.routers.portainer-secure.entrypoints: "web-secure"
+    traefik.http.routers.portainer-secure.middlewares: "myAuth@file"
+    traefik.http.routers.portainer-secure.tls: "true"
+    traefik.http.routers.portainer-secure.tls.certresolver: letsencrypt
     traefik.http.services.portainer.loadbalancer.server.port: "9000"

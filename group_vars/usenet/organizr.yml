@@ -14,8 +14,11 @@ organizr_docker_additional_options:
       ipv4_address: "{{ network.prefix }}.10"
   dns_servers: "{{ network.dns }}"
   labels:
+    traefik.http.routers.organizr.entrypoints: "web"
+    traefik.http.routers.organizr.middlewares: "redirect@file"
     traefik.http.routers.organizr.rule: "Host(`{{ common_tld }}`)"
-    traefik.http.routers.organizr.service: organizr
-    traefik.http.routers.organizr.tls: "true"
-    traefik.http.routers.organizr.tls.certresolver: letsencrypt
+    traefik.http.routers.organizr-secure.entrypoints: "web-secure"
+    traefik.http.routers.organizr-secure.rule: "Host(`{{ common_tld }}`)"
+    traefik.http.routers.organizr-secure.tls: "true"
+    traefik.http.routers.organizr-secure.tls.certresolver: letsencrypt
     traefik.http.services.organizr.loadbalancer.server.port: "80"

@@ -14,13 +14,15 @@ couchpotato_environment_variables:
 couchpotato_docker_additional_options:
   networks:
     - name: "{{ network.name }}"
-      ipv4_address: "{{ network.prefix }}.8"
+      # ipv4_address: "{{ network.prefix }}.8"
   dns_servers: "{{ network.dns }}"
   labels:
-    traefik.http.routers.couchpotato.service: couchpotato
-    traefik.http.routers.couchpotato.middlewares: "myAuth@file"
-    traefik.http.routers.couchpotato.tls: "true"
-    traefik.http.routers.couchpotato.tls.certresolver: letsencrypt
+    traefik.http.routers.couchpotato.entrypoints: "web"
+    traefik.http.routers.couchpotato.middlewares: "redirect@file"
+    traefik.http.routers.couchpotato-secure.entrypoints: "web-secure"
+    traefik.http.routers.couchpotato-secure.middlewares: "myAuth@file"
+    traefik.http.routers.couchpotato-secure.tls: "true"
+    traefik.http.routers.couchpotato-secure.tls.certresolver: letsencrypt
     traefik.http.services.couchpotato.loadbalancer.server.port: "5050"
 
 couchpotato_config:

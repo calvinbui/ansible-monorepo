@@ -37,7 +37,9 @@
         env:
           TZ: "{{ common_timezone }}"
         labels:
-          traefik.http.routers.fuel.service: "{{ fuel_name }}"
-          traefik.http.routers.fuel.tls: "true"
-          traefik.http.routers.fuel.tls.certresolver: letsencrypt
+          traefik.http.routers.fuel.entrypoints: "web"
+          traefik.http.routers.fuel.middlewares: "redirect@file"
+          traefik.http.routers.fuel-secure.entrypoints: "web-secure"
+          traefik.http.routers.fuel-secure.tls: "true"
+          traefik.http.routers.fuel-secure.tls.certresolver: letsencrypt
           traefik.http.services.fuel.loadbalancer.server.port: "5000"

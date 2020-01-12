@@ -19,9 +19,11 @@ bookstack_docker_additional_options:
     - name: "{{ network.name }}"
       ipv4_address: "{{ network.prefix }}.16"
   labels:
-    traefik.http.routers.bookstack.service: bookstack
-    traefik.http.routers.bookstack.tls: "true"
-    traefik.http.routers.bookstack.tls.certresolver: letsencrypt
+    traefik.http.routers.bookstack.entrypoints: "web"
+    traefik.http.routers.bookstack.middlewares: "redirect@file"
+    traefik.http.routers.bookstack-secure.entrypoints: "web-secure"
+    traefik.http.routers.bookstack-secure.tls: "true"
+    traefik.http.routers.bookstack-secure.tls.certresolver: letsencrypt
     traefik.http.services.bookstack.loadbalancer.server.port: "80"
 
 bookstack_env_options:

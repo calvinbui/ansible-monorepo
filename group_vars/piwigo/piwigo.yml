@@ -16,7 +16,9 @@ piwigo_docker_additional_options:
     - name: "{{ network.name }}"
       ipv4_address: "{{ network.prefix }}.22"
   labels:
-    traefik.http.routers.piwigo.service: piwigo
-    traefik.http.routers.piwigo.tls: "true"
-    traefik.http.routers.piwigo.tls.certresolver: letsencrypt
+    traefik.http.routers.piwigo.entrypoints: "web"
+    traefik.http.routers.piwigo.middlewares: "redirect@file"
+    traefik.http.routers.piwigo-secure.entrypoints: "web-secure"
+    traefik.http.routers.piwigo-secure.tls: "true"
+    traefik.http.routers.piwigo-secure.tls.certresolver: letsencrypt
     traefik.http.services.piwigo.loadbalancer.server.port: "80"

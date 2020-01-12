@@ -16,10 +16,12 @@ nzbget_docker_additional_options:
       ipv4_address: "{{ network.prefix }}.4"
   dns_servers: "{{ network.dns }}"
   labels:
-    traefik.http.routers.nzbget.service: nzbget
-    traefik.http.routers.nzbget.middlewares: "myAuth@file"
-    traefik.http.routers.nzbget.tls: "true"
-    traefik.http.routers.nzbget.tls.certresolver: letsencrypt
+    traefik.http.routers.nzbget.entrypoints: "web"
+    traefik.http.routers.nzbget.middlewares: "redirect@file"
+    traefik.http.routers.nzbget-secure.entrypoints: "web-secure"
+    traefik.http.routers.nzbget-secure.middlewares: "myAuth@file"
+    traefik.http.routers.nzbget-secure.tls: "true"
+    traefik.http.routers.nzbget-secure.tls.certresolver: letsencrypt
     traefik.http.services.nzbget.loadbalancer.server.port: "6789"
 
 nzbget_config:

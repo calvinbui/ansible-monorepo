@@ -12,9 +12,11 @@ xbrowsersync_docker_additional_options:
       ipv4_address: "{{ network.prefix }}.20"
   dns_servers: "{{ network.dns }}"
   labels:
-    traefik.http.routers.xbrowsersync.service: xbrowsersync
-    traefik.http.routers.xbrowsersync.tls: "true"
-    traefik.http.routers.xbrowsersync.tls.certresolver: letsencrypt
+    traefik.http.routers.xbrowsersync.entrypoints: "web"
+    traefik.http.routers.xbrowsersync.middlewares: "redirect@file"
+    traefik.http.routers.xbrowsersync-secure.entrypoints: "web-secure"
+    traefik.http.routers.xbrowsersync-secure.tls: "true"
+    traefik.http.routers.xbrowsersync-secure.tls.certresolver: letsencrypt
     traefik.http.services.xbrowsersync.loadbalancer.server.port: "8080"
 
 # https://github.com/xbrowsersync/api#4-modify-configuration-settings

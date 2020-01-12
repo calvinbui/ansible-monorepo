@@ -18,8 +18,10 @@ jdownloader_docker_additional_options:
       ipv4_address: "{{ network.prefix }}.9"
   dns_servers: "{{ network.dns }}"
   labels:
-    traefik.http.routers.jdownloader.service: jdownloader
-    traefik.http.routers.jdownloader.middlewares: "myAuth@file"
-    traefik.http.routers.jdownloader.tls: "true"
-    traefik.http.routers.jdownloader.tls.certresolver: letsencrypt
+    traefik.http.routers.jdownloader.entrypoints: "web"
+    traefik.http.routers.jdownloader.middlewares: "redirect@file"
+    traefik.http.routers.jdownloader-secure.entrypoints: "web-secure"
+    traefik.http.routers.jdownloader-secure.middlewares: "myAuth@file"
+    traefik.http.routers.jdownloader-secure.tls: "true"
+    traefik.http.routers.jdownloader-secure.tls.certresolver: letsencrypt
     traefik.http.services.jdownloader.loadbalancer.server.port: "5800"

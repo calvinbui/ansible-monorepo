@@ -4,6 +4,9 @@
   [providers.file]
     filename = "/dynamic_conf.toml"
 
+[entryPoints.web]
+  address = ":80"
+
 [entryPoints.web-secure]
   address = ":443"
 
@@ -15,5 +18,3 @@
     delayBeforeCheck = 10
 
 [api]
-
-[ping]

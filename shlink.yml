@@ -32,10 +32,13 @@
           - name: "{{ network.name }}"
             ipv4_address: "{{ network.prefix }}.23"
         labels:
+          traefik.http.routers.shlink.entrypoints: "web"
+          traefik.http.routers.shlink.middlewares: "redirect@file"
           traefik.http.routers.shlink.rule: "Host(`{{ shlink_domain }}`)"
-          traefik.http.routers.shlink.service: shlink
-          traefik.http.routers.shlink.tls: "true"
-          traefik.http.routers.shlink.tls.certresolver: letsencrypt
+          traefik.http.routers.shlink-secure.entrypoints: "web-secure"
+          traefik.http.routers.shlink-secure.rule: "Host(`{{ shlink_domain }}`)"
+          traefik.http.routers.shlink-secure.tls: "true"
+          traefik.http.routers.shlink-secure.tls.certresolver: letsencrypt
           traefik.http.services.shlink.loadbalancer.server.port: "8080"
     - name: Check if shlink API config exists
       stat:
@@ -66,9 +69,12 @@
           - name: "{{ network.name }}"
             ipv4_address: "{{ network.prefix }}.25"
         labels:
+          traefik.http.routers.shlink-web-client.entrypoints: "web"
+          traefik.http.routers.shlink-web-client.middlewares: "redirect@file"
           traefik.http.routers.shlink-web-client.rule: "Host(`shlink.{{ common_tld }}`)"
-          traefik.http.routers.shlink-web-client.middlewares: "myAuth@file"
-          traefik.http.routers.shlink-web-client.service: shlink-web-client
-          traefik.http.routers.shlink-web-client.tls: "true"
-          traefik.http.routers.shlink-web-client.tls.certresolver: letsencrypt
+          traefik.http.routers.shlink-web-client-secure.entrypoints: "web-secure"
+          traefik.http.routers.shlink-web-client-secure.rule: "Host(`shlink.{{ common_tld }}`)"
+          traefik.http.routers.shlink-web-client-secure.middlewares: "myAuth@file"
+          traefik.http.routers.shlink-web-client-secure.tls: "true"
+          traefik.http.routers.shlink-web-client-secure.tls.certresolver: letsencrypt
           traefik.http.services.shlink-web-client.loadbalancer.server.port: "80"

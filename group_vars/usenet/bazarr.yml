@@ -17,10 +17,12 @@ bazarr_docker_additional_options:
       ipv4_address: "{{ network.prefix }}.8"
   dns_servers: "{{ network.dns }}"
   labels:
-    traefik.http.routers.bazarr.service: bazarr
-    traefik.http.routers.bazarr.middlewares: "myAuth@file"
-    traefik.http.routers.bazarr.tls: "true"
-    traefik.http.routers.bazarr.tls.certresolver: letsencrypt
+    traefik.http.routers.bazarr.entrypoints: "web"
+    traefik.http.routers.bazarr.middlewares: "redirect@file"
+    traefik.http.routers.bazarr-secure.entrypoints: "web-secure"
+    traefik.http.routers.bazarr-secure.middlewares: "myAuth@file"
+    traefik.http.routers.bazarr-secure.tls: "true"
+    traefik.http.routers.bazarr-secure.tls.certresolver: letsencrypt
     traefik.http.services.bazarr.loadbalancer.server.port: "6767"
 
 # defaults at https://github.com/morpheus65535/bazarr/blob/master/bazarr/config.py

@@ -16,10 +16,12 @@ nzbhydra_docker_additional_options:
       ipv4_address: "{{ network.prefix }}.6"
   dns_servers: "{{ network.dns }}"
   labels:
-    traefik.http.routers.nzbhydra.service: nzbhydra
-    traefik.http.routers.nzbhydra.middlewares: "myAuth@file"
-    traefik.http.routers.nzbhydra.tls: "true"
-    traefik.http.routers.nzbhydra.tls.certresolver: letsencrypt
+    traefik.http.routers.nzbhydra.entrypoints: "web"
+    traefik.http.routers.nzbhydra.middlewares: "redirect@file"
+    traefik.http.routers.nzbhydra-secure.entrypoints: "web-secure"
+    traefik.http.routers.nzbhydra-secure.middlewares: "myAuth@file"
+    traefik.http.routers.nzbhydra-secure.tls: "true"
+    traefik.http.routers.nzbhydra-secure.tls.certresolver: letsencrypt
     traefik.http.services.nzbhydra.loadbalancer.server.port: "5076"
 
 nzbhydra_config:

@@ -17,10 +17,12 @@ lidarr_docker_additional_options:
       ipv4_address: "{{ network.prefix }}.12"
   dns_servers: "{{ network.dns }}"
   labels:
-    traefik.http.routers.lidarr.service: lidarr
-    traefik.http.routers.lidarr.middlewares: "myAuth@file"
-    traefik.http.routers.lidarr.tls: "true"
-    traefik.http.routers.lidarr.tls.certresolver: letsencrypt
+    traefik.http.routers.lidarr.entrypoints: "web"
+    traefik.http.routers.lidarr.middlewares: "redirect@file"
+    traefik.http.routers.lidarr-secure.entrypoints: "web-secure"
+    traefik.http.routers.lidarr-secure.middlewares: "myAuth@file"
+    traefik.http.routers.lidarr-secure.tls: "true"
+    traefik.http.routers.lidarr-secure.tls.certresolver: letsencrypt
     traefik.http.services.lidarr.loadbalancer.server.port: "8686"
 
 lidarr_config:

@@ -15,7 +15,9 @@ collabora_docker_additional_options:
   capabilities:
     - MKNOD
   labels:
-    traefik.http.routers.collabora.service: collabora
-    traefik.http.routers.collabora.tls: "true"
-    traefik.http.routers.collabora.tls.certresolver: letsencrypt
+    traefik.http.routers.collabora.entrypoints: "web"
+    traefik.http.routers.collabora.middlewares: "redirect@file"
+    traefik.http.routers.collabora-secure.entrypoints: "web-secure"
+    traefik.http.routers.collabora-secure.tls: "true"
+    traefik.http.routers.collabora-secure.tls.certresolver: letsencrypt
     traefik.http.services.collabora.loadbalancer.server.port: "9980"

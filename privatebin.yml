@@ -48,9 +48,11 @@
           - name: "{{ network.name }}"
         dns_servers: "{{ network.dns }}"
         labels:
-          traefik.http.routers.privatebin.service: privatebin
-          traefik.http.routers.privatebin.tls: "true"
-          traefik.http.routers.privatebin.tls.certresolver: letsencrypt
+          traefik.http.routers.privatebin.entrypoints: "web"
+          traefik.http.routers.privatebin.middlewares: "redirect@file"
+          traefik.http.routers.privatebin-secure.entrypoints: "web-secure"
+          traefik.http.routers.privatebin-secure.tls: "true"
+          traefik.http.routers.privatebin-secure.tls.certresolver: letsencrypt
           traefik.http.services.privatebin.loadbalancer.server.port: "8080"
         comparisons:
           env: strict

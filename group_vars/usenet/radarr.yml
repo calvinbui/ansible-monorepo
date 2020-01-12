@@ -17,10 +17,12 @@ radarr_docker_additional_options:
       ipv4_address: "{{ network.prefix }}.11"
   dns_servers: "{{ network.dns }}"
   labels:
-    traefik.http.routers.radarr.service: radarr
-    traefik.http.routers.radarr.middlewares: "myAuth@file"
-    traefik.http.routers.radarr.tls: "true"
-    traefik.http.routers.radarr.tls.certresolver: letsencrypt
+    traefik.http.routers.radarr.entrypoints: "web"
+    traefik.http.routers.radarr.middlewares: "redirect@file"
+    traefik.http.routers.radarr-secure.entrypoints: "web-secure"
+    traefik.http.routers.radarr-secure.middlewares: "myAuth@file"
+    traefik.http.routers.radarr-secure.tls: "true"
+    traefik.http.routers.radarr-secure.tls.certresolver: letsencrypt
     traefik.http.services.radarr.loadbalancer.server.port: "7878"
 
 radarr_config:
