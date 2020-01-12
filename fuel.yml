@@ -43,3 +43,4 @@
           traefik.http.routers.fuel-secure.tls: "true"
           traefik.http.routers.fuel-secure.tls.certresolver: letsencrypt
           traefik.http.services.fuel.loadbalancer.server.port: "5000"
+          com.centurylinklabs.watchtower.enable: "false"

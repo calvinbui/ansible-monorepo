@@ -1,4 +1,6 @@
 ---
+nextcloud_build_image: true
+nextcloud_build_folder: "full"
 
 nextcloud_name: nextcloud
 nextcloud_version: 17.0.2
@@ -49,6 +51,4 @@ nextcloud_docker_additional_options:
     traefik.http.routers.nextcloud-secure.tls: "true"
     traefik.http.routers.nextcloud-secure.tls.certresolver: letsencrypt
     traefik.http.services.nextcloud.loadbalancer.server.port: "80"
-
-nextcloud_build_image: true
-nextcloud_build_folder: "full"
+    com.centurylinklabs.watchtower.enable: "false"
