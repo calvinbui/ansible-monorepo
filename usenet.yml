@@ -6,6 +6,7 @@
     network: "{{ networks.pub }}"
   module_defaults:
     docker_container:
+      state: started
       restart_policy: unless-stopped
       networks_cli_compatible: true
       purge_networks: true

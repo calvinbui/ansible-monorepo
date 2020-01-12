@@ -5,6 +5,7 @@
     network: "{{ networks.pub }}"
   module_defaults:
     docker_container:
+      state: started
       restart_policy: unless-stopped
       networks_cli_compatible: true
       purge_networks: true
@@ -18,7 +19,6 @@
       docker_container:
         name: shlink
         image: shlinkio/shlink:stable
-        state: started
         env:
           DB_DRIVER: "mysql"
           DB_HOST: "{{ mariadb_docker_additional_options.networks[0].ipv4_address }}"
@@ -61,7 +61,6 @@
       docker_container:
         name: shlink-web-client
         image: shlinkio/shlink-web-client:latest
-        state: started
         volumes:
           - "{{ shlink_web_client_directory }}/servers.json:/usr/share/nginx/html/servers.json"
         restart_policy: unless-stopped
