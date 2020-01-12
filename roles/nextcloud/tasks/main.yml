@@ -20,6 +20,8 @@
     build:
       path: "{{ nextcloud_directory }}/build/{{ nextcloud_build_folder }}"
       pull: true
+      args:
+        nextcloud_version: "{{ nextcloud_version }}"
     source: build
     state: present
   when: nextcloud_build_image

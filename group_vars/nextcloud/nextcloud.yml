@@ -1,7 +1,8 @@
 ---
 
 nextcloud_name: nextcloud
-nextcloud_image: "nextcloud:17.0.1-{{ nextcloud_build_folder }}"
+nextcloud_version: 17.0.2
+nextcloud_image: "nextcloud:{{ nextcloud_version }}-{{ nextcloud_build_folder }}"
 nextcloud_ports: []
 nextcloud_directory: "{{ common_directory }}/nextcloud/nextcloud"
 nextcloud_environment_variables:

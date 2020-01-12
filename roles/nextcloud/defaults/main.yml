@@ -1,7 +1,8 @@
 ---
 
 nextcloud_name: nextcloud
-nextcloud_image: nextcloud:16
+nextcloud_version: "16"
+nextcloud_image: "nextcloud:{{ nextcloud_version }}-mine"
 nextcloud_ports:
   - 80:80
 nextcloud_directory: /tmp/nextcloud

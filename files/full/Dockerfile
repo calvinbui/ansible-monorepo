@@ -1,4 +1,5 @@
-FROM nextcloud:17.0.1
+ARG nextcloud_version
+FROM nextcloud:$nextcloud_version
 
 RUN set -ex; \
     \
