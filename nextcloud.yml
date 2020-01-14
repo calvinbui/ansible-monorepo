@@ -5,6 +5,7 @@
     network: "{{ networks.user }}"
   module_defaults:
     docker_container:
+      keep_volumes: false
       restart_policy: unless-stopped
       networks_cli_compatible: true
       purge_networks: true

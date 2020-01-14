@@ -21,6 +21,7 @@
           - "{{ common_directory }}/jellyfin:/config"
           - "{{ common_directory_tv }}:/data/tvshows"
           - "{{ common_directory_movies }}:/data/movies"
+        keep_volumes: false
         restart_policy: unless-stopped
         networks_cli_compatible: true
         purge_networks: true

@@ -28,6 +28,7 @@
         name: "{{ fuel_name }}"
         image: "{{ fuel_image }}"
         state: started
+        keep_volumes: false
         networks:
           - name: "{{ networks.pub.name }}"
         dns_servers: "{{ networks.pub.dns }}"

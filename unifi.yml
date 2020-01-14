@@ -18,6 +18,7 @@
           PGID: "{{ common_root_group }}"
         volumes:
           - "{{ common_directory }}/unifi:/config"
+        keep_volumes: false
         restart_policy: unless-stopped
         networks_cli_compatible: true
         purge_networks: true

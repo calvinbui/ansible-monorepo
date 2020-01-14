@@ -59,6 +59,7 @@
         name: datadog
         image: datadog/agent:latest
         state: started
+        keep_volumes: false
         trust_image_content: true
         env:
           DD_API_KEY: "{{ datadog_api_key }}"

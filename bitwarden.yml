@@ -25,6 +25,7 @@
       SIGNUPS_ALLOWED: "false"
       SHOW_PASSWORD_HINT: "false"
     bitwardenrs_docker_additional_options:
+      keep_volumes: false
       restart_policy: unless-stopped
       networks_cli_compatible: true
       purge_networks: true

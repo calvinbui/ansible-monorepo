@@ -41,6 +41,7 @@
         volumes:
           - "{{ common_directory }}/privatebin/data/:/srv/data"
           - "{{ common_directory }}/privatebin/cfg/:/srv/cfg"
+        keep_volumes: false
         restart_policy: unless-stopped
         networks_cli_compatible: true
         purge_networks: true

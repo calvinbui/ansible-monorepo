@@ -24,6 +24,7 @@
         name: duplicati
         image: linuxserver/duplicati
         state: started
+        keep_volumes: false
         networks:
           - name: "{{ networks.pub.name }}"
             ipv4_address: "{{ network.prefix }}.30"
