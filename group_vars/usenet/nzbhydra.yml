@@ -45,7 +45,7 @@ nzbhydra_downloaders:
     downloaderType: "NZBGET"
     name: "NZBGet"
     nzbAddingType: "UPLOAD"
-    url: "http://{{ nzbget_name }}.{{ common_local_tld }}:6789"
+    url: "http://{{ nzbget_name }}.{{ network.name }}:6789"
     enabled: true
     iconCssClass: ""
 

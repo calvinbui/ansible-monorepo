@@ -54,7 +54,7 @@ couchpotato_config:
   trailer.enabled: 'True'
   blackhole.enabled: 'False'
   nzbget.enabled: 1
-  nzbget.host: "{{ nzbget_name }}.{{ common_local_tld }}:6789"
+  nzbget.host: "{{ nzbget_name }}.{{ network.name }}:6789"
   transmission.enabled: 'False'
   email.starttls: 1
   email.smtp_pass: "{{ common_email_password }}"
@@ -66,7 +66,7 @@ couchpotato_config:
   email.smtp_user: "{{ common_email_username }}"
   newznab.use: 1
   newznab.extra_score: ''
-  newznab.host: "{{ nzbhydra_name }}.{{ common_local_tld }}:5076"
+  newznab.host: "{{ nzbhydra_name }}.{{ network.name }}:5076"
   newznab.custom_tag: ''
   newznab.api_key: "{{ nzbhydra_config['main.apiKey'] }}"
   kickasstorrents.enabled: 'False'

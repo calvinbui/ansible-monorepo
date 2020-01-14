@@ -34,7 +34,7 @@ bazarr_config:
   general.upgrade_subs: "False"
 
   general.use_sonarr: "True"
-  sonarr.ip: "{{ sonarr_name }}.{{ common_local_tld }}"
+  sonarr.ip: "{{ sonarr_name }}.{{ network.name }}"
   sonarr.apikey: "{{ sonarr_config.ApiKey }}"
   general.path_mappings: "[['/tv', '/tv'], ['', ''], ['', ''], ['', ''], ['', '']]"
   general.serie_default_enabled: "True"
@@ -42,7 +42,7 @@ bazarr_config:
 
   general.use_radarr: "True"
   radarr.apikey: "{{ radarr_config.ApiKey }}"
-  radarr.ip: "{{ radarr_name }}.{{ common_local_tld }}"
+  radarr.ip: "{{ radarr_name }}.{{ network.name }}"
   general.path_mappings_movie: "[['/movies', '/movies'], ['', ''], ['', ''], ['', ''], ['', '']]"
   general.movie_default_enabled: "True"
   general.movie_default_language: "['en']"
