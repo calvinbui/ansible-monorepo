@@ -45,10 +45,13 @@ nextcloud_docker_additional_options:
     - name: "{{ network.name }}"
       ipv4_address: "{{ network.prefix }}.18"
   labels:
+    com.centurylinklabs.watchtower.enable: "false"
+
+    traefik.http.services.nextcloud.loadbalancer.server.port: "80"
+
     traefik.http.routers.nextcloud.entrypoints: "web"
     traefik.http.routers.nextcloud.middlewares: "redirect@file"
+
     traefik.http.routers.nextcloud-secure.entrypoints: "web-secure"
     traefik.http.routers.nextcloud-secure.tls: "true"
     traefik.http.routers.nextcloud-secure.tls.certresolver: letsencrypt
-    traefik.http.services.nextcloud.loadbalancer.server.port: "80"
-    com.centurylinklabs.watchtower.enable: "false"

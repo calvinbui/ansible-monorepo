@@ -1,6 +1,6 @@
 ---
 
-onlyoffice_name: onlyoffice
+onlyoffice_name: nextcloud-onlyoffice
 onlyoffice_image: onlyoffice/documentserver
 onlyoffice_ports: []
 onlyoffice_environment_variables: {}
@@ -10,10 +10,8 @@ onlyoffice_docker_additional_options:
     - name: "{{ network.name }}"
       ipv4_address: "{{ network.prefix }}.21"
   labels:
-    traefik.http.routers.onlyoffice.entrypoints: "web"
-    traefik.http.routers.onlyoffice.middlewares: "redirect@file"
-
     traefik.http.routers.onlyoffice-secure.entrypoints: "web-secure"
+    traefik.http.routers.onlyoffice-secure.rule: "Host(`onlyoffice.{{ common_tld }}`)"
     traefik.http.routers.onlyoffice-secure.tls: "true"
     traefik.http.routers.onlyoffice-secure.tls.certresolver: letsencrypt
 
