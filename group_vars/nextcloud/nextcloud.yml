@@ -1,6 +1,6 @@
 ---
 nextcloud_build_image: true
-nextcloud_build_folder: "full"
+nextcloud_build_folder: "nextcloud/full"
 
 nextcloud_name: nextcloud
 nextcloud_version: 17.0.2

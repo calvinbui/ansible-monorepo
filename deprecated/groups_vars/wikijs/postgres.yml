@@ -4,7 +4,7 @@ postgres_name: wikijs-postgres
 postgres_version: '12'
 postgres_ports: []
 postgres_volumes:
-  - "{{ common_directory }}/wikijs/postgres:/var/lib/mysql"
+  - "{{ common_directory }}/wikijs/postgres:/var/lib/postgresql/data"
 postgres_environment_variables:
   POSTGRES_PASSWORD: !vault |
           $ANSIBLE_VAULT;1.1;AES256

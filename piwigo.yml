@@ -31,7 +31,7 @@
         force: true
     - name: Copy Quick Sync plugin (https://br.piwigo.org/ext/extension_view.php?eid=855)
       copy:
-        src: files/piwigo_refresh.pl
+        src: files/piwigo/piwigo_refresh.pl
         dest: "{{ common_directory }}/piwigo/piwigo_refresh.pl"
     - name: Create cronjob for Quick Sync
       cron:
