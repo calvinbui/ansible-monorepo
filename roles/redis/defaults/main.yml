@@ -1,0 +1,12 @@
+---
+
+redis_name: redis
+redis_version: '5.0'
+redis_image: "bitnami/redis:{{ redis_version }}"
+redis_ports: []
+redis_volumes:
+  - /tmp/redis:/bitnami/redis/data
+redis_environment_variables: {}
+
+redis_docker_additional_options:
+  restart_policy: unless-stopped
