@@ -63,3 +63,6 @@ wikijs ansible_host=homelab
 
 [mattermost]
 mattermost ansible_host=homelab
+
+[zulip]
+zulip ansible_host=homelab
