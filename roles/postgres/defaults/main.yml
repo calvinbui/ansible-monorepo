@@ -2,7 +2,7 @@
 
 postgres_name: postgres
 postgres_version: '12'
-postgres_image: "postgres:{{ postgres_version }}"
+postgres_image: "postgres:{{ postgres_version }}-alpine"
 postgres_ports: []
 postgres_volumes:
   - /tmp/postgres:/var/lib/postgresql/data
@@ -11,5 +11,5 @@ postgres_environment_variables:
   POSTGRES_USER: postgres
   POSTGRES_DB: mydb
 
-mariadb_docker_additional_options:
+postgres_docker_additional_options:
   restart_policy: unless-stopped
