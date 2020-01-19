@@ -1,0 +1,10 @@
+---
+
+memcached_name: memcached
+memcached_version: '1'
+memcached_image: "bitnami/memcached:{{ memcached_version }}"
+memcached_ports: []
+memcached_environment_variables: {}
+
+memcached_docker_additional_options:
+  restart_policy: unless-stopped
