@@ -18,7 +18,8 @@
   docker_image:
     name: "{{ nextcloud_image }}"
     build:
-      path: "{{ nextcloud_directory }}/build/{{ nextcloud_build_folder }}"
+      path: "{{ nextcloud_directory }}/build"
+      dockerfile: Dockerfile
       pull: true
       args:
         nextcloud_version: "{{ nextcloud_version }}"
