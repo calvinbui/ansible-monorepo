@@ -15,6 +15,8 @@
     mysql_variables:
       - group_vars/piwigo/mariadb.yml
       - group_vars/nextcloud/mariadb.yml
+      - group_vars/bookstack/mariadb.yml
+      - group_vars/shlink/mariadb.yml
     mongo_variables:
       - group_vars/xbrowsersync/mongo.yaml
   tasks:
