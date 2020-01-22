@@ -32,3 +32,6 @@ mariadb_docker_additional_options:
       ipv4_address: "{{ network.prefix }}.17"
   labels:
     traefik.enable: "false"
+    com.datadoghq.ad.check_names: '["mysql"]'
+    com.datadoghq.ad.init_configs: '[{}]'
+    com.datadoghq.ad.instances: '[{"server":"%%host%%","port":"3306","user":"root","pass":"{{ mariadb_environment_variables.MYSQL_ROOT_PASSWORD | string }}"}]'

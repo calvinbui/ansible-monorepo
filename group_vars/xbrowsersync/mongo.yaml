@@ -22,3 +22,6 @@ mongo_docker_additional_options:
       ipv4_address: "{{ network.prefix }}.21"
   labels:
     traefik.enable: "false"
+    com.datadoghq.ad.check_names: '["mongo"]'
+    com.datadoghq.ad.init_configs: '[{}]'
+    com.datadoghq.ad.instances: '[{"server":"mongodb://{{ mongo_environment_variables.MONGO_INITDB_ROOT_USERNAME }}:{{ mongo_environment_variables.MONGO_INITDB_ROOT_PASSWORD | string }}@%%host%%:27017/admin","replica_check":"false"}]'
