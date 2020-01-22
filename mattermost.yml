@@ -2,12 +2,7 @@
 - hosts: mattermost
   become: true
   vars:
-    app_directory: "{{ common_directory }}/mattermost/mattermost"
-    app_directory_folders:
-      - data
-      - logs
-      - config
-      - plugins
+    mattermost_app_directory: "{{ common_directory }}/mattermost/mattermost"
     network: "{{ networks.pub }}"
   module_defaults:
     docker_container:
@@ -17,6 +12,8 @@
       networks_cli_compatible: true
       purge_networks: true
       dns_servers: "{{ network.dns }}"
+      networks:
+        - name: "{{ network.name }}"
       comparisons:
         env: strict
         labels: strict
@@ -25,7 +22,7 @@
   tasks:
     - name: Create Mattermost app directories
       file:
-        path: "{{ app_directory }}/{{ item }}"
+        path: "{{ mattermost_app_directory }}/{{ item }}"
         state: directory
         recurse: true
         owner: "2000"
@@ -41,11 +38,11 @@
         name: mattermost
         image: mattermost/mattermost-team-edition:5
         volumes:
-          - "{{ app_directory }}/config:/mattermost/config"
-          - "{{ app_directory }}/data:/mattermost/data"
-          - "{{ app_directory }}/logs:/mattermost/logs"
-          - "{{ app_directory }}/plugins:/mattermost/plugins"
-          - "{{ app_directory }}/client-plugins:/mattermost/client/plugins"
+          - "{{ mattermost_app_directory }}/config:/mattermost/config"
+          - "{{ mattermost_app_directory }}/data:/mattermost/data"
+          - "{{ mattermost_app_directory }}/logs:/mattermost/logs"
+          - "{{ mattermost_app_directory }}/plugins:/mattermost/plugins"
+          - "{{ mattermost_app_directory }}/client-plugins:/mattermost/client/plugins"
           - /etc/localtime:/etc/localtime:ro
         env:
           # set same as db credentials and dbname
@@ -56,9 +53,6 @@
           DB_PORT_NUMBER: "5432"
           MM_SQLSETTINGS_DRIVERNAME: postgres
           MM_SQLSETTINGS_DATASOURCE: "postgres://{{ postgres_environment_variables.POSTGRES_USER }}:{{ postgres_environment_variables.POSTGRES_PASSWORD }}@{{ postgres_name }}.{{ network.name }}:5432/{{ postgres_environment_variables.POSTGRES_DB }}?sslmode=disable&connect_timeout=10"
-        networks:
-          - name: "{{ network.name }}"
-            ipv4_address: "{{ network.prefix }}.40"
         labels:
           traefik.http.routers.mattermost.entrypoints: "web"
           traefik.http.routers.mattermost.middlewares: "redirect@file"

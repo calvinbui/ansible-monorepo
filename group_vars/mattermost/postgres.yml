@@ -2,7 +2,6 @@
 
 postgres_name: mattermost-postgres
 postgres_version: '12'
-postgres_ports: []
 postgres_volumes:
   - "{{ common_directory }}/mattermost/postgres:/var/lib/postgresql/data"
 postgres_environment_variables:
@@ -17,8 +16,5 @@ postgres_environment_variables:
   POSTGRES_DB: mattermost
 
 postgres_docker_additional_options:
-  networks:
-    - name: "{{ network.name }}"
-      ipv4_address: "{{ network.prefix }}.41"
   labels:
     traefik.enable: "false"
