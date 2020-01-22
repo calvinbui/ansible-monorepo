@@ -63,12 +63,20 @@
         trust_image_content: true
         env:
           DD_API_KEY: "{{ datadog_api_key }}"
+          DD_PROCESS_AGENT_ENABLED: "true"
+          DD_SYSTEM_PROBE_ENABLED: "true"
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock:ro
           - /proc/:/host/proc/:ro
           - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
           - /run/systemd/:/host/run/systemd/:ro
+          - /sys/kernel/debug:/sys/kernel/debug
           - "{{ datadog_dir }}:/conf.d:ro"
+        capabilities:
+          - SYS_ADMIN
+          - SYS_RESOURCE
+          - SYS_PTRACE
+          - NET_ADMIN
         restart_policy: unless-stopped
         networks_cli_compatible: true
         purge_networks: true
