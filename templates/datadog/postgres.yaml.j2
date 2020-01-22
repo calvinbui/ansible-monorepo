@@ -1,0 +1,10 @@
+init_config:
+
+instances:
+{% for yaml in postgresql_variables %}
+  - host: {{ postgresql_servers[yaml].postgres_name }}.{{ common_local_tld }}
+    port: 5432
+    username: {{ postgresql_servers[yaml].postgres_environment_variables.POSTGRES_USER }}
+    password: {{ postgresql_servers[yaml].postgres_environment_variables.POSTGRES_PASSWORD }}
+    dbname: {{ postgresql_servers[yaml].postgres_environment_variables.POSTGRES_DB }}
+{% endfor %}

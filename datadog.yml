@@ -19,6 +19,8 @@
       - group_vars/shlink/mariadb.yml
     mongo_variables:
       - group_vars/xbrowsersync/mongo.yaml
+    postgresql_variables:
+      - group_vars/mattermost/postgres.yaml
   tasks:
     - name: Create Datadog directory
       file:
@@ -49,6 +51,18 @@
         mongo_servers: "{{ dict(mongo_servers.results | json_query('[].[item, ansible_facts.mongo_servers]')) }}"
     # MONGO
 
+    # PostgreSQL
+    - name: Load PostgreSQL Servers
+      include_vars:
+        file: "{{ item }}"
+        name: "postgresql_servers"
+      loop: "{{ postgresql_variables }}"
+      register: postgresql_servers
+    - name: Combine PostgreSQL vars into one
+      set_fact:
+        postgresql_servers: "{{ dict(postgresql_servers.results | json_query('[].[item, ansible_facts.postgresql_servers]')) }}"
+    # PostgreSQL
+
     - name: Copy Datadog config templates to host
       template:
         src: "{{ item }}"
@@ -56,6 +70,7 @@
         mode: '0644'
       with_fileglob: templates/datadog/*.j2
       notify: Restart Datadog container
+
     - name: Create Datadog container
       docker_container:
         name: datadog
