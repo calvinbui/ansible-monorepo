@@ -5,27 +5,28 @@ xbrowsersync_image: xbrowsersync/api
 xbrowsersync_config_directory: "{{ common_directory }}/xbrowsersync"
 xbrowsersync_config_template: settings.json.j2
 xbrowsersync_config_file: "{{ xbrowsersync_config_directory }}/settings.json"
-xbrowsersync_ports: []
 xbrowsersync_docker_additional_options:
-  networks:
-    - name: "{{ network.name }}"
-      ipv4_address: "{{ network.prefix }}.20"
-  dns_servers: "{{ network.dns }}"
   labels:
     traefik.http.routers.xbrowsersync.entrypoints: "web"
     traefik.http.routers.xbrowsersync.middlewares: "redirect@file"
+
     traefik.http.routers.xbrowsersync-secure.entrypoints: "web-secure"
     traefik.http.routers.xbrowsersync-secure.tls: "true"
     traefik.http.routers.xbrowsersync-secure.tls.certresolver: letsencrypt
+
     traefik.http.services.xbrowsersync.loadbalancer.server.port: "8080"
+
+    com.datadoghq.ad.check_names: '["http_check"]'
+    com.datadoghq.ad.init_configs: '[{}]'
+    com.datadoghq.ad.instances: '[{"name":"{{ xbrowsersync_name }}","url":"https://{{ xbrowsersync_name }}.{{ common_tld | string }}"}]'
 
 # https://github.com/xbrowsersync/api#4-modify-configuration-settings
 xbrowsersync_config:
   db:
-    host: "{{ mongo_docker_additional_options.networks[0].ipv4_address }}"
+    host: "{{ mongo_name }}.{{ network.name }}"
     username: "{{ mongo_environment_variables.MONGO_INITDB_ROOT_USERNAME }}"
     password: "{{ mongo_environment_variables.MONGO_INITDB_ROOT_PASSWORD }}"
     name: "{{ mongo_environment_variables.MONGO_INITDB_DATABASE }}"
   status:
     message: "Hi {{ common_user }}"
-    allowNewSyncs: "true"
+    allowNewSyncs: "false"

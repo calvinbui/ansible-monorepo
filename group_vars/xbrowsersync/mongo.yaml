@@ -1,9 +1,8 @@
 ---
 
 mongo_name: xbrowsersync-mongo
-mongo_version: 4.2.2
+mongo_version: 4
 mongo_image: "mongo:{{ mongo_version }}"
-mongo_ports: []
 mongo_directory: "{{ common_directory }}/xbrowsersync/mongodb"
 mongo_environment_variables:
   MONGO_INITDB_ROOT_USERNAME: xbrowsersync
@@ -17,11 +16,9 @@ mongo_environment_variables:
   MONGO_INITDB_DATABASE: xbrowsersync
 
 mongo_docker_additional_options:
-  networks:
-    - name: "{{ network.name }}"
-      ipv4_address: "{{ network.prefix }}.21"
   labels:
     traefik.enable: "false"
+
     com.datadoghq.ad.check_names: '["mongo"]'
     com.datadoghq.ad.init_configs: '[{}]'
     com.datadoghq.ad.instances: '[{"server":"mongodb://{{ mongo_environment_variables.MONGO_INITDB_ROOT_USERNAME }}:{{ mongo_environment_variables.MONGO_INITDB_ROOT_PASSWORD | string }}@%%host%%:27017/admin","replica_check":"false"}]'

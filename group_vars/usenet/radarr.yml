@@ -2,7 +2,6 @@
 
 radarr_name: radarr
 radarr_image: linuxserver/radarr
-radarr_ports: []
 radarr_config_directory: "{{ common_directory }}/radarr"
 radarr_movie_directory: "{{ common_directory_movies }}"
 radarr_download_directory: "{{ common_directory_download }}"
@@ -15,15 +14,20 @@ radarr_docker_additional_options:
   networks:
     - name: "{{ network.name }}"
       ipv4_address: "{{ network.prefix }}.11"
-  dns_servers: "{{ network.dns }}"
   labels:
     traefik.http.routers.radarr.entrypoints: "web"
     traefik.http.routers.radarr.middlewares: "redirect@file"
+
     traefik.http.routers.radarr-secure.entrypoints: "web-secure"
     traefik.http.routers.radarr-secure.middlewares: "myAuth@file"
     traefik.http.routers.radarr-secure.tls: "true"
     traefik.http.routers.radarr-secure.tls.certresolver: letsencrypt
+
     traefik.http.services.radarr.loadbalancer.server.port: "7878"
+
+    com.datadoghq.ad.check_names: '["http_check"]'
+    com.datadoghq.ad.init_configs: '[{}]'
+    com.datadoghq.ad.instances: '[{"name":"{{ radarr_name }}","url":"https://{{ radarr_name }}.{{ common_tld | string }}","username":"{{ htpasswd.username | string }}","password":"{{ htpasswd.password | string }}"}]'
 
 radarr_config:
   ApiKey: !vault |

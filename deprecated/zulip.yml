@@ -14,7 +14,7 @@
         - name: "{{ network.name }}"
       dns_servers: "{{ network.dns }}"
       comparisons:
-        env: strict
+        env: allow_more_present
         labels: allow_more_present
   roles:
     - postgres

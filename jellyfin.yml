@@ -1,8 +1,22 @@
 ---
 - hosts: jellyfin
   become: true
+  module_defaults:
+    docker_container:
+      keep_volumes: false
+      state: started
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      networks:
+        - name: "{{ network.name }}"
+      dns_servers: "{{ network.dns }}"
+      comparisons:
+        env: allow_more_present
+        labels: allow_more_present
   vars:
     network: "{{ networks.user }}"
+    jellyfin_name: jellyfin
   tasks:
     - name: Create Jellyfin config folder
       file:
@@ -12,7 +26,6 @@
       docker_container:
         name: jellyfin
         image: linuxserver/jellyfin
-        state: started
         env:
           PUID: "{{ common_user_id }}"
           PGID: "{{ common_root_group }}"
@@ -21,13 +34,12 @@
           - "{{ common_directory }}/jellyfin:/config"
           - "{{ common_directory_tv }}:/data/tvshows"
           - "{{ common_directory_movies }}:/data/movies"
-        keep_volumes: false
-        restart_policy: unless-stopped
-        networks_cli_compatible: true
-        purge_networks: true
         networks:
           - name: "{{ network.name }}"
             ipv4_address: "{{ network.prefix }}.24"
-        dns_servers: "{{ network.dns }}"
         labels:
           traefik.enable: "false"
+
+          com.datadoghq.ad.check_names: '["http_check"]'
+          com.datadoghq.ad.init_configs: '[{}]'
+          com.datadoghq.ad.instances: '[{"name":"{{ jellyfin_name }}","url":"https://{{ jellyfin_name }}.{{ common_local_tld | string }}:8920"}]'

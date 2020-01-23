@@ -2,7 +2,6 @@
 
 jdownloader_name: jdownloader
 jdownloader_image: jlesage/jdownloader-2
-jdownloader_ports: []
 jdownloader_config_directory: "{{ common_directory }}/jdownloader"
 jdownloader_download_directory: "{{ common_directory_download }}"
 jdownloader_environment_variables:
@@ -16,12 +15,18 @@ jdownloader_docker_additional_options:
   networks:
     - name: "{{ network.name }}"
       ipv4_address: "{{ network.prefix }}.9"
-  dns_servers: "{{ network.dns }}"
   labels:
     traefik.http.routers.jdownloader.entrypoints: "web"
     traefik.http.routers.jdownloader.middlewares: "redirect@file"
+
     traefik.http.routers.jdownloader-secure.entrypoints: "web-secure"
     traefik.http.routers.jdownloader-secure.middlewares: "myAuth@file"
     traefik.http.routers.jdownloader-secure.tls: "true"
     traefik.http.routers.jdownloader-secure.tls.certresolver: letsencrypt
+
     traefik.http.services.jdownloader.loadbalancer.server.port: "5800"
+
+    com.datadoghq.ad.check_names: '["http_check"]'
+    com.datadoghq.ad.init_configs: '[{}]'
+    com.datadoghq.ad.instances: '[{"name":"{{ jdownloader_name }}","url":"https://{{ jdownloader_name }}.{{ common_tld | string }}","username":"{{ htpasswd.username | string }}","password":"{{ htpasswd.password | string }}"}]'
+

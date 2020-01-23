@@ -10,9 +10,12 @@
       restart_policy: unless-stopped
       networks_cli_compatible: true
       purge_networks: true
+      networks:
+        - name: "{{ network.name }}"
       dns_servers: "{{ network.dns }}"
-    comparisons:
-      labels: strict
+      comparisons:
+        env: allow_more_present
+        labels: allow_more_present
   roles:
     - mariadb
   tasks:
@@ -22,59 +25,68 @@
         image: shlinkio/shlink:stable
         env:
           DB_DRIVER: "mysql"
-          DB_HOST: "{{ mariadb_docker_additional_options.networks[0].ipv4_address }}"
+          DB_HOST: "{{ mariadb_name }}.{{ network.name }}"
           DB_USER: root
           DB_PASSWORD: "{{ mariadb_environment_variables.MYSQL_ROOT_PASSWORD }}"
           DB_NAME: "{{ mariadb_environment_variables.MYSQL_DATABASE }}"
           SHORT_DOMAIN_HOST: "{{ shlink_domain }}"
           SHORT_DOMAIN_SCHEMA: "https"
-        restart_policy: unless-stopped
-        networks:
-          - name: "{{ network.name }}"
-            ipv4_address: "{{ network.prefix }}.23"
         labels:
           traefik.http.routers.shlink.entrypoints: "web"
           traefik.http.routers.shlink.middlewares: "redirect@file"
           traefik.http.routers.shlink.rule: "Host(`{{ shlink_domain }}`)"
+
           traefik.http.routers.shlink-secure.entrypoints: "web-secure"
           traefik.http.routers.shlink-secure.rule: "Host(`{{ shlink_domain }}`)"
           traefik.http.routers.shlink-secure.tls: "true"
           traefik.http.routers.shlink-secure.tls.certresolver: letsencrypt
+
           traefik.http.services.shlink.loadbalancer.server.port: "8080"
+
+          com.datadoghq.ad.check_names: '["http_check"]'
+          com.datadoghq.ad.init_configs: '[{}]'
+          com.datadoghq.ad.instances: '[{"name":"shlink","url":"https://{{ shlink_domain | string }}/rest/health"}]'
+
     - name: Check if shlink API config exists
       stat:
         path: "{{ shlink_web_client_directory }}/servers.json"
       register: shlink_web_config
+
     - name: Create shlink-web-client dir
       file:
         path: "{{ shlink_web_client_directory }}"
         state: directory
+
     - name: Generate shlink API key
       command: docker exec -it shlink shlink api-key:generate --no-interaction --no-ansi
       register: shlink_api
       when: shlink_web_config.stat.exists == false
+
     - name: Template shlink-web client config
       template:
         src: shlink/servers.json.j2
         dest: "{{ shlink_web_client_directory }}/servers.json"
       when: shlink_web_config.stat.exists == false
+
     - name: Create shlink web client container
       docker_container:
         name: shlink-web-client
         image: shlinkio/shlink-web-client:latest
         volumes:
           - "{{ shlink_web_client_directory }}/servers.json:/usr/share/nginx/html/servers.json"
-        restart_policy: unless-stopped
-        networks:
-          - name: "{{ network.name }}"
-            ipv4_address: "{{ network.prefix }}.25"
         labels:
           traefik.http.routers.shlink-web-client.entrypoints: "web"
           traefik.http.routers.shlink-web-client.middlewares: "redirect@file"
           traefik.http.routers.shlink-web-client.rule: "Host(`shlink.{{ common_tld }}`)"
+
           traefik.http.routers.shlink-web-client-secure.entrypoints: "web-secure"
           traefik.http.routers.shlink-web-client-secure.rule: "Host(`shlink.{{ common_tld }}`)"
           traefik.http.routers.shlink-web-client-secure.middlewares: "myAuth@file"
           traefik.http.routers.shlink-web-client-secure.tls: "true"
           traefik.http.routers.shlink-web-client-secure.tls.certresolver: letsencrypt
+
           traefik.http.services.shlink-web-client.loadbalancer.server.port: "80"
+
+          com.datadoghq.ad.check_names: '["http_check"]'
+          com.datadoghq.ad.init_configs: '[{}]'
+          com.datadoghq.ad.instances: '[{"name":"shlink-web-client","url":"https://shlink.{{ common_tld | string }}","username":"{{ htpasswd.username | string }}","password":"{{ htpasswd.password | string }}"}]'

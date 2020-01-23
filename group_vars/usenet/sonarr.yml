@@ -2,7 +2,6 @@
 
 sonarr_name: sonarr
 sonarr_image: linuxserver/sonarr
-sonarr_ports: []
 sonarr_config_directory: "{{ common_directory }}/sonarr"
 sonarr_tv_directory: "{{ common_directory_tv }}"
 sonarr_download_directory: "{{ common_directory_download }}"
@@ -15,15 +14,20 @@ sonarr_docker_additional_options:
   networks:
     - name: "{{ network.name }}"
       ipv4_address: "{{ network.prefix }}.7"
-  dns_servers: "{{ network.dns }}"
   labels:
     traefik.http.routers.sonarr.entrypoints: "web"
     traefik.http.routers.sonarr.middlewares: "redirect@file"
+
     traefik.http.routers.sonarr-secure.entrypoints: "web-secure"
     traefik.http.routers.sonarr-secure.middlewares: "myAuth@file"
     traefik.http.routers.sonarr-secure.tls: "true"
     traefik.http.routers.sonarr-secure.tls.certresolver: letsencrypt
+
     traefik.http.services.sonarr.loadbalancer.server.port: "8989"
+
+    com.datadoghq.ad.check_names: '["http_check"]'
+    com.datadoghq.ad.init_configs: '[{}]'
+    com.datadoghq.ad.instances: '[{"name":"{{ sonarr_name }}","url":"https://{{ sonarr_name }}.{{ common_tld | string }}","username":"{{ htpasswd.username | string }}","password":"{{ htpasswd.password | string }}"}]'
 
 sonarr_config:
   ApiKey: !vault |

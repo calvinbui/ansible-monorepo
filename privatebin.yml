@@ -3,6 +3,7 @@
   become: true
   vars:
     network: "{{ networks.pub }}"
+    privatebin_name: privatebin
     privatebin_url_shortener: !vault |
       $ANSIBLE_VAULT;1.1;AES256
       65386565666238376234393933626533353536383832306166656631303565366335333335353031
@@ -14,6 +15,19 @@
       32323763646530643030613763353734323832353837663839343562656133313266636166633266
       32366635626466623037346666646532313035663361353139366437653732343936626261393831
       38633834363363383431323437646336656338326666363535396337626234363337
+  module_defaults:
+    docker_container:
+      keep_volumes: false
+      state: started
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      networks:
+        - name: "{{ network.name }}"
+      dns_servers: "{{ network.dns }}"
+      comparisons:
+        env: allow_more_present
+        labels: allow_more_present
   tasks:
     - name: Create PrivateBin config folder
       file:
@@ -26,6 +40,7 @@
         - "{{ common_directory }}/privatebin"
         - "{{ common_directory }}/privatebin/cfg"
         - "{{ common_directory }}/privatebin/data"
+
     - name: Template PrivateBin config
       template:
         src: privatebin/conf.php.j2
@@ -33,28 +48,24 @@
         mode: '0644'
         owner: nobody
         group: 82
+
     - name: Create PrivateBin container
       docker_container:
-        name: privatebin
+        name: "{{ privatebin_name }}"
         image: privatebin/nginx-fpm-alpine
-        state: started
         volumes:
           - "{{ common_directory }}/privatebin/data/:/srv/data"
           - "{{ common_directory }}/privatebin/cfg/:/srv/cfg"
-        keep_volumes: false
-        restart_policy: unless-stopped
-        networks_cli_compatible: true
-        purge_networks: true
-        networks:
-          - name: "{{ network.name }}"
-        dns_servers: "{{ network.dns }}"
         labels:
           traefik.http.routers.privatebin.entrypoints: "web"
           traefik.http.routers.privatebin.middlewares: "redirect@file"
+
           traefik.http.routers.privatebin-secure.entrypoints: "web-secure"
           traefik.http.routers.privatebin-secure.tls: "true"
           traefik.http.routers.privatebin-secure.tls.certresolver: letsencrypt
+
           traefik.http.services.privatebin.loadbalancer.server.port: "8080"
-        comparisons:
-          env: strict
-          labels: strict
+
+          com.datadoghq.ad.check_names: '["http_check"]'
+          com.datadoghq.ad.init_configs: '[{}]'
+          com.datadoghq.ad.instances: '[{"name":"{{ privatebin_name }}","url":"https://{{ privatebin_name }}.{{ common_tld | string }}"}]'

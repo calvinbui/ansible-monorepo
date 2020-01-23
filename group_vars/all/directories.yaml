@@ -1,0 +1,7 @@
+common_directory_nfs: "/mnt/files"
+common_directory_download: "{{ common_directory_nfs }}/Downloads"
+common_directory_tv: "{{ common_directory_nfs }}/TV"
+common_directory_movies: "{{ common_directory_nfs }}/Movies"
+common_directory_books: "{{ common_directory_nfs }}/Books"
+common_directory_photos: "{{ common_directory_nfs }}/Photos"
+common_directory_music: "{{ common_directory_nfs }}/Music"

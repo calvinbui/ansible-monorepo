@@ -2,16 +2,11 @@
 
 collabora_name: nextcloud-collabora
 collabora_image: collabora/code
-collabora_ports: []
 collabora_environment_variables:
   dictionaries: "en_US"
   extra_params: "--o:ssl.termination=true --o:ssl.enable=false"
-  domain: "{{ 'nextcloud\\.' + common_tld | regex_replace('\\.', '\\\\.') }}"
-
+  domain: "{{ nextcloud_name + '\\.' + common_tld | regex_replace('\\.', '\\\\.') }}"
 collabora_docker_additional_options:
-  networks:
-    - name: "{{ network.name }}"
-      ipv4_address: "{{ network.prefix }}.20"
   capabilities:
     - MKNOD
   labels:
@@ -19,4 +14,9 @@ collabora_docker_additional_options:
     traefik.http.routers.collabora-secure.rule: "Host(`collabora.{{ common_tld }}`)"
     traefik.http.routers.collabora-secure.tls: "true"
     traefik.http.routers.collabora-secure.tls.certresolver: letsencrypt
+
     traefik.http.services.collabora.loadbalancer.server.port: "9980"
+
+    com.datadoghq.ad.check_names: '["http_check"]'
+    com.datadoghq.ad.init_configs: '[{}]'
+    com.datadoghq.ad.instances: '[{"name":"collabora","url":"https://collabora.{{ common_tld | string }}"}]'

@@ -3,7 +3,6 @@
 qbittorrent_name: qbittorrent
 qbittorrent_image: linuxserver/qbittorrent
 qbittorrent_webui_port: '8090' # place in quotes
-qbittorrent_ports: []
 qbittorrent_config_directory: "{{ common_directory }}/qbittorrent"
 qbittorrent_download_directory: "{{ common_directory_download }}"
 qbittorrent_environment_variables:
@@ -17,15 +16,20 @@ qbittorrent_docker_additional_options:
   networks:
     - name: "{{ network.name }}"
       ipv4_address: "{{ network.prefix }}.5"
-  dns_servers: "{{ network.dns }}"
   labels:
     traefik.http.routers.qbittorrent.entrypoints: "web"
     traefik.http.routers.qbittorrent.middlewares: "redirect@file"
+
     traefik.http.routers.qbittorrent-secure.entrypoints: "web-secure"
     traefik.http.routers.qbittorrent-secure.middlewares: "myAuth@file"
     traefik.http.routers.qbittorrent-secure.tls: "true"
     traefik.http.routers.qbittorrent-secure.tls.certresolver: letsencrypt
+
     traefik.http.services.qbittorrent.loadbalancer.server.port: "8090"
+
+    com.datadoghq.ad.check_names: '["http_check"]'
+    com.datadoghq.ad.init_configs: '[{}]'
+    com.datadoghq.ad.instances: '[{"name":"{{ qbittorrent_name }}","url":"https://{{ qbittorrent_name }}.{{ common_tld | string }}","username":"{{ htpasswd.username | string }}","password":"{{ htpasswd.password | string }}"}]'
 
 qbittorrent_config:
   Preferences.Downloads\UseIncompleteExtension: 'true'

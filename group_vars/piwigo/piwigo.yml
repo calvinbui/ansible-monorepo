@@ -2,7 +2,6 @@
 
 piwigo_name: piwigo
 piwigo_image: linuxserver/piwigo
-piwigo_ports: []
 piwigo_volumes:
   - "{{ common_directory }}/piwigo/piwigo:/config"
   - "{{ common_directory_photos }}:/photos"
@@ -12,13 +11,16 @@ piwigo_environment_variables:
   TZ: "{{ common_timezone }}"
 
 piwigo_docker_additional_options:
-  networks:
-    - name: "{{ network.name }}"
-      ipv4_address: "{{ network.prefix }}.22"
   labels:
     traefik.http.routers.piwigo.entrypoints: "web"
     traefik.http.routers.piwigo.middlewares: "redirect@file"
+    
     traefik.http.routers.piwigo-secure.entrypoints: "web-secure"
     traefik.http.routers.piwigo-secure.tls: "true"
     traefik.http.routers.piwigo-secure.tls.certresolver: letsencrypt
+    
     traefik.http.services.piwigo.loadbalancer.server.port: "80"
+
+    com.datadoghq.ad.check_names: '["http_check"]'
+    com.datadoghq.ad.init_configs: '[{}]'
+    com.datadoghq.ad.instances: '[{"name":"{{ piwigo_name }}","url":"https://{{ piwigo_name }}.{{ common_tld | string }}"}]'

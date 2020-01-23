@@ -29,6 +29,9 @@
         traefik.http.routers.blueiris.tls: "true"
         traefik.http.routers.blueiris.tls.certresolver: letsencrypt
         traefik.http.services.blueiris.loadbalancer.server.port: "81"
+        com.datadoghq.ad.check_names: '["http_check"]'
+        com.datadoghq.ad.init_configs: '[{}]'
+        com.datadoghq.ad.instances: '[{"name":"{{ blueiris_name }}","url":"http://{{ blueiris_name }}.{{ common_local_tld | string }}:8080"}]'
 
   pre_tasks:
     - mount:

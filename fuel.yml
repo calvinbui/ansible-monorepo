@@ -6,6 +6,20 @@
     fuel_name: fuel
     fuel_directory: "{{ common_directory }}/fuel"
     fuel_image: fuel
+    network: "{{ networks.pub }}"
+  module_defaults:
+    docker_container:
+      keep_volumes: false
+      state: started
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      networks:
+        - name: "{{ network.name }}"
+      dns_servers: "{{ network.dns }}"
+      comparisons:
+        env: allow_more_present
+        labels: allow_more_present
   tasks:
     - name: Clone repo
       git:
@@ -13,6 +27,7 @@
         dest: "{{ fuel_directory }}"
         update: true
       register: clone_repo
+
     - name: Build image
       docker_image:
         build:
@@ -23,25 +38,25 @@
         force_source: true
         state: present
       when: clone_repo.changed
+
     - name: Create 7Eleven Python
       docker_container:
         name: "{{ fuel_name }}"
         image: "{{ fuel_image }}"
-        state: started
-        keep_volumes: false
-        networks:
-          - name: "{{ networks.pub.name }}"
-        dns_servers: "{{ networks.pub.dns }}"
-        networks_cli_compatible: true
-        purge_networks: true
-        restart_policy: unless-stopped
         env:
           TZ: "{{ common_timezone }}"
         labels:
+          com.centurylinklabs.watchtower.enable: "false"
+
           traefik.http.routers.fuel.entrypoints: "web"
           traefik.http.routers.fuel.middlewares: "redirect@file"
+
           traefik.http.routers.fuel-secure.entrypoints: "web-secure"
           traefik.http.routers.fuel-secure.tls: "true"
           traefik.http.routers.fuel-secure.tls.certresolver: letsencrypt
+
           traefik.http.services.fuel.loadbalancer.server.port: "5000"
-          com.centurylinklabs.watchtower.enable: "false"
+
+          com.datadoghq.ad.check_names: '["http_check"]'
+          com.datadoghq.ad.init_configs: '[{}]'
+          com.datadoghq.ad.instances: '[{"name":"{{ fuel_name }}","url":"http://{{ fuel_name }}.{{ common_tld | string }}"}]'

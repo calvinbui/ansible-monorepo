@@ -33,7 +33,7 @@
       name: "{{ nextcloud_name }}"
       image: "{{ nextcloud_image }}"
       state: started
-      published_ports: "{{ nextcloud_ports }}"
+      published_ports: "{{ nextcloud_ports | default(omit) }}"
       volumes:
         - "{{ nextcloud_directory }}/app:/var/www/html"
       env: "{{ nextcloud_environment_variables }}"

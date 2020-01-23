@@ -2,7 +2,6 @@
 
 nzbget_name: nzbget
 nzbget_image: linuxserver/nzbget
-nzbget_ports: []
 nzbget_config_directory: "{{ common_directory }}/nzbget"
 nzbget_download_directory: "{{ common_directory_download }}"
 nzbget_environment_variables:
@@ -14,15 +13,20 @@ nzbget_docker_additional_options:
   networks:
     - name: "{{ network.name }}"
       ipv4_address: "{{ network.prefix }}.4"
-  dns_servers: "{{ network.dns }}"
   labels:
     traefik.http.routers.nzbget.entrypoints: "web"
     traefik.http.routers.nzbget.middlewares: "redirect@file"
+
     traefik.http.routers.nzbget-secure.entrypoints: "web-secure"
     traefik.http.routers.nzbget-secure.middlewares: "myAuth@file"
     traefik.http.routers.nzbget-secure.tls: "true"
     traefik.http.routers.nzbget-secure.tls.certresolver: letsencrypt
+
     traefik.http.services.nzbget.loadbalancer.server.port: "6789"
+
+    com.datadoghq.ad.check_names: '["http_check"]'
+    com.datadoghq.ad.init_configs: '[{}]'
+    com.datadoghq.ad.instances: '[{"name":"{{ nzbget_name }}","url":"https://{{ nzbget_name }}.{{ common_tld | string }}","username":"{{ htpasswd.username | string }}","password":"{{ htpasswd.password | string }}"}]'
 
 nzbget_config:
   MainDir: '/downloads'

@@ -2,6 +2,7 @@
 - hosts: mattermost
   become: true
   vars:
+    mattermost_name: mattermost
     mattermost_app_directory: "{{ common_directory }}/mattermost/mattermost"
     network: "{{ networks.pub }}"
   module_defaults:
@@ -35,7 +36,7 @@
         - client-plugins
     - name: Create Mattermost container
       docker_container:
-        name: mattermost
+        name: "{{ mattermost_name }}"
         image: mattermost/mattermost-team-edition:5
         volumes:
           - "{{ mattermost_app_directory }}/config:/mattermost/config"
@@ -56,7 +57,13 @@
         labels:
           traefik.http.routers.mattermost.entrypoints: "web"
           traefik.http.routers.mattermost.middlewares: "redirect@file"
+
           traefik.http.routers.mattermost-secure.entrypoints: "web-secure"
           traefik.http.routers.mattermost-secure.tls: "true"
           traefik.http.routers.mattermost-secure.tls.certresolver: letsencrypt
+
           traefik.http.services.mattermost.loadbalancer.server.port: "8065"
+
+          com.datadoghq.ad.check_names: '["http_check"]'
+          com.datadoghq.ad.init_configs: '[{}]'
+          com.datadoghq.ad.instances: '[{"name":"{{ mattermost_name }}","url":"https://{{ mattermost_name }}.{{ common_tld | string }}"}]'

@@ -2,7 +2,6 @@
 
 nzbhydra_name: nzbhydra
 nzbhydra_image: linuxserver/hydra2
-nzbhydra_ports: []
 nzbhydra_config_directory: "{{ common_directory }}/nzbhydra"
 nzbhydra_download_directory: "{{ common_directory_download }}"
 nzbhydra_environment_variables:
@@ -18,11 +17,17 @@ nzbhydra_docker_additional_options:
   labels:
     traefik.http.routers.nzbhydra.entrypoints: "web"
     traefik.http.routers.nzbhydra.middlewares: "redirect@file"
+
     traefik.http.routers.nzbhydra-secure.entrypoints: "web-secure"
     traefik.http.routers.nzbhydra-secure.middlewares: "myAuth@file"
     traefik.http.routers.nzbhydra-secure.tls: "true"
     traefik.http.routers.nzbhydra-secure.tls.certresolver: letsencrypt
+
     traefik.http.services.nzbhydra.loadbalancer.server.port: "5076"
+
+    com.datadoghq.ad.check_names: '["http_check"]'
+    com.datadoghq.ad.init_configs: '[{}]'
+    com.datadoghq.ad.instances: '[{"name":"{{ nzbhydra_name }}","url":"https://{{ nzbhydra_name }}.{{ common_tld | string }}","username":"{{ htpasswd.username | string }}","password":"{{ htpasswd.password | string }}"}]'
 
 nzbhydra_config:
   main.apiKey: !vault |

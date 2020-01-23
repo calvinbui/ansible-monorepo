@@ -1,7 +1,8 @@
 ---
 
 apt_install_packages:
-  - name: libwww-perl
+  - name: 
+      - libwww-perl
+      - libjson-perl
     state: present
-  - name: libjson-perl
-    state: present
+

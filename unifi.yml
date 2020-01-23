@@ -1,30 +1,43 @@
 ---
 - hosts: unifi
   become: true
+  module_defaults:
+    docker_container:
+      keep_volumes: false
+      state: started
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      networks:
+        - name: "{{ network.name }}"
+      dns_servers: "{{ network.dns }}"
+      comparisons:
+        env: allow_more_present
+        labels: allow_more_present
   vars:
     network: "{{ networks.user }}"
+    unifi_name: unifi
   tasks:
     - name: Create Unifi config folder
       file:
         path: "{{ common_directory }}/unifi"
         state: directory
+
     - name: Create Unifi Container
       docker_container:
         name: unifi
         image: linuxserver/unifi-controller:LTS
-        state: started
         env:
           PUID: "{{ common_user_id }}"
           PGID: "{{ common_root_group }}"
         volumes:
           - "{{ common_directory }}/unifi:/config"
-        keep_volumes: false
-        restart_policy: unless-stopped
-        networks_cli_compatible: true
-        purge_networks: true
         networks:
           - name: "{{ network.name }}"
             ipv4_address: "{{ network.prefix }}.3"
-        dns_servers: "{{ network.dns }}"
         labels:
           traefik.enable: "false"
+
+          com.datadoghq.ad.check_names: '["http_check"]'
+          com.datadoghq.ad.init_configs: '[{}]'
+          com.datadoghq.ad.instances: '[{"name":"{{ unifi_name }}","url":"https://{{ unifi_name }}.{{ common_local_tld | string }}:8443"}]'

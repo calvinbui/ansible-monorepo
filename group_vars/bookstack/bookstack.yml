@@ -2,29 +2,30 @@
 
 bookstack_name: bookstack
 bookstack_image: linuxserver/bookstack
-bookstack_ports: []
 bookstack_config_directory: "{{ common_directory }}/bookstack/bookstack"
 bookstack_volumes:
   - "{{ bookstack_config_directory }}:/config"
 bookstack_environment_variables:
   PUID: "{{ common_user_id }}"
   PGID: "{{ common_group_id }}"
-  DB_HOST: "bookstack-mariadb.{{ common_local_tld }}"
+  DB_HOST: "{{ mariadb_name }}.{{ network.name }}"
   DB_USER: "{{ mariadb_environment_variables.MYSQL_USER }}"
   DB_PASS: "{{ mariadb_environment_variables.MYSQL_PASSWORD }}"
   DB_DATABASE: "{{ mariadb_environment_variables.MYSQL_DATABASE }}"
-
 bookstack_docker_additional_options:
-  networks:
-    - name: "{{ network.name }}"
-      ipv4_address: "{{ network.prefix }}.16"
   labels:
     traefik.http.routers.bookstack.entrypoints: "web"
     traefik.http.routers.bookstack.middlewares: "redirect@file"
+
     traefik.http.routers.bookstack-secure.entrypoints: "web-secure"
     traefik.http.routers.bookstack-secure.tls: "true"
     traefik.http.routers.bookstack-secure.tls.certresolver: letsencrypt
+
     traefik.http.services.bookstack.loadbalancer.server.port: "80"
+
+    com.datadoghq.ad.check_names: '["http_check"]'
+    com.datadoghq.ad.init_configs: '[{}]'
+    com.datadoghq.ad.instances: '[{"name":"{{ bookstack_name }}","url":"https://{{ bookstack_name }}.{{ common_tld | string }}"}]'
 
 bookstack_env_options:
   - WKHTMLTOPDF=/usr/bin/wkhtmltopdf

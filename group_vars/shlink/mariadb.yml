@@ -3,7 +3,6 @@
 mariadb_name: shlink-mariadb
 mariadb_version: '10'
 mariadb_image: "mariadb:{{ mariadb_version }}"
-mariadb_ports: []
 mariadb_volumes:
   - "{{ common_directory }}/shlink/mariadb:/var/lib/mysql"
 mariadb_environment_variables:
@@ -18,11 +17,9 @@ mariadb_environment_variables:
   MYSQL_DATABASE: shlink
 
 mariadb_docker_additional_options:
-  networks:
-    - name: "{{ network.name }}"
-      ipv4_address: "{{ network.prefix }}.24"
   labels:
     traefik.enable: "false"
+
     com.datadoghq.ad.check_names: '["mysql"]'
     com.datadoghq.ad.init_configs: '[{}]'
     com.datadoghq.ad.instances: '[{"server":"%%host%%","port":"3306","user":"root","pass":"{{ mariadb_environment_variables.MYSQL_ROOT_PASSWORD | string }}"}]'

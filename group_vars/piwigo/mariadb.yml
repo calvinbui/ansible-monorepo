@@ -3,7 +3,6 @@
 mariadb_name: piwigo-mariadb
 mariadb_version: '10'
 mariadb_image: "mariadb:{{ mariadb_version }}"
-mariadb_ports: []
 mariadb_volumes:
   - "{{ common_directory }}/piwigo/mariadb:/var/lib/mysql"
 mariadb_environment_variables:
@@ -17,6 +16,7 @@ mariadb_environment_variables:
   MYSQL_DATABASE: piwigo
 
 mariadb_docker_additional_options:
+  # needed as piwigo image doesnt allow specifying DB via env
   networks:
     - name: "{{ network.name }}"
       ipv4_address: "{{ network.prefix }}.23"

@@ -11,9 +11,12 @@
       restart_policy: unless-stopped
       networks_cli_compatible: true
       purge_networks: true
-      dns_servers: "{{ network.dns }}"
       networks:
         - name: "{{ network.name }}"
+      dns_servers: "{{ network.dns }}"
+      comparisons:
+        env: allow_more_present
+        labels: allow_more_present
   roles:
     - pip
     - nzbget

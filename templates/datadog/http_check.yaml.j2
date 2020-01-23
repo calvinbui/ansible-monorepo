@@ -1,82 +1,12 @@
 init_config:
 instances:
-  - name: bookstack
-    url: https://bookstack.{{ common_tld }}
-  - name: nextcloud
-    url: https://nextcloud.{{ common_tld }}
-  - name: collabora
-    url: https://collabora.{{ common_tld }}
-  - name: onlyoffice
-    url: https://onlyoffice.{{ common_tld }}
-  - name: piwigo
-    url: https://piwigo.{{ common_tld }}
-  - name: xbrowsersync
-    url: https://xbrowsersync.{{ common_tld }}
-  - name: bazarr
-    url: https://bazarr.{{ common_tld }}
-    username: "{{ htpasswd.username }}"
-    password: "{{ htpasswd.password }}"
-  - name: jdownloader
-    url: https://jdownloader.{{ common_tld }}
-    username: "{{ htpasswd.username }}"
-    password: "{{ htpasswd.password }}"
-  - name: lidarr
-    url: https://lidarr.{{ common_tld }}
-    username: "{{ htpasswd.username }}"
-    password: "{{ htpasswd.password }}"
-  - name: nzbget
-    url: https://nzbget.{{ common_tld }}
-    username: "{{ htpasswd.username }}"
-    password: "{{ htpasswd.password }}"
-  - name: nzbhydra
-    url: https://nzbhydra.{{ common_tld }}
-    username: "{{ htpasswd.username }}"
-    password: "{{ htpasswd.password }}"
-  - name: organizr
-    url: https://{{ common_tld }}
-  - name: qbittorrent
-    url: https://qbittorrent.{{ common_tld }}
-    username: "{{ htpasswd.username }}"
-    password: "{{ htpasswd.password }}"
-  - name: radarr
-    url: https://radarr.{{ common_tld }}
-    username: "{{ htpasswd.username }}"
-    password: "{{ htpasswd.password }}"
-  - name: sonarr
-    url: https://sonarr.{{ common_tld }}
-    username: "{{ htpasswd.username }}"
-    password: "{{ htpasswd.password }}"
-  - name: traefik
-    url: https://traefik.{{ common_tld }}
-    username: "{{ htpasswd.username }}"
-    password: "{{ htpasswd.password }}"
-  - name: blueiris
-    url: http://blueiris.{{ common_local_tld }}:8080
-  - name: fuel
-    url: https://fuel.{{ common_tld }}
-  - name: duplicati
-    url: https://duplicati.{{ common_local_tld }}:8200
-  - name: bitwarden
-    url: https://bitwarden.{{ common_tld }}
-  - name: unifi
-    url: https://unifi.{{ common_local_tld }}:8443
-  - name: homelab-ipmi
-    url: https://homelab-ipmi.{{ common_local_tld }}
-    check_certificate_expiration: false
+  - name: opnsense
+    url: https://opnsense.{{ common_local_tld }}
   - name: freenas-ipmi
     url: https://freenas-ipmi.{{ common_local_tld }}
     check_certificate_expiration: false
   - name: freenas
     url: https://freenas.{{ common_local_tld }}
-  - name: opnsense
-    url: https://opnsense.{{ common_local_tld }}
-  - name: jellyfin
-    url: https://jellyfin.{{ common_local_tld }}:8920
-  - name: shlink
-    url: https://{{ shlink_domain }}/rest/health
-  - name: shlink-web-client
-    url: https://shlink.{{ common_tld }}
-    username: "{{ htpasswd.username }}"
-    password: "{{ htpasswd.password }}"
-  - name: privatebin
-    url: https://privatebin.{{ common_tld }}
+  - name: homelab-ipmi
+    url: https://homelab-ipmi.{{ common_local_tld }}
+    check_certificate_expiration: false
