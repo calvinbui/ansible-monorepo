@@ -20,7 +20,7 @@ nextcloud_environment_variables:
   MYSQL_DATABASE: "{{ mariadb_environment_variables.MYSQL_DATABASE }}"
   MYSQL_USER: "root"
   MYSQL_PASSWORD: "{{ mariadb_environment_variables.MYSQL_ROOT_PASSWORD }}"
-  MYSQL_HOST: "{{ mariadb_name }}.{{ common_local_tld }}"
+  MYSQL_HOST: "{{ mariadb_name }}.{{ network.name }}"
   SMTP_NAME: "{{ common_email_username }}"
   SMTP_PASSWORD: "{{ common_email_password }}"
   SMTP_PORT: "465"
