@@ -16,10 +16,6 @@ mariadb_environment_variables:
   MYSQL_DATABASE: piwigo
 
 mariadb_docker_additional_options:
-  # needed as piwigo image doesnt allow specifying DB via env
-  networks:
-    - name: "{{ network.name }}"
-      ipv4_address: "{{ network.prefix }}.23"
   labels:
     traefik.enable: "false"
     com.datadoghq.ad.check_names: '["mysql"]'
