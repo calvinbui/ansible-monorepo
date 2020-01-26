@@ -11,9 +11,6 @@ bazarr_environment_variables:
   TZ: "{{ common_timezone }}"
 
 bazarr_docker_additional_options:
-  networks:
-    - name: "{{ network.name }}"
-      ipv4_address: "{{ network.prefix }}.8"
   labels:
     traefik.http.routers.bazarr.entrypoints: "web"
     traefik.http.routers.bazarr.middlewares: "redirect@file"
@@ -21,7 +18,7 @@ bazarr_docker_additional_options:
     traefik.http.routers.bazarr-secure.entrypoints: "web-secure"
     traefik.http.routers.bazarr-secure.middlewares: "myAuth@file"
     traefik.http.routers.bazarr-secure.tls: "true"
-    traefik.http.routers.bazarr-secure.tls.certresolver: letsencrypt
+    traefik.http.routers.bazarr-secure.tls.certresolver: "letsencrypt"
 
     traefik.http.services.bazarr.loadbalancer.server.port: "6767"
 

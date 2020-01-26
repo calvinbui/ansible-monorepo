@@ -11,9 +11,6 @@ radarr_environment_variables:
   TZ: "{{ common_timezone }}"
 
 radarr_docker_additional_options:
-  networks:
-    - name: "{{ network.name }}"
-      ipv4_address: "{{ network.prefix }}.11"
   labels:
     traefik.http.routers.radarr.entrypoints: "web"
     traefik.http.routers.radarr.middlewares: "redirect@file"
@@ -21,7 +18,7 @@ radarr_docker_additional_options:
     traefik.http.routers.radarr-secure.entrypoints: "web-secure"
     traefik.http.routers.radarr-secure.middlewares: "myAuth@file"
     traefik.http.routers.radarr-secure.tls: "true"
-    traefik.http.routers.radarr-secure.tls.certresolver: letsencrypt
+    traefik.http.routers.radarr-secure.tls.certresolver: "letsencrypt"
 
     traefik.http.services.radarr.loadbalancer.server.port: "7878"
 

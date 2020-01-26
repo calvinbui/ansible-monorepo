@@ -32,6 +32,7 @@
     value: "{{ item.value }}"
   loop: "{{ nzbhydra_indexer_item | dict2items }}"
   when: nzbhydra_configured_indexer_index != ''
+  notify: Restart NZBHydra
 
 - name: Append indexer to list if not found
   yedit:
@@ -40,3 +41,4 @@
     value: "{{ nzbhydra_indexer_item }}"
     append: true
   when: nzbhydra_configured_indexer_index == ''
+  notify: Restart NZBHydra

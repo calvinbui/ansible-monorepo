@@ -88,3 +88,11 @@
     state: absent
   loop: "{{ nzbhydra_configured_indexers_index | difference(nzbhydra_var_indexers_index) | sort(reverse=true) }}"
   when: nzbhydra_configured_indexers_index | difference(nzbhydra_var_indexers_index) | length > 0
+  notify: Restart NZBHydra
+
+- name: Set permissions on nzbhydra.yml
+  file:
+    path: "{{ nzbhydra_config_directory }}/nzbhydra.yml"
+    owner: "{{ nzbhydra_environment_variables.PUID }}"
+    group: "{{ nzbhydra_environment_variables.PGID }}"
+  notify: Restart NZBHydra

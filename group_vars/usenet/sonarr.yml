@@ -11,9 +11,6 @@ sonarr_environment_variables:
   TZ: "{{ common_timezone }}"
 
 sonarr_docker_additional_options:
-  networks:
-    - name: "{{ network.name }}"
-      ipv4_address: "{{ network.prefix }}.7"
   labels:
     traefik.http.routers.sonarr.entrypoints: "web"
     traefik.http.routers.sonarr.middlewares: "redirect@file"
@@ -21,7 +18,7 @@ sonarr_docker_additional_options:
     traefik.http.routers.sonarr-secure.entrypoints: "web-secure"
     traefik.http.routers.sonarr-secure.middlewares: "myAuth@file"
     traefik.http.routers.sonarr-secure.tls: "true"
-    traefik.http.routers.sonarr-secure.tls.certresolver: letsencrypt
+    traefik.http.routers.sonarr-secure.tls.certresolver: "letsencrypt"
 
     traefik.http.services.sonarr.loadbalancer.server.port: "8989"
 

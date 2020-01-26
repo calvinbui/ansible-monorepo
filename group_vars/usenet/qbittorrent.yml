@@ -13,9 +13,6 @@ qbittorrent_environment_variables:
   WEBUI_PORT: "{{ qbittorrent_webui_port }}"
 
 qbittorrent_docker_additional_options:
-  networks:
-    - name: "{{ network.name }}"
-      ipv4_address: "{{ network.prefix }}.5"
   labels:
     traefik.http.routers.qbittorrent.entrypoints: "web"
     traefik.http.routers.qbittorrent.middlewares: "redirect@file"
@@ -23,7 +20,7 @@ qbittorrent_docker_additional_options:
     traefik.http.routers.qbittorrent-secure.entrypoints: "web-secure"
     traefik.http.routers.qbittorrent-secure.middlewares: "myAuth@file"
     traefik.http.routers.qbittorrent-secure.tls: "true"
-    traefik.http.routers.qbittorrent-secure.tls.certresolver: letsencrypt
+    traefik.http.routers.qbittorrent-secure.tls.certresolver: "letsencrypt"
 
     traefik.http.services.qbittorrent.loadbalancer.server.port: "8090"
 

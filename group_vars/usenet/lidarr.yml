@@ -11,9 +11,6 @@ lidarr_environment_variables:
   TZ: "{{ common_timezone }}"
 
 lidarr_docker_additional_options:
-  networks:
-    - name: "{{ network.name }}"
-      ipv4_address: "{{ network.prefix }}.12"
   labels:
     traefik.http.routers.lidarr.entrypoints: "web"
     traefik.http.routers.lidarr.middlewares: "redirect@file"
@@ -21,7 +18,7 @@ lidarr_docker_additional_options:
     traefik.http.routers.lidarr-secure.entrypoints: "web-secure"
     traefik.http.routers.lidarr-secure.middlewares: "myAuth@file"
     traefik.http.routers.lidarr-secure.tls: "true"
-    traefik.http.routers.lidarr-secure.tls.certresolver: letsencrypt
+    traefik.http.routers.lidarr-secure.tls.certresolver: "letsencrypt"
 
     traefik.http.services.lidarr.loadbalancer.server.port: "8686"
 
