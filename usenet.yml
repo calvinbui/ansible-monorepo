@@ -1,5 +1,4 @@
 ---
-
 - hosts: usenet
   become: true
   vars:
@@ -24,7 +23,6 @@
     - nzbhydra
     - sonarr
     - jdownloader
-    - organizr
     - radarr
     - lidarr
     - bazarr

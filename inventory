@@ -58,11 +58,8 @@ privatebin ansible_host=homelab
 [shlink]
 shlink ansible_host=homelab
 
-[wikijs]
-wikijs ansible_host=homelab
-
 [mattermost]
 mattermost ansible_host=homelab
 
-[zulip]
-zulip ansible_host=homelab
+[heimdall]
+heimdall ansible_host=homelab
