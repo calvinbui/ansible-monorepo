@@ -1,4 +1,5 @@
 ---
+bookstack_app_url: "https://{{ bookstack_name }}.{{ common_tld }}"
 
 bookstack_name: bookstack
 bookstack_image: linuxserver/bookstack
@@ -12,6 +13,7 @@ bookstack_environment_variables:
   DB_USER: "{{ mariadb_environment_variables.MYSQL_USER }}"
   DB_PASS: "{{ mariadb_environment_variables.MYSQL_PASSWORD }}"
   DB_DATABASE: "{{ mariadb_environment_variables.MYSQL_DATABASE }}"
+  APP_URL: "{{ bookstack_app_url | string }}"
 bookstack_docker_additional_options:
   labels:
     traefik.http.routers.bookstack.entrypoints: "web"
@@ -25,7 +27,7 @@ bookstack_docker_additional_options:
 
     com.datadoghq.ad.check_names: '["http_check"]'
     com.datadoghq.ad.init_configs: '[{}]'
-    com.datadoghq.ad.instances: '[{"name":"{{ bookstack_name }}","url":"https://{{ bookstack_name }}.{{ common_tld | string }}"}]'
+    com.datadoghq.ad.instances: '[{"name":"{{ bookstack_name }}","url":"{{ bookstack_app_url | string }}"}]'
 
 bookstack_env_options:
   - WKHTMLTOPDF=/usr/bin/wkhtmltopdf
