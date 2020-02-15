@@ -1,32 +1,6 @@
 ---
+- import_tasks: ./debian.yaml
+  when: ansible_os_family == 'Debian'
 
-- name: Install nut
-  apt:
-    name: nut
-    state: present
-    update_cache: true
-    cache_valid_time: 3600
-  become: true
-  register: result
-  until: result is success
-  retries: 5
-  delay: 5
-
-- name: Force systemd to reload itself
-  systemd:
-    daemon_reload: true
-
-- name: Install NUT configuration files.
-  template:
-    src: "{{ item }}.j2"
-    dest: "/etc/nut/{{ item }}"
-    owner: root
-    group: nut
-    mode: '0640'
-  with_items:
-    - ups.conf
-    - upsd.conf
-    - upsd.users
-    - upsmon.conf
-    - nut.conf
-  notify: Restart NUT
+- import_tasks: ./redhat.yaml
+  when: ansible_os_family == 'RedHat'
