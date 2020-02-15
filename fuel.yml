@@ -36,9 +36,7 @@
           network: "{{ networks.mgmt.name }}"
         name: "{{ fuel_image }}"
         source: build
-        force_source: true
         state: present
-      when: clone_repo.changed
 
     - name: Create 7Eleven Python
       docker_container:
