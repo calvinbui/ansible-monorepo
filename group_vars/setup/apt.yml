@@ -1,15 +1,18 @@
 apt_install_packages:
-  - name: vim
-  - name: htop
-  - name: iftop
-  - name: nano
-  - name: tree
-  - name: unzip
-  - name: ncdu
-  - name: curl
-  - name: wget
-  - name: dnsutils
-  - name: popularity-contest
-    state: absent
-  - name: pastebinit
+  - name:
+      - vim
+      - htop
+      - iftop
+      - nano
+      - tree
+      - unzip
+      - ncdu
+      - curl
+      - wget
+      - dnsutils
+      - git
+    state: present
+  - name:
+      - popularity-contest
+      - pastebinit
     state: absent
