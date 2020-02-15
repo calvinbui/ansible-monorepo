@@ -23,6 +23,7 @@
       pull: true
       args:
         nextcloud_version: "{{ nextcloud_version }}"
+      network: "{{ network.name }}"
     source: build
     state: present
   when: nextcloud_build_image
