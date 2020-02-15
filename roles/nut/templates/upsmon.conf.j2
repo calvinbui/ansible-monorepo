@@ -128,7 +128,7 @@ SHUTDOWNCMD "/sbin/shutdown -h +0"
 # information and ideas, see docs/scheduling.txt
 #
 # Example:
-# NOTIFYCMD /bin/notifyme
+# NOTIFYCMD /usr/bin/notifyme
 
 # --------------------------------------------------------------------------
 # POLLFREQ <n>
@@ -201,9 +201,11 @@ MAXAGE 25
 # Refer to the section:
 # [[UPS_shutdown]] "Configuring automatic shutdowns for low battery events"
 # or refer to the online version.
-
+{% if ansible_os_family == 'RedHat' %}
+POWERDOWNFLAG /etc/killpower
+{% elif ansible_os_family == 'Debian' %}
 POWERDOWNFLAG /etc/nut/killpower
-
+{% endif %}
 # --------------------------------------------------------------------------
 # NOTIFYMSG - change messages sent by upsmon when certain events occur
 #
@@ -313,7 +315,7 @@ FINALDELAY 30
 # Certificates are stored in a dedicated database (splitted in 3 files).
 # Specify the path of the database directory.
 #
-# CERTPATH /etc/nut/cert/upsmon
+# CERTPATH /etc/ups/cert/upsmon
 #
 # With OpenSSL:
 # Directory containing CA certificates in PEM format, used to verify
