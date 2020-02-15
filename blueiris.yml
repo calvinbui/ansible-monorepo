@@ -39,6 +39,6 @@
         src: "{{ recording_device }}"
         fstype: "ext4"
         boot: true
-        state: present
+        state: mounted
   roles:
     - blueiris
