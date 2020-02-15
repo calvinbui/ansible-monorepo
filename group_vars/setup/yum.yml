@@ -11,3 +11,4 @@ yum_install_packages:
       - curl
       - wget
       - bind-utils
+      - git
