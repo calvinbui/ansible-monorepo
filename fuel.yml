@@ -33,6 +33,7 @@
         build:
           path: "{{ fuel_directory }}"
           pull: true
+          network: "{{ networks.mgmt.name }}"
         name: "{{ fuel_image }}"
         source: build
         force_source: true
