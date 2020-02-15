@@ -1,0 +1,13 @@
+yum_install_packages:
+  - name: epel-release
+  - name:
+      - vim
+      - htop
+      - iftop
+      - nano
+      - tree
+      - unzip
+      - ncdu
+      - curl
+      - wget
+      - bind-utils

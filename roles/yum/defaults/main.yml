@@ -1,0 +1,10 @@
+---
+
+yum_install_packages:
+  - name: git
+  - name: vim
+  - name: htop
+    state: present
+  - upgrade: dist
+  - update_cache: true
+    cache_valid_time: 3600

@@ -7,13 +7,17 @@
         update_cache: true
         cache_valid_time: 600
       changed_when: false
+      when: ansible_distribution == 'Ubuntu'
   roles:
-    - motd
+    - role: motd
+      when: ansible_distribution == 'Ubuntu'
     - authorized-keys
-    - apt
+    - role: apt
+      when: ansible_os_family == 'Debian'
+    - role: yum
+      when: ansible_os_family == 'RedHat'
     - pip
     - docker
-    - docker-network
     - nfs-client
   tasks:
     - lineinfile:
@@ -22,6 +26,17 @@
         regexp: "^{{ common_user }}"
         line: "{{ common_user }} ALL=(ALL) NOPASSWD: ALL"
         validate: 'visudo -cf %s'
+    - name: Create Docker networks
+      docker_network:
+        name: "{{ item.value.name }}"
+        driver: "{{ item.value.driver }}"
+        ipam_config:
+          - gateway: "{{ item.value.gateway }}"
+            subnet: "{{ item.value.gateway + item.value.subnet }}"
+            iprange: "{{ item.value.iprange }}"
+        driver_options:
+          parent: "{{ item.value.parent }}.{{ item.value.vlan }}"
+      loop: "{{ networks|dict2items }}"
     - timezone:
         name: "{{ common_timezone }}"
   post_tasks:

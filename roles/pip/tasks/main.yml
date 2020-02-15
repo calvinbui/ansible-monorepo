@@ -6,6 +6,9 @@
 - import_tasks: install-apk.yml
   when: ansible_os_family == 'Alpine'
 
+- import_tasks: install-yum.yml
+  when: ansible_os_family == 'RedHat'
+
 - name: Install pip package/s
   pip:
     "{{ item }}"

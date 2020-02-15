@@ -1,56 +1,16 @@
 ---
-# Based on https://docs.docker.com/engine/installation/linux/ubuntu/
-- name: Ensure old versions of Docker are not installed.
-  apt:
-    name:
-      - docker
-      - docker-engine
-      - docker.io
-      - containerd
-      - runc
-    state: absent
 
-- name: Install Docker dependencies
-  apt:
-    name:
-      - apt-transport-https
-      - ca-certificates
-      - curl
-      - software-properties-common
-      - gnupg-agent
-    state: present
-  register: result
-  until: result is success
-  retries: 5
-  delay: 5
+- import_tasks: install-ubuntu.yml
+  when: ansible_distribution == 'Ubuntu'
 
-- name: Add Docker GPG key
-  apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
-    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
-    state: present
-  register: result
-  until: result is success
-  retries: 5
-  delay: 5
+- import_tasks: install-centos.yml
+  when: ansible_distribution == 'CentOS'
 
-- name: Add Docker Repository
-  apt_repository:
-    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
-    state: present
-    update_cache: true
-
-- name: Install Docker
-  apt:
-    name:
-      - docker-ce
-      - docker-ce-cli
-      - containerd.io
-    state: present
-  register: result
-  until: result is success
-  retries: 5
-  delay: 5
+- name: Start Docker
+  service:
+    name: docker
+    state: started
+    enabled: true
 
 - name: Add user to Docker group
   user:

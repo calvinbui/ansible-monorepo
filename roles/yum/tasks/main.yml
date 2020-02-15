@@ -1,0 +1,10 @@
+---
+- name: Install yum package/s
+  yum:
+    "{{ item }}"
+  register: result
+  until: result is success
+  retries: 5
+  delay: 5
+  loop: "{{ yum_install_packages }}"
+  when: ansible_os_family == 'RedHat'
