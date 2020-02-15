@@ -24,7 +24,7 @@ nut_user_slave_password: !vault |
 
 nut_ups_devices:
   - |
-    [OR1500ELCDRM1U]
+    [cyberpower]
       driver = usbhid-ups
       port = auto
       ignorelb
@@ -35,7 +35,7 @@ nut_ups_devices:
       override.ups.delay.start = 120
       override.ups.delay.shutdown = 120
 nut_ups_monitors:
-  - "MONITOR OR1500ELCDRM1U@{{ nut_host }} 1 {{ nut_user_master_name }} {{ nut_user_master_password }} master"
+  - "MONITOR cyberpower@{{ nut_host }} 1 {{ nut_user_master_name }} {{ nut_user_master_password }} master"
 
 nut_ups_listen: |
   LISTEN 127.0.0.1 3493
