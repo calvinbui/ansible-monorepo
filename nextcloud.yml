@@ -18,6 +18,10 @@
     - onlyoffice
     - collabora
   post_tasks:
+    - name: Waits for Nextcloud
+      wait_for:
+        host: "{{ nextcloud_name }}.{{ common_tld | string }}"
+        port: 443
     - name: Overwrite Nextcloud protocol to HTTPS within config
       command: "docker exec --user www-data {{ nextcloud_name }} php occ config:system:set overwriteprotocol --value='https'"
       register: command_result
