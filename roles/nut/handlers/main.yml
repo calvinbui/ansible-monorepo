@@ -4,8 +4,8 @@
   service:
     name: "{{ item }}"
     state: restarted
+    enabled: true
   with_items:
     - nut-driver
     - nut-monitor
     - nut-server
-  become: true
