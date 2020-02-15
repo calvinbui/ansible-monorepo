@@ -5,15 +5,21 @@
     network: "{{ networks.pub }}"
   tasks:
     # https://github.com/Neilpang/acme.sh/wiki/How-to-install
-    - name:
+    - name: Install socat
       apt:
         name: socat
         state: present
+      when: ansible_os_family == 'Debian'
+    - name: Install socat
+      yum:
+        name: socat
+        state: present
+      when: ansible_os_family == 'RedHat'
     - name: Download Neilpang's acme.sh
       git:
-        repo: https://github.com/Neilpang/acme.sh.git
+        repo: https://github.com/acmesh-official/acme.sh.git
         dest: "{{ acme_repo_dir }}"
-        version: 2.8.3
+        version: 2.8.5
     - name: Setup acme.sh
       shell: |
         ./acme.sh --install \
