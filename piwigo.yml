@@ -19,7 +19,8 @@
         cache_valid_time: 600
       changed_when: false
   roles:
-    - apt
+    - role: apt
+      when: ansible_os_family == 'Debian'
     - mariadb
     - piwigo
   post_tasks:
