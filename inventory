@@ -66,3 +66,6 @@ homelab ansible_host=homelab
 
 [ohmyzsh]
 homelab ansible_host=homelab
+
+[hauk]
+homelab ansible_host=homelab

@@ -1,0 +1,54 @@
+---
+
+- hosts: hauk
+  become: true
+  vars:
+    # https://hub.docker.com/r/bilde2910/hauk
+    hauk_name: hauk
+    hauk_config_directory: "{{ common_directory }}/{{ hauk_name }}"
+    hauk_domain: "hauk.{{ common_tld }}"
+    hauk_password: "$2y$10$ABxFMeoCHxEFplmmHQpVk.fO2bfUCta4BS0jF9fGonvzLSTmJIMYi"
+    network: "{{ networks.pub }}"
+  module_defaults:
+    docker_container:
+      keep_volumes: false
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      dns_servers: "{{ network.dns }}"
+      networks:
+        - name: "{{ network.name }}"
+  handlers:
+    - name: Restart Hauk
+      shell: docker restart "{{ hauk_name }}"
+  tasks:
+    - name: Create Hauk config directory
+      file:
+        path: "{{ hauk_config_directory }}"
+        state: directory
+
+    - name: Copy Hauk config
+      template:
+        src: templates/hauk/config.php.j2
+        dest: "{{ hauk_config_directory }}/config.php"
+      notify: Restart Hauk
+
+    - name: Create Hauk container
+      docker_container:
+        name: "{{ hauk_name }}"
+        image: bilde2910/hauk
+        volumes:
+          - "{{ hauk_config_directory }}:/etc/hauk"
+        labels:
+          traefik.http.routers.hauk.entrypoints: "web"
+          traefik.http.routers.hauk.middlewares: "redirect@file"
+
+          traefik.http.routers.hauk-secure.entrypoints: "web-secure"
+          traefik.http.routers.hauk-secure.tls: "true"
+          traefik.http.routers.hauk-secure.tls.certresolver: letsencrypt
+
+          traefik.http.services.hauk.loadbalancer.server.port: "80"
+
+          com.datadoghq.ad.check_names: '["http_check"]'
+          com.datadoghq.ad.init_configs: '[{}]'
+          com.datadoghq.ad.instances: '[{"name":"{{ hauk_name }}","url":"https://{{ hauk_name }}.{{ common_tld | string }}"}]'
