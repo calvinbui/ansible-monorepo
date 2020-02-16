@@ -1,5 +1,5 @@
 ---
-- hosts: usenet
+- hosts: homelab
   become: true
   vars:
     network: "{{ networks.pub }}"

@@ -1,5 +1,5 @@
 ---
-- hosts: heimdall
+- hosts: homelab
   become: true
   module_defaults:
     docker_container:

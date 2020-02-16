@@ -1,6 +1,6 @@
 ---
 
-- hosts: fuel
+- hosts: homelab
   become: true
   vars:
     fuel_name: fuel

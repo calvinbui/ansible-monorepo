@@ -1,6 +1,6 @@
 ---
 
-- hosts: nextcloud
+- hosts: homelab
   become: true
   vars:
     omz_user: "{{ common_user }}"

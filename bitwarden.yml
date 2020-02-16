@@ -1,5 +1,5 @@
 ---
-- hosts: bitwarden
+- hosts: homelab
   become: true
   module_defaults:
     docker_container:

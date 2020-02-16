@@ -1,6 +1,6 @@
 ---
 
-- hosts: hauk
+- hosts: homelab
   become: true
   vars:
     # https://hub.docker.com/r/bilde2910/hauk

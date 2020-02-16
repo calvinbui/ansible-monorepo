@@ -1,16 +1,7 @@
 [all:vars]
 ansible_python_interpreter=/usr/bin/env python3
 
-[setup]
-homelab ansible_host=homelab
-
-[docker_services]
-homelab ansible_host=homelab
-
-[blueiris]
-homelab ansible_host=homelab
-
-[usenet]
+[homelab]
 homelab ansible_host=homelab
 
 [bookstack]
@@ -22,50 +13,14 @@ homelab ansible_host=homelab
 [piwigo]
 homelab ansible_host=homelab
 
-[nut]
-homelab ansible_host=homelab
-
-[datadog]
-homelab ansible_host=homelab
-
-[bitwarden]
-homelab ansible_host=homelab
-
-[blueiris]
-homelab ansible_host=homelab
-
-[fuel]
-homelab ansible_host=homelab
-
-[unifi]
-homelab ansible_host=homelab
-
 [xbrowsersync]
 homelab ansible_host=homelab
 
-[borgmatic]
-homelab ansible_host=homelab
-
-[certs]
-homelab ansible_host=homelab
-
 [jellyfin]
-homelab ansible_host=homelab
-
-[privatebin]
 homelab ansible_host=homelab
 
 [shlink]
 homelab ansible_host=homelab
 
 [mattermost]
-homelab ansible_host=homelab
-
-[heimdall]
-homelab ansible_host=homelab
-
-[ohmyzsh]
-homelab ansible_host=homelab
-
-[hauk]
 homelab ansible_host=homelab

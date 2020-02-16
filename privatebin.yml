@@ -1,5 +1,5 @@
 ---
-- hosts: privatebin
+- hosts: homelab
   become: true
   vars:
     network: "{{ networks.pub }}"

@@ -1,5 +1,5 @@
 ---
-- hosts: blueiris
+- hosts: homelab
   become: true
   vars:
     network: "{{ networks.iot }}"
