@@ -1,0 +1,87 @@
+---
+- hosts: borgmatic
+  become: true
+  vars:
+    network: "{{ networks.mgmt }}"
+    borgmatic_name: borgmatic
+    borgmatic_common_directory: "{{ common_directory_backup }}/borgmatic/"
+    borgmatic_source_directory: "{{ common_directory }}" # data to backup
+    borgmatic_destination_directory: "{{ borgmatic_common_directory }}/backups"
+    borgmatic_repository_directory: "{{ borgmatic_common_directory }}/borgbackup" # borg backup repo
+    borgmatic_notification_webhook: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          35316463616432373433336236326164616232316162646138373738656634353466653863613563
+          3135313633663131386434363036363936653763366661370a343064653032623133303638656566
+          38373633306665333363666331633339666634653737376530386263373539636262653839386238
+          6264623635633564640a643531386632323565616138376261383563353861646634646433333534
+          65363932316661303164623130656234323234323962323263636338303539643431363531343435
+          37386565336366383061353634643261616163666361656466343036386137363062336236343933
+          38386630306635626434366464386234343265333230303965303239323366386565336130306639
+          65633139313433323530
+  module_defaults:
+    docker_container:
+      keep_volumes: false
+      state: started
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      networks:
+        - name: "{{ network.name }}"
+      dns_servers: "{{ network.dns }}"
+      comparisons:
+        env: strict
+        labels: allow_more_present
+  handlers:
+    - name: Restart Borgmatic
+      shell: docker restart "{{ borgmatic_name }}"
+  tasks:
+    - name: Create Borgmatic directory
+      file:
+        path: "{{ borgmatic_common_directory }}"
+        state: directory
+
+    - name: Clone Borgbackup repo
+      git:
+        repo: https://github.com/borgbackup/borg
+        clone: true
+        dest: "{{ borgmatic_repository_directory }}"
+        version: "1.1.10"
+
+    - name: Create Borgmatic container
+      docker_container:
+        name: "{{ borgmatic_name }}"
+        image: b3vis/borgmatic
+        env:
+          TZ: "{{ common_timezone }}"
+        volumes:
+          - "{{ borgmatic_source_directory }}:/mnt/source:ro"
+          - "{{ borgmatic_destination_directory }}:/mnt/destination"
+          - "{{ borgmatic_repository_directory }}:/mnt/borg-repository"
+          - "{{ borgmatic_common_directory}}/borgmatic.d:/etc/borgmatic.d/"
+          - "{{ borgmatic_common_directory}}/borgmatic:/root/.borgmatic"
+          - "{{ borgmatic_common_directory}}/config/borg:/root/.config/borg"
+          - "{{ borgmatic_common_directory}}/ssh:/root/.ssh"
+          - "{{ borgmatic_common_directory}}/cache/borg:/root/.cache/borg"
+        labels:
+          traefik.enable: "false"
+
+    - name: Template borgmatic configuration
+      template:
+        src: borgmatic/config.yaml.j2
+        dest: "{{ borgmatic_common_directory}}/borgmatic.d/config.yaml"
+        owner: root
+        group: root
+
+    - name: Template borgmatic crontab
+      template:
+        src: borgmatic/crontab.txt.j2
+        dest: "{{ borgmatic_common_directory}}/borgmatic.d/crontab.txt"
+        owner: root
+        group: root
+      notify: Restart Borgmatic
+
+    - name: Template notification script
+      template:
+        src: borgmatic/notifications.sh.j2
+        dest: "{{ borgmatic_common_directory}}/borgmatic.d/notifications.sh"
+        mode: 500

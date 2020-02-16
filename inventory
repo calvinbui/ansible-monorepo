@@ -2,64 +2,64 @@
 ansible_python_interpreter=/usr/bin/env python3
 
 [setup]
-setup ansible_host=homelab
+homelab ansible_host=homelab
 
 [docker_services]
-docker_services ansible_host=homelab
+homelab ansible_host=homelab
 
 [blueiris]
-blueiris ansible_host=homelab
+homelab ansible_host=homelab
 
 [usenet]
-usenet ansible_host=homelab
+homelab ansible_host=homelab
 
 [bookstack]
-bookstack ansible_host=homelab
+homelab ansible_host=homelab
 
 [nextcloud]
-nextcloud ansible_host=homelab
+homelab ansible_host=homelab
 
 [piwigo]
-piwigo ansible_host=homelab
+homelab ansible_host=homelab
 
 [nut]
-nut ansible_host=homelab
+homelab ansible_host=homelab
 
 [datadog]
-datadog ansible_host=homelab
+homelab ansible_host=homelab
 
 [bitwarden]
-bitwarden ansible_host=homelab
+homelab ansible_host=homelab
 
 [blueiris]
-blueiris ansible_host=homelab
+homelab ansible_host=homelab
 
 [fuel]
-fuel ansible_host=homelab
+homelab ansible_host=homelab
 
 [unifi]
-unifi ansible_host=homelab
+homelab ansible_host=homelab
 
 [xbrowsersync]
-xbrowsersync ansible_host=homelab
+homelab ansible_host=homelab
 
-[duplicati]
-duplicati ansible_host=homelab
+[borgmatic]
+homelab ansible_host=homelab
 
 [certs]
-certs ansible_host=homelab
+homelab ansible_host=homelab
 
 [jellyfin]
-jellyfin ansible_host=homelab
+homelab ansible_host=homelab
 
 [privatebin]
-privatebin ansible_host=homelab
+homelab ansible_host=homelab
 
 [shlink]
-shlink ansible_host=homelab
+homelab ansible_host=homelab
 
 [mattermost]
-mattermost ansible_host=homelab
+homelab ansible_host=homelab
 
 [heimdall]
-heimdall ansible_host=homelab
+homelab ansible_host=homelab

@@ -18,9 +18,14 @@
         - name: "{{ network.name }}"
       dns_servers: "{{ network.dns }}"
       comparisons:
-        env: allow_more_present
+        env: strict
         labels: allow_more_present
   tasks:
+    - name: Create Duplicati directory
+      file:
+        path: "{{ duplicati_config_directory }}"
+        state: directory
+
     - name: Copy Duplicati run file
       copy:
         src: duplicati/run
@@ -37,7 +42,7 @@
           PUID: "{{ common_root_id }}"
           PGID: "{{ common_root_group }}"
           TZ: "{{ common_timezone }}"
-          CLI_ARGS: "--webservice-sslcertificatefile=/config/cert.pfx --webservice-sslcertificatepassword=pass"
+          # CLI_ARGS: "--webservice-sslcertificatefile=/config/cert.pfx --webservice-sslcertificatepassword=pass"
         volumes:
           - "{{ duplicati_config_directory }}:/config"
           - "{{ duplicati_backup_directory }}:/backups"
