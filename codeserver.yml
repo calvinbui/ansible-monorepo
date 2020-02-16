@@ -1,0 +1,57 @@
+---
+- hosts: homelab
+  become: true
+  module_defaults:
+    docker_container:
+      keep_volumes: false
+      state: started
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      networks:
+        - name: "{{ network.name }}"
+      dns_servers: "{{ network.dns }}"
+      comparisons:
+        env: allow_more_present
+        labels: allow_more_present
+  vars:
+    network: "{{ networks.pub }}"
+    codeserver_name: vscode
+    codeserver_pass: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          32636565383432363837633864353635313634343266653233373839623634616139646537383264
+          6430333534393837663662633839383337306533393233610a656233316664343432396636643735
+          39333138633866323564636237616263616337616466313333616664376234363665636333336366
+          6339616164313061350a363161666631646333316332623837353232343337623233343235303136
+          38353963623161393730393533666137383832666438636339363236303564313737
+  tasks:
+    - name: Create code-server config folder
+      file:
+        path: "{{ common_directory }}/vscode"
+        state: directory
+
+    - name: Create code-server Container
+      docker_container:
+        name: vscode
+        image: codercom/code-server
+        command: # to support golang
+          - --security-opt
+          - seccomp=unconfined
+          - --disable-telemetry
+        env:
+          PASSWORD: "{{ codeserver_pass }}"
+        volumes:
+          - "{{ common_directory }}/vscode:/home/coder/project"
+        labels:
+          traefik.http.routers.codeserver.entrypoints: "web"
+          traefik.http.routers.codeserver.middlewares: "redirect@file"
+
+          traefik.http.routers.codeserver-secure.entrypoints: "web-secure"
+          traefik.http.routers.codeserver-secure.tls: "true"
+          traefik.http.routers.codeserver-secure.tls.certresolver: letsencrypt
+
+          traefik.http.services.codeserver.loadbalancer.server.port: "8080"
+
+          com.datadoghq.ad.check_names: '["http_check"]'
+          com.datadoghq.ad.init_configs: '[{}]'
+          com.datadoghq.ad.instances: '[{"name":"{{ codeserver_name }}","url":"https://{{ codeserver_name }}.{{ common_tld | string }}"}]'
