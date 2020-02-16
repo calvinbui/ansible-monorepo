@@ -16,9 +16,6 @@ homelab ansible_host=homelab
 [xbrowsersync]
 homelab ansible_host=homelab
 
-[jellyfin]
-homelab ansible_host=homelab
-
 [shlink]
 homelab ansible_host=homelab
 
