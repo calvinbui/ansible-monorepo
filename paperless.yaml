@@ -1,0 +1,75 @@
+---
+
+- hosts: homelab
+  become: true
+  vars:
+    paperless_name: paperless
+    paperless_config_directory: "{{ common_directory }}/paperless"
+    network: "{{ networks.user }}"
+    scan_directory: "/mnt/files/Misc/Scans"
+  module_defaults:
+    docker_container:
+      keep_volumes: false
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      dns_servers: "{{ network.dns }}"
+      networks:
+        - name: "{{ network.name }}"
+  handlers:
+    - name: Restart Paperless
+      shell: docker restart "{{ paperless_name }}"
+  tasks:
+    - name: Create Paperless config directory
+      file:
+        path: "{{ paperless_config_directory }}"
+        state: directory
+    - name: Create Paperless webserver container
+      docker_container:
+        name: "{{ paperless_name }}-webserver"
+        image: thepaperlessproject/paperless
+        command:
+          - gunicorn
+          - -b
+          - 0.0.0.0:8000
+        env:
+          USERMAP_UID: "{{ common_user_id }}"
+          USERMAP_GID: "{{ common_group_id }}"
+          PAPERLESS_USE_SSL: "false"
+        volumes:
+          - "{{ paperless_config_directory }}/data:/usr/src/paperless/data"
+          - "{{ paperless_config_directory }}/media:/usr/src/paperless/media"
+          - "{{ scan_directory }}/Consume:/consume"
+        labels:
+          traefik.http.routers.paperless.entrypoints: "web"
+          traefik.http.routers.paperless.middlewares: "redirect@file"
+          traefik.http.routers.paperless.rule: "Host(`paperless.{{ common_tld }}`)"
+
+          traefik.http.routers.paperless-secure.entrypoints: "web-secure"
+          traefik.http.routers.paperless-secure.tls: "true"
+          traefik.http.routers.paperless-secure.tls.certresolver: letsencrypt
+          traefik.http.routers.paperless-secure.rule: "Host(`paperless.{{ common_tld }}`)"
+
+          traefik.http.services.paperless.loadbalancer.server.port: "8000"
+
+          com.datadoghq.ad.check_names: '["http_check"]'
+          com.datadoghq.ad.init_configs: '[{}]'
+          com.datadoghq.ad.instances: '[{"name":"{{ paperless_name }}","url":"https://{{ paperless_name }}.{{ common_tld | string }}"}]'
+    - name: Create Paperless consumer container
+      docker_container:
+        name: "{{ paperless_name }}-consumer"
+        image: thepaperlessproject/paperless
+        command:
+          - document_consumer
+          - --no-inotify
+        env:
+          USERMAP_UID: "{{ common_user_id }}"
+          USERMAP_GID: "{{ common_group_id }}"
+          PAPERLESS_USE_SSL: "false"
+        volumes:
+          - "{{ paperless_config_directory }}/data:/usr/src/paperless/data"
+          - "{{ paperless_config_directory }}/media:/usr/src/paperless/media"
+          - "{{ scan_directory }}/Consume:/consume"
+          - "{{ scan_directory }}/Export:/export"
+        labels:
+          traefik.enable: "false"
