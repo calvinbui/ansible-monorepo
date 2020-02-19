@@ -1,9 +1,6 @@
 [all:vars]
 ansible_python_interpreter=/usr/bin/env python3
 
-[homelab]
-homelab ansible_host=homelab
-
 [bookstack]
 homelab ansible_host=homelab
 
@@ -14,10 +11,4 @@ homelab ansible_host=homelab
 homelab ansible_host=homelab
 
 [xbrowsersync]
-homelab ansible_host=homelab
-
-[shlink]
-homelab ansible_host=homelab
-
-[mattermost]
 homelab ansible_host=homelab

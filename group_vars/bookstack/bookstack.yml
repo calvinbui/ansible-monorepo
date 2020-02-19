@@ -1,6 +1,5 @@
 ---
 bookstack_app_url: "https://{{ bookstack_name }}.{{ common_tld }}"
-
 bookstack_name: bookstack
 bookstack_image: linuxserver/bookstack
 bookstack_config_directory: "{{ common_directory }}/bookstack/bookstack"
