@@ -1,0 +1,52 @@
+---
+
+- hosts: homelab
+  become: true
+  vars:
+    grocy_name: grocy
+    grocy_config_directory: "{{ common_directory }}/{{ grocy_name }}"
+    network: "{{ networks.pub }}"
+  module_defaults:
+    docker_container:
+      keep_volumes: false
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      dns_servers: "{{ network.dns }}"
+      networks:
+        - name: "{{ network.name }}"
+      comparisons:
+        env: allow_more_present
+        labels: allow_more_present        
+  handlers:
+    - name: Restart Grocy
+      shell: docker restart "{{ grocy_name }}"
+  pre_tasks:
+    - name: Create Grocy config directory
+      file:
+        path: "{{ grocy_config_directory }}"
+        state: directory
+  tasks:
+    - name: Create Grocy container
+      docker_container:
+        name: "{{ grocy_name }}"
+        image: linuxserver/grocy
+        volumes:
+          - "{{ grocy_config_directory }}:/config"
+        env:
+          PUID: "{{ common_user_id }}"
+          PGID: "{{ common_group_id }}"
+          TZ: "{{ common_timezone }}"
+        labels:
+          traefik.http.routers.grocy.entrypoints: "web"
+          traefik.http.routers.grocy.middlewares: "redirect@file"
+
+          traefik.http.routers.grocy-secure.entrypoints: "web-secure"
+          traefik.http.routers.grocy-secure.tls: "true"
+          traefik.http.routers.grocy-secure.tls.certresolver: letsencrypt
+
+          traefik.http.services.grocy.loadbalancer.server.port: "80"
+
+          com.datadoghq.ad.check_names: '["http_check"]'
+          com.datadoghq.ad.init_configs: '[{}]'
+          com.datadoghq.ad.instances: '[{"name":"{{ grocy_name }}","url":"https://{{ grocy_name }}.{{ common_tld | string }}"}]'
