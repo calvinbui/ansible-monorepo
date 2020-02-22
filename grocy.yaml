@@ -17,10 +17,7 @@
         - name: "{{ network.name }}"
       comparisons:
         env: allow_more_present
-        labels: allow_more_present        
-  handlers:
-    - name: Restart Grocy
-      shell: docker restart "{{ grocy_name }}"
+        labels: allow_more_present
   pre_tasks:
     - name: Create Grocy config directory
       file:
