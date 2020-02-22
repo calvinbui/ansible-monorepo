@@ -5,17 +5,17 @@
     path: "{{ mongo_directory }}"
     state: directory
 
-- name: Set Docker container parameters
-  set_fact:
-    mongo_container_parameters:
-      name: "{{ mongo_name }}"
-      image: "{{ mongo_image }}"
-      state: started
-      published_ports: "{{ mongo_ports | default(omit) }}"
-      env: "{{ mongo_environment_variables | default(omit) }}"
-      volumes:
-        - "{{ mongo_directory }}:/data/db"
-
 - name: Create MongoDB container
-  docker_container: "{{ mongo_container_parameters | combine(mongo_docker_additional_options) }}"
-  register: mongo_container
+  docker_container:
+    name: "{{ mongo_name }}"
+    image: "{{ mongo_image }}"
+    state: started
+    published_ports: "{{ mongo_ports | default(omit) }}"
+    env: "{{ mongo_environment_variables | default(omit) }}"
+    volumes:
+      - "{{ mongo_directory }}:/data/db"
+    labels:
+      traefik.enable: "false"
+      com.datadoghq.ad.check_names: '["mongo"]'
+      com.datadoghq.ad.init_configs: '[{}]'
+      com.datadoghq.ad.instances: '[{"server":"mongodb://{{ mongo_environment_variables.MONGO_INITDB_ROOT_USERNAME }}:{{ mongo_environment_variables.MONGO_INITDB_ROOT_PASSWORD | string }}@%%host%%:27017/admin","replica_check":"false"}]'

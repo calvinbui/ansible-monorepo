@@ -1,7 +1,0 @@
----
-
-- name: Restart xBrowserSync
-  docker_container:
-    name: "{{ xbrowsersync_name }}"
-    state: started
-    restart: true
