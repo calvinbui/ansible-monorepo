@@ -8,4 +8,5 @@ homelab ansible_host=homelab
 homelab ansible_host=homelab
 
 [xbrowsersync]
+[usenet]
 homelab ansible_host=homelab
