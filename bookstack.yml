@@ -1,8 +1,56 @@
 ---
-- hosts: bookstack
+- hosts: homelab
   become: true
   vars:
     network: "{{ networks.user }}"
+    bookstack_app_url: "https://{{ bookstack_name }}.{{ common_tld }}"
+    bookstack_name: bookstack
+    bookstack_image: linuxserver/bookstack
+    bookstack_config_directory: "{{ common_directory }}/bookstack/bookstack"
+    bookstack_volumes:
+      - "{{ bookstack_config_directory }}:/config"
+    bookstack_environment_variables:
+      PUID: "{{ common_user_id }}"
+      PGID: "{{ common_group_id }}"
+      DB_HOST: "{{ mariadb_name }}.{{ network.name }}"
+      DB_USER: root
+      DB_PASS: "{{ mariadb_environment_variables.MYSQL_ROOT_PASSWORD }}"
+      DB_DATABASE: "{{ mariadb_environment_variables.MYSQL_DATABASE }}"
+      APP_URL: "{{ bookstack_app_url | string }}"
+    bookstack_docker_additional_options:
+      labels:
+        traefik.http.routers.bookstack.entrypoints: "web"
+        traefik.http.routers.bookstack.middlewares: "redirect@file"
+
+        traefik.http.routers.bookstack-secure.entrypoints: "web-secure"
+        traefik.http.routers.bookstack-secure.tls: "true"
+        traefik.http.routers.bookstack-secure.tls.certresolver: letsencrypt
+
+        traefik.http.services.bookstack.loadbalancer.server.port: "80"
+
+        com.datadoghq.ad.check_names: '["http_check"]'
+        com.datadoghq.ad.init_configs: '[{}]'
+        com.datadoghq.ad.instances: '[{"name":"{{ bookstack_name }}","url":"{{ bookstack_app_url | string }}"}]'
+    bookstack_env_options:
+      - WKHTMLTOPDF=/usr/bin/wkhtmltopdf
+      - DRAWIO=true
+      - APP_TIMEZONE="{{ common_timezone }}"
+    bookstack_php_options:
+      - post_max_size=10M
+      - upload_max_filesize=10M
+    mariadb_name: bookstack-mariadb
+    mariadb_version: '10'
+    mariadb_directory: "{{ common_directory }}/bookstack/mariadb"
+    mariadb_environment_variables:
+      MYSQL_ROOT_PASSWORD: !vault |
+        $ANSIBLE_VAULT;1.1;AES256
+        38656365626264363335636631333233666139353539343830613135616439313063383334326438
+        3362326165313130663265336166646162303132363961300a353365623239353430326635666131
+        36323938336637346237623330633937343134343730353035303735663731306539643465386364
+        3035663661396338360a326262373836636433626536383966653037356630393763363337663365
+        34303963653163323530303766303737633333616162326337643639316237333733353730386432
+        3535636531613238363937636364656433393532393138333861
+      MYSQL_DATABASE: bookstackapp
   module_defaults:
     docker_container:
       keep_volumes: false
