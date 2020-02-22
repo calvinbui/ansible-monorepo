@@ -15,8 +15,7 @@
     network: "{{ networks.user }}"
     postgres_name: firefly-postgres
     postgres_version: '12'
-    postgres_volumes:
-      - "{{ common_directory }}/firefly/postgres:/var/lib/postgresql/data"
+    postgres_directory: "{{ common_directory }}/firefly/postgres"
     postgres_environment_variables:
       POSTGRES_USER: fireflyiii
       POSTGRES_PASSWORD: !vault |
@@ -27,12 +26,6 @@
         6234393131386537310a346562323563663637393763653961376137613538316638653165363637
         38646136363563656132303534333630343136363536343666663230633466333736
       POSTGRES_DB: fireflyiii
-    postgres_docker_additional_options:
-      labels:
-        traefik.enable: "true"
-        com.datadoghq.ad.check_names: '["postgres"]'
-        com.datadoghq.ad.init_configs: '[{}]'
-        com.datadoghq.ad.instances: '[{"host":"%%host%%","port":"5432","username":"{{ postgres_environment_variables.POSTGRES_USER }}","password":"{{ postgres_environment_variables.POSTGRES_PASSWORD | string }}","dbname":"{{ postgres_environment_variables.POSTGRES_DB }}"}]'
   module_defaults:
     docker_container:
       keep_volumes: false
@@ -56,7 +49,6 @@
         group: "{{ common_root_group }}"
       loop:
         - "{{ firefly_app_directory }}"
-        - "{{ postgres_volumes[0] }}"
   roles:
     - postgres
   tasks:

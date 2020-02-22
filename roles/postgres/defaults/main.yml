@@ -4,12 +4,8 @@ postgres_name: postgres
 postgres_version: '12'
 postgres_image: "postgres:{{ postgres_version }}-alpine"
 postgres_ports: []
-postgres_volumes:
-  - /tmp/postgres:/var/lib/postgresql/data
+postgres_directory: /tmp/postgres
 postgres_environment_variables:
   POSTGRES_PASSWORD: mysecretpassword
   POSTGRES_USER: postgres
   POSTGRES_DB: mydb
-
-postgres_docker_additional_options:
-  restart_policy: unless-stopped
