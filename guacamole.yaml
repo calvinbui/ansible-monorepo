@@ -1,0 +1,99 @@
+---
+
+- hosts: homelab
+  become: true
+  vars:
+    network: "{{ networks.user }}"
+    guacamole_name: guacamole
+    guacamole_config_directory: "{{ common_directory }}/{{ guacamole_name }}"
+    guacd_name: guacamole-guacd
+    postgres_name: guacamole-postgres
+    postgres_version: '12'
+    postgres_directory: "{{ common_directory }}/guacamole/postgres"
+    postgres_environment_variables:
+      POSTGRES_USER: guacamole
+      POSTGRES_PASSWORD: !vault |
+        $ANSIBLE_VAULT;1.1;AES256
+        30336234666131353835373535303330653030343362616236613238323738333139393264376537
+        6432333034306266303937623965396261633734323437300a356662623666346363623565363431
+        38613263636132383361323763363939363531356566636138323463376239323238343863373930
+        3430326538393062370a353631663063333532396530326264333763383233373664383538666665
+        30323233326666313636313831393065623339356633613535313961333131323033653933336639
+        3031393834336639313964353266363665366634646235346539
+      POSTGRES_DB: guacamole
+  module_defaults:
+    docker_container:
+      keep_volumes: false
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      dns_servers: "{{ network.dns }}"
+      networks:
+        - name: "{{ network.name }}"
+      comparisons:
+        env: allow_more_present
+        labels: allow_more_present
+  pre_tasks:
+    - name: Create Postgres config directory
+      file:
+        path: "{{ postgres_directory }}"
+        state: directory
+    - name: Install psycopg2
+      apt:
+        name: python3-psycopg2
+        state: present
+  roles:
+    - postgres
+  tasks:
+    - name: Copy SQL database init script
+      copy:
+        src: files/guacamole/initdb.sql
+        dest: "{{ guacamole_config_directory }}"
+    - name: Get postgres IP
+      shell: docker inspect -f {% raw %}'{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'{% endraw %} "{{ postgres_name }}"
+      register: postgres_ip
+    - name: Init DB
+      postgresql_query:
+        login_host: "{{ postgres_ip.stdout }}"
+        login_user: "{{ postgres_environment_variables.POSTGRES_USER }}"
+        login_password: "{{ postgres_environment_variables.POSTGRES_PASSWORD }}"
+        db: "{{ postgres_environment_variables.POSTGRES_DB }}"
+        path_to_script: "{{ guacamole_config_directory }}/initdb.sql"
+      ignore_errors: true
+    - name: Create guacd container
+      docker_container:
+        name: "{{ guacd_name }}"
+        image: guacamole/guacd
+        env:
+          GUACD_LOG_LEVEL: debug
+        labels:
+          traefik.enable: "false"
+    - name: Create Guacamole container
+      docker_container:
+        name: "{{ guacamole_name }}"
+        image: guacamole/guacamole
+        volumes:
+          - "{{ guacamole_config_directory }}:/config"
+        env:
+          GUACD_HOSTNAME: "{{ guacd_name }}.{{ network.name }}"
+          GUACD_LOG_LEVEL: debug
+          POSTGRES_HOSTNAME: "{{ postgres_name }}.{{ network.name }}"
+          POSTGRES_DATABASE: "{{ postgres_environment_variables.POSTGRES_DB }}"
+          POSTGRES_USER: "{{ postgres_environment_variables.POSTGRES_USER }}"
+          POSTGRES_PASSWORD: "{{ postgres_environment_variables.POSTGRES_PASSWORD }}"
+        labels:
+          traefik.http.routers.guacamole.entrypoints: "web"
+          traefik.http.routers.guacamole.middlewares: "redirect@file"
+
+          traefik.http.routers.guacamole-secure.entrypoints: "web-secure"
+          traefik.http.routers.guacamole-secure.tls: "true"
+          traefik.http.routers.guacamole-secure.tls.certresolver: letsencrypt
+
+          traefik.http.routers.guacamole-secure.middlewares: "guacamole-addprefix"
+          traefik.http.middlewares.guacamole-addprefix.addprefix.prefix: "/guacamole"
+
+          traefik.http.services.guacamole.loadbalancer.server.port: "8080"
+
+          com.datadoghq.ad.check_names: '["http_check"]'
+          com.datadoghq.ad.init_configs: '[{}]'
+          com.datadoghq.ad.instances: '[{"name":"{{ guacamole_name }}","url":"https://{{ guacamole_name }}.{{ common_tld | string }}"}]'
