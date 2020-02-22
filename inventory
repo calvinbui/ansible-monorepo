@@ -7,6 +7,5 @@ homelab ansible_host=homelab
 [piwigo]
 homelab ansible_host=homelab
 
-[xbrowsersync]
 [usenet]
 homelab ansible_host=homelab
