@@ -13,9 +13,7 @@
     shlink_web_client_directory: "{{ common_directory }}/shlink/web-client/"
     mariadb_name: shlink-mariadb
     mariadb_version: '10'
-    mariadb_image: "mariadb:{{ mariadb_version }}"
-    mariadb_volumes:
-      - "{{ common_directory }}/shlink/mariadb:/var/lib/mysql"
+    mariadb_directory: "{{ common_directory }}/shlink/mariadb"
     mariadb_environment_variables:
       MYSQL_ROOT_PASSWORD: !vault |
         $ANSIBLE_VAULT;1.1;AES256
@@ -26,12 +24,6 @@
         33393730643765623266633333616332636230333563376531376262346436396238326638633537
         6435303963373661636139393433636235386533333062343437
       MYSQL_DATABASE: shlink
-    mariadb_docker_additional_options:
-      labels:
-        traefik.enable: "false"
-        com.datadoghq.ad.check_names: '["mysql"]'
-        com.datadoghq.ad.init_configs: '[{}]'
-        com.datadoghq.ad.instances: '[{"server":"%%host%%","port":"3306","user":"root","pass":"{{ mariadb_environment_variables.MYSQL_ROOT_PASSWORD | string }}"}]'
   module_defaults:
     docker_container:
       keep_volumes: false

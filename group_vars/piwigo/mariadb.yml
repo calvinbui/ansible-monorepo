@@ -2,9 +2,7 @@
 
 mariadb_name: piwigo-mariadb
 mariadb_version: '10'
-mariadb_image: "mariadb:{{ mariadb_version }}"
-mariadb_volumes:
-  - "{{ common_directory }}/piwigo/mariadb:/var/lib/mysql"
+mariadb_directory: "{{ common_directory }}/piwigo/mariadb"
 mariadb_environment_variables:
   MYSQL_ROOT_PASSWORD: !vault |
           $ANSIBLE_VAULT;1.1;AES256
@@ -14,10 +12,3 @@ mariadb_environment_variables:
           3933373064396335610a613035616235383566326264336661656264303330333563316464383538
           3537
   MYSQL_DATABASE: piwigo
-
-mariadb_docker_additional_options:
-  labels:
-    traefik.enable: "false"
-    com.datadoghq.ad.check_names: '["mysql"]'
-    com.datadoghq.ad.init_configs: '[{}]'
-    com.datadoghq.ad.instances: '[{"server":"%%host%%","port":"3306","user":"root","pass":"{{ mariadb_environment_variables.MYSQL_ROOT_PASSWORD | string }}"}]'
