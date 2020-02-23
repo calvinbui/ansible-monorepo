@@ -17,11 +17,13 @@
   vars:
     network: "{{ networks.user }}"
     jellyfin_name: jellyfin
-  tasks:
+    jellyfin_directory: "{{ common_directory }}/{{ jellyfin_name }}"
+  pre_tasks:
     - name: Create Jellyfin config folder
       file:
-        path: "{{ common_directory }}/jellyfin"
+        path: "{{ jellyfin_directory }}"
         state: directory
+  tasks:
     - name: Create Jellyfin Container
       docker_container:
         name: jellyfin
@@ -31,9 +33,9 @@
           PGID: "{{ common_root_group }}"
           TZ: "{{ common_timezone }}"
         volumes:
-          - "{{ common_directory }}/jellyfin:/config"
-          - "{{ common_directory_tv }}:/data/tvshows"
-          - "{{ common_directory_movies }}:/data/movies"
+          - "{{ jellyfin_directory }}:/config"
+          - "{{ common_directory_tv }}:/data/tvshows:ro"
+          - "{{ common_directory_movies }}:/data/movies:ro"
         networks:
           - name: "{{ network.name }}"
             ipv4_address: "{{ network.prefix }}.24"
