@@ -1,12 +1,34 @@
 ---
+# https://torsion.org/borgmatic/
+
+# Init the backup with
+# docker exec borgmatic sh -c "borgmatic --init --encryption repokey-blake2"
+
+# Extract the encryption key with
+# borg key export /mnt/destination
+
+# Start a backup with
+# borgmatic --stats
+
+# Restore a backup with
+# borgmatic extract
+
 - hosts: homelab
   become: true
   vars:
     network: "{{ networks.mgmt }}"
-    borgmatic_name: borgmatic
+    borgmatic_name: borgmatic-homelab
+    borgmatic_pass: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      37626530363533323433633066656632393664313962366264363435386635346634613433303661
+      3866616565383433353636356337356438373934373433650a653235663033383330386638303031
+      63303930626431656232343336393965343966653330323964313532353964613030643137616363
+      3966623038626139300a666265326566373439663038393432396432356636353733643361623031
+      35663138313039623361346562346234636365316164636365663439326663643261643438376334
+      3361306465303461613739396564306434333033643962616664
     borgmatic_common_directory: "{{ common_directory_backup }}/borgmatic/"
     borgmatic_source_directory: "{{ common_directory }}" # data to backup
-    borgmatic_destination_directory: "{{ borgmatic_common_directory }}/backups"
+    borgmatic_destination_directory: "{{ borgmatic_common_directory }}/homelab"
     borgmatic_repository_directory: "{{ borgmatic_common_directory }}/borgbackup" # borg backup repo
     borgmatic_notification_webhook: !vault |
           $ANSIBLE_VAULT;1.1;AES256
@@ -53,8 +75,9 @@
         image: b3vis/borgmatic
         env:
           TZ: "{{ common_timezone }}"
+          BORG_PASSPHRASE: "{{ borgmatic_pass }}"
         volumes:
-          - "{{ borgmatic_source_directory }}:/mnt/source:ro"
+          - "{{ borgmatic_source_directory }}:/mnt/source:ro" # dont mount as ro when a restore is needed
           - "{{ borgmatic_destination_directory }}:/mnt/destination"
           - "{{ borgmatic_repository_directory }}:/mnt/borg-repository"
           - "{{ borgmatic_common_directory}}/borgmatic.d:/etc/borgmatic.d/"
@@ -68,14 +91,14 @@
     - name: Template borgmatic configuration
       template:
         src: borgmatic/config.yaml.j2
-        dest: "{{ borgmatic_common_directory}}/borgmatic.d/config.yaml"
+        dest: "{{ borgmatic_common_directory }}/borgmatic.d/config.yaml"
         owner: root
         group: root
 
     - name: Template borgmatic crontab
       template:
         src: borgmatic/crontab.txt.j2
-        dest: "{{ borgmatic_common_directory}}/borgmatic.d/crontab.txt"
+        dest: "{{ borgmatic_common_directory }}/borgmatic.d/crontab.txt"
         owner: root
         group: root
       notify: Restart Borgmatic
@@ -83,5 +106,5 @@
     - name: Template notification script
       template:
         src: borgmatic/notifications.sh.j2
-        dest: "{{ borgmatic_common_directory}}/borgmatic.d/notifications.sh"
+        dest: "{{ borgmatic_common_directory }}/borgmatic.d/notifications.sh"
         mode: 500
