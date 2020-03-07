@@ -11,6 +11,7 @@
     image: "{{ mariadb_image }}"
     state: started
     published_ports: "{{ mariadb_ports | default(omit) }}"
+    command: "{{ mariadb_command | default(omit) }}"
     volumes:
       - "{{ mariadb_directory }}:/var/lib/mysql"
     env: "{{ mariadb_environment_variables | default(omit) }}"
