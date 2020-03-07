@@ -1,0 +1,15 @@
+---
+
+elasticsearch_name: elasticsearch
+elasticsearch_version: 6.8.7
+elasticsearch_image: "elasticsearch:{{ elasticsearch_version }}"
+elasticsearch_ports: []
+elasticsearch_directory: /tmp/elasticsearch
+elasticsearch_environment_variables:
+  http.host: '0.0.0.0'
+  ES_JAVA_OPTS: '-Xms512m -Xmx512m'
+  network.host: '0.0.0.0'
+  bootstrap.memory_lock: "true"
+
+elasticsearch_docker_additional_options:
+  restart_policy: unless-stopped

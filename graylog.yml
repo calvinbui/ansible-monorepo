@@ -1,0 +1,99 @@
+---
+- hosts: homelab
+  become: true
+  vars:
+    network: "{{ networks.pub }}"
+    graylog_name: graylog
+    graylog_directory: "{{ common_directory }}/graylog"
+    graylog_app_directory: "{{ graylog_directory }}/graylog"
+    graylog_password_secret: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      35613235363030313530396533323731333035623530376237303862613530323061313437623736
+      3737383736343838326133363164656265613664353735390a386663653935316533313138656431
+      32323034303537616435613736393231373439663966643163356165363061393965343038333030
+      6661613337353461330a303839346431316564666563613136346331626438663331373339323230
+      61643161353534353361313532363062313233366432306232383261393762653231626638373539
+      3432383836386230363731393336343337616233343662653135
+    graylog_root_password_sha2: 41cde49909a25c2bc1e43d955153be13d2985d23ad53f8ce27357c9f84268293
+    graylog_http_external_uri: "https://{{ graylog_name }}.{{ common_tld | string }}/"
+    mongo_name: "{{ graylog_name }}-mongo"
+    mongo_version: 4
+    mongo_directory: "{{ graylog_directory }}/mongodb"
+    mongo_environment_variables:
+      MONGO_INITDB_ROOT_USERNAME: graylog
+      MONGO_INITDB_ROOT_PASSWORD: !vault |
+        $ANSIBLE_VAULT;1.1;AES256
+        64653439626435346433643033646537376239613436636633636236613434313563336239323136
+        6432623830366163636462316234303431333138613633320a313564363431333533353636613939
+        38383237626533633938643132626330636230643966313164333261306537343838643162383534
+        3637626338386665370a623839313437363531373563366265383064613034366233353462646463
+        66383934303330626339396535656662326335656133636166323539653332653336643164656536
+        3436323037653666623733626232366663336666306266376262
+      MONGO_INITDB_DATABASE: graylog
+    elasticsearch_name: "{{ graylog_name }}-elasticsearch"
+    elasticsearch_version: 6.8.7
+    elasticsearch_directory: "{{ graylog_directory }}/elasticsearch"
+  module_defaults:
+    docker_container:
+      keep_volumes: false
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      dns_servers: "{{ network.dns }}"
+      networks:
+        - name: "{{ network.name }}"
+  handlers:
+    - name: Restart Graylog
+      shell: docker restart "{{ graylog_name }}"
+  pre_tasks:
+    - name: Create Graylog directory
+      file:
+        path: "{{ graylog_directory }}"
+        state: directory
+  roles:
+    - mongo
+    - elasticsearch
+  tasks:
+    - name: Create Graylog directory
+      file:
+        path: "{{ graylog_app_directory }}"
+        state: directory
+        owner: "1100"
+        group: "1100"
+
+    - name: Create Graylog container
+      docker_container:
+        name: "{{ graylog_name }}"
+        image: graylog/graylog:3.2
+        env:
+          GRAYLOG_PASSWORD_SECRET: "{{ graylog_password_secret }}"
+          GRAYLOG_ROOT_PASSWORD_SHA2: "{{ graylog_root_password_sha2 }}"
+          GRAYLOG_HTTP_EXTERNAL_URI: "{{ graylog_http_external_uri }}"
+
+          GRAYLOG_MONGODB_URI: "mongodb://{{ mongo_environment_variables.MONGO_INITDB_ROOT_USERNAME }}:{{ mongo_environment_variables.MONGO_INITDB_ROOT_PASSWORD | string }}@{{ mongo_name }}:27017/{{ mongo_environment_variables.MONGO_INITDB_DATABASE }}?authSource=admin"
+
+          GRAYLOG_ELASTICSEARCH_HOSTS: "http://{{ elasticsearch_name }}:9200"
+
+          GRAYLOG_TRANSPORT_EMAIL_ENABLED: "true"
+          GRAYLOG_TRANSPORT_EMAIL_HOSTNAME: "{{ common_email_server }}"
+          GRAYLOG_TRANSPORT_EMAIL_PORT: "{{ common_email_smtp_port }}"
+          GRAYLOG_TRANSPORT_EMAIL_USE_AUTH: "true"
+          GRAYLOG_TRANSPORT_EMAIL_USE_TLS: "true"
+          GRAYLOG_TRANSPORT_EMAIL_AUTH_USERNAME: "{{ common_email_username }}"
+          GRAYLOG_TRANSPORT_EMAIL_AUTH_PASSWORD: "{{ common_email_password }}"
+          GRAYLOG_TRANSPORT_EMAIL_FROM_EMAIL: "{{ common_email_username }}"
+        volumes:
+          - "{{ graylog_app_directory }}:/usr/share/graylog/data/journal"
+        labels:
+          traefik.http.routers.graylog.entrypoints: "web"
+          traefik.http.routers.graylog.middlewares: "redirect@file"
+
+          traefik.http.routers.graylog-secure.entrypoints: "web-secure"
+          traefik.http.routers.graylog-secure.tls: "true"
+          traefik.http.routers.graylog-secure.tls.certresolver: letsencrypt
+
+          traefik.http.services.graylog.loadbalancer.server.port: "9000"
+
+          com.datadoghq.ad.check_names: '["http_check"]'
+          com.datadoghq.ad.init_configs: '[{}]'
+          com.datadoghq.ad.instances: '[{"name":"{{ graylog_name }}","url":"https://{{ graylog_name }}.{{ common_tld | string }}"}]'
