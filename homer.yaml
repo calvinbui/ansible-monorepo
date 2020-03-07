@@ -1,0 +1,65 @@
+---
+
+- hosts: homelab
+  become: true
+  vars:
+    homer_name: homer
+    homer_config_directory: "{{ common_directory }}/{{ homer_name }}"
+    network: "{{ networks.pub }}"
+  module_defaults:
+    docker_container:
+      keep_volumes: false
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      dns_servers: "{{ network.dns }}"
+      networks:
+        - name: "{{ network.name }}"
+      comparisons:
+        env: allow_more_present
+        labels: allow_more_present
+  handlers:
+    - name: Restart Homer
+      shell: docker restart "{{ homer_name }}"
+  pre_tasks:
+    - name: Create Homer config directory
+      file:
+        path: "{{ homer_config_directory }}"
+        state: directory
+  tasks:
+    - name: Template config file
+      template:
+        src: templates/homer/config.yml.j2
+        dest: "{{ homer_config_directory }}/config.yml"
+      notify: Restart Homer
+    - name: Copy icons
+      copy:
+        src: files/homer/icons
+        dest: "{{ homer_config_directory }}"
+    - name: Create Homer container
+      docker_container:
+        name: "{{ homer_name }}"
+        image: b4bz/homer:latest
+        volumes:
+          - "{{ homer_config_directory }}/config.yml:/www/config.yml"
+          - "{{ homer_config_directory }}/icons:/www/assets/icons"
+        env:
+          PUID: "{{ common_user_id }}"
+          PGID: "{{ common_group_id }}"
+          TZ: "{{ common_timezone }}"
+        labels:
+          traefik.http.routers.homer.entrypoints: "web"
+          traefik.http.routers.homer.middlewares: "redirect@file"
+
+          traefik.http.routers.homer-secure.entrypoints: "web-secure"
+          traefik.http.routers.homer-secure.tls: "true"
+          traefik.http.routers.homer-secure.tls.certresolver: letsencrypt
+
+          traefik.http.services.homer.loadbalancer.server.port: "8080"
+
+          traefik.http.routers.homer.rule: "Host(`{{ common_tld }}`)"
+          traefik.http.routers.homer-secure.rule: "Host(`{{ common_tld }}`)"
+
+          com.datadoghq.ad.check_names: '["http_check"]'
+          com.datadoghq.ad.init_configs: '[{}]'
+          com.datadoghq.ad.instances: '[{"name":"{{ homer_name }}","url":"https://{{ common_tld | string }}"}]'
