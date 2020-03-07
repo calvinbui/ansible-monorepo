@@ -88,14 +88,14 @@
         labels:
           traefik.enable: "false"
 
-    - name: Template borgmatic configuration
+    - name: Template Borgmatic configuration
       template:
         src: borgmatic/config.yaml.j2
         dest: "{{ borgmatic_common_directory }}/borgmatic.d/config.yaml"
         owner: root
         group: root
 
-    - name: Template borgmatic crontab
+    - name: Template Borgmatic crontab
       template:
         src: borgmatic/crontab.txt.j2
         dest: "{{ borgmatic_common_directory }}/borgmatic.d/crontab.txt"
