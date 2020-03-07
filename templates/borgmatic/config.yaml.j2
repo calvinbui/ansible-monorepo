@@ -100,7 +100,7 @@ location:
 # https://borgbackup.readthedocs.io/en/stable/usage.html#borg-create and
 # https://borgbackup.readthedocs.io/en/stable/usage/general.html#environment-variables for
 # details.
-# storage:
+storage:
     # The standard output of this command is used to unlock the encryption key. Only
     # use on repositories that were initialized with passcommand/repokey encryption.
     # Note that if both encryption_passcommand and encryption_passphrase are set,
@@ -126,7 +126,7 @@ location:
     # Type of compression to use when creating archives. See
     # https://borgbackup.readthedocs.org/en/stable/usage.html#borg-create for details.
     # Defaults to "lz4".
-    # compression: lz4
+    compression: lzma,9
 
     # Remote network upload rate limit in kiBytes/second. Defaults to unlimited.
     # remote_rate_limit: 100
