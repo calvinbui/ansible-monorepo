@@ -43,3 +43,8 @@ nextcloud_docker_additional_options:
     com.datadoghq.ad.check_names: '["http_check"]'
     com.datadoghq.ad.init_configs: '[{}]'
     com.datadoghq.ad.instances: '[{"name":"{{ nextcloud_name }}","url":"https://{{ nextcloud_name }}.{{ common_tld | string }}"}]'
+
+    traefik.http.routers.nextcloud-secure.middlewares: "nextcloud-dav"
+    traefik.http.middlewares.nextcloud-dav.redirectregex.permanent: 'true'
+    traefik.http.middlewares.nextcloud-dav.redirectregex.regex: https://(.*)/.well-known/(card|cal)dav
+    traefik.http.middlewares.nextcloud-dav.redirectregex.replacement: https://${1}/remote.php/dav/
