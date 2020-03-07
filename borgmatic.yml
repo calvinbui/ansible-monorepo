@@ -107,4 +107,12 @@
       template:
         src: borgmatic/notifications.sh.j2
         dest: "{{ borgmatic_common_directory }}/borgmatic.d/notifications.sh"
-        mode: 500
+        mode: '0500'
+
+    - name: Copy SSH keys
+      copy:
+        src: files/borgmatic/ssh/
+        dest: "{{ borgmatic_common_directory}}/ssh/"
+        owner: root
+        group: root
+        mode: '0600'
