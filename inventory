@@ -4,7 +4,6 @@ ansible_python_interpreter=/usr/bin/env python3
 [nextcloud]
 homelab ansible_host=homelab
 
-[piwigo]
 homelab ansible_host=homelab
 
 [usenet]
