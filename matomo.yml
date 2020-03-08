@@ -48,13 +48,12 @@
   pre_tasks:
     - name: Create Matomo directories
       file:
-        path: "{{ item }}"
+        path: "{{ matomo_app_directory }}"
         state: directory
         recurse: true
-        owner: "{{ common_user }}"
+        owner: "82" # www-data
         group: "{{ common_root_group }}"
       loop:
-        - "{{ matomo_app_directory }}"
   roles:
     - mariadb
   tasks:
