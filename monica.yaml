@@ -56,6 +56,7 @@
         volumes:
           - "{{ monica_config_directory }}:/var/www/monica/storage"
         env:
+          APP_ENV: production
           APP_KEY: "{{ monica_app_key }}"
           DB_HOST: "{{ mariadb_name }}.{{ network.name }}"
           DB_DATABASE: "{{ mariadb_environment_variables.MYSQL_DATABASE }}"
