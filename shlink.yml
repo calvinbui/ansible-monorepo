@@ -1,5 +1,5 @@
 ---
-- hosts: shlink
+- hosts: homelab
   become: true
   vars:
     network: "{{ networks.pub }}"
