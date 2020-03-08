@@ -1,5 +1,5 @@
 ---
-- hosts: homelab
+- hosts: docker_services
   become: true
   vars:
     network: "{{ networks.mgmt }}"

@@ -8,6 +8,11 @@
         cache_valid_time: 600
       changed_when: false
       when: ansible_distribution == 'Ubuntu'
+  handlers:
+    - name: Restart Docker
+      service:
+        name: docker
+        state: restarted
   roles:
     - role: motd
       when: ansible_distribution == 'Ubuntu'
@@ -37,7 +42,8 @@
         driver_options:
           parent: "{{ item.value.parent }}.{{ item.value.vlan }}"
       loop: "{{ networks|dict2items }}"
-    - timezone:
+    - name: Set timezone
+      timezone:
         name: "{{ common_timezone }}"
   post_tasks:
     - name: Create common directory
@@ -46,3 +52,8 @@
         state: directory
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
+    - name: Template Docker daemon.json
+      template:
+        src: templates/docker/daemon.json.j2
+        dest: /etc/docker/daemon.json
+      notify: Restart Docker

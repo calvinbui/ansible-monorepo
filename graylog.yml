@@ -65,6 +65,9 @@
       docker_container:
         name: "{{ graylog_name }}"
         image: graylog/graylog:3.2
+        networks:
+          - name: "{{ network.name }}"
+            ipv4_address: "{{ logging_ip }}"
         env:
           GRAYLOG_PASSWORD_SECRET: "{{ graylog_password_secret }}"
           GRAYLOG_ROOT_PASSWORD_SHA2: "{{ graylog_root_password_sha2 }}"
