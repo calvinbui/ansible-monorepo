@@ -85,8 +85,12 @@
           GRAYLOG_TRANSPORT_EMAIL_AUTH_USERNAME: "{{ common_email_username }}"
           GRAYLOG_TRANSPORT_EMAIL_AUTH_PASSWORD: "{{ common_email_password }}"
           GRAYLOG_TRANSPORT_EMAIL_FROM_EMAIL: "{{ common_email_username }}"
+
+          GRAYLOG_ROOT_EMAIL: "graylog{{ common_email_to }}"
+          GRAYLOG_ROOT_TIMEZONE: "{{ common_timezone }}"
         volumes:
           - "{{ graylog_app_directory }}:/usr/share/graylog/data/journal"
+          - /etc/timezone:/etc/timezone:ro
         labels:
           traefik.http.routers.graylog.entrypoints: "web"
           traefik.http.routers.graylog.middlewares: "redirect@file"
