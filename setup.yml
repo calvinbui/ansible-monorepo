@@ -52,8 +52,3 @@
         state: directory
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
-    - name: Template Docker daemon.json
-      template:
-        src: templates/docker/daemon.json.j2
-        dest: /etc/docker/daemon.json
-      notify: Restart Docker

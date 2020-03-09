@@ -33,6 +33,7 @@
     elasticsearch_name: "{{ graylog_name }}-elasticsearch"
     elasticsearch_version: 6.8.7
     elasticsearch_directory: "{{ graylog_directory }}/elasticsearch"
+    logspout_name: logspout
   module_defaults:
     docker_container:
       keep_volumes: false
@@ -88,6 +89,8 @@
 
           GRAYLOG_ROOT_EMAIL: "graylog{{ common_email_to }}"
           GRAYLOG_ROOT_TIMEZONE: "{{ common_timezone }}"
+
+          LOGSPOUT: "ignore"
         volumes:
           - "{{ graylog_app_directory }}:/usr/share/graylog/data/journal"
           - /etc/timezone:/etc/timezone:ro
@@ -104,3 +107,14 @@
           com.datadoghq.ad.check_names: '["http_check"]'
           com.datadoghq.ad.init_configs: '[{}]'
           com.datadoghq.ad.instances: '[{"name":"{{ graylog_name }}","url":"https://{{ graylog_name }}.{{ common_tld | string }}"}]'
+
+    - name: Create Logspout container
+      docker_container:
+        name: "{{ logspout_name }}"
+        image: gliderlabs/logspout:latest
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+        command:
+          - "syslog://{{ logging_ip }}:{{ logging_syslog_port }}"
+        labels:
+          traefik.enable: "false"
