@@ -37,11 +37,13 @@
         name: "{{ fuel_image }}"
         source: build
         state: present
+        force_source: true
 
     - name: Create 7Eleven Python
       docker_container:
         name: "{{ fuel_name }}"
         image: "{{ fuel_image }}"
+        recreate: true
         env:
           TZ: "{{ common_timezone }}"
         labels:
