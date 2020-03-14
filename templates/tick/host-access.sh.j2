@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+ip link add {{ network.name }}-shim link {{ network.parent }}.{{ network.vlan }} type macvlan mode bridge
+ip addr add {{ telegraf_virtual_ip }}/32 dev {{ network.name }}-shim
+ip link set {{ network.name }}-shim up
+ip route add {{ influxdb_ip }}/32 dev {{ network.name }}-shim

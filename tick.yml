@@ -18,6 +18,26 @@
     influxdb_retention: "72h"
     influxdb_ip: "{{ network.prefix }}.194"
 
+    telegraf_virtual_ip: 192.168.1.103
+    telegraf_influxdb_urls:
+      - "http://{{ influxdb_ip }}:8086"
+    telegraf_influxdb_database: "{{ influxdb_database }}"
+    telegraf_influxdb_retention_policy: "{{ influxdb_database }}_rpo"
+    telegraf_influxdb_username: "{{ influxdb_username }}"
+    telegraf_influxdb_password: "{{ influxdb_password }}"
+    telegraf_plugins_base:
+      - name: docker
+      - name: mem
+      - name: system
+      - name: cpu
+      - name: disk
+        options:
+          ignore_fs:
+            - "overlay"
+            - "tmpfs"
+            - "shm"
+      - name: systemd_units
+
     kapacitor_username: "tickkapacitoruser"
     kapacitor_password: !vault |
       $ANSIBLE_VAULT;1.1;AES256
@@ -40,9 +60,6 @@
       comparisons:
         env: strict
         labels: strict
-  handlers:
-    - name: Restart Telegraf
-      shell: docker restart "tick-telegraf"
   pre_tasks:
     - name: Create TICK config directories
       file:
@@ -51,7 +68,6 @@
       loop:
         - "{{ tick_directory }}/influxdb/scripts"
         - "{{ tick_directory }}/influxdb/data"
-        - "{{ tick_directory }}/telegraf"
         - "{{ tick_directory }}/chronograf"
         - "{{ tick_directory }}/kapacitor"
   tasks:
@@ -59,12 +75,24 @@
       template:
         src: "{{ item.src }}"
         dest: "{{ item.dest }}"
+        mode: '{{ item.mode | default(omit) }}'
       loop:
         - src: templates/tick/retention.iql.j2
           dest: "{{ tick_directory }}/influxdb/scripts/retention.iql"
-        - src: templates/tick/telegraf.conf.j2
-          dest: "{{ tick_directory }}/telegraf/telegraf.conf"
+        - src: templates/tick/host-access.sh.j2
+          dest: "{{ tick_directory }}/host-access.sh"
+          mode: '0755'
       notify: Restart Telegraf
+
+    - name: Add host-access script to crontab @ reboot
+      cron:
+        name: "a job for reboot"
+        special_time: reboot
+        job: "{{ tick_directory }}/host-access.sh"
+    - name: Run the host-access script
+      shell:
+        cmd: "{{ tick_directory }}/host-access.sh"
+      ignore_errors: true
 
     - name: Create influxdb container
       docker_container:
@@ -88,19 +116,15 @@
         labels:
           traefik.enable: "false"
 
-    - name: Create telegraf container
-      docker_container:
-        name: tick-telegraf
-        image: telegraf:1.13-alpine
-        env:
-          HOST_PROC: /host/proc
-        volumes:
-          - "{{ tick_directory }}/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro"
-          - /var/run/docker.sock:/var/run/docker.sock:ro
-          - /proc:/host/proc:ro
-          - /run/systemd/:/host/run/systemd/:ro
-        labels:
-          traefik.enable: "false"
+    - name: Run Telegraf role
+      import_role :
+        name: rossmcdonald.telegraf
+
+    - name: Add telegraf user to Docker group
+      user:
+        name: "telegraf"
+        groups: docker
+        append: true
 
     - name: Create kapacitor container
       docker_container:

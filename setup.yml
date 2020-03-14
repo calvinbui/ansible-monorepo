@@ -45,7 +45,6 @@
     - name: Set timezone
       timezone:
         name: "{{ common_timezone }}"
-  post_tasks:
     - name: Create common directory
       file:
         path: "{{ common_directory }}"
