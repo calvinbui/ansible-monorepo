@@ -1,0 +1,25 @@
+[agent]
+  interval = "10s"
+  hostname = "homelab"
+
+[[outputs.influxdb]]
+  urls = ["http://tick-influxdb.{{ network.name }}:8086"]
+  database = "{{ influxdb_database }}"
+  skip_database_creation = true
+  retention_policy = "{{ influxdb_database }}_rpo"
+  username = "{{ influxdb_username }}"
+  password = "{{ influxdb_password }}"
+
+[[inputs.docker]]
+  endpoint = "unix:///var/run/docker.sock"
+
+[[inputs.cpu]]
+
+[[inputs.mem]]
+
+[[inputs.net]]
+
+[[inputs.disk]]
+  ignore_fs = ["overlay", "tmpfs", "shm"]
+
+[[inputs.systemd_units]]

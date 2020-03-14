@@ -1,0 +1,154 @@
+---
+- hosts: homelab
+  become: true
+  vars:
+    network: "{{ networks.mgmt }}"
+    tick_directory: "{{ common_directory }}/tick"
+
+    influxdb_database: "tickstack"
+    influxdb_username: "tickinfluxuser"
+    influxdb_password: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      30316461316661376331653261616535613463303830326532393039316566663934376335376166
+      3736643731633134663632373138613566333735343138380a353434323434353330656436376565
+      64303266666363663637353435373264376531396431643064303964383538653137303437366334
+      6331646630333535610a366461663566666639313337633863313332653136343730393530393563
+      31666630396564633165343433326638636533343930393639343063666531313332646161346464
+      3530346533656332616433366464373962623434306336613730
+    influxdb_retention: "72h"
+    influxdb_ip: "{{ network.prefix }}.7"
+
+    kapacitor_username: "tickkapacitoruser"
+    kapacitor_password: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      35306264326264383938663237633963393265333535643064373730613938633135376331663763
+      3537353839653731323065346165616630343137613165340a643738666131643366366235383734
+      35616361313331333065326336323761333763313530366135633632373339613162646133346533
+      3362313638306537380a376532666138336564383465366239613463383565613666366361376164
+      64383233386135616661613763623662343331643639376439376538646165343662366265613033
+      3835643863333963623933303864616632373234363934306161
+  module_defaults:
+    docker_container:
+      keep_volumes: false
+      state: started
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      networks:
+        - name: "{{ network.name }}"
+      dns_servers: "{{ network.dns }}"
+      comparisons:
+        env: strict
+        labels: strict
+  handlers:
+    - name: Restart Telegraf
+      shell: docker restart "tick-telegraf"
+  pre_tasks:
+    - name: Create TICK config directories
+      file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - "{{ tick_directory }}/influxdb/scripts"
+        - "{{ tick_directory }}/influxdb/data"
+        - "{{ tick_directory }}/telegraf"
+        - "{{ tick_directory }}/chronograf"
+        - "{{ tick_directory }}/kapacitor"
+  tasks:
+    - name: Template configs and scripts
+      template:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+      loop:
+        - src: templates/tick/retention.iql.j2
+          dest: "{{ tick_directory }}/influxdb/scripts/retention.iql"
+        - src: templates/tick/telegraf.conf.j2
+          dest: "{{ tick_directory }}/telegraf/telegraf.conf"
+      notify: Restart Telegraf
+
+    - name: Create influxdb container
+      docker_container:
+        name: tick-influxdb
+        image: influxdb:1.7-alpine
+        env:
+          INFLUXDB_HTTP_AUTH_ENABLED: "true"
+
+          INFLUXDB_DB: "{{ influxdb_database }}"
+          INFLUXDB_ADMIN_USER: "{{ influxdb_username }}"
+          INFLUXDB_ADMIN_PASSWORD: "{{ influxdb_password }}"
+
+          INFLUXDB_REPORTING_DISABLED: "true"
+          INFLUXDB_META_RETENTION_AUTOCREATE: "false"
+        networks:
+          - name: "{{ network.name }}"
+            ipv4_address: "{{ influxdb_ip }}"
+        volumes:
+          - "{{ tick_directory }}/influxdb/data:/var/lib/influxdb"
+          - "{{ tick_directory }}/influxdb/scripts:/docker-entrypoint-initdb.d"
+        labels:
+          traefik.enable: "false"
+
+    - name: Create telegraf container
+      docker_container:
+        name: tick-telegraf
+        image: telegraf:1.13-alpine
+        env:
+          HOST_PROC: /host/proc
+        volumes:
+          - "{{ tick_directory }}/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro"
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+          - /proc:/host/proc:ro
+          - /run/systemd/:/host/run/systemd/:ro
+        labels:
+          traefik.enable: "false"
+
+    - name: Create kapacitor container
+      docker_container:
+        name: tick-kapacitor
+        image: kapacitor:1.5-alpine
+        env:
+          KAPACITOR_HTTP_AUTH_ENABLED: "true"
+          KAPACITOR_HTTP_USERNAME: "{{ kapacitor_username }}"
+          KAPACITOR_HTTP_PASSWORD: "{{ kapacitor_password }}"
+
+          KAPACITOR_INFLUXDB_0_ENABLED: "true"
+          KAPACITOR_INFLUXDB_0_DEFAULT: "true"
+          KAPACITOR_INFLUXDB_0_URLS_0: "http://tick-influxdb.{{ network.name }}:8086"
+          KAPACITOR_INFLUXDB_0_USERNAME: "{{ influxdb_username }}"
+          KAPACITOR_INFLUXDB_0_PASSWORD: "{{ influxdb_password }}"
+
+          KAPACITOR_REPORTING_ENABLED: "false"
+
+          TZ: "{{ common_timezone }}"
+        volumes:
+          - "{{ tick_directory }}/kapacitor:/var/lib/kapacitor"
+        labels:
+          traefik.enable: "false"
+
+    - name: Create chronograf container
+      docker_container:
+        name: tick-chronograf
+        image: chronograf:1.8-alpine
+        env:
+          INFLUXDB_URL: "http://tick-influxdb.{{ network.name }}:8086"
+          INFLUXDB_USERNAME: "{{ influxdb_username }}"
+          INFLUXDB_PASSWORD: "{{ influxdb_password }}"
+
+          KAPACITOR_URL: "http://tick-kapacitor.{{ network.name }}:9092"
+          KAPACITOR_USERNAME: "{{ kapacitor_username }}"
+          KAPACITOR_PASSWORD: "{{ kapacitor_password }}"
+
+          REPORTING_DISABLED: "true"
+        volumes:
+          - "{{ tick_directory }}/chronograf:/var/lib/chronograf"
+        labels:
+          traefik.http.routers.chronograf.entrypoints: "web"
+          traefik.http.routers.chronograf.middlewares: "redirect@file"
+          traefik.http.routers.chronograf.rule: "Host(`chronograf.{{ common_tld | string }}`)"
+
+          traefik.http.routers.chronograf-secure.entrypoints: "web-secure"
+          traefik.http.routers.chronograf-secure.rule: "Host(`chronograf.{{ common_tld | string }}`)"
+          traefik.http.routers.chronograf-secure.tls: "true"
+          traefik.http.routers.chronograf-secure.tls.certresolver: letsencrypt
+
+          traefik.http.services.chronograf.loadbalancer.server.port: "8888"
