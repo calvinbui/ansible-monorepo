@@ -36,6 +36,7 @@
             - "overlay"
             - "tmpfs"
             - "shm"
+            - "squashfs"
       - name: systemd_units
 
     kapacitor_username: "tickkapacitoruser"
