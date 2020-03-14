@@ -13,19 +13,6 @@
               31646435626133663634653463313462346430656235613838643932323762303036663862313731
               3835613166343664346131656662323562343065356463396532
   tasks:
-    - name: Create Datadog directory
-      file:
-        path: "{{ datadog_dir }}"
-        state: directory
-
-    - name: Copy Datadog config templates to host
-      template:
-        src: "{{ item }}"
-        dest: "{{ datadog_dir }}/{{ item | basename | regex_replace('\\.j2', '') }}"
-        mode: '0644'
-      with_fileglob: templates/datadog/*.j2
-      notify: Restart Datadog container
-
     - name: Create Datadog container
       docker_container:
         name: datadog
@@ -35,22 +22,6 @@
         trust_image_content: true
         env:
           DD_API_KEY: "{{ datadog_api_key }}"
-          DD_PROCESS_AGENT_ENABLED: "true"
-          DD_SYSTEM_PROBE_ENABLED: "true"
-          DD_APM_ENABLED: "true"
-          DD_LOG_LEVEL: "OFF"
-        volumes:
-          - /var/run/docker.sock:/var/run/docker.sock:ro
-          - /proc/:/host/proc/:ro
-          - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
-          - /run/systemd/:/host/run/systemd/:ro
-          - /sys/kernel/debug:/sys/kernel/debug
-          - "{{ datadog_dir }}:/conf.d:ro"
-        capabilities:
-          - SYS_ADMIN
-          - SYS_RESOURCE
-          - SYS_PTRACE
-          - NET_ADMIN
         restart_policy: unless-stopped
         networks_cli_compatible: true
         purge_networks: true
@@ -59,8 +30,3 @@
         dns_servers: "{{ network.dns }}"
         labels:
           traefik.enable: "false"
-  handlers:
-    - name: Restart Datadog container
-      docker_container:
-        name: datadog
-        restart: true

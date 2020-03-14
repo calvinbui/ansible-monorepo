@@ -1,3 +1,4 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
 ---
 title: Services
 subtitle: {{ common_tld }}
@@ -7,155 +8,59 @@ services:
   - name: Download
     icon: fas fa-cloud-download-alt
     items:
-      - name: Bazarr
-        logo: assets/icons/bazarr.png
-        subtitle: Manages and Downloads Subtitles
-        url: https://bazarr.{{ common_tld }}/
-      - name: JDownloader
-        logo: assets/icons/jdownloader.png
-        subtitle: Download Management Tool
-        url: https://jdownloader.{{ common_tld }}/
-      - name: NZBGet
-        logo: assets/icons/nzbget.png
-        subtitle: Downloads Files From Usenet
-        url: https://nzbget.{{ common_tld }}/
-      - name: NZBHydra
-        logo: assets/icons/nzbhydra.png
-        subtitle: Meta Search For Nzb Indexers
-        url: https://nzbhydra.{{ common_tld }}/
-      - name: Radarr
-        logo: assets/icons/radarr.png
-        subtitle: Manages and Downloads Movies
-        url: https://radarr.{{ common_tld }}/
-      - name: Sonarr
-        logo: assets/icons/sonarr.png
-        subtitle: Manages and Downloads TV Shows
-        url: https://sonarr.{{ common_tld }}/
-      - name: qBittorrent
-        logo: assets/icons/qbittorrent.svg
-        subtitle: Download Torrents
-        url: https://qbittorrent.{{ common_tld }}/
-      - name: Lidarr
-        logo: assets/icons/lidarr.png
-        subtitle: Manages and Downloads Music
-        url: https://lidarr.{{ common_tld }}/
+    {% for service in http_services %}
+      {% if service.group == "Download" %}
+      - name: {{ service.name }}
+        logo: {{ service.logo }}
+        subtitle: {{ service.subtitle }}
+        url: {{ service.url }}
+      {% endif %}
+    {% endfor %}
 
   - name: Home
     icon: fas fa-home
     items:
-      - name: Firefly III
-        logo: assets/icons/firefly.png
-        subtitle: Personal Finances Manager
-        url: https://firefly.{{ common_tld }}/
-      - name: Grocy
-        logo: assets/icons/grocy.png
-        subtitle: Groceries Household Management
-        url: https://grocy.{{ common_tld }}/
-      - name: Monica
-        logo: assets/icons/monica.png
-        subtitle: Personal Relationship Manager
-        url: https://monica.{{ common_tld }}/
-      - name: Paperless
-        logo: assets/icons/paperless.png
-        subtitle: Scan Index and Archive Paper Documents
-        url: https://paperless.{{ common_tld }}/
-      - name: Jellyfin
-        logo: assets/icons/jellyfin.png
-        subtitle: Software Media System
-        url: https://jellyfin.{{ common_local_tld }}:8920/
-      - name: Mattermost
-        logo: assets/icons/mattermost.png
-        subtitle: Online Chat
-        url: https://mattermost.{{ common_tld }}/
-      - name: JIRA
-        logo: assets/icons/jira.svg
-        subtitle: Issue Tracking
-        url: https://thingstodo.atlassian.net/
-      - name: Nextcloud
-        logo: assets/icons/nextcloud.png
-        subtitle: File Sharing and Communication Platform
-        url: https://nextcloud.{{ common_tld }}/
+    {% for service in http_services %}
+      {% if service.group == "Home" %}
+      - name: {{ service.name }}
+        logo: {{ service.logo }}
+        subtitle: {{ service.subtitle }}
+        url: {{ service.url }}
+      {% endif %}
+    {% endfor %}
 
   - name: Tools
     icon: fas fa-tools
     items:
-      - name: Shlink
-        logo: assets/icons/shlink.png
-        subtitle: Url Shortener
-        url: https://shlink.{{ common_tld }}/
-      - name: PrivateBin
-        logo: assets/icons/privatebin.png
-        subtitle: Zero Knowledge Pastebin
-        url: https://privatebin.{{ common_tld }}/
-      - name: Bookstack
-        logo: assets/icons/bookstack.png
-        subtitle: Documentation and Wiki
-        url: https://bookstack.{{ common_tld }}/
-      - name: Hauk
-        logo: assets/icons/hauk.png
-        subtitle: Location Sharing
-        url: https://hauk.{{ common_tld }}/
-      - name: VS Code
-        logo: assets/icons/vscode.png
-        subtitle: Source Code Editor
-        url: https://vscode.{{ common_tld }}/
-      - name: Bitwarden
-        logo: assets/icons/bitwarden.png
-        subtitle: Password Management
-        url: https://bitwarden.{{ common_tld }}/
-      - name: OctoPrint
-        logo: assets/icons/octoprint.png
-        subtitle: 3 D Print Controller
-        url: http://octopi.{{ common_local_tld }}/
-      - name: Piwigo
-        logo: assets/icons/piwigo.png
-        subtitle: Photo Gallery
-        url: https://piwigo.{{ common_tld }}/
+    {% for service in http_services %}
+      {% if service.group == "Tools" %}
+      - name: {{ service.name }}
+        logo: {{ service.logo }}
+        subtitle: {{ service.subtitle }}
+        url: {{ service.url }}
+      {% endif %}
+    {% endfor %}
 
   - name: Monitoring
     icon: fas fa-chart-area
     items:
-      - name: Matomo
-        logo: assets/icons/matomo.png
-        subtitle: Web Analytics
-        url: https://matomo.{{ common_tld }}/
-      - name: Graylog
-        logo: assets/icons/graylog.png
-        subtitle: Logging
-        url: https://graylog.{{ common_tld }}/
-      - name: Chronograf
-        logo: assets/icons/chronograf.svg
-        subtitle: Dashboards and alerting
-        url: https://chronograf.{{ common_tld }}/
+    {% for service in http_services %}
+      {% if service.group == "Monitoring" %}
+      - name: {{ service.name }}
+        logo: {{ service.logo }}
+        subtitle: {{ service.subtitle }}
+        url: {{ service.url }}
+      {% endif %}
+    {% endfor %}
 
   - name: Infrastructure
     icon: fas fa-server
     items:
-      - name: FreeNAS
-        logo: assets/icons/freenas.svg
-        subtitle: Network Attached Storage
-        url: https://freenas.{{ common_local_tld }}/
-      - name: OPNsense
-        logo: assets/icons/opnsense.png
-        subtitle: Firewall and Routing
-        url: https://opnsense.{{ common_local_tld }}/
-      - name: Guacamole
-        logo: assets/icons/guacamole.png
-        subtitle: Clientless Remote Desktop Gateway
-        url: https://guacamole.{{ common_tld }}/
-      - name: Portainer
-        logo: assets/icons/portainer.png
-        subtitle: Docker Management
-        url: https://portainer.{{ common_tld }}/
-      - name: Traefik
-        logo: assets/icons/traefik.png
-        subtitle: Cloud Native Edge Router
-        url: https://traefik.{{ common_tld }}/
-      - name: Unifi
-        logo: assets/icons/unifi.png
-        subtitle: Unifi Controller
-        url: https://unifi.{{ common_local_tld }}:8443/
-      - name: BorgBase
-        logo: assets/icons/borgmatic.png
-        subtitle: Hosting For Borg Backup Repos
-        url: https://www.borgbase.com/
+    {% for service in http_services %}
+      {% if service.group == "Infrastructure" %}
+      - name: {{ service.name }}
+        logo: {{ service.logo }}
+        subtitle: {{ service.subtitle }}
+        url: {{ service.url }}
+      {% endif %}
+    {% endfor %}

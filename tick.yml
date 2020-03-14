@@ -19,25 +19,7 @@
     influxdb_ip: "{{ network.prefix }}.194"
 
     telegraf_virtual_ip: 192.168.1.103
-    telegraf_influxdb_urls:
-      - "http://{{ influxdb_ip }}:8086"
-    telegraf_influxdb_database: "{{ influxdb_database }}"
-    telegraf_influxdb_retention_policy: "{{ influxdb_database }}_rpo"
-    telegraf_influxdb_username: "{{ influxdb_username }}"
-    telegraf_influxdb_password: "{{ influxdb_password }}"
-    telegraf_plugins_base:
-      - name: docker
-      - name: mem
-      - name: system
-      - name: cpu
-      - name: disk
-        options:
-          ignore_fs:
-            - "overlay"
-            - "tmpfs"
-            - "shm"
-            - "squashfs"
-      - name: systemd_units
+    telegraf_configuration_template: templates/tick/telegraf.conf.j2
 
     kapacitor_username: "tickkapacitoruser"
     kapacitor_password: !vault |

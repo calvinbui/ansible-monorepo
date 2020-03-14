@@ -1,0 +1,192 @@
+---
+
+http_services:
+  - name: Bazarr
+    logo: assets/icons/bazarr.png
+    subtitle: Manages and Downloads Subtitles
+    url: https://bazarr.{{ common_tld }}
+    group: "Download"
+  - name: JDownloader
+    logo: assets/icons/jdownloader.png
+    subtitle: Download Management Tool
+    url: https://jdownloader.{{ common_tld }}
+    group: "Download"
+  - name: NZBGet
+    logo: assets/icons/nzbget.png
+    subtitle: Downloads Files From Usenet
+    url: https://nzbget.{{ common_tld }}
+    group: "Download"
+  - name: NZBHydra
+    logo: assets/icons/nzbhydra.png
+    subtitle: Meta Search For Nzb Indexers
+    url: https://nzbhydra.{{ common_tld }}
+    group: "Download"
+  - name: Radarr
+    logo: assets/icons/radarr.png
+    subtitle: Manages and Downloads Movies
+    url: https://radarr.{{ common_tld }}
+    group: "Download"
+  - name: Sonarr
+    logo: assets/icons/sonarr.png
+    subtitle: Manages and Downloads TV Shows
+    url: https://sonarr.{{ common_tld }}
+    group: "Download"
+  - name: qBittorrent
+    logo: assets/icons/qbittorrent.svg
+    subtitle: Download Torrents
+    url: https://qbittorrent.{{ common_tld }}
+    group: "Download"
+  - name: Lidarr
+    logo: assets/icons/lidarr.png
+    subtitle: Manages and Downloads Music
+    url: https://lidarr.{{ common_tld }}
+    group: "Download"
+
+  - name: Firefly III
+    logo: assets/icons/firefly.png
+    subtitle: Personal Finances Manager
+    url: https://firefly.{{ common_tld }}
+    group: "Home"
+  - name: Grocy
+    logo: assets/icons/grocy.png
+    subtitle: Groceries Household Management
+    url: https://grocy.{{ common_tld }}
+    group: "Home"
+  - name: Monica
+    logo: assets/icons/monica.png
+    subtitle: Personal Relationship Manager
+    url: https://monica.{{ common_tld }}
+    group: "Home"
+  - name: Paperless
+    logo: assets/icons/paperless.png
+    subtitle: Scan Index and Archive Paper Documents
+    url: https://paperless.{{ common_tld }}
+    group: "Home"
+  - name: Jellyfin
+    logo: assets/icons/jellyfin.png
+    subtitle: Software Media System
+    url: https://jellyfin.{{ common_local_tld }}:8920
+    group: "Home"
+  - name: Mattermost
+    logo: assets/icons/mattermost.png
+    subtitle: Online Chat
+    url: https://mattermost.{{ common_tld }}
+    group: "Home"
+  - name: JIRA
+    logo: assets/icons/jira.svg
+    subtitle: Issue Tracking
+    url: https://thingstodo.atlassian.net
+    group: "Home"
+  - name: Nextcloud
+    logo: assets/icons/nextcloud.png
+    subtitle: File Sharing and Communication Platform
+    url: https://nextcloud.{{ common_tld }}
+    group: "Home"
+  - name: 7-Eleven Fuel Locker
+    logo: assets/icons/711.svg
+    subtitle: Check prices and lock them in
+    url: https://fuel.{{ common_tld }}
+    group: "Home"
+
+  - name: Shlink
+    logo: assets/icons/shlink.png
+    subtitle: Url Shortener
+    url: https://shlink.{{ common_tld }}
+    group: "Tools"
+  - name: PrivateBin
+    logo: assets/icons/privatebin.png
+    subtitle: Zero Knowledge Pastebin
+    url: https://privatebin.{{ common_tld }}
+    group: "Tools"
+  - name: Bookstack
+    logo: assets/icons/bookstack.png
+    subtitle: Documentation and Wiki
+    url: https://bookstack.{{ common_tld }}
+    group: "Tools"
+  - name: Hauk
+    logo: assets/icons/hauk.png
+    subtitle: Location Sharing
+    url: https://hauk.{{ common_tld }}
+    group: "Tools"
+  - name: VS Code
+    logo: assets/icons/vscode.png
+    subtitle: Source Code Editor
+    url: https://vscode.{{ common_tld }}
+    group: "Tools"
+  - name: Bitwarden
+    logo: assets/icons/bitwarden.png
+    subtitle: Password Management
+    url: https://bitwarden.{{ common_tld }}
+    group: "Tools"
+  - name: OctoPrint
+    logo: assets/icons/octoprint.png
+    subtitle: 3 D Print Controller
+    url: http://octopi.{{ common_local_tld }}
+    group: "Tools"
+  - name: Piwigo
+    logo: assets/icons/piwigo.png
+    subtitle: Photo Gallery
+    url: https://piwigo.{{ common_tld }}
+    group: "Tools"
+  - name: FreeNAS IPMI
+    url: https://freenas-ipmi.{{ common_local_tld }}
+    logo: assets/icons/ipmi.png
+    subtitle: Supermicro IPMI
+    group: "Tools"
+  - name: Homelab IPMI
+    url: https://homelab-ipmi.{{ common_local_tld }}
+    logo: assets/icons/ipmi.png
+    subtitle: Supermicro IPMI
+    group: "Tools"
+
+  - name: Matomo
+    logo: assets/icons/matomo.png
+    subtitle: Web Analytics
+    url: https://matomo.{{ common_tld }}
+    group: "Monitoring"
+  - name: Graylog
+    logo: assets/icons/graylog.png
+    subtitle: Logging
+    url: https://graylog.{{ common_tld }}
+    group: "Monitoring"
+  - name: Chronograf
+    logo: assets/icons/chronograf.svg
+    subtitle: Dashboards and alerting
+    url: https://chronograf.{{ common_tld }}
+    group: "Monitoring"
+
+  - name: FreeNAS
+    logo: assets/icons/freenas.svg
+    subtitle: Network Attached Storage
+    url: https://freenas.{{ common_local_tld }}
+    group: "Infrastructure"
+  - name: OPNsense
+    logo: assets/icons/opnsense.png
+    subtitle: Firewall and Routing
+    url: https://opnsense.{{ common_local_tld }}
+    group: "Infrastructure"
+  - name: Guacamole
+    logo: assets/icons/guacamole.png
+    subtitle: Clientless Remote Desktop Gateway
+    url: https://guacamole.{{ common_tld }}
+    group: "Infrastructure"
+  - name: Portainer
+    logo: assets/icons/portainer.png
+    subtitle: Docker Management
+    url: https://portainer.{{ common_tld }}
+    group: "Infrastructure"
+  - name: Traefik
+    logo: assets/icons/traefik.png
+    subtitle: Cloud Native Edge Router
+    url: https://traefik.{{ common_tld }}
+    group: "Infrastructure"
+  - name: Unifi
+    logo: assets/icons/unifi.png
+    subtitle: Unifi Controller
+    url: https://unifi.{{ common_local_tld }}:8443
+    group: "Infrastructure"
+  - name: BorgBase
+    logo: assets/icons/borgmatic.png
+    subtitle: Hosting For Borg Backup Repos
+    url: https://www.borgbase.com
+    group: "Infrastructure"
