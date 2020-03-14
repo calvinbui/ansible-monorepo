@@ -147,6 +147,7 @@
           traefik.http.routers.chronograf.rule: "Host(`chronograf.{{ common_tld | string }}`)"
 
           traefik.http.routers.chronograf-secure.entrypoints: "web-secure"
+          traefik.http.routers.chronograf-secure.middlewares: "myAuth@file"
           traefik.http.routers.chronograf-secure.rule: "Host(`chronograf.{{ common_tld | string }}`)"
           traefik.http.routers.chronograf-secure.tls: "true"
           traefik.http.routers.chronograf-secure.tls.certresolver: letsencrypt
