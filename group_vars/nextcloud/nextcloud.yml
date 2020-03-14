@@ -28,6 +28,7 @@ nextcloud_environment_variables:
   SMTP_SECURE: "ssl"
 
 nextcloud_docker_additional_options:
+  hostname: "{{ nextcloud_name }}"
   labels:
     com.centurylinklabs.watchtower.enable: "false"
 
@@ -39,10 +40,6 @@ nextcloud_docker_additional_options:
     traefik.http.routers.nextcloud-secure.entrypoints: "web-secure"
     traefik.http.routers.nextcloud-secure.tls: "true"
     traefik.http.routers.nextcloud-secure.tls.certresolver: letsencrypt
-
-    com.datadoghq.ad.check_names: '["http_check"]'
-    com.datadoghq.ad.init_configs: '[{}]'
-    com.datadoghq.ad.instances: '[{"name":"{{ nextcloud_name }}","url":"https://{{ nextcloud_name }}.{{ common_tld | string }}"}]'
 
     traefik.http.routers.nextcloud-secure.middlewares: "nextcloud-dav,nextcloud-hsts"
     traefik.http.middlewares.nextcloud-dav.redirectregex.permanent: 'true'

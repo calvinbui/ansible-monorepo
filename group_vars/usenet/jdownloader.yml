@@ -12,6 +12,7 @@ jdownloader_environment_variables:
   DISPLAY_HEIGHT: "1080"
 
 jdownloader_docker_additional_options:
+  hostname: "{{ jdownloader_name }}"
   labels:
     traefik.http.routers.jdownloader.entrypoints: "web"
     traefik.http.routers.jdownloader.middlewares: "redirect@file"
@@ -22,8 +23,3 @@ jdownloader_docker_additional_options:
     traefik.http.routers.jdownloader-secure.tls.certresolver: "letsencrypt"
 
     traefik.http.services.jdownloader.loadbalancer.server.port: "5800"
-
-    com.datadoghq.ad.check_names: '["http_check"]'
-    com.datadoghq.ad.init_configs: '[{}]'
-    com.datadoghq.ad.instances: '[{"name":"{{ jdownloader_name }}","url":"https://{{ jdownloader_name }}.{{ common_tld | string }}","username":"{{ htpasswd.username | string }}","password":"{{ htpasswd.password | string }}"}]'
-

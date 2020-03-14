@@ -18,6 +18,7 @@
 - name: Create ElasticSearch container
   docker_container:
     name: "{{ elasticsearch_name }}"
+    hostname: "{{ elasticsearch_name }}"
     image: "{{ elasticsearch_image }}"
     state: started
     published_ports: "{{ elasticsearch_ports | default(omit) }}"
@@ -29,6 +30,3 @@
       - nofile:65535:65535
     labels:
       traefik.enable: "false"
-      com.datadoghq.ad.check_names: '["elasticsearch"]'
-      com.datadoghq.ad.init_configs: '[{}]'
-      com.datadoghq.ad.instances: '[{"url":"http://%%host%%:9200/"}]'

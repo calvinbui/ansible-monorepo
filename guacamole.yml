@@ -71,6 +71,7 @@
     - name: Create Guacamole container
       docker_container:
         name: "{{ guacamole_name }}"
+        hostname: "{{ guacamole_name }}"
         image: guacamole/guacamole
         volumes:
           - "{{ guacamole_config_directory }}:/config"
@@ -93,7 +94,3 @@
           traefik.http.middlewares.guacamole-addprefix.addprefix.prefix: "/guacamole"
 
           traefik.http.services.guacamole.loadbalancer.server.port: "8080"
-
-          com.datadoghq.ad.check_names: '["http_check"]'
-          com.datadoghq.ad.init_configs: '[{}]'
-          com.datadoghq.ad.instances: '[{"name":"{{ guacamole_name }}","url":"https://{{ guacamole_name }}.{{ common_tld | string }}"}]'

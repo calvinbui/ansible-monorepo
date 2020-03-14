@@ -52,6 +52,7 @@
     - name: Create PrivateBin container
       docker_container:
         name: "{{ privatebin_name }}"
+        hostname: "{{ privatebin_name }}"        
         image: privatebin/nginx-fpm-alpine
         volumes:
           - "{{ common_directory }}/privatebin/data/:/srv/data"
@@ -65,7 +66,3 @@
           traefik.http.routers.privatebin-secure.tls.certresolver: letsencrypt
 
           traefik.http.services.privatebin.loadbalancer.server.port: "8080"
-
-          com.datadoghq.ad.check_names: '["http_check"]'
-          com.datadoghq.ad.init_configs: '[{}]'
-          com.datadoghq.ad.instances: '[{"name":"{{ privatebin_name }}","url":"https://{{ privatebin_name }}.{{ common_tld | string }}"}]'

@@ -80,6 +80,7 @@
     - name: Create influxdb container
       docker_container:
         name: tick-influxdb
+        hostname: tick-influxdb
         image: influxdb:1.7-alpine
         env:
           INFLUXDB_HTTP_AUTH_ENABLED: "true"
@@ -112,6 +113,7 @@
     - name: Create kapacitor container
       docker_container:
         name: tick-kapacitor
+        hostname: tick-kapacitor
         image: kapacitor:1.5-alpine
         env:
           KAPACITOR_HTTP_AUTH_ENABLED: "true"
@@ -135,6 +137,7 @@
     - name: Create chronograf container
       docker_container:
         name: tick-chronograf
+        hostname: tick-chronograf
         image: chronograf:1.8-alpine
         env:
           INFLUXDB_URL: "http://tick-influxdb.{{ network.name }}:8086"

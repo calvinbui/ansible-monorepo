@@ -16,6 +16,7 @@
     - name: Create Datadog container
       docker_container:
         name: datadog
+        hostname: homelab
         image: datadog/agent:latest
         state: started
         keep_volumes: false

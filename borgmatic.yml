@@ -72,6 +72,7 @@
     - name: Create Borgmatic container
       docker_container:
         name: "{{ borgmatic_name }}"
+        hostname: "{{ borgmatic_name }}"
         image: b3vis/borgmatic
         env:
           TZ: "{{ common_timezone }}"

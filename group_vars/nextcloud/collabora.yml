@@ -7,6 +7,7 @@ collabora_environment_variables:
   extra_params: "--o:ssl.termination=true --o:ssl.enable=false"
   domain: "{{ nextcloud_name + '\\.' + common_tld | regex_replace('\\.', '\\\\.') }}"
 collabora_docker_additional_options:
+  hostname: "{{ collabora_name }}"
   capabilities:
     - MKNOD
   labels:
@@ -16,7 +17,3 @@ collabora_docker_additional_options:
     traefik.http.routers.collabora-secure.tls.certresolver: letsencrypt
 
     traefik.http.services.collabora.loadbalancer.server.port: "9980"
-
-    com.datadoghq.ad.check_names: '["http_check"]'
-    com.datadoghq.ad.init_configs: '[{}]'
-    com.datadoghq.ad.instances: '[{"name":"collabora","url":"https://collabora.{{ common_tld | string }}"}]'

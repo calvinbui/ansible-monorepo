@@ -7,15 +7,13 @@ traefik_config_file: "{{ traefik_config_directory }}/traefik.toml"
 traefik_config_dynamic: "{{ traefik_config_directory }}/dynamic_conf.toml"
 traefik_config_acme_file: "{{ traefik_config_directory }}/acme.json"
 traefik_docker_additional_options:
+  hostname: "{{ traefik_name }}"
   # for static port forwarding
   networks:
     - name: "{{ network.name }}"
       ipv4_address: "{{ network.prefix }}.193"
   labels:
     traefik.enable: "false"
-    com.datadoghq.ad.check_names: '["http_check"]'
-    com.datadoghq.ad.init_configs: '[{}]'
-    com.datadoghq.ad.instances: '[{"name":"{{ traefik_name }}","url":"https://{{ traefik_name }}.{{ common_tld | string }}","username":"{{ htpasswd.username | string }}","password":"{{ htpasswd.password | string }}"}]'
   volumes:
     - /var/run/docker.sock:/var/run/docker.sock
     - "{{ traefik_config_file }}:/etc/traefik/traefik.toml"

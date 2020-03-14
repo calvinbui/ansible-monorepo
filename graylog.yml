@@ -65,6 +65,7 @@
     - name: Create Graylog container
       docker_container:
         name: "{{ graylog_name }}"
+        hostname: "{{ graylog_name }}"
         image: graylog/graylog:3.2
         networks:
           - name: "{{ network.name }}"
@@ -103,10 +104,6 @@
           traefik.http.routers.graylog-secure.tls.certresolver: letsencrypt
 
           traefik.http.services.graylog.loadbalancer.server.port: "9000"
-
-          com.datadoghq.ad.check_names: '["http_check"]'
-          com.datadoghq.ad.init_configs: '[{}]'
-          com.datadoghq.ad.instances: '[{"name":"{{ graylog_name }}","url":"https://{{ graylog_name }}.{{ common_tld | string }}"}]'
 
     - name: Create Logspout container
       docker_container:

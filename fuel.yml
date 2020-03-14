@@ -42,6 +42,7 @@
     - name: Create 7Eleven Python
       docker_container:
         name: "{{ fuel_name }}"
+        hostname: "{{ fuel_name }}"
         image: "{{ fuel_image }}"
         recreate: true
         env:
@@ -57,7 +58,3 @@
           traefik.http.routers.fuel-secure.tls.certresolver: letsencrypt
 
           traefik.http.services.fuel.loadbalancer.server.port: "5000"
-
-          com.datadoghq.ad.check_names: '["http_check"]'
-          com.datadoghq.ad.init_configs: '[{}]'
-          com.datadoghq.ad.instances: '[{"name":"{{ fuel_name }}","url":"http://{{ fuel_name }}.{{ common_tld | string }}"}]'

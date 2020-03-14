@@ -43,6 +43,7 @@
     - name: Create shlink container
       docker_container:
         name: shlink
+        hostname: shlink
         image: shlinkio/shlink:stable
         env:
           DB_DRIVER: "mysql"
@@ -63,10 +64,6 @@
           traefik.http.routers.shlink-secure.tls.certresolver: letsencrypt
 
           traefik.http.services.shlink.loadbalancer.server.port: "8080"
-
-          com.datadoghq.ad.check_names: '["http_check"]'
-          com.datadoghq.ad.init_configs: '[{}]'
-          com.datadoghq.ad.instances: '[{"name":"shlink","url":"https://{{ shlink_domain | string }}/rest/health"}]'
 
     - name: Check if shlink API config exists
       stat:
@@ -92,6 +89,7 @@
     - name: Create shlink web client container
       docker_container:
         name: shlink-web-client
+        hostname: shlink-web-client
         image: shlinkio/shlink-web-client:latest
         volumes:
           - "{{ shlink_web_client_directory }}/servers.json:/usr/share/nginx/html/servers.json"
@@ -107,7 +105,3 @@
           traefik.http.routers.shlink-web-client-secure.tls.certresolver: letsencrypt
 
           traefik.http.services.shlink-web-client.loadbalancer.server.port: "80"
-
-          com.datadoghq.ad.check_names: '["http_check"]'
-          com.datadoghq.ad.init_configs: '[{}]'
-          com.datadoghq.ad.instances: '[{"name":"shlink-web-client","url":"https://shlink.{{ common_tld | string }}","username":"{{ htpasswd.username | string }}","password":"{{ htpasswd.password | string }}"}]'

@@ -13,6 +13,7 @@ qbittorrent_environment_variables:
   WEBUI_PORT: "{{ qbittorrent_webui_port }}"
 
 qbittorrent_docker_additional_options:
+  hostname: "{{ qbittorrent_name }}"
   labels:
     traefik.http.routers.qbittorrent.entrypoints: "web"
     traefik.http.routers.qbittorrent.middlewares: "redirect@file"
@@ -23,10 +24,6 @@ qbittorrent_docker_additional_options:
     traefik.http.routers.qbittorrent-secure.tls.certresolver: "letsencrypt"
 
     traefik.http.services.qbittorrent.loadbalancer.server.port: "8090"
-
-    com.datadoghq.ad.check_names: '["http_check"]'
-    com.datadoghq.ad.init_configs: '[{}]'
-    com.datadoghq.ad.instances: '[{"name":"{{ qbittorrent_name }}","url":"https://{{ qbittorrent_name }}.{{ common_tld | string }}","username":"{{ htpasswd.username | string }}","password":"{{ htpasswd.password | string }}"}]'
 
 qbittorrent_config:
   Preferences.Downloads\UseIncompleteExtension: 'true'

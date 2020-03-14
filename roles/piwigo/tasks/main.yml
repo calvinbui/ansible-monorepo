@@ -4,6 +4,7 @@
   set_fact:
     piwigo_container_parameters:
       name: "{{ piwigo_name }}"
+      hostname: "{{ piwigo_name }}"
       image: "{{ piwigo_image }}"
       state: started
       published_ports: "{{ piwigo_ports }}"

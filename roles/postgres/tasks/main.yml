@@ -8,6 +8,7 @@
 - name: Create Postgres container
   docker_container:
     name: "{{ postgres_name }}"
+    hostname: "{{ postgres_name }}"
     image: "{{ postgres_image }}"
     state: started
     published_ports: "{{ postgres_ports | default(omit) }}"
@@ -16,6 +17,3 @@
     env: "{{ postgres_environment_variables | default(omit) }}"
     labels:
       traefik.enable: "false"
-      com.datadoghq.ad.check_names: '["postgres"]'
-      com.datadoghq.ad.init_configs: '[{}]'
-      com.datadoghq.ad.instances: '[{"host":"%%host%%","port":"5432","username":"{{ postgres_environment_variables.POSTGRES_USER }}","password":"{{ postgres_environment_variables.POSTGRES_PASSWORD | string }}","dbname":"{{ postgres_environment_variables.POSTGRES_DB }}"}]'

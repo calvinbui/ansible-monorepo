@@ -26,6 +26,7 @@
     - name: Create Unifi Container
       docker_container:
         name: unifi
+        hostname: unifi
         image: linuxserver/unifi-controller:LTS
         env:
           PUID: "{{ common_user_id }}"
@@ -37,7 +38,3 @@
             ipv4_address: "{{ network.prefix }}.3"
         labels:
           traefik.enable: "false"
-
-          com.datadoghq.ad.check_names: '["http_check"]'
-          com.datadoghq.ad.init_configs: '[{}]'
-          com.datadoghq.ad.instances: '[{"name":"{{ unifi_name }}","url":"https://{{ unifi_name }}.{{ common_local_tld | string }}:8443"}]'

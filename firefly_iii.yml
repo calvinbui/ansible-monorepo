@@ -55,6 +55,7 @@
     - name: Create Firefly container
       docker_container:
         name: "{{ firefly_name }}"
+        hostname: "{{ firefly_name }}"
         image: jc5x/firefly-iii
         volumes:
           - "{{ firefly_app_directory }}/export:/var/www/firefly-iii/storage/export"
@@ -81,7 +82,3 @@
           traefik.http.routers.firefly-secure.tls.certresolver: letsencrypt
 
           traefik.http.services.firefly.loadbalancer.server.port: "80"
-
-          com.datadoghq.ad.check_names: '["http_check"]'
-          com.datadoghq.ad.init_configs: '[{}]'
-          com.datadoghq.ad.instances: '[{"name":"{{ firefly_name }}","url":"https://{{ firefly_name }}.{{ common_tld | string }}"}]'

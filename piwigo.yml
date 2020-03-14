@@ -24,9 +24,6 @@
 
         traefik.http.services.piwigo.loadbalancer.server.port: "80"
 
-        com.datadoghq.ad.check_names: '["http_check"]'
-        com.datadoghq.ad.init_configs: '[{}]'
-        com.datadoghq.ad.instances: '[{"name":"{{ piwigo_name }}","url":"https://{{ piwigo_name }}.{{ common_tld | string }}"}]'
     apt_install_packages:
       - name:
           - libwww-perl

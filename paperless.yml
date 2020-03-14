@@ -27,6 +27,7 @@
     - name: Create Paperless webserver container
       docker_container:
         name: "{{ paperless_name }}-webserver"
+        hostname: "{{ paperless_name }}-webserver"
         image: thepaperlessproject/paperless
         command:
           - gunicorn
@@ -52,12 +53,10 @@
 
           traefik.http.services.paperless.loadbalancer.server.port: "8000"
 
-          com.datadoghq.ad.check_names: '["http_check"]'
-          com.datadoghq.ad.init_configs: '[{}]'
-          com.datadoghq.ad.instances: '[{"name":"{{ paperless_name }}","url":"https://{{ paperless_name }}.{{ common_tld | string }}"}]'
     - name: Create Paperless consumer container
       docker_container:
         name: "{{ paperless_name }}-consumer"
+        hostname: "{{ paperless_name }}-consumer"
         image: thepaperlessproject/paperless
         command:
           - document_consumer

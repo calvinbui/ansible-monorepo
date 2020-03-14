@@ -50,6 +50,7 @@
     - name: Create Mattermost container
       docker_container:
         name: "{{ mattermost_name }}"
+        hostname: "{{ mattermost_name }}"
         image: mattermost/mattermost-team-edition:5
         volumes:
           - "{{ mattermost_app_directory }}/config:/mattermost/config"
@@ -76,7 +77,3 @@
           traefik.http.routers.mattermost-secure.tls.certresolver: letsencrypt
 
           traefik.http.services.mattermost.loadbalancer.server.port: "8065"
-
-          com.datadoghq.ad.check_names: '["http_check"]'
-          com.datadoghq.ad.init_configs: '[{}]'
-          com.datadoghq.ad.instances: '[{"name":"{{ mattermost_name }}","url":"https://{{ mattermost_name }}.{{ common_tld | string }}"}]'

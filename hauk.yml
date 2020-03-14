@@ -36,6 +36,7 @@
     - name: Create Hauk container
       docker_container:
         name: "{{ hauk_name }}"
+        hostname: "{{ hauk_name }}"
         image: bilde2910/hauk
         volumes:
           - "{{ hauk_config_directory }}:/etc/hauk"
@@ -48,7 +49,3 @@
           traefik.http.routers.hauk-secure.tls.certresolver: letsencrypt
 
           traefik.http.services.hauk.loadbalancer.server.port: "80"
-
-          com.datadoghq.ad.check_names: '["http_check"]'
-          com.datadoghq.ad.init_configs: '[{}]'
-          com.datadoghq.ad.instances: '[{"name":"{{ hauk_name }}","url":"https://{{ hauk_name }}.{{ common_tld | string }}"}]'

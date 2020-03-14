@@ -27,6 +27,7 @@
     - name: Create Grocy container
       docker_container:
         name: "{{ grocy_name }}"
+        hostname: "{{ grocy_name }}"
         image: linuxserver/grocy
         volumes:
           - "{{ grocy_config_directory }}:/config"
@@ -43,7 +44,3 @@
           traefik.http.routers.grocy-secure.tls.certresolver: letsencrypt
 
           traefik.http.services.grocy.loadbalancer.server.port: "80"
-
-          com.datadoghq.ad.check_names: '["http_check"]'
-          com.datadoghq.ad.init_configs: '[{}]'
-          com.datadoghq.ad.instances: '[{"name":"{{ grocy_name }}","url":"https://{{ grocy_name }}.{{ common_tld | string }}"}]'

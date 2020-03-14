@@ -11,6 +11,7 @@ radarr_environment_variables:
   TZ: "{{ common_timezone }}"
 
 radarr_docker_additional_options:
+  hostname: "{{ radarr_name }}"
   labels:
     traefik.http.routers.radarr.entrypoints: "web"
     traefik.http.routers.radarr.middlewares: "redirect@file"
@@ -21,10 +22,6 @@ radarr_docker_additional_options:
     traefik.http.routers.radarr-secure.tls.certresolver: "letsencrypt"
 
     traefik.http.services.radarr.loadbalancer.server.port: "7878"
-
-    com.datadoghq.ad.check_names: '["http_check"]'
-    com.datadoghq.ad.init_configs: '[{}]'
-    com.datadoghq.ad.instances: '[{"name":"{{ radarr_name }}","url":"https://{{ radarr_name }}.{{ common_tld | string }}","username":"{{ htpasswd.username | string }}","password":"{{ htpasswd.password | string }}"}]'
 
 radarr_config:
   ApiKey: !vault |

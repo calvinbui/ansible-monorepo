@@ -4,6 +4,7 @@ portainer_name: portainer
 portainer_image: portainer/portainer
 portainer_config_directory: "{{ common_directory }}/portainer"
 portainer_docker_additional_options:
+  hostname: "{{ portainer_name }}"
   networks:
     - name: "{{ network.name }}"
       ipv4_address: "{{ network.prefix }}.192"
@@ -18,7 +19,3 @@ portainer_docker_additional_options:
     traefik.http.routers.portainer-secure.tls.certresolver: letsencrypt
 
     traefik.http.services.portainer.loadbalancer.server.port: "9000"
-
-    com.datadoghq.ad.check_names: '["http_check"]'
-    com.datadoghq.ad.init_configs: '[{}]'
-    com.datadoghq.ad.instances: '[{"name":"{{ portainer_name }}","url":"https://{{ portainer_name }}.{{ common_tld | string }}","username":"{{ htpasswd.username | string }}","password":"{{ htpasswd.password | string }}"}]'

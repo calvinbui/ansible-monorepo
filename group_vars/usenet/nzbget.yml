@@ -10,6 +10,7 @@ nzbget_environment_variables:
   TZ: "{{ common_timezone }}"
 
 nzbget_docker_additional_options:
+  hostname: "{{ nzbget_name }}"
   labels:
     traefik.http.routers.nzbget.entrypoints: "web"
     traefik.http.routers.nzbget.middlewares: "redirect@file"
@@ -20,10 +21,6 @@ nzbget_docker_additional_options:
     traefik.http.routers.nzbget-secure.tls.certresolver: "letsencrypt"
 
     traefik.http.services.nzbget.loadbalancer.server.port: "6789"
-
-    com.datadoghq.ad.check_names: '["http_check"]'
-    com.datadoghq.ad.init_configs: '[{}]'
-    com.datadoghq.ad.instances: '[{"name":"{{ nzbget_name }}","url":"https://{{ nzbget_name }}.{{ common_tld | string }}","username":"{{ htpasswd.username | string }}","password":"{{ htpasswd.password | string }}"}]'
 
 nzbget_config:
   MainDir: '/downloads'

@@ -8,6 +8,7 @@
 - name: Create MariaDB container
   docker_container:
     name: "{{ mariadb_name }}"
+    hostname: "{{ mariadb_name }}"
     image: "{{ mariadb_image }}"
     state: started
     published_ports: "{{ mariadb_ports | default(omit) }}"
@@ -17,6 +18,3 @@
     env: "{{ mariadb_environment_variables | default(omit) }}"
     labels:
       traefik.enable: "false"
-      com.datadoghq.ad.check_names: '["mysql"]'
-      com.datadoghq.ad.init_configs: '[{}]'
-      com.datadoghq.ad.instances: '[{"server":"%%host%%","port":"3306","user":"root","pass":"{{ mariadb_environment_variables.MYSQL_ROOT_PASSWORD | string }}"}]'

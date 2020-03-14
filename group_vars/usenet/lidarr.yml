@@ -11,6 +11,7 @@ lidarr_environment_variables:
   TZ: "{{ common_timezone }}"
 
 lidarr_docker_additional_options:
+  hostname: "{{ lidarr_name }}"
   labels:
     traefik.http.routers.lidarr.entrypoints: "web"
     traefik.http.routers.lidarr.middlewares: "redirect@file"
@@ -21,10 +22,6 @@ lidarr_docker_additional_options:
     traefik.http.routers.lidarr-secure.tls.certresolver: "letsencrypt"
 
     traefik.http.services.lidarr.loadbalancer.server.port: "8686"
-
-    com.datadoghq.ad.check_names: '["http_check"]'
-    com.datadoghq.ad.init_configs: '[{}]'
-    com.datadoghq.ad.instances: '[{"name":"{{ lidarr_name }}","url":"https://{{ lidarr_name }}.{{ common_tld | string }}","username":"{{ htpasswd.username | string }}","password":"{{ htpasswd.password | string }}"}]'
 
 lidarr_config:
   ApiKey: !vault |

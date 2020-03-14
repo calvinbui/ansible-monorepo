@@ -60,6 +60,7 @@
     - name: Create Matomo container
       docker_container:
         name: "{{ matomo_name }}"
+        hostname: "{{ matomo_name }}"
         image: matomo:3-fpm-alpine
         volumes:
           - "{{ matomo_app_directory }}:/var/www/html"
@@ -83,6 +84,7 @@
     - name: Create Matomo NGINX container
       docker_container:
         name: "{{ matomo_name }}-nginx"
+        hostname: "{{ matomo_name }}-nginx"
         image: nginx:alpine
         volumes:
           - "{{ matomo_app_directory }}:/var/www/html:ro"
@@ -98,7 +100,3 @@
           traefik.http.routers.matomo-secure.rule: "Host(`{{ matomo_name }}.{{ common_tld }}`)"
 
           traefik.http.services.matomo.loadbalancer.server.port: "80"
-
-          com.datadoghq.ad.check_names: '["http_check"]'
-          com.datadoghq.ad.init_configs: '[{}]'
-          com.datadoghq.ad.instances: '[{"name":"{{ matomo_name }}","url":"https://{{ matomo_name }}.{{ common_tld | string }}"}]'

@@ -5,32 +5,7 @@
     network: "{{ networks.user }}"
     bookstack_app_url: "https://{{ bookstack_name }}.{{ common_tld }}"
     bookstack_name: bookstack
-    bookstack_image: linuxserver/bookstack
     bookstack_config_directory: "{{ common_directory }}/bookstack/bookstack"
-    bookstack_volumes:
-      - "{{ bookstack_config_directory }}:/config"
-    bookstack_environment_variables:
-      PUID: "{{ common_user_id }}"
-      PGID: "{{ common_group_id }}"
-      DB_HOST: "{{ mariadb_name }}.{{ network.name }}"
-      DB_USER: root
-      DB_PASS: "{{ mariadb_environment_variables.MYSQL_ROOT_PASSWORD }}"
-      DB_DATABASE: "{{ mariadb_environment_variables.MYSQL_DATABASE }}"
-      APP_URL: "{{ bookstack_app_url | string }}"
-    bookstack_docker_additional_options:
-      labels:
-        traefik.http.routers.bookstack.entrypoints: "web"
-        traefik.http.routers.bookstack.middlewares: "redirect@file"
-
-        traefik.http.routers.bookstack-secure.entrypoints: "web-secure"
-        traefik.http.routers.bookstack-secure.tls: "true"
-        traefik.http.routers.bookstack-secure.tls.certresolver: letsencrypt
-
-        traefik.http.services.bookstack.loadbalancer.server.port: "80"
-
-        com.datadoghq.ad.check_names: '["http_check"]'
-        com.datadoghq.ad.init_configs: '[{}]'
-        com.datadoghq.ad.instances: '[{"name":"{{ bookstack_name }}","url":"{{ bookstack_app_url | string }}"}]'
     bookstack_env_options:
       - WKHTMLTOPDF=/usr/bin/wkhtmltopdf
       - DRAWIO=true
@@ -64,6 +39,66 @@
       comparisons:
         env: allow_more_present
         labels: allow_more_present
+  handlers:
+    - name: Restart BookStack
+      shell: docker restart "{{ bookstack_name }}"
+
   roles:
     - mariadb
-    - bookstack
+  tasks:
+    - name: Create BookStack directory
+      file:
+        path: "{{ bookstack_config_directory }}"
+        state: directory
+
+    - name: Set Docker container parameters
+      set_fact:
+        bookstack_container_parameters:
+
+    - name: Create Bookstack container
+      docker_container:
+        name: "{{ bookstack_name }}"
+        image: linuxserver/bookstack
+        state: started
+        volumes:
+          - "{{ bookstack_config_directory }}:/config"
+        env:
+          PUID: "{{ common_user_id }}"
+          PGID: "{{ common_group_id }}"
+          DB_HOST: "{{ mariadb_name }}.{{ network.name }}"
+          DB_USER: root
+          DB_PASS: "{{ mariadb_environment_variables.MYSQL_ROOT_PASSWORD }}"
+          DB_DATABASE: "{{ mariadb_environment_variables.MYSQL_DATABASE }}"
+          APP_URL: "{{ bookstack_app_url | string }}"
+        hostname: "{{ bookstack_name }}"
+        labels:
+          traefik.http.routers.bookstack.entrypoints: "web"
+          traefik.http.routers.bookstack.middlewares: "redirect@file"
+
+          traefik.http.routers.bookstack-secure.entrypoints: "web-secure"
+          traefik.http.routers.bookstack-secure.tls: "true"
+          traefik.http.routers.bookstack-secure.tls.certresolver: letsencrypt
+
+          traefik.http.services.bookstack.loadbalancer.server.port: "80"
+      register: bookstack_container
+
+    - name: Wait for .env file
+      wait_for:
+        path: "{{ bookstack_config_directory }}/www/.env"
+      when: bookstack_container is changed
+
+    - name: Configure Bookstack .env
+      lineinfile:
+        dest: "{{ bookstack_config_directory }}/www/.env"
+        regexp: "^{{ item.split('=')[0] }}="
+        line: "{{ item }}"
+      loop: "{{ bookstack_env_options }}"
+      notify: Restart BookStack
+
+    - name: Configure PHP options
+      lineinfile:
+        dest: "{{ bookstack_config_directory }}/php/php-local.ini"
+        regexp: "^{{ item.split('=')[0] }}="
+        line: "{{ item }}"
+      loop: "{{ bookstack_php_options }}"
+      notify: Restart BookStack

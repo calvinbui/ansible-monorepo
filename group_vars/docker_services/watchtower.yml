@@ -3,6 +3,7 @@
 watchtower_name: watchtower
 watchtower_image: containrrr/watchtower
 watchtower_docker_additional_options:
+  hostname: "{{ watchtower_name }}"
   networks:
     - name: "{{ networks.pub.name }}"
   dns_servers: "{{ networks.pub.dns }}"

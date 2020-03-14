@@ -10,6 +10,7 @@ nzbhydra_environment_variables:
   TZ: "{{ common_timezone }}"
 
 nzbhydra_docker_additional_options:
+  hostname: "{{ nzbhydra_name }}"
   labels:
     traefik.http.routers.nzbhydra.entrypoints: "web"
     traefik.http.routers.nzbhydra.middlewares: "redirect@file"
@@ -20,10 +21,6 @@ nzbhydra_docker_additional_options:
     traefik.http.routers.nzbhydra-secure.tls.certresolver: "letsencrypt"
 
     traefik.http.services.nzbhydra.loadbalancer.server.port: "5076"
-
-    com.datadoghq.ad.check_names: '["http_check"]'
-    com.datadoghq.ad.init_configs: '[{}]'
-    com.datadoghq.ad.instances: '[{"name":"{{ nzbhydra_name }}","url":"https://{{ nzbhydra_name }}.{{ common_tld | string }}","username":"{{ htpasswd.username | string }}","password":"{{ htpasswd.password | string }}"}]'
 
 nzbhydra_config:
   main.apiKey: !vault |

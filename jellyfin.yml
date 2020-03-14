@@ -27,6 +27,7 @@
     - name: Create Jellyfin Container
       docker_container:
         name: jellyfin
+        hostname: jellyfin
         image: linuxserver/jellyfin
         env:
           PUID: "{{ common_user_id }}"
@@ -41,7 +42,3 @@
             ipv4_address: "{{ network.prefix }}.24"
         labels:
           traefik.enable: "false"
-
-          com.datadoghq.ad.check_names: '["http_check"]'
-          com.datadoghq.ad.init_configs: '[{}]'
-          com.datadoghq.ad.instances: '[{"name":"{{ jellyfin_name }}","url":"https://{{ jellyfin_name }}.{{ common_local_tld | string }}:8920"}]'

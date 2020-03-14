@@ -52,6 +52,7 @@
     - name: Create Monica container
       docker_container:
         name: "{{ monica_name }}"
+        hostname: "{{ monica_name }}"
         image: monicahq/monicahq
         volumes:
           - "{{ monica_config_directory }}:/var/www/monica/storage"
@@ -71,7 +72,3 @@
           traefik.http.routers.monica-secure.tls.certresolver: letsencrypt
 
           traefik.http.services.monica.loadbalancer.server.port: "80"
-
-          com.datadoghq.ad.check_names: '["http_check"]'
-          com.datadoghq.ad.init_configs: '[{}]'
-          com.datadoghq.ad.instances: '[{"name":"{{ monica_name }}","url":"https://{{ monica_name }}.{{ common_tld | string }}"}]'

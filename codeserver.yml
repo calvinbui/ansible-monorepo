@@ -33,6 +33,7 @@
     - name: Create code-server Container
       docker_container:
         name: vscode
+        hostname: vscode
         image: codercom/code-server
         command: # to support golang
           - --security-opt
@@ -51,7 +52,3 @@
           traefik.http.routers.codeserver-secure.tls.certresolver: letsencrypt
 
           traefik.http.services.codeserver.loadbalancer.server.port: "8080"
-
-          com.datadoghq.ad.check_names: '["http_check"]'
-          com.datadoghq.ad.init_configs: '[{}]'
-          com.datadoghq.ad.instances: '[{"name":"{{ codeserver_name }}","url":"https://{{ codeserver_name }}.{{ common_tld | string }}"}]'
