@@ -10,7 +10,7 @@ traefik_docker_additional_options:
   # for static port forwarding
   networks:
     - name: "{{ network.name }}"
-      ipv4_address: "{{ network.prefix }}.10"
+      ipv4_address: "{{ network.prefix }}.193"
   labels:
     traefik.enable: "false"
     com.datadoghq.ad.check_names: '["http_check"]'

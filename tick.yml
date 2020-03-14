@@ -16,7 +16,7 @@
       31666630396564633165343433326638636533343930393639343063666531313332646161346464
       3530346533656332616433366464373962623434306336613730
     influxdb_retention: "72h"
-    influxdb_ip: "{{ network.prefix }}.7"
+    influxdb_ip: "{{ network.prefix }}.194"
 
     kapacitor_username: "tickkapacitoruser"
     kapacitor_password: !vault |

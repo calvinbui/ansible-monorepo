@@ -2,7 +2,7 @@
 - hosts: homelab
   become: true
   vars:
-    network: "{{ networks.pub }}"
+    network: "{{ networks.mgmt }}"
     graylog_name: graylog
     graylog_directory: "{{ common_directory }}/graylog"
     graylog_app_directory: "{{ graylog_directory }}/graylog"

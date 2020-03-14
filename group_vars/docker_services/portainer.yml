@@ -6,7 +6,7 @@ portainer_config_directory: "{{ common_directory }}/portainer"
 portainer_docker_additional_options:
   networks:
     - name: "{{ network.name }}"
-      ipv4_address: "{{ network.prefix }}.9"
+      ipv4_address: "{{ network.prefix }}.192"
   command: '--no-auth --no-analytics'
   labels:
     traefik.http.routers.portainer.entrypoints: "web"
