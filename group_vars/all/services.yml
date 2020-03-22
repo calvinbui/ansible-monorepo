@@ -149,10 +149,20 @@ http_services:
     subtitle: Logging
     url: https://graylog.{{ common_tld }}
     group: "Monitoring"
-  - name: Chronograf
-    logo: assets/icons/chronograf.svg
-    subtitle: Dashboards and alerting
-    url: https://chronograf.{{ common_tld }}
+  - name: Prometheus
+    logo: assets/icons/prometheus.png
+    subtitle: Monitoring system
+    url: https://prometheus.{{ common_tld }}
+    group: "Monitoring"
+  - name: Alertmanager
+    logo: assets/icons/alertmanager.png
+    subtitle: Alerting
+    url: https://alertmanager.{{ common_tld }}
+    group: "Monitoring"
+  - name: Grafana
+    logo: assets/icons/grafana.png
+    subtitle: Dashboards
+    url: https://grafana.{{ common_tld }}
     group: "Monitoring"
 
   - name: FreeNAS

@@ -1,0 +1,17 @@
+---
+
+global:
+  slack_api_url: {{ alertmanager_slack_url }}
+
+templates:
+  - '/etc/alertmanager/template/*.tmpl'
+
+receivers:
+  - name: slack
+    slack_configs:
+      - channel: 'homelab'
+        send_resolved: true
+
+route:
+  receiver: slack
+  repeat_interval: 24h

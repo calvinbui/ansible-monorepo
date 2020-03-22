@@ -1,0 +1,15 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
+---
+modules:
+  http:
+    prober: http
+    timeout: 15s
+    http:
+      method: GET
+      valid_status_codes:
+        - 200
+        - 301
+        - 401
+      fail_if_ssl: false
+      fail_if_not_ssl: true
+      preferred_ip_protocol: "ipv4"
