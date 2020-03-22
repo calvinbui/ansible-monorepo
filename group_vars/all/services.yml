@@ -121,7 +121,7 @@ http_services:
   - name: OctoPrint
     logo: assets/icons/octoprint.png
     subtitle: 3 D Print Controller
-    url: http://octopi.{{ common_local_tld }}
+    url: https://octopi.{{ common_local_tld }}
     group: "Tools"
   - name: Piwigo
     logo: assets/icons/piwigo.png
