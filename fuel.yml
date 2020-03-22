@@ -3,9 +3,6 @@
 - hosts: homelab
   become: true
   vars:
-    fuel_name: fuel
-    fuel_directory: "{{ common_directory }}/fuel"
-    fuel_image: fuel
     network: "{{ networks.pub }}"
   module_defaults:
     docker_container:
@@ -21,29 +18,11 @@
         env: allow_more_present
         labels: allow_more_present
   tasks:
-    - name: Clone repo
-      git:
-        repo: https://github.com/freyta/7Eleven-Python
-        dest: "{{ fuel_directory }}"
-        update: true
-      register: clone_repo
-
-    - name: Build image
-      docker_image:
-        build:
-          path: "{{ fuel_directory }}"
-          pull: true
-          network: "{{ networks.mgmt.name }}"
-        name: "{{ fuel_image }}"
-        source: build
-        state: present
-        force_source: true
-
-    - name: Create 7Eleven Python
+    - name: Create 7eleven-python container
       docker_container:
-        name: "{{ fuel_name }}"
-        hostname: "{{ fuel_name }}"
-        image: "{{ fuel_image }}"
+        name: fuel
+        hostname: fuel
+        image: freyta/7eleven-python
         recreate: true
         env:
           TZ: "{{ common_timezone }}"
