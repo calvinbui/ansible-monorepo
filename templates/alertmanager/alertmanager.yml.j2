@@ -1,3 +1,4 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
 ---
 
 global:
@@ -7,11 +8,20 @@ templates:
   - '/etc/alertmanager/template/*.tmpl'
 
 receivers:
-  - name: slack
+  - name: mattermost
     slack_configs:
-      - channel: 'homelab'
+      - channel: '#home-lab'
         send_resolved: true
+        {%- raw %}
+        title: |-
+          {{ range .Alerts }}{{ .Annotations.title }}{{ end }}
+        text: >-
+          {{ range .Alerts }}
+            {{ .Annotations.description }}
+          {{ end }}
+        {% endraw %}
 
 route:
-  receiver: slack
+  receiver: mattermost
   repeat_interval: 24h
+  group_by: ['instance','alertname','name']

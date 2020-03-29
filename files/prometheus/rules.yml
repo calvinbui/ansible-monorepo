@@ -1,0 +1,115 @@
+---
+
+groups:
+  - name: Container Down
+    rules:
+      - alert: Container Down
+        expr: container_last_seen{name=~".+"} < time()-30
+        for: 5m
+        labels:
+          severity: error
+        annotations:
+          title: "Container missing"
+          description: "The container {{ $labels.name }} was last seen a while ago"
+  - name: Container CPU
+    rules:
+      - alert: Container CPU
+        expr: sum(rate(container_cpu_usage_seconds_total{name=~".+"}[5m])) by (name,host) * 100 > 90
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          title: "Container CPU Usage"
+          description: "The container {{ $labels.name }} CPU usage is high"
+  - name: Disk Read-Only
+    rules:
+      - alert: Disk Read-Only
+        expr: node_filesystem_readonly == 1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          title: "Disk Read-Only"
+          description: "The device {{ $labels.device }} mounted at {{ $labels.mountpoint }} is read-only"
+  - name: Disk Space
+    rules:
+      - alert: Disk Space
+        expr: (node_filesystem_size_bytes - node_filesystem_free_bytes)/node_filesystem_size_bytes > 0.95
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          title: "Disk Space"
+          description: "The device {{ $labels.device }} mounted at {{ $labels.mountpoint }} is almost full"
+  - name: HTTP
+    rules:
+      - alert: HTTP Connection
+        expr: probe_success{instance!~".*ipmi.*"} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          title: "HTTP Connection"
+          description: "The URL {{ $labels.instance }} is not responding successfully"
+      - alert: HTTP SSL
+        expr: probe_http_ssl{instance!~".*ipmi.*"} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          title: "SSL Connection"
+          description: "The SSL Connection to {{ $labels.instance }} is unsuccessful"
+      - alert: Certificate
+        expr: probe_ssl_earliest_cert_expiry{job="blackbox"} - time() < 86400 * 7
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          title: "Certificate is expiring soon"
+          description: "The certificate for {{ $labels.instance }} is expiring soon"
+  - name: Exporter
+    rules:
+      - alert: Exporter Down
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: error
+        annotations:
+          title: "Exporter Not Responding"
+          description: "The exporter {{ $labels.job }} for instance {{ $labels.instance }} is not responding"
+  - name: Memory
+    rules:
+      - alert: Memory Usage
+        expr: (node_memory_MemTotal_bytes-node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.90
+        for: 5m
+        labels:
+          severity: error
+        annotations:
+          title: "Memory Usage"
+          description: "Memory usage for {{ $labels.instance }} is high"
+  - name: NUT
+    rules:
+      - alert: NUT Driver
+        expr: namedprocess_namegroup_num_procs{groupname="usbhid-ups"} != 1
+        for: 1m
+        labels:
+          severity: error
+        annotations:
+          title: "NUT Driver Service"
+          description: "The nut-driver service is abnormal"
+      - alert: NUT Client
+        expr: namedprocess_namegroup_num_procs{groupname="upsmon"} != 2
+        for: 1m
+        labels:
+          severity: error
+        annotations:
+          title: "NUT Client Service"
+          description: "The nut-client service is abnormal"
+      - alert: NUT Server
+        expr: namedprocess_namegroup_num_procs{groupname="upsd"} != 1
+        for: 1m
+        labels:
+          severity: error
+        annotations:
+          title: "NUT Server Service"
+          description: "The nut-server service is abnormal"

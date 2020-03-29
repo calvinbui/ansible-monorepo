@@ -35,6 +35,7 @@
     prometheus_config_directory: "{{ monitoring_directory }}/prometheus"
     prometheus_data_directory: "{{ prometheus_config_directory }}/data/"
     prometheus_config: "{{ prometheus_config_directory }}/prometheus.yml"
+    prometheus_rules: "{{ prometheus_config_directory }}/rules.yml"
     prometheus_scrape_config_templates:
       - templates/blackbox_exporter/scrape_config.yml.j2
       - templates/node_exporter/scrape_config.yml.j2
@@ -102,6 +103,8 @@
           - '--path.rootfs=/host'
           - '--collector.systemd'
           - '--collector.mountstats'
+          - '--collector.ntp'
+          - '--collector.filesystem.ignored-fs-types=^(tmpfs|vfat|rpc_pipefs|fuse.lxcfs|rootfs|squashfs|nsfs)$'
           - '--no-collector.arp'
           - '--no-collector.bcache'
           - '--no-collector.bonding'
@@ -225,6 +228,11 @@
       template:
         src: templates/prometheus/prometheus.yml.j2
         dest: "{{ prometheus_config }}"
+      notify: Restart prometheus
+    - name: Copy Prometheus rules
+      copy:
+        src: files/prometheus/rules.yml
+        dest: "{{ prometheus_rules }}"
       notify: Restart prometheus
     # https://prometheus.io/docs/prometheus/latest/installation/
     - name: Create Prometheus container
