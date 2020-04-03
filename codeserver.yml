@@ -35,9 +35,7 @@
         name: vscode
         hostname: vscode
         image: codercom/code-server
-        command: # to support golang
-          - --security-opt
-          - seccomp=unconfined
+        command:
           - --disable-telemetry
         env:
           PASSWORD: "{{ codeserver_pass }}"
