@@ -5,10 +5,13 @@
     filename = "/dynamic_conf.toml"
 
 [entryPoints.web]
-  address = ":80"
+  address = ":80/tcp"
 
 [entryPoints.web-secure]
-  address = ":443"
+  address = ":443/tcp"
+
+[entryPoints.jitsi]
+  address = ":10000/udp"
 
 [certificatesResolvers.letsencrypt.acme]
   email = "{{ acme_email }}"
