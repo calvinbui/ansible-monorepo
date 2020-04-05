@@ -46,22 +46,20 @@
   handlers:
     - name: Restart Graylog
       shell: docker restart "{{ graylog_name }}"
+    - name: Restart Journalbeat
+      shell: docker restart journalbeat
   pre_tasks:
-    - name: Create Graylog directory
+    - name: Create Graylog directories
       file:
         path: "{{ graylog_directory }}"
         state: directory
+      loop:
+        - "{{ graylog_directory }}/journalbeat"
+        - "{{ graylog_app_directory }}"
   roles:
     - mongo
     - elasticsearch
   tasks:
-    - name: Create Graylog directory
-      file:
-        path: "{{ graylog_app_directory }}"
-        state: directory
-        owner: "1100"
-        group: "1100"
-
     - name: Create Graylog container
       docker_container:
         name: "{{ graylog_name }}"
@@ -104,6 +102,7 @@
           traefik.http.routers.graylog-secure.tls.certresolver: letsencrypt
 
           traefik.http.services.graylog.loadbalancer.server.port: "9000"
+      tags: graylog
 
     - name: Create Logspout container
       docker_container:
@@ -115,3 +114,25 @@
           - "syslog://{{ logging_ip }}:{{ logging_syslog_port }}"
         labels:
           traefik.enable: "false"
+      tags: logspout
+
+    - name: Template Journalbeat config
+      template:
+        src: templates/graylog/journalbeat.yml.j2
+        dest: "{{ graylog_directory }}/journalbeat/journalbeat.yml"
+      notify: Restart Journalbeat
+      tags: journalbeat
+
+    - name: Create Journalbeat container
+      docker_container:
+        name: journalbeat
+        image: mheese/journalbeat
+        volumes:
+           - /var/log/journal:/var/log/journal
+           - /etc/machine-id:/etc/machine-id
+           - /run/systemd:/run/systemd
+           - /etc/hostname:/etc/hostname:ro
+           - "{{ graylog_directory }}/journalbeat/journalbeat.yml:/journalbeat.yml:ro"
+        labels:
+          traefik.enable: "false"
+      tags: journalbeat
