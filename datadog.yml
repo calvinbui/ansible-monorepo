@@ -2,7 +2,7 @@
 - hosts: homelab
   become: true
   vars:
-    network: "{{ networks.mgmt }}"
+    network: "{{ networks.pub }}"
     datadog_dir: "{{ common_directory }}/datadog"
     datadog_api_key: !vault |
               $ANSIBLE_VAULT;1.1;AES256
@@ -29,5 +29,8 @@
         networks:
           - name: "{{ network.name }}"
         dns_servers: "{{ network.dns }}"
+        volumes:
+          - /proc/:/host/proc/:ro
+          - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
         labels:
           traefik.enable: "false"
