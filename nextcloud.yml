@@ -29,8 +29,8 @@
   roles:
     - mariadb
     - nextcloud
-    - onlyoffice
-    - collabora
+    - role: onlyoffice
+      tags: onlyoffice
   post_tasks:
     - name: Waits for Nextcloud
       wait_for:
