@@ -68,6 +68,15 @@ location:
     exclude_patterns:
         - '/mnt/source/graylog'
         - '/mnt/source/monitoring/prometheus/data'
+        - '/mnt/source/nextcloud/nextcloud/app/data/appdata_*/preview'
+        - '/mnt/source/nextcloud/nextcloud/build'
+        - '/mnt/source/jellyfin'
+        - '/mnt/source/unifi/data/backup'
+        - '/mnt/source/*/*/log'
+        - '/mnt/source/*/*/logs'
+        - '/mnt/source/*/logs'
+        - '/mnt/source/*/log'
+        - '/mnt/source/*/*.log'
         # - '*.pyc'
         # - ~/*/.cache
         # - /etc/ssl
