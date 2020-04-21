@@ -1,8 +1,7 @@
 ---
-
 qbittorrent_name: qbittorrent
 qbittorrent_image: linuxserver/qbittorrent
-qbittorrent_webui_port: '8090' # place in quotes
+qbittorrent_webui_port: "8090" # place in quotes
 qbittorrent_config_directory: "{{ common_directory }}/qbittorrent"
 qbittorrent_download_directory: "{{ common_directory_download }}"
 qbittorrent_environment_variables:
@@ -13,6 +12,9 @@ qbittorrent_environment_variables:
   WEBUI_PORT: "{{ qbittorrent_webui_port }}"
 
 qbittorrent_docker_additional_options:
+  networks:
+    - name: "{{ network.name }}"
+      ipv4_address: 192.168.4.2
   hostname: "{{ qbittorrent_name }}"
   labels:
     traefik.http.routers.qbittorrent.entrypoints: "web"
@@ -26,13 +28,14 @@ qbittorrent_docker_additional_options:
     traefik.http.services.qbittorrent.loadbalancer.server.port: "8090"
 
 qbittorrent_config:
-  Preferences.Downloads\UseIncompleteExtension: 'true'
+  Preferences.Downloads\UseIncompleteExtension: "true"
   Preferences.Downloads\TempPath: /downloads/Intermediate/
-  BitTorrent.Session\CreateTorrentSubfolder: 'true'
+  BitTorrent.Session\CreateTorrentSubfolder: "true"
   Preferences.Bittorrent\MaxRatio: 0
   Preferences.Connection\GlobalDLLimit: 10000
   Preferences.General\Locale: en_AU
   Preferences.WebUI\AuthSubnetWhitelist: 0.0.0.0/0
-  Preferences.WebUI\AuthSubnetWhitelistEnabled: 'true'
-  Preferences.WebUI\CSRFProtection: 'false'
-  Preferences.WebUI\ClickjackingProtection: 'false'
+  Preferences.WebUI\AuthSubnetWhitelistEnabled: "true"
+  Preferences.WebUI\CSRFProtection: "false"
+  Preferences.WebUI\ClickjackingProtection: "false"
+  Preferences.Connection\PortRangeMin: 26316

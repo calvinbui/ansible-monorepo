@@ -18,11 +18,19 @@
         labels: allow_more_present
   roles:
     - pip
-    - nzbget
-    - qbittorrent
-    - nzbhydra
-    - sonarr
-    - jdownloader
-    - radarr
-    - lidarr
-    - bazarr
+    - role: nzbget
+      tags: nzbget
+    - role: qbittorrent
+      tags: qbittorrent
+    - role: nzbhydra
+      tags: nzbhydra
+    - role: sonarr
+      tags: sonarr
+    - role: jdownloader
+      tags: jdownloader
+    - role: radarr
+      tags: radarr
+    - role: lidarr
+      tags: lidarr
+    - role: bazarr
+      tags: bazarr
