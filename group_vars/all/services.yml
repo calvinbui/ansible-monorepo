@@ -1,40 +1,40 @@
 ---
 
 http_services:
-  - name: Bazarr
-    logo: assets/icons/bazarr.png
-    subtitle: Manages and Downloads Subtitles
-    url: https://bazarr.{{ common_tld }}
+  - name: NZBGet
+    logo: assets/icons/nzbget.png
+    subtitle: Downloads Files From Usenet
+    url: https://nzbget.{{ common_tld }}
+    group: "Download"
+  - name: qBittorrent
+    logo: assets/icons/qbittorrent.svg
+    subtitle: Download Torrents
+    url: https://qbittorrent.{{ common_tld }}
     group: "Download"
   - name: JDownloader
     logo: assets/icons/jdownloader.png
     subtitle: Download Management Tool
     url: https://jdownloader.{{ common_tld }}
     group: "Download"
-  - name: NZBGet
-    logo: assets/icons/nzbget.png
-    subtitle: Downloads Files From Usenet
-    url: https://nzbget.{{ common_tld }}
-    group: "Download"
   - name: NZBHydra
     logo: assets/icons/nzbhydra.png
     subtitle: Meta Search For Nzb Indexers
     url: https://nzbhydra.{{ common_tld }}
-    group: "Download"
-  - name: Radarr
-    logo: assets/icons/radarr.png
-    subtitle: Manages and Downloads Movies
-    url: https://radarr.{{ common_tld }}
     group: "Download"
   - name: Sonarr
     logo: assets/icons/sonarr.png
     subtitle: Manages and Downloads TV Shows
     url: https://sonarr.{{ common_tld }}
     group: "Download"
-  - name: qBittorrent
-    logo: assets/icons/qbittorrent.svg
-    subtitle: Download Torrents
-    url: https://qbittorrent.{{ common_tld }}
+  - name: Radarr
+    logo: assets/icons/radarr.png
+    subtitle: Manages and Downloads Movies
+    url: https://radarr.{{ common_tld }}
+    group: "Download"
+  - name: Bazarr
+    logo: assets/icons/bazarr.png
+    subtitle: Manages and Downloads Subtitles
+    url: https://bazarr.{{ common_tld }}
     group: "Download"
   - name: Lidarr
     logo: assets/icons/lidarr.png
@@ -42,6 +42,11 @@ http_services:
     url: https://lidarr.{{ common_tld }}
     group: "Download"
 
+  - name: Nextcloud
+    logo: assets/icons/nextcloud.png
+    subtitle: File Sharing and Communication Platform
+    url: https://nextcloud.{{ common_tld }}
+    group: "Home"
   - name: Firefly III
     logo: assets/icons/firefly.png
     subtitle: Personal Finances Manager
@@ -77,17 +82,17 @@ http_services:
     subtitle: Issue Tracking
     url: https://thingstodo.atlassian.net
     group: "Home"
-  - name: Nextcloud
-    logo: assets/icons/nextcloud.png
-    subtitle: File Sharing and Communication Platform
-    url: https://nextcloud.{{ common_tld }}
-    group: "Home"
   - name: 7-Eleven Fuel Locker
     logo: assets/icons/711.svg
     subtitle: Check prices and lock them in
     url: https://fuel.{{ common_tld }}
     group: "Home"
 
+  - name: Jitsi
+    logo: assets/icons/jitsi.png
+    subtitle: Video Conferencing
+    url: https://jitsi.{{ common_tld }}
+    group: "Tools"
   - name: Shlink
     logo: assets/icons/shlink.png
     subtitle: Url Shortener
@@ -139,16 +144,6 @@ http_services:
     subtitle: Supermicro IPMI
     group: "Tools"
 
-  - name: Matomo
-    logo: assets/icons/matomo.png
-    subtitle: Web Analytics
-    url: https://matomo.{{ common_tld }}
-    group: "Monitoring"
-  - name: Graylog
-    logo: assets/icons/graylog.png
-    subtitle: Logging
-    url: https://graylog.{{ common_tld }}
-    group: "Monitoring"
   - name: Prometheus
     logo: assets/icons/prometheus.png
     subtitle: Monitoring system
@@ -163,6 +158,16 @@ http_services:
     logo: assets/icons/grafana.png
     subtitle: Dashboards
     url: https://grafana.{{ common_tld }}
+    group: "Monitoring"
+  - name: Graylog
+    logo: assets/icons/graylog.png
+    subtitle: Logging
+    url: https://graylog.{{ common_tld }}
+    group: "Monitoring"
+  - name: Matomo
+    logo: assets/icons/matomo.png
+    subtitle: Web Analytics
+    url: https://matomo.{{ common_tld }}
     group: "Monitoring"
 
   - name: FreeNAS
