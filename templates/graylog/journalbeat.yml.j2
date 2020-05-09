@@ -1,9 +1,0 @@
-journalbeat:
-  clean_field_names: true
-  kernel: true
-
-name: journalbeat
-
-output.logstash:
-  enabled: true
-  hosts: ["{{ graylog_name }}.{{ network.name }}:5044"]

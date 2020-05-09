@@ -159,11 +159,6 @@ http_services:
     subtitle: Dashboards
     url: https://grafana.{{ common_tld }}
     group: "Monitoring"
-  - name: Graylog
-    logo: assets/icons/graylog.png
-    subtitle: Logging
-    url: https://graylog.{{ common_tld }}
-    group: "Monitoring"
   - name: Matomo
     logo: assets/icons/matomo.png
     subtitle: Web Analytics
