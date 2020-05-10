@@ -21,9 +21,6 @@
       - domain: "unifi.{{ common_local_tld }}"
         method: --dns dns_cf
         script: "{{ acme_scripts_dir }}/unifi-docker.sh {{ acme_cert_dir }}/unifi.{{ common_local_tld }}/fullchain.cer {{ acme_cert_dir }}/unifi.{{ common_local_tld }}/unifi.{{ common_local_tld }}.key {{ common_directory }}/unifi/data"
-      - domain: "duplicati.{{ common_local_tld }}"
-        method: --dns dns_cf
-        script: "{{ acme_scripts_dir }}/duplicati.sh {{ acme_cert_dir }}/duplicati.{{ common_local_tld }} {{ common_directory }}/duplicati/cert.pfx"
       - domain: "jellyfin.{{ common_local_tld }}"
         method: --dns dns_cf
         script: "{{ acme_scripts_dir }}/jellyfin.sh {{ acme_cert_dir }}/jellyfin.{{ common_local_tld }} {{ common_directory }}/jellyfin/cert.pfx"
@@ -43,7 +40,7 @@
       git:
         repo: https://github.com/acmesh-official/acme.sh.git
         dest: "{{ acme_repo_dir }}"
-        version: 2.8.5
+        version: 2.8.6
     - name: Setup acme.sh
       shell: |
         ./acme.sh --install \
