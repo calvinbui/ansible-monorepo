@@ -143,12 +143,14 @@
         name: "{{ cadvisor_name }}"
         hostname: "{{ cadvisor_name }}"
         image: gcr.io/google-containers/cadvisor:latest
+        command:
+          - --housekeeping_interval=30s
+          - --storage_duration=1m
         volumes:
           - /:/rootfs:ro
-          - /var/run:/var/run:ro
+          - /var/run:/var/run:rw
           - /sys:/sys:ro
           - /var/lib/docker/:/var/lib/docker:ro
-          - /dev/disk/:/dev/disk:ro
         labels:
           traefik.enable: "false"
 

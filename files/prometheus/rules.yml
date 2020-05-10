@@ -41,6 +41,24 @@ groups:
         annotations:
           title: "Disk Space"
           description: "The device {{ $labels.device }} mounted at {{ $labels.mountpoint }} is almost full"
+  - name: Filesystem
+    rules:
+      - alert: FileSystem Writes
+        expr: sum(rate(container_fs_writes_bytes_total{pod_name!=""}[5m])) by (pod_name, device) > 100000
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          description: Pod {{ $labels.pod_name }} is writing to the filesystem on {{ $labels.pod_name }} at a high rate
+          summary: Pod Disk Write Usage High
+      - alert: FileSystem Reads
+        expr: sum(rate(container_fs_reads_bytes_total{pod_name!=""}[5m])) by (pod_name, device) > 100000
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          description: Pod {{ $labels.pod_name }} is reading from the filesystem on {{ $labels.pod_name }} at a high rate
+          summary: Pod Disk Read Usage High
   - name: HTTP
     rules:
       - alert: HTTP Connection
