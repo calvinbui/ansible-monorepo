@@ -5,7 +5,7 @@ groups:
     rules:
       - alert: Container Down
         expr: container_last_seen{name=~".+"} < time()-30
-        for: 1m
+        for: 5m
         labels:
           severity: error
         annotations:
