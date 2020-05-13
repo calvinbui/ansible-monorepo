@@ -145,7 +145,6 @@
         image: gcr.io/google-containers/cadvisor:latest
         command:
           - --housekeeping_interval=30s
-          - --storage_duration=1m
         volumes:
           - /:/rootfs:ro
           - /var/run:/var/run:rw
