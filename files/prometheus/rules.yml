@@ -4,7 +4,7 @@ groups:
   - name: Container Down
     rules:
       - alert: Container Down
-        expr: sum by (name) (container_last_seen{name=~".+"}) < time()-30
+        expr: time() - container_last_seen{name=~".+"} > 60
         for: 5m
         labels:
           severity: error
