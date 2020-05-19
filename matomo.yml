@@ -99,4 +99,7 @@
           traefik.http.routers.matomo-secure.tls.certresolver: letsencrypt
           traefik.http.routers.matomo-secure.rule: "Host(`{{ matomo_name }}.{{ common_tld }}`)"
 
+          traefik.http.routers.matomo-secure.middlewares: "matomo-compress"
+          traefik.http.middlewares.matomo-compress.compress: "true"
+
           traefik.http.services.matomo.loadbalancer.server.port: "80"
