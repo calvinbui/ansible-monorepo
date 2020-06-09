@@ -45,7 +45,11 @@
           - name: "{{ network.name }}"
             ipv4_address: "{{ network.prefix }}.2"
         labels:
-          traefik.http.routers.blueiris.service: blueiris
-          traefik.http.routers.blueiris.tls: "true"
-          traefik.http.routers.blueiris.tls.certresolver: letsencrypt
+          traefik.http.routers.blueiris.entrypoints: "web"
+          traefik.http.routers.blueiris.middlewares: "redirect@file"
+
+          traefik.http.routers.blueiris-secure.entrypoints: "web-secure"
+          traefik.http.routers.blueiris-secure.tls: "true"
+          traefik.http.routers.blueiris-secure.tls.certresolver: letsencrypt
+
           traefik.http.services.blueiris.loadbalancer.server.port: "81"
