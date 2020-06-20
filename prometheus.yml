@@ -205,7 +205,7 @@
       docker_container:
         name: alertmanager
         hostname: alertmanager
-        image: prom/alertmanager:v0.20.0
+        image: prom/alertmanager:latest
         command:
           - '--config.file=/etc/alertmanager/config.yml'
           - '--storage.path=/alertmanager'
@@ -240,7 +240,7 @@
       docker_container:
         name: prometheus
         hostname: prometheus
-        image: prom/prometheus:v2.16.0
+        image: prom/prometheus:latest
         command:
           - '--config.file=/etc/prometheus/prometheus.yml'
           # https://prometheus.io/docs/operating/security/
@@ -279,7 +279,7 @@
       docker_container:
         name: grafana
         hostname: grafana
-        image: grafana/grafana:6.7.1
+        image: grafana/grafana:latest
         volumes:
           - "{{ grafana_data_directory }}:/var/lib/grafana"
           - "{{ grafana_provisioning_directory }}:/etc/grafana/provisioning"
