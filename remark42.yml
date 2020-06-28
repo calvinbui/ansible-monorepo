@@ -1,0 +1,78 @@
+---
+- hosts: homelab
+  become: true
+  module_defaults:
+    docker_container:
+      keep_volumes: false
+      state: started
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      networks:
+        - name: "{{ network.name }}"
+      dns_servers: "{{ network.dns }}"
+      comparisons:
+        env: allow_more_present
+        labels: allow_more_present
+  vars:
+    remark42_subdomain: remark42
+    remark42_secret: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      31633035376637356634656238306338626135663937323132356262643234336561303934646565
+      3938303031346338333230623961393632636135323332620a643034303231313538663831323365
+      32396363383938616139366664663064666531356663663235383938633132626437393361353836
+      6263326236316531300a633431643662626563653836303961343764373762303662373539333764
+      63646338316262393030376230333935636666323635636164313033626137626331653964626365
+      3237666663386638393665383361643134383936653263653938
+    remark42_admin_password: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      33656238616561373632383037346462343265333962333736343837363365613866353233346537
+      6336373865366434663535633238393739323362393161350a303964333161366263353066333532
+      32653634633930383064393131353639356162313266396161303763373663323262623030303539
+      3266396334393235310a656430613338303835346533613731623062346133646235346639333436
+      39643538623838656264636137626434346463346633303838373363663062353161653963333364
+      3432626437336530316561656362306337356438653239653038
+    remark42_site: "calvin.me"
+    remark42_admin_shared_id: "github_52e797c0db366550d9b782bd82f58e8f16aba597"
+    network: "{{ networks.user }}"
+  tasks:
+    - name: Create remark42 config folder
+      file:
+        path: "{{ common_directory }}/remark42"
+        state: directory
+
+    - name: Create remark42 Container
+      docker_container:
+        name: remark42
+        hostname: remark42
+        image: umputun/remark42:latest
+        env:
+          REMARK_URL: "https://{{ remark42_subdomain }}.{{ common_tld }}"
+          SECRET: "{{ remark42_secret }}"
+          ADMIN_PASSWD: "{{ remark42_admin_password }}"
+          SITE: "{{ remark42_site }}"
+          SMTP_HOST: "{{ common_email_server }}"
+          SMTP_PORT: "{{ common_email_smtp_port }}"
+          SMTP_USERNAME: "{{ common_email_username }}"
+          SMTP_PASSWORD: "{{ common_email_password }}"
+          AUTH_ANON: "true"
+          AUTH_EMAIL_ENABLE: "true"
+          AUTH_GITHUB_CID: c644fdb0864bfb0d5ee8
+          AUTH_GITHUB_CSEC: 79ee4944cd26fc8e51bd28ce97b4c721e0e146e7
+          SMTP_TLS: "true"
+          ANON_VOTE: "true"
+          EMOJI: "true"
+          ADMIN_SHARED_ID: "{{ remark42_admin_shared_id }}"
+          TIME_ZONE: "{{ common_timezone }}"
+          MAX_BACKUP_FILES: 1 # i already do backups elsewhere
+        volumes:
+          - "{{ common_directory }}/remark42:/srv/var"
+        labels:
+          traefik.http.routers.remark42.entrypoints: "web"
+          traefik.http.routers.remark42.middlewares: "redirect@file"
+
+          traefik.http.routers.remark42-secure.entrypoints: "web-secure"
+          traefik.http.routers.remark42-secure.tls: "true"
+          traefik.http.routers.remark42-secure.tls.certresolver: letsencrypt
+
+          traefik.http.services.remark42.loadbalancer.server.port: "8080"
