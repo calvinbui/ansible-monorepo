@@ -104,14 +104,29 @@
 
           traefik.http.services.matomo.loadbalancer.server.port: "80"
 
-    - name: Symlink Piwik files
-      command:
-        cmd: "ln -sf {{ item.src }} {{ item.dest }}"
-        creates: "{{ item.dest }}"
-      args:
-        chdir: "{{ matomo_app_directory }}"
+    - name: "Copy piwik files"
+      copy:
+        src: "{{ matomo_app_directory }}/{{ item.src }}"
+        dest: "{{ matomo_app_directory }}/{{ item.dest }}"
+        remote_src: yes
       loop:
         - src: piwik.js
           dest: p.js
         - src: piwik.php
           dest: p.php
+
+    # https://github.com/matomo-org/matomo/issues/7364#issuecomment-564027185
+    - name: "Change strings"
+      command:
+        cmd: sed -i -e 's/&send_image=0/\&/g' p.js
+        warn: false
+      args:
+        chdir: "{{ matomo_app_directory }}"
+    - name: "Change 2nd string"
+      command:
+        cmd: sed -i -e 's/action_name=/send_image=0\&action_name=/g' p.js
+        warn: false
+      args:
+        chdir: "{{ matomo_app_directory }}"
+    - name: "Run matomo update"
+      command: "docker exec {{ matomo_name }} /var/www/html/console custom-matomo-js:update"
