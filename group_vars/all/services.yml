@@ -163,7 +163,7 @@ http_services:
   - name: Matomo
     logo: assets/icons/matomo.png
     subtitle: Web Analytics
-    url: https://matomo.{{ common_tld }}
+    url: https://mtmo.{{ common_tld }}
     group: "Monitoring"
 
   - name: FreeNAS

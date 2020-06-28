@@ -4,6 +4,7 @@
   vars:
     network: "{{ networks.pub }}"
     matomo_name: matomo
+    matomo_subdomain: mtmo
     matomo_app_directory: "{{ common_directory }}/matomo/matomo"
     matomo_app_key: !vault |
       $ANSIBLE_VAULT;1.1;AES256
@@ -92,12 +93,12 @@
         labels:
           traefik.http.routers.matomo.entrypoints: "web"
           traefik.http.routers.matomo.middlewares: "redirect@file"
-          traefik.http.routers.matomo.rule: "Host(`{{ matomo_name }}.{{ common_tld }}`)"
+          traefik.http.routers.matomo.rule: "Host(`{{ matomo_subdomain }}.{{ common_tld }}`)"
 
           traefik.http.routers.matomo-secure.entrypoints: "web-secure"
           traefik.http.routers.matomo-secure.tls: "true"
           traefik.http.routers.matomo-secure.tls.certresolver: letsencrypt
-          traefik.http.routers.matomo-secure.rule: "Host(`{{ matomo_name }}.{{ common_tld }}`)"
+          traefik.http.routers.matomo-secure.rule: "Host(`{{ matomo_subdomain }}.{{ common_tld }}`)"
 
           traefik.http.routers.matomo-secure.middlewares: "matomo-compress"
           traefik.http.middlewares.matomo-compress.compress: "true"
