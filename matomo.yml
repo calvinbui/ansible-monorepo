@@ -51,7 +51,6 @@
       file:
         path: "{{ matomo_app_directory }}"
         state: directory
-        recurse: true
         owner: "82" # www-data
         group: "{{ common_root_group }}"
       loop:
@@ -104,3 +103,15 @@
           traefik.http.middlewares.matomo-compress.compress: "true"
 
           traefik.http.services.matomo.loadbalancer.server.port: "80"
+
+    - name: Symlink Piwik files
+      command:
+        cmd: "ln -sf {{ item.src }} {{ item.dest }}"
+        creates: "{{ item.dest }}"
+      args:
+        chdir: "{{ matomo_app_directory }}"
+      loop:
+        - src: piwik.js
+          dest: p.js
+        - src: piwik.php
+          dest: p.php
