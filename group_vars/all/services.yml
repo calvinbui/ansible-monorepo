@@ -82,6 +82,7 @@ http_services:
     subtitle: Issue Tracking
     url: https://thingstodo.atlassian.net
     group: "Home"
+    external: true
   - name: 7-Eleven Fuel Locker
     logo: assets/icons/711.svg
     subtitle: Check prices and lock them in
@@ -200,3 +201,4 @@ http_services:
     subtitle: Hosting For Borg Backup Repos
     url: https://www.borgbase.com
     group: "Infrastructure"
+    external: true
