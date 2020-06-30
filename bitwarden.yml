@@ -27,7 +27,12 @@
           ADMIN_TOKEN: "{{ bitwarden_admin_token }}"
           WEBSOCKET_ENABLED: "true"
           SIGNUPS_ALLOWED: "false"
-          SHOW_PASSWORD_HINT: "false"
+          SMTP_HOST: "{{ common_email_server }}"
+          SMTP_PORT: "{{ common_email_smtp_port }}"
+          SMTP_USERNAME: "{{ common_email_username }}"
+          SMTP_PASSWORD: "{{ common_email_password }}"
+          SMTP_SSL: "true"
+          SMTP_FROM: "bitwarden{{ common_email_to }}"
         volumes:
           - "{{ bitwardenrs_config_directory }}:/data"
         hostname: bitwarden
