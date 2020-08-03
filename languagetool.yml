@@ -1,0 +1,61 @@
+---
+- hosts: homelab
+  become: true
+  module_defaults:
+    docker_container:
+      keep_volumes: false
+      state: started
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      networks:
+        - name: "{{ network.name }}"
+      dns_servers: "{{ network.dns }}"
+      comparisons:
+        env: allow_more_present
+        labels: allow_more_present
+  vars:
+    network: "{{ networks.pub }}"
+    languagetool_ngram_lang: "en"
+    languagetool_ngram_version: "20150817"
+  tasks:
+    - name: Create languagetool folder
+      file:
+        path: "{{ common_directory }}/languagetool"
+        state: directory
+      loop:
+        - "{{ common_directory }}/languagetool"
+        - "{{ common_directory }}/languagetool/ngrams"
+
+    - name: Download English ngrams
+      get_url:
+        url: "https://languagetool.org/download/ngram-data/ngrams-{{ languagetool_ngram_lang }}-{{ languagetool_ngram_version }}.zip"
+        dest: "{{ common_directory }}/languagetool/ngrams-{{ languagetool_ngram_lang }}-{{ languagetool_ngram_version }}.zip"
+        checksum: md5:ee56b280af45daf8e68fe0d69dd0914d
+      register: _languagetool_ngram_download
+
+    - name: Unarchive ngrams
+      unarchive:
+        src: "{{ _languagetool_ngram_download.dest }}"
+        dest: "{{ common_directory }}/languagetool/ngrams/"
+        remote_src: true
+        creates: "{{ common_directory }}/languagetool/ngrams/{{ languagetool_ngram_lang }}"
+
+    - name: Create languagetool container
+      docker_container:
+        name: languagetool
+        hostname: languagetool
+        image: erikvl87/languagetool:latest
+        env:
+          langtool_languageModel: /ngrams
+        volumes:
+          - "{{ common_directory }}/languagetool/ngrams/:/ngrams"
+        labels:
+          traefik.http.routers.languagetool.entrypoints: "web"
+          traefik.http.routers.languagetool.middlewares: "redirect@file"
+
+          traefik.http.routers.languagetool-secure.entrypoints: "web-secure"
+          traefik.http.routers.languagetool-secure.tls: "true"
+          traefik.http.routers.languagetool-secure.tls.certresolver: letsencrypt
+
+          traefik.http.services.languagetool.loadbalancer.server.port: "8010"
