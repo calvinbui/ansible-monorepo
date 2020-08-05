@@ -43,7 +43,7 @@
         image: b4bz/homer:latest
         volumes:
           - "{{ homer_config_directory }}/config.yml:/www/config.yml"
-          - "{{ homer_config_directory }}/icons:/www/assets/icons"
+          - "{{ homer_config_directory }}/icons:/www/assets/custom"
         env:
           PUID: "{{ common_user_id }}"
           PGID: "{{ common_group_id }}"

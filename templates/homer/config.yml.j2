@@ -11,7 +11,7 @@ services:
     {% for service in http_services %}
       {% if service.group == "Download" %}
       - name: {{ service.name }}
-        logo: {{ service.logo }}
+        logo: assets/custom/{{ service.logo }}
         subtitle: {{ service.subtitle }}
         url: {{ service.url }}
       {% endif %}
@@ -23,7 +23,7 @@ services:
     {% for service in http_services %}
       {% if service.group == "Home" %}
       - name: {{ service.name }}
-        logo: {{ service.logo }}
+        logo: assets/custom/{{ service.logo }}
         subtitle: {{ service.subtitle }}
         url: {{ service.url }}
       {% endif %}
@@ -35,7 +35,7 @@ services:
     {% for service in http_services %}
       {% if service.group == "Tools" %}
       - name: {{ service.name }}
-        logo: {{ service.logo }}
+        logo: assets/custom/{{ service.logo }}
         subtitle: {{ service.subtitle }}
         url: {{ service.url }}
       {% endif %}
@@ -47,7 +47,7 @@ services:
     {% for service in http_services %}
       {% if service.group == "Monitoring" %}
       - name: {{ service.name }}
-        logo: {{ service.logo }}
+        logo: assets/custom/{{ service.logo }}
         subtitle: {{ service.subtitle }}
         url: {{ service.url }}
       {% endif %}
@@ -59,7 +59,7 @@ services:
     {% for service in http_services %}
       {% if service.group == "Infrastructure" %}
       - name: {{ service.name }}
-        logo: {{ service.logo }}
+        logo: assets/custom/{{ service.logo }}
         subtitle: {{ service.subtitle }}
         url: {{ service.url }}
       {% endif %}
