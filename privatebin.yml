@@ -28,6 +28,9 @@
       comparisons:
         env: allow_more_present
         labels: allow_more_present
+  handlers:
+    - name: Restart PrivateBin
+      shell: docker restart "{{ privatebin_name }}"
   tasks:
     - name: Create PrivateBin config folder
       file:
@@ -48,11 +51,12 @@
         mode: '0644'
         owner: nobody
         group: 82
+      notify: Restart PrivateBin
 
     - name: Create PrivateBin container
       docker_container:
         name: "{{ privatebin_name }}"
-        hostname: "{{ privatebin_name }}"        
+        hostname: "{{ privatebin_name }}"
         image: privatebin/nginx-fpm-alpine
         volumes:
           - "{{ common_directory }}/privatebin/data/:/srv/data"
