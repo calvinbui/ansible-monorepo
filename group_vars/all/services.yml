@@ -83,11 +83,6 @@ http_services:
     url: https://thingstodo.atlassian.net
     group: "Home"
     external: true
-  - name: 7-Eleven Fuel Locker
-    logo: assets/icons/711.svg
-    subtitle: Check prices and lock them in
-    url: https://fuel.{{ common_tld }}
-    group: "Home"
 
   - name: Jitsi
     logo: assets/icons/jitsi.png
@@ -113,11 +108,6 @@ http_services:
     logo: assets/icons/hauk.png
     subtitle: Location Sharing
     url: https://hauk.{{ common_tld }}
-    group: "Tools"
-  - name: VS Code
-    logo: assets/icons/vscode.png
-    subtitle: Source Code Editor
-    url: https://vscode.{{ common_tld }}
     group: "Tools"
   - name: Bitwarden
     logo: assets/icons/bitwarden.png
