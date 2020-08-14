@@ -45,9 +45,7 @@
       docker_container:
         name: languagetool
         hostname: languagetool
-        image: erikvl87/languagetool:latest
-        env:
-          langtool_languageModel: /ngrams
+        image: silviof/docker-languagetool:latest
         volumes:
           - "{{ common_directory }}/languagetool/ngrams/:/ngrams"
         labels:
