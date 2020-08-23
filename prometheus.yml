@@ -207,8 +207,9 @@
         hostname: alertmanager
         image: prom/alertmanager:latest
         command:
-          - '--config.file=/etc/alertmanager/config.yml'
-          - '--storage.path=/alertmanager'
+          - "--config.file=/etc/alertmanager/config.yml"
+          - "--storage.path=/alertmanager"
+          - "--web.external-url=https://alertmanager.{{ common_tld }}"
         volumes:
           - "{{ alertmanager_directory }}:/etc/alertmanager"
         labels:
