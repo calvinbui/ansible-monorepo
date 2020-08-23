@@ -37,8 +37,8 @@
       networks:
         - name: "{{ network.name }}"
       comparisons:
-        env: strict
-        labels: strict
+        env: allow_more_present
+        labels: allow_more_present
   pre_tasks:
     - name: Create Firefly directories
       file:
@@ -63,6 +63,7 @@
         env:
           # set same as db credentials and dbname
           APP_KEY: "{{ firefly_app_key }}"
+          APP_URL: "https://{{ firefly_name }}.{{ common_tld }}"
           DB_HOST: "{{ postgres_name }}.{{ network.name }}"
           DB_PORT: "5432"
           DB_DATABASE: "{{ postgres_environment_variables.POSTGRES_DB }}"
@@ -81,4 +82,4 @@
           traefik.http.routers.firefly-secure.tls: "true"
           traefik.http.routers.firefly-secure.tls.certresolver: letsencrypt
 
-          traefik.http.services.firefly.loadbalancer.server.port: "80"
+          traefik.http.services.firefly.loadbalancer.server.port: "8080"
