@@ -116,13 +116,18 @@ http_services:
     group: "Tools"
   - name: OctoPrint
     logo: octoprint.png
-    subtitle: 3 D Print Controller
+    subtitle: 3D Print Controller
     url: https://octopi.{{ common_local_tld }}
     group: "Tools"
   - name: Piwigo
     logo: piwigo.png
     subtitle: Photo Gallery
     url: https://piwigo.{{ common_tld }}
+    group: "Tools"
+  - name: Huginn
+    logo: huginn.png
+    subtitle: Web-based Scheduler
+    url: https://octopi.{{ common_local_tld }}
     group: "Tools"
   - name: FreeNAS IPMI
     url: https://freenas-ipmi.{{ common_local_tld }}
