@@ -66,12 +66,22 @@ location:
     # Any paths matching these patterns are excluded from backups. Globs and tildes
     # are expanded. See the output of "borg help patterns" for more details.
     exclude_patterns:
-        - '/mnt/source/monitoring/prometheus/data'
-        - '/mnt/source/nextcloud/nextcloud/app/data/appdata_*/preview'
-        - '/mnt/source/nextcloud/nextcloud/build'
-        - '/mnt/source/jellyfin'
         - '/mnt/source/languagetool'
+
+        - '/mnt/source/nextcloud/nextcloud/app/data/appdata_*/preview'
+        - '/mnt/source/nextcloud/nextcloud/app/data/*/files_versions'
+        - '/mnt/source/nextcloud/nextcloud/app/data/*/cache'
+        - '/mnt/source/nextcloud/nextcloud/build'
+
+        - '/mnt/source/jellyfin'
+
         - '/mnt/source/unifi/data/backup'
+        - '/mnt/source/unifi/data/db/diagnostic.data'
+
+        - '/mnt/source/monitoring/prometheus/data'
+
+        - '/mnt/source/nzbhydra/backup'
+
         - '/mnt/source/*/*/log'
         - '/mnt/source/*/*/logs'
         - '/mnt/source/*/logs'
