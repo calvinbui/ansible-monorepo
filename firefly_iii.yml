@@ -58,12 +58,12 @@
         hostname: "{{ firefly_name }}"
         image: jc5x/firefly-iii
         volumes:
-          - "{{ firefly_app_directory }}/export:/var/www/firefly-iii/storage/export"
-          - "{{ firefly_app_directory }}/upload:/var/www/firefly-iii/storage/upload"
+          - "{{ firefly_app_directory }}/upload:/var/www/html/storage/upload"
         env:
           # set same as db credentials and dbname
           APP_KEY: "{{ firefly_app_key }}"
           APP_URL: "https://{{ firefly_name }}.{{ common_tld }}"
+          DB_CONNECTION: pgsql
           DB_HOST: "{{ postgres_name }}.{{ network.name }}"
           DB_PORT: "5432"
           DB_DATABASE: "{{ postgres_environment_variables.POSTGRES_DB }}"
