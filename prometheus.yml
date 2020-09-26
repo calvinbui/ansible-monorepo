@@ -101,9 +101,7 @@
         image: quay.io/prometheus/node-exporter:latest
         command:
           - '--path.rootfs=/host'
-          - '--collector.systemd'
           - '--collector.mountstats'
-          - '--collector.ntp'
           - '--collector.filesystem.ignored-fs-types=^(tmpfs|vfat|rpc_pipefs|fuse.lxcfs|rootfs|squashfs|nsfs)$'
           - '--no-collector.arp'
           - '--no-collector.bcache'
