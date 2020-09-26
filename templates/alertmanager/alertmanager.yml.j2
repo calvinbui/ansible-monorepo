@@ -14,7 +14,7 @@ receivers:
         send_resolved: true
         {%- raw %}
         title: |-
-          {{ range .Alerts }}{{ .Annotations.title }}{{ end }}
+          {{ with index .Alerts 0 }}{{ if .Annotations.title }}{{ .Annotations.title }}{{ end }}{{ end }}
         text: >-
           {{ range .Alerts }}
             {{ .Annotations.description }}
