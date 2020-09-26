@@ -140,9 +140,7 @@
       docker_container:
         name: "{{ cadvisor_name }}"
         hostname: "{{ cadvisor_name }}"
-        image: gcr.io/google-containers/cadvisor:v0.36.0
-        command:
-          - --disable_metrics=tcp,udp,percpu,sched,process
+        image: gcr.io/cadvisor/cadvisor:v0.36.0
         volumes:
           - /:/rootfs:ro
           - /var/run:/var/run:ro
@@ -154,6 +152,8 @@
         privileged: true
         labels:
           traefik.enable: "false"
+      tags:
+        - cadvisor
 
 ########## Blackbox Exporter
     - name: Template blackbox_exporter configuration
