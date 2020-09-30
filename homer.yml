@@ -38,6 +38,7 @@
         dest: "{{ homer_config_directory }}"
     - name: Create Homer container
       docker_container:
+        recreate: true
         name: "{{ homer_name }}"
         hostname: "{{ homer_name }}"
         image: b4bz/homer:latest

@@ -45,8 +45,9 @@ http_services:
   - name: Blue Iris
     logo: blueiris.png
     subtitle: Surveillance Cameras
-    url: https://blueiris.{{ common_tld }}
+    url: http://blueiris.{{ common_local_tld }}:81
     group: "Home"
+    excludeMonitoring: ~
   - name: Nextcloud
     logo: nextcloud.png
     subtitle: File Sharing and Communication Platform
@@ -87,7 +88,7 @@ http_services:
     subtitle: Issue Tracking
     url: https://thingstodo.atlassian.net
     group: "Home"
-    external: true
+    excludeMonitoring: ~
 
   - name: Jitsi
     logo: jitsi.png
@@ -201,4 +202,5 @@ http_services:
     subtitle: Hosting For Borg Backup Repos
     url: https://www.borgbase.com
     group: "Infrastructure"
-    external: true
+    excludeMonitoring: ~
+
