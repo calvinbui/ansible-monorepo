@@ -39,7 +39,7 @@
         networks_cli_compatible: true
         purge_networks: true
         comparisons:
-          "labels": "strict"
+          labels: strict
         dns_servers: "{{ network.dns }}"
         networks:
           - name: "{{ network.name }}"
