@@ -45,9 +45,8 @@ http_services:
   - name: Blue Iris
     logo: blueiris.png
     subtitle: Surveillance Cameras
-    url: http://blueiris.{{ common_local_tld }}:81
+    url: https://blueiris.{{ common_tld }}
     group: "Home"
-    excludeMonitoring: ~
   - name: Nextcloud
     logo: nextcloud.png
     subtitle: File Sharing and Communication Platform
