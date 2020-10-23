@@ -1,0 +1,77 @@
+---
+- hosts: homelab
+  become: true
+  module_defaults:
+    docker_container:
+      keep_volumes: false
+      state: started
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      networks:
+        - name: "{{ network.name }}"
+      dns_servers: "{{ network.dns }}"
+      comparisons:
+        env: allow_more_present
+        labels: allow_more_present
+  vars:
+    photoprism_admin_password: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      38386537613232643363643431363462656563363261323465303631613331663664343137616634
+      3936623239366136396464303862376661633463343336310a356161363337386536303335663065
+      63656639313735346534366364636332653132623639663739386636633461333633346531386165
+      6437303836633733620a343136303966643339396562373732623037613463346531383436653733
+      39353033323936663964366261646436653339376632306133303131343234303938
+    network: "{{ networks.user }}"
+
+    mariadb_name: photoprism-mariadb
+    mariadb_version: '10'
+    mariadb_directory: "{{ common_directory }}/photoprism/mariadb"
+    mariadb_environment_variables:
+      MYSQL_ROOT_PASSWORD: !vault |
+        $ANSIBLE_VAULT;1.1;AES256
+        64333365313038396266666464356437313234303330333165386431663537323163383232303532
+        6236323832393761376433316666313535323737623962640a316333306439616361396561396630
+        61633562336132366565613035363733333938626638366562303032343238383764333337386566
+        3239373230323530370a323133623564333865643034613537393534303736383566346566623733
+        63316265306335646264393833393330626231373832633638643830633066613036
+      MYSQL_DATABASE: photoprism
+
+  roles:
+    - mariadb
+  tasks:
+    - name: Create photoprism config folder
+      file:
+        path: "{{ common_directory }}/photoprism/photoprism"
+        state: directory
+
+    - name: Create photoprism Container
+      docker_container:
+        name: photoprism
+        hostname: photoprism
+        image: photoprism/photoprism
+        security_opts:
+          - seccomp=unconfined
+          - apparmor=unconfined
+        env:
+          PHOTOPRISM_ADMIN_PASSWORD: "{{ photoprism_admin_password }}"
+          PHOTOPRISM_PUBLIC: "false"
+          PHOTOPRISM_READONLY: "true"
+          PHOTOPRISM_UPLOAD_NSFW: "true"
+          PHOTOPRISM_DETECT_NSFW: "false"
+          PHOTOPRISM_EXPERIMENTAL: "false"
+          PHOTOPRISM_SITE_URL: "https://photoprism.{{ common_tld }}/"
+          PHOTOPRISM_DATABASE_DRIVER: "mysql"
+          PHOTOPRISM_DATABASE_DSN: "root:{{ mariadb_environment_variables.MYSQL_ROOT_PASSWORD }}@tcp({{ mariadb_name }}.{{ network.name }}:3306)/photoprism?charset=utf8mb4,utf8&parseTime=true"
+        volumes:
+          - "{{ common_directory }}/photoprism/photoprism:/photoprism/storage"
+          - "{{ common_directory_photos }}:/photoprism/originals:ro"
+        labels:
+          traefik.http.routers.photoprism.entrypoints: "web"
+          traefik.http.routers.photoprism.middlewares: "redirect@file"
+
+          traefik.http.routers.photoprism-secure.entrypoints: "web-secure"
+          traefik.http.routers.photoprism-secure.tls: "true"
+          traefik.http.routers.photoprism-secure.tls.certresolver: letsencrypt
+
+          traefik.http.services.photoprism.loadbalancer.server.port: "2342"
