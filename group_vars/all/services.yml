@@ -129,11 +129,6 @@ http_services:
     subtitle: 3D Print Controller
     url: https://octopi.{{ common_local_tld }}
     group: "Tools"
-  - name: Piwigo
-    logo: piwigo.png
-    subtitle: Photo Gallery
-    url: https://piwigo.{{ common_tld }}
-    group: "Tools"
   - name: Huginn
     logo: huginn.png
     subtitle: Web-based Scheduler
