@@ -89,6 +89,11 @@ http_services:
     group: "Home"
     excludeMonitoring: ~
 
+  - name: PhotoPrism
+    logo: photoprism.png
+    subtitle: Personal Photo Management
+    url: https://photoprism.{{ common_tld }}
+    group: "Tools"
   - name: Jitsi
     logo: jitsi.png
     subtitle: Video Conferencing
