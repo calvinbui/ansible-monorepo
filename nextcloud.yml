@@ -16,7 +16,6 @@
               65373662303434363834656234626237336438663531383232313034356234396462
       MYSQL_DATABASE: nextcloud
       MYSQL_ROOT_HOST: '%'
-
   module_defaults:
     docker_container:
       keep_volumes: false
