@@ -144,6 +144,11 @@ http_services:
     logo: ipmi.png
     subtitle: Supermicro IPMI
     group: "Tools"
+  - name: Remark42
+    url: https://remark42.{{ common_tld }}/api/v1/rss/site?site=calvin.me
+    logo: remark42.png
+    subtitle: Commenting system
+    group: "Tools"
 
   - name: Prometheus
     logo: prometheus.png

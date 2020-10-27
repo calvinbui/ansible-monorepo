@@ -64,7 +64,7 @@
           EMOJI: "true"
           ADMIN_SHARED_ID: "{{ remark42_admin_shared_id }}"
           TIME_ZONE: "{{ common_timezone }}"
-          MAX_BACKUP_FILES: 1 # i already do backups elsewhere
+          MAX_BACKUP_FILES: "1" # i already do backups elsewhere
         volumes:
           - "{{ common_directory }}/remark42:/srv/var"
         labels:
