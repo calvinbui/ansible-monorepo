@@ -1,13 +1,23 @@
 # Based on https://docs.docker.com/engine/installation/linux/ubuntu/
 
+- name: Uninstall old versions
+  apt:
+    name:
+      - docker
+      - docker-engine
+      - docker.io
+      - containerd
+      - runc
+    state: absent
+
 - name: Install Docker dependencies
   apt:
     name:
       - apt-transport-https
       - ca-certificates
       - curl
-      - software-properties-common
       - gnupg-agent
+      - software-properties-common
     state: present
   register: result
   until: result is success
