@@ -1,6 +1,0 @@
----
-
-nfs_mount_name: "{{ common_directory_nfs }}"
-nfs_mount_src: "freenas.{{ common_local_tld }}:/mnt/files/"
-nfs_mount_owner: "{{ common_user }}"
-nfs_mount_group: "{{ common_group }}"

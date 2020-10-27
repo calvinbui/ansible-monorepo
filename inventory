@@ -7,8 +7,5 @@ homelab ansible_host=homelab
 [usenet]
 homelab ansible_host=homelab
 
-[setup]
-homelab ansible_host=homelab
-
 [docker_services]
 homelab ansible_host=homelab

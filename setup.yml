@@ -8,6 +8,38 @@
         cache_valid_time: 600
       changed_when: false
       when: ansible_distribution == 'Ubuntu'
+  vars:
+    apt_install_packages:
+      - name:
+          - neovim
+          - htop
+          - iftop
+          - nano
+          - tree
+          - unzip
+          - ncdu
+          - curl
+          - wget
+          - dnsutils
+          - git
+          - zfsutils-linux
+        state: present
+      - name:
+          - popularity-contest
+          - pastebinit
+        state: absent
+    authorized_keys_config:
+      - user: root
+        state: present
+        key: https://github.com/calvinbui.keys
+      - user: "{{ common_user }}"
+        state: present
+        key: https://github.com/calvinbui.keys
+    docker_users:
+      - "{{ common_user }}"
+    pip_install_packages:
+      - name: docker
+        executable: pip3
   handlers:
     - name: Restart Docker
       service:
@@ -23,7 +55,7 @@
       when: ansible_os_family == 'RedHat'
     - pip
     - docker
-    - nfs-client
+    # - nfs-client
   tasks:
     - lineinfile:
         path: /etc/sudoers

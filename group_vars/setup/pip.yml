@@ -1,3 +1,0 @@
-pip_install_packages:
-  - name: docker
-    executable: pip3
