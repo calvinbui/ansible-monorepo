@@ -134,11 +134,6 @@ http_services:
     subtitle: Web-based Scheduler
     url: https://octopi.{{ common_local_tld }}
     group: "Tools"
-  - name: FreeNAS IPMI
-    url: https://freenas-ipmi.{{ common_local_tld }}
-    logo: ipmi.png
-    subtitle: Supermicro IPMI
-    group: "Tools"
   - name: Homelab IPMI
     url: https://homelab-ipmi.{{ common_local_tld }}
     logo: ipmi.png
@@ -171,11 +166,6 @@ http_services:
     url: https://mtmo.{{ common_tld }}
     group: "Monitoring"
 
-  - name: FreeNAS
-    logo: freenas.svg
-    subtitle: Network Attached Storage
-    url: https://freenas.{{ common_local_tld }}
-    group: "Infrastructure"
   - name: OPNsense
     logo: opnsense.png
     subtitle: Firewall and Routing
