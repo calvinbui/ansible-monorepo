@@ -1,0 +1,44 @@
+---
+
+- hosts: homelab
+  become: true
+  pre_tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: true
+        cache_valid_time: 600
+      changed_when: false
+      when: ansible_distribution == 'Ubuntu'
+  handlers:
+    - name: "Restart Samba"
+      service:
+        name: samba
+        state: restarted
+  tasks:
+    - name: "Install Samba"
+      apt:
+        name: samba
+        state: present
+    - name: "Enable Samba service"
+      service:
+        name: smbd
+        state: started
+        enabled: true
+    - name: "Configure Samba"
+      copy:
+        content: |
+          [files]
+          comment = ZFS - files
+          path = {{ common_directory_storage }}
+          read only = no
+          browseable = yes
+        dest: /etc/samba/smb.conf
+        validate: "testparm --suppress-prompt"
+      notify: Restart Samba
+    - name: "Allow Samba in firewall"
+      ufw:
+        name: samba
+        rule: allow
+    - name: "Reminder"
+      debug:
+        msg: Create an smb password using `sudo smbpasswd calvin`
