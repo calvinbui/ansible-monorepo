@@ -10,6 +10,9 @@ nextcloud_environment_variables:
   NEXTCLOUD_ADMIN_USER: "admin"
   NEXTCLOUD_ADMIN_PASSWORD: "admin"
 
+nextcloud_volumes:
+  - "{{ nextcloud_directory }}/app:/var/www/html"
+
 nextcloud_docker_additional_options:
   restart_policy: unless-stopped
 

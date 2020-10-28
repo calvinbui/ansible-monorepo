@@ -6,6 +6,11 @@ nextcloud_name: nextcloud
 nextcloud_version: 19.0.4
 nextcloud_image: "nextcloud-{{ nextcloud_version }}"
 nextcloud_directory: "{{ common_directory }}/nextcloud/nextcloud"
+
+nextcloud_volumes:
+  - "{{ nextcloud_directory }}/app:/var/www/html"
+  - "{{ common_directory_storage }}:/mnt/zfs_files"
+
 nextcloud_environment_variables:
   NEXTCLOUD_ADMIN_USER: "{{ common_user }}"
   NEXTCLOUD_ADMIN_PASSWORD: !vault |
