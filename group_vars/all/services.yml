@@ -67,11 +67,6 @@ http_services:
     subtitle: Personal Relationship Manager
     url: https://monica.{{ common_tld }}
     group: "Home"
-  - name: Paperless
-    logo: paperless.png
-    subtitle: Scan Index and Archive Paper Documents
-    url: https://paperless.{{ common_tld }}
-    group: "Home"
   - name: Jellyfin
     logo: jellyfin.png
     subtitle: Software Media System
