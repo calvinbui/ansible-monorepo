@@ -123,7 +123,6 @@
           - '--no-collector.textfile'
           - '--no-collector.vmstat'
           - '--no-collector.xfs'
-          - '--no-collector.zfs'
         pid_mode: host
         capabilities:
           - sys_time

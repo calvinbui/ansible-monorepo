@@ -1,0 +1,196 @@
+---
+
+- hosts: homelab
+  become: true
+  module_defaults:
+    docker_container:
+      keep_volumes: false
+      state: started
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      networks:
+        - name: "{{ network.name }}"
+      dns_servers: "{{ network.dns }}"
+      comparisons:
+        env: allow_more_present
+        labels: allow_more_present
+  pre_tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: true
+        cache_valid_time: 600
+      changed_when: false
+      when: ansible_distribution == 'Ubuntu'
+  vars:
+    network: "{{ networks.mgmt }}"
+    zfswatcher_version: "0.4.6"
+    zfswatcher_config:
+      - section: www
+        option: enable
+        value: "true"
+      - section: www
+        option: bind
+        value: 0.0.0.0:8990
+      - section: email "main"
+        option: enable
+        value: "true"
+      - section: email "main"
+        option: server
+        value: "{{ common_email_server }}:{{ common_email_smtp_port }}"
+      - section: email "main"
+        option: username
+        value: "{{ common_email_username }}"
+      - section: email "main"
+        option: password
+        value: "{{ common_email_password }}"
+      - section: email "main"
+        option: from
+        value: "{{ common_email_username }}"
+      - section: email "main"
+        option: to
+        value: "zfswatcher{{ common_email_to }}"
+      - section: wwwuser "{{ htpasswd.username }}"
+        option: password
+        value: "{{ htpasswd.password_hashed }}"
+      - section: wwwuser "{{ htpasswd.username }}"
+        option: enable
+        value: "true"
+
+  handlers:
+    - name: Restart zfswatcher
+      command: docker restart zfswatcher
+
+  tasks:
+    ##################
+    ### zfswatcher ###
+    ##################
+    - name: Create zfswatcher config folder
+      file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - "{{ common_directory }}/zfswatcher"
+        - "/var/log/zfswatcher"
+    - name: Create zfswatcher container
+      docker_container:
+        name: zfswatcher
+        hostname: zfswatcher
+        image: pectojin/zfswatcher:latest
+        devices:
+          - /dev/zfs:/dev/zfs:rw
+        volumes:
+          - "{{ common_directory }}/zfswatcher:/zfswatcher_config:rw"
+          - /var/log/zfswatcher:/var/log/zfswatcher:rw
+          - /dev/log:/dev/log:rw
+        labels:
+          traefik.http.routers.zfswatcher.entrypoints: "web"
+          traefik.http.routers.zfswatcher.middlewares: "redirect@file"
+
+          traefik.http.routers.zfswatcher-secure.entrypoints: "web-secure"
+          traefik.http.routers.zfswatcher-secure.middlewares: "myAuth@file"
+          traefik.http.routers.zfswatcher-secure.tls: "true"
+          traefik.http.routers.zfswatcher-secure.tls.certresolver: letsencrypt
+
+          traefik.http.services.zfswatcher.loadbalancer.server.port: "8990"
+    - name: Configure zfswatcher
+      ini_file:
+        path: "{{ common_directory }}/zfswatcher/zfswatcher.conf"
+        section: "{{ item.section }}"
+        option: "{{ item.option }}"
+        value: "{{ item.value }}"
+      loop: "{{ zfswatcher_config}}"
+      notify: Restart zfswatcher
+
+    ###############
+    ### zfs-zed ###
+    ###############
+    - name: Install zfs-zed and msmtp
+      apt:
+        name:
+          - zfs-zed
+          - msmtp
+          - msmtp-mta # provide a sendmail-compatible MTA
+          # send mails using the mail command
+          - mailutils
+          - s-nail
+        state: present
+
+    - name: Create msmtp files
+      file:
+        path: /var/log/msmtp.log
+        state: touch
+        mode: "0777"
+        modification_time: preserve
+        access_time: preserve
+
+    - name: Configure msmtp
+      copy:
+        dest: /etc/msmtprc
+        content: |
+          defaults
+          auth           on
+          tls            on
+          tls_trust_file /etc/ssl/certs/ca-certificates.crt
+          logfile        /var/log/msmtp.log
+
+          account alerts
+          host           {{ common_email_server }}
+          port           {{ common_email_smtp_port }}
+          tls            on
+          from           {{ common_email_username }}
+          user           {{ common_email_username }}
+          password       {{ common_email_password }}
+
+          account default : alerts
+
+    - name: Configure ZFS ZED
+      lineinfile:
+        path: /etc/zfs/zed.d/zed.rc
+        regexp: "^{{ item.split('=')[0] }}="
+        line: "{{ item }}"
+        state: present
+      loop:
+        - ZED_EMAIL_ADDR="zfszed{{ common_email_to }}"
+        - ZED_EMAIL_PROG="mailx"
+        - ZED_NOTIFY_VERBOSE=1
+        - ZED_NOTIFY_DATA=1
+
+    ################
+    ### scrutiny ###
+    ################
+    - name: Create scrutiny config folder
+      file:
+        path: "{{ common_directory }}/scrutiny"
+        state: directory
+
+    - name: Template scrutiny config
+      template:
+        src: templates/scrutiny/scrutiny.yaml.j2
+        dest: "{{ common_directory }}/scrutiny/scrutiny.yaml"
+
+    - name: Get disks
+      shell: for line in $(lsblk --noheadings --list --scsi --output name); do echo "/dev/${line}"; done
+      register: lsblk_disks
+
+    - name: Create scrutiny container
+      docker_container:
+        name: scrutiny
+        hostname: scrutiny
+        image: analogj/scrutiny
+        capabilities:
+          - SYS_RAWIO
+        volumes:
+          - /run/udev:/run/udev:ro
+          - "{{ common_directory }}/scrutiny:/scrutiny/config/"
+        devices: "{{ lsblk_disks.stdout_lines }}"
+        labels:
+          traefik.http.routers.scrutiny.entrypoints: "web"
+          traefik.http.routers.scrutiny.middlewares: "redirect@file"
+
+          traefik.http.routers.scrutiny-secure.entrypoints: "web-secure"
+          traefik.http.routers.scrutiny-secure.middlewares: "myAuth@file"
+          traefik.http.routers.scrutiny-secure.tls: "true"
+          traefik.http.routers.scrutiny-secure.tls.certresolver: letsencrypt
+
+          traefik.http.services.scrutiny.loadbalancer.server.port: "8080"
