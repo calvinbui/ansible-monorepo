@@ -127,7 +127,7 @@ http_services:
   - name: Huginn
     logo: huginn.png
     subtitle: Web-based Scheduler
-    url: https://octopi.{{ common_local_tld }}
+    url: https://huginn.{{ common_local_tld }}
     group: "Tools"
   - name: Homelab IPMI
     url: https://homelab-ipmi.{{ common_local_tld }}
