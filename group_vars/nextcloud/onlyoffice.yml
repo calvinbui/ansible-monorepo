@@ -1,7 +1,7 @@
 ---
 
 onlyoffice_name: nextcloud-onlyoffice
-onlyoffice_image: onlyoffice/documentserver:5.4.2.46
+onlyoffice_image: alehoho/oo-ce-docker-license
 onlyoffice_docker_additional_options:
   hostname: "{{ onlyoffice_name }}"
   labels:
