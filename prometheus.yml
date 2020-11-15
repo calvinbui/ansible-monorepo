@@ -8,6 +8,8 @@
       restart_policy: unless-stopped
       networks_cli_compatible: true
       purge_networks: true
+      container_default_behavior: no_defaults
+      network_mode: "{{ network.name }}"
       networks:
         - name: "{{ network.name }}"
       dns_servers: "{{ network.dns }}"
@@ -141,9 +143,11 @@
         hostname: "{{ cadvisor_name }}"
         image: gcr.io/cadvisor/cadvisor:v0.37.0
         command:
-          - '--docker_only'
-          - '--disable_metrics=accelerator,tcp,udp,percpu,sched,process,hugetlb,resctrl'
-          - '--housekeeping_interval=10s'
+          - '--docker_only=true'
+          - '--disable_metrics=accelerator,cpu_topology,disk,diskIO,network,tcp,udp,percpu,sched,process,hugetlb,referenced_memory,resctrl'
+          - '--max_procs=1'
+          - '--enable_load_reader=false'
+          - '--storage_duration=0m40s'
         volumes:
           - /:/rootfs:ro
           - /var/run:/var/run:ro
