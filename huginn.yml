@@ -58,6 +58,11 @@
           HUGINN_SMTP_ENABLE_STARTTLS_AUTO: "true"
           HUGINN_SMTP_SSL: "false"
           HUGINN_EMAIL_FROM_ADDRESS: "huginn{{ common_email_to }}"
+
+          HUGINN_TIMEZONE: "{{ common_timezone.split('/')[1] }}"
+        volumes:
+          - /etc/timezone:/etc/timezone:ro
+          - /etc/localtime:/etc/localtime:ro
         labels:
           traefik.http.routers.huginn.entrypoints: "web"
           traefik.http.routers.huginn.middlewares: "redirect@file"
