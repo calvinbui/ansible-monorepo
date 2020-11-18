@@ -60,6 +60,8 @@
           HUGINN_EMAIL_FROM_ADDRESS: "huginn{{ common_email_to }}"
 
           HUGINN_TIMEZONE: "{{ common_timezone.split('/')[1] }}"
+
+          HUGINN_ENABLE_INSECURE_AGENTS: "true"
         volumes:
           - /etc/timezone:/etc/timezone:ro
           - /etc/localtime:/etc/localtime:ro
