@@ -43,36 +43,36 @@ qbittorrent_config:
   # Connections
   # ============================================================================
   # Enabled Protocol
-  BitTorrent.Session\BTProtocol: TCP
+  BitTorrent.Session\BTProtocol: Both
 
   # Listening Port
   Preferences.Connection\PortRangeMin: 62615
 
   # Connection Limits
-  Preferences.Bittorrent\MaxConnecs: 1200
-  Preferences.Bittorrent\MaxConnecsPerTorrent: 180
-  Preferences.Bittorrent\MaxUploads: 9
-  Preferences.Bittorrent\MaxUploadsPerTorrent: 9
+  Preferences.Bittorrent\MaxConnecs: -1
+  Preferences.Bittorrent\MaxConnecsPerTorrent: -1
+  Preferences.Bittorrent\MaxUploads: -1
+  Preferences.Bittorrent\MaxUploadsPerTorrent: -1
 
   # Proxy Server
-  Preferences.Connection\Proxy\IP: 10.8.0.1
+  Preferences.Connection\Proxy\IP: 10.64.0.1
   Preferences.Connection\Proxy\Password: ""
   Preferences.Connection\Proxy\Port: 1080
   Preferences.Connection\Proxy\Username: ""
   Preferences.Connection\ProxyOnlyForTorrents: "true"
   Preferences.Connection\ProxyPeerConnections: "true"
-  Preferences.Connection\ProxyType: 2
+  Preferences.Connection\ProxyType: 0
   # ============================================================================
   # Speed
   # ============================================================================
   # Global Rate Limits
-  Preferences.Connection\GlobalUPLimit: 1000
-  Preferences.Connection\GlobalDLLimit: 10000
+  Preferences.Connection\GlobalUPLimit: 0
+  Preferences.Connection\GlobalDLLimit: 0
 
   # Rate Limit Settings
-  Preferences.Bittorrent\uTP_rate_limited: "true"
-  Preferences.Advanced\IncludeOverhead: "true"
-  Preferences.Advanced\IgnoreLimitsLAN: "false"
+  Preferences.Bittorrent\uTP_rate_limited: "false"
+  Preferences.Advanced\IncludeOverhead: "false"
+  Preferences.Advanced\IgnoreLimitsLAN: "true"
 
   # ============================================================================
   # BitTorrent
@@ -103,5 +103,5 @@ qbittorrent_config:
   # Advanced
   # ============================================================================
   # qBittorrent Section
-  Preferences.Connection\ResolvePeerCountries: "true"
+  Preferences.Connection\ResolvePeerCountries: "false"
   LegalNotice.Accepted: "true"
