@@ -89,11 +89,6 @@ http_services:
     subtitle: Personal Photo Management
     url: https://photoprism.{{ common_tld }}
     group: "Tools"
-  - name: Jitsi
-    logo: jitsi.png
-    subtitle: Video Conferencing
-    url: https://jitsi.{{ common_tld }}
-    group: "Tools"
   - name: Shlink
     logo: shlink.png
     subtitle: Url Shortener
