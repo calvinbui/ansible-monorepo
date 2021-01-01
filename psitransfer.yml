@@ -38,6 +38,8 @@
       file:
         path: "{{ common_directory }}/psitransfer"
         state: directory
+        owner: "1000"
+        group: "1000"
 
     - name: Create PsiTransfer Container
       docker_container:
