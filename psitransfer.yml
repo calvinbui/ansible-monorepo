@@ -49,6 +49,9 @@
         env:
           PSITRANSFER_ADMIN_PASS: "{{ psitransfer_admin_pass }}"
           PSITRANSFER_UPLOAD_PASS: "{{ psitransfer_upload_pass }}"
+          PSITRANSFER_RETENTIONS: '{"one-time":"one time","3600":"1 Hour","86400":"1 Day","604800": "1 Week"}'
+          PSITRANSFER_DEFAULT_RETENTION: "86400"
+          PSITRANSFER_MAX_AGE: "604800"
         volumes:
           - "{{ common_directory }}/psitransfer:/data"
         labels:
