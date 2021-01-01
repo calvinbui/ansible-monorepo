@@ -84,6 +84,11 @@ http_services:
     group: "Home"
     excludeMonitoring: ~
 
+  - name: PsiTransfer
+    icon: fas fa-cloud-upload-alt
+    subtitle: File Sharing
+    url: https://share.{{ common_tld }}
+    group: "Tools"
   - name: PhotoPrism
     logo: photoprism.png
     subtitle: Personal Photo Management

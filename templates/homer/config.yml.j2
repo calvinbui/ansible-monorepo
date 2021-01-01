@@ -11,7 +11,11 @@ services:
     {% for service in http_services %}
       {% if service.group == "Download" %}
       - name: {{ service.name }}
+      {% if service.logo is defined %}
         logo: assets/custom/{{ service.logo }}
+      {% elif service.icon is defined %}
+        icon: {{ service.icon }}
+      {% endif %}
         subtitle: {{ service.subtitle }}
         url: {{ service.url }}
       {% endif %}
@@ -23,7 +27,11 @@ services:
     {% for service in http_services %}
       {% if service.group == "Home" %}
       - name: {{ service.name }}
+      {% if service.logo is defined %}
         logo: assets/custom/{{ service.logo }}
+      {% elif service.icon is defined %}
+        icon: {{ service.icon }}
+      {% endif %}
         subtitle: {{ service.subtitle }}
         url: {{ service.url }}
       {% endif %}
@@ -35,7 +43,11 @@ services:
     {% for service in http_services %}
       {% if service.group == "Tools" %}
       - name: {{ service.name }}
+      {% if service.logo is defined %}
         logo: assets/custom/{{ service.logo }}
+      {% elif service.icon is defined %}
+        icon: {{ service.icon }}
+      {% endif %}
         subtitle: {{ service.subtitle }}
         url: {{ service.url }}
       {% endif %}
@@ -47,7 +59,11 @@ services:
     {% for service in http_services %}
       {% if service.group == "Monitoring" %}
       - name: {{ service.name }}
+      {% if service.logo is defined %}
         logo: assets/custom/{{ service.logo }}
+      {% elif service.icon is defined %}
+        icon: {{ service.icon }}
+      {% endif %}
         subtitle: {{ service.subtitle }}
         url: {{ service.url }}
       {% endif %}
@@ -59,7 +75,11 @@ services:
     {% for service in http_services %}
       {% if service.group == "Infrastructure" %}
       - name: {{ service.name }}
+      {% if service.logo is defined %}
         logo: assets/custom/{{ service.logo }}
+      {% elif service.icon is defined %}
+        icon: {{ service.icon }}
+      {% endif %}
         subtitle: {{ service.subtitle }}
         url: {{ service.url }}
       {% endif %}
