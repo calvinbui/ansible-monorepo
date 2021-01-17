@@ -34,6 +34,14 @@
       3432626437336530316561656362306337356438653239653038
     remark42_site: "calvin.me"
     remark42_admin_shared_id: "github_52e797c0db366550d9b782bd82f58e8f16aba597"
+    remark42_github_secret: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      64613564373334333363343661656634353438353732333530353738663331323463643637303138
+      3636303538613466633531396237313932323762303362660a343737333963633935333231313735
+      37326430303631316331316530653636653965393539336535343561363965396332356435623864
+      3266343131626430610a303231336665393465613463626438333533333637376166393030353336
+      39666631613336366166376365303736396130396138363438326237353934643131373934336332
+      6139346239363663333262643964316337376566326434306430
     network: "{{ networks.user }}"
   tasks:
     - name: Create remark42 config folder
@@ -51,14 +59,9 @@
           SECRET: "{{ remark42_secret }}"
           ADMIN_PASSWD: "{{ remark42_admin_password }}"
           SITE: "{{ remark42_site }}"
-          SMTP_HOST: "{{ common_email_server }}"
-          SMTP_PORT: "{{ common_email_smtp_port }}"
-          SMTP_USERNAME: "{{ common_email_username }}"
-          SMTP_PASSWORD: "{{ common_email_password }}"
           AUTH_ANON: "true"
-          AUTH_EMAIL_ENABLE: "true"
           AUTH_GITHUB_CID: c644fdb0864bfb0d5ee8
-          AUTH_GITHUB_CSEC: ***REMOVED***
+          AUTH_GITHUB_CSEC: "{{ remark42_github_secret }}"
           SMTP_TLS: "true"
           ANON_VOTE: "true"
           EMOJI: "true"
