@@ -89,6 +89,11 @@ http_services:
     subtitle: File Sharing
     url: https://share.{{ common_tld }}
     group: "Tools"
+  - name: File Browser
+    logo: filebrowser.svg
+    subtitle: Web File Browser
+    url: https://filebrowser.{{ common_tld }}
+    group: "Tools"
   - name: PhotoPrism
     logo: photoprism.png
     subtitle: Personal Photo Management

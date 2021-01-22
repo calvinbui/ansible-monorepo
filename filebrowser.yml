@@ -1,0 +1,60 @@
+---
+- hosts: homelab
+  become: true
+  module_defaults:
+    docker_container:
+      keep_volumes: false
+      state: started
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      networks:
+        - name: "{{ network.name }}"
+      dns_servers: "{{ network.dns }}"
+      comparisons:
+        env: allow_more_present
+        labels: allow_more_present
+      container_default_behavior: no_defaults
+      network_mode: "{{ network.name }}"
+  vars:
+    network: "{{ networks.pub }}"
+  tasks:
+    - name: Create File Browser folder
+      file:
+        path: "{{ common_directory }}/filebrowser"
+        state: directory
+        owner: "1000"
+        group: "1000"
+
+    - name: Touch File Browser config
+      file:
+        path: "{{ common_directory }}/filebrowser/filebrowser.json"
+        state: touch
+        modification_time: preserve
+        access_time: preserve
+
+    - name: Touch File Browser DB
+      file:
+        path: "{{ common_directory }}/filebrowser/filebrowser.db"
+        state: touch
+        modification_time: preserve
+        access_time: preserve
+
+    - name: Create File Browser Container
+      docker_container:
+        name: filebrowser
+        hostname: filebrowser
+        image: filebrowser/filebrowser
+        volumes:
+          - "{{ common_directory_storage }}:/srv"
+          - "{{ common_directory }}/filebrowser/filebrowser.db:/database.db"
+          - "{{ common_directory }}/filebrowser/filebrowser.json:/.filebrowser.json"
+        labels:
+          traefik.http.routers.filebrowser.entrypoints: "web"
+          traefik.http.routers.filebrowser.middlewares: "redirect@file"
+
+          traefik.http.routers.filebrowser-secure.entrypoints: "web-secure"
+          traefik.http.routers.filebrowser-secure.tls: "true"
+          traefik.http.routers.filebrowser-secure.tls.certresolver: letsencrypt
+
+          traefik.http.services.filebrowser.loadbalancer.server.port: "80"
