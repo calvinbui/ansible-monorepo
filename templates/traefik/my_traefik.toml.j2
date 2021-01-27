@@ -10,8 +10,8 @@
 [entryPoints.web-secure]
   address = ":443/tcp"
 
-[entryPoints.jitsi]
-  address = ":10000/udp"
+[entryPoints.rtmp]
+  address = ":1935/tcp"
 
 [certificatesResolvers.letsencrypt.acme]
   email = "{{ acme_email }}"
