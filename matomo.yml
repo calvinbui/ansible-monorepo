@@ -43,6 +43,8 @@
       comparisons:
         env: strict
         labels: allow_more_present
+      container_default_behavior: no_defaults
+      network_mode: "{{ network.name }}"
   handlers:
     - name: Restart NGINX
       shell: docker restart "{{ matomo_name }}-nginx"
@@ -61,7 +63,7 @@
       docker_container:
         name: "{{ matomo_name }}"
         hostname: "{{ matomo_name }}"
-        image: matomo:3-fpm-alpine
+        image: matomo:4-fpm-alpine
         volumes:
           - "{{ matomo_app_directory }}:/var/www/html"
         env:
@@ -114,6 +116,10 @@
           dest: p.js
         - src: piwik.php
           dest: p.php
+        - src: matomo.js
+          dest: m.js
+        - src: matomo.php
+          dest: m.php
 
     # https://github.com/matomo-org/matomo/issues/7364#issuecomment-564027185
     - name: "Change strings"
