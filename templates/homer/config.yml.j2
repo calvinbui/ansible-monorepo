@@ -41,6 +41,22 @@ services:
       {% endif %}
     {% endfor %}
 
+  - name: Sharing
+    icon: fas fa-people-arrows
+    items:
+    {% for service in http_services %}
+      {% if service.group == "Sharing" %}
+      - name: {{ service.name }}
+      {% if service.logo is defined %}
+        logo: assets/custom/{{ service.logo }}
+      {% elif service.icon is defined %}
+        icon: {{ service.icon }}
+      {% endif %}
+        subtitle: {{ service.subtitle }}
+        url: {{ service.url }}
+      {% endif %}
+    {% endfor %}
+
   - name: Tools
     icon: fas fa-tools
     items:

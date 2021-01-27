@@ -1,6 +1,11 @@
 ---
 
 http_services:
+  ####################################################
+  #
+  #                    DOWNLOADS
+  #
+  ###################################################
   - name: NZBGet
     logo: nzbget.png
     subtitle: Downloads Files From Usenet
@@ -42,6 +47,11 @@ http_services:
     url: https://lidarr.{{ common_tld }}
     group: "Download"
 
+  ####################################################
+  #
+  #                    HOME
+  #
+  ###################################################
   - name: Blue Iris
     logo: blueiris.png
     subtitle: Surveillance Cameras
@@ -51,6 +61,11 @@ http_services:
     logo: nextcloud.png
     subtitle: File Sharing and Communication Platform
     url: https://nextcloud.{{ common_tld }}
+    group: "Home"
+  - name: PhotoPrism
+    logo: photoprism.png
+    subtitle: Personal Photo Management
+    url: https://photoprism.{{ common_tld }}
     group: "Home"
   - name: Firefly III
     logo: firefly.png
@@ -84,30 +99,41 @@ http_services:
     group: "Home"
     excludeMonitoring: ~
 
+  ####################################################
+  #
+  #                    SHARING
+  #
+  ###################################################
   - name: PsiTransfer
     icon: fas fa-cloud-upload-alt
     subtitle: File Sharing
     url: https://share.{{ common_tld }}
-    group: "Tools"
+    group: "Sharing"
   - name: File Browser
     logo: filebrowser.svg
     subtitle: Web File Browser
     url: https://filebrowser.{{ common_tld }}
-    group: "Tools"
-  - name: PhotoPrism
-    logo: photoprism.png
-    subtitle: Personal Photo Management
-    url: https://photoprism.{{ common_tld }}
-    group: "Tools"
-  - name: Shlink
-    logo: shlink.png
-    subtitle: Url Shortener
-    url: https://shlink.{{ common_tld }}
-    group: "Tools"
+    group: "Sharing"
   - name: PrivateBin
     logo: privatebin.png
     subtitle: Zero Knowledge Pastebin
     url: https://privatebin.{{ common_tld }}
+    group: "Sharing"
+  - name: MovieNight
+    logo: movienight.png
+    subtitle: Video streaming server
+    url: https://movienight.{{ common_tld }}
+    group: "Sharing"
+
+  ####################################################
+  #
+  #                    TOOLS
+  #
+  ###################################################
+  - name: Shlink
+    logo: shlink.png
+    subtitle: Url Shortener
+    url: https://shlink.{{ common_tld }}
     group: "Tools"
   - name: Bookstack
     logo: bookstack.png
@@ -134,17 +160,12 @@ http_services:
     subtitle: Web-based Scheduler
     url: https://huginn.{{ common_tld }}
     group: "Tools"
-  - name: Homelab IPMI
-    url: https://homelab-ipmi.{{ common_local_tld }}
-    logo: ipmi.png
-    subtitle: Supermicro IPMI
-    group: "Tools"
-  - name: Remark42
-    url: https://remark42.{{ common_tld }}/api/v1/rss/site?site=calvin.me
-    logo: remark42.png
-    subtitle: Commenting system
-    group: "Tools"
 
+  ####################################################
+  #
+  #                    MONITORING
+  #
+  ###################################################
   - name: Prometheus
     logo: prometheus.png
     subtitle: Monitoring system
@@ -170,13 +191,17 @@ http_services:
     subtitle: WebUI for smartd S.M.A.R.T monitoring
     url: https://scrutiny.{{ common_tld }}
     group: "Monitoring"
-
   - name: Matomo
     logo: matomo.png
     subtitle: Web Analytics
     url: https://mtmo.{{ common_tld }}
     group: "Monitoring"
 
+  ####################################################
+  #
+  #                    INFRASTRUCTURE
+  #
+  ###################################################
   - name: OPNsense
     logo: opnsense.png
     subtitle: Firewall and Routing
@@ -202,10 +227,14 @@ http_services:
     subtitle: Unifi Controller
     url: https://unifi.{{ common_local_tld }}:8443
     group: "Infrastructure"
+  - name: Homelab IPMI
+    url: https://homelab-ipmi.{{ common_local_tld }}
+    logo: ipmi.png
+    subtitle: Supermicro IPMI
+    group: "Tools"
   - name: BorgBase
     logo: borgmatic.png
     subtitle: Hosting For Borg Backup Repos
     url: https://www.borgbase.com
     group: "Infrastructure"
     excludeMonitoring: ~
-
