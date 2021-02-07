@@ -18,7 +18,7 @@
   storage = "acme.json"
   [certificatesResolvers.letsencrypt.acme.dnsChallenge]
     provider = "cloudflare"
-    delayBeforeCheck = 180
+    delayBeforeCheck = 1200
     resolvers = ["1.1.1.1:53", "1.0.0.1:53"]
 
 [api]
