@@ -16,11 +16,13 @@ nzbhydra_docker_additional_options:
     traefik.http.routers.nzbhydra.middlewares: "redirect@file"
 
     traefik.http.routers.nzbhydra-secure.entrypoints: "web-secure"
-    traefik.http.routers.nzbhydra-secure.middlewares: "myAuth@file"
+    traefik.http.routers.nzbhydra-secure.middlewares: "myAuth@file, sslheader"
     traefik.http.routers.nzbhydra-secure.tls: "true"
     traefik.http.routers.nzbhydra-secure.tls.certresolver: "letsencrypt"
 
     traefik.http.services.nzbhydra.loadbalancer.server.port: "5076"
+
+    traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto: https
 
 nzbhydra_config:
   main.apiKey: !vault |
