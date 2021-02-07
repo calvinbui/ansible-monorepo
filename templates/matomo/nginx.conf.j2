@@ -24,6 +24,8 @@ server {
 		fastcgi_param PATH_INFO $fastcgi_path_info;
 		fastcgi_param HTTP_PROXY ""; # prohibit httpoxy: https://httpoxy.org/
 		fastcgi_pass php-handler;
+
+		resolver {{ network.dns }};
 	}
 
 	## deny access to all other .php files
