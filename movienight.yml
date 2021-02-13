@@ -18,7 +18,6 @@
       network_mode: "{{ network.name }}"
   vars:
     movienight_directory: "{{ common_directory }}/movienight"
-    movienight_admin_password:
     movienight_settings:
       RegenAdminPass: false
       LetThemLurk: true
