@@ -160,6 +160,11 @@ http_services:
     subtitle: Web-based Scheduler
     url: https://huginn.{{ common_tld }}
     group: "Tools"
+  - name: Joplin
+    logo: joplin.svg
+    subtitle: Note taking
+    url: https://joplin.{{ common_tld }}/login
+    group: "Tools"
 
   ####################################################
   #
@@ -231,7 +236,7 @@ http_services:
     url: https://homelab-ipmi.{{ common_local_tld }}
     logo: ipmi.png
     subtitle: Supermicro IPMI
-    group: "Tools"
+    group: "Infrastructure"
   - name: BorgBase
     logo: borgmatic.png
     subtitle: Hosting For Borg Backup Repos
