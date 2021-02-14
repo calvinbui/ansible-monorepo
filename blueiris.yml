@@ -3,54 +3,34 @@
   become: true
   vars:
     network: "{{ networks.iot }}"
-    recording_device: LABEL=recordings
-    recording_path: /mnt/recordings
-    blueiris_config_directory: "{{ recording_path }}"
+    config_directory: "{{ common_directory }}/blueiris"
+    blueiris_endpoint: http://192.168.3.2
   pre_tasks:
-    - mount:
-        path: "{{ recording_path }}"
-        src: "{{ recording_device }}"
-        fstype: "ext4"
-        boot: true
-        state: mounted
+    - name: Update apt cache
+      apt:
+        update_cache: true
+        cache_valid_time: 600
+      changed_when: false
+      when: ansible_distribution == 'Ubuntu'
   tasks:
-    - name: Create Blue Iris directory
+    - name: Install kvm packages
+      apt:
+        name:
+          - cpu-checker
+          - qemu-kvm
+          - libvirt-daemon-ssytem
+          - virt-manager
+        state: present
+
+    - name: Create config folder
       file:
-        path: "{{ blueiris_config_directory }}"
+        path: "{{ config_directory }}"
         state: directory
-
-    - name: Template supervisord config
-      template:
-        src: templates/blueiris/supervisord.conf.j2
-        dest: "{{ blueiris_config_directory }}/supervisord.conf"
-
-    - name: Create Blue Iris container
-      docker_container:
-        name: blueiris
-        image: jshridha/blueiris
-        state: started
-        volumes:
-          - "{{ blueiris_config_directory }}/blueiris:/root/prefix32:rw"
-          - /etc/localtime:/etc/localtime:ro
-          - "{{ blueiris_config_directory }}/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf"
-        pull: true
-        hostname: blueiris
-        restart_policy: unless-stopped
-        networks_cli_compatible: true
-        purge_networks: true
-        comparisons:
-          labels: strict
-        dns_servers: "{{ network.dns }}"
-        networks:
-          - name: "{{ network.name }}"
-            ipv4_address: "{{ network.prefix }}.2"
-        labels:
-          traefik.enable: "false"
 
     - name: Copy NGINX config
       template:
         src: templates/blueiris/nginx.conf
-        dest: "{{ blueiris_config_directory }}/nginx.conf"
+        dest: "{{ config_directory }}/nginx.conf"
 
     - name: Create Docker NGINX proxy
       docker_container:
@@ -58,7 +38,7 @@
         image: nginx
         state: started
         volumes:
-          - "{{ blueiris_config_directory }}/nginx.conf:/etc/nginx/conf.d/default.conf:ro"
+          - "{{ config_directory }}/nginx.conf:/etc/nginx/conf.d/default.conf:ro"
         hostname: blueiris-proxy
         restart_policy: unless-stopped
         networks_cli_compatible: true
@@ -81,4 +61,3 @@
 
           traefik.http.routers.blueiris.rule: "Host(`blueiris.{{ common_tld }}`)"
           traefik.http.routers.blueiris-secure.rule: "Host(`blueiris.{{ common_tld }}`)"
-
