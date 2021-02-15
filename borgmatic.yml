@@ -88,6 +88,8 @@
           - "{{ borgmatic_common_directory}}/cache/borg:/root/.cache/borg"
         labels:
           traefik.enable: "false"
+        container_default_behavior: no_defaults
+        network_mode: "{{ network.name }}"
 
     - name: Template Borgmatic configuration
       template:

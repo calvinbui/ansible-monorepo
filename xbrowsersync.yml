@@ -40,6 +40,8 @@
       dns_servers: "{{ network.dns }}"
       networks:
         - name: "{{ network.name }}"
+      container_default_behavior: no_defaults
+      network_mode: "{{ network.name }}"
   handlers:
     - name: Restart xBrowserSync
       shell: docker restart "{{ xbrowsersync_name }}"

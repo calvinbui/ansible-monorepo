@@ -39,6 +39,8 @@
       comparisons:
         env: allow_more_present
         labels: allow_more_present
+      container_default_behavior: no_defaults
+      network_mode: "{{ network.name }}"
   handlers:
     - name: Restart BookStack
       shell: docker restart "{{ bookstack_name }}"

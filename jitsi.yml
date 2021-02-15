@@ -30,6 +30,8 @@
       comparisons:
         env: strict
         labels: strict
+      container_default_behavior: no_defaults
+      network_mode: "{{ network.name }}"
   # pre_tasks:
   #   - name: Clean Jitsi directories
   #     file:

@@ -16,6 +16,8 @@
       comparisons:
         env: strict
         labels: strict
+      container_default_behavior: no_defaults
+      network_mode: "{{ network.name }}"
   vars:
     network: "{{ networks.mgmt }}"
     monitoring_directory: "{{ common_directory }}/monitoring"

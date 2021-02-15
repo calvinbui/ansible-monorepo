@@ -28,6 +28,8 @@
       comparisons:
         env: allow_more_present
         labels: allow_more_present
+      container_default_behavior: no_defaults
+      network_mode: "{{ network.name }}"
   handlers:
     - name: Restart PrivateBin
       shell: docker restart "{{ privatebin_name }}"

@@ -25,6 +25,8 @@
       dns_servers: "{{ network.dns }}"
       networks:
         - name: "{{ network.name }}"
+      container_default_behavior: no_defaults
+      network_mode: "{{ network.name }}"
   roles:
     - mariadb
     - nextcloud

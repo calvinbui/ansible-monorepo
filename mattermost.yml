@@ -31,6 +31,8 @@
       comparisons:
         env: strict
         labels: strict
+      container_default_behavior: no_defaults
+      network_mode: "{{ network.name }}"
   roles:
     - postgres
   tasks:
