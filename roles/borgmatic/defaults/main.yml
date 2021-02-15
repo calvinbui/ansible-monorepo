@@ -1,0 +1,8 @@
+---
+
+borgmatic_name: ""
+borgmatic_crontab: "0 3 * * *"
+borgmatic_source: ""
+borgmatic_folder: "{{ borgmatic_common_directory }}/{{ borgmatic_name }}"
+borgmatic_ssh_src: ""
+borgmatic_config: ""

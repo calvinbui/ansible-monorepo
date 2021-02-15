@@ -10,8 +10,7 @@ location:
     # repositories are backed up to in sequence. See ssh_command for SSH options like
     # identity file or port.
     repositories:
-        - /mnt/destination
-        - y8p6ha46@y8p6ha46.repo.borgbase.com:repo
+        - q09177h4@q09177h4.repo.borgbase.com:repo
 
     # Stay in same file system (do not cross mount points). Defaults to false.
     # one_file_system: true
@@ -65,35 +64,7 @@ location:
 
     # Any paths matching these patterns are excluded from backups. Globs and tildes
     # are expanded. See the output of "borg help patterns" for more details.
-    exclude_patterns:
-        - '/mnt/source/languagetool'
-
-        - '/mnt/source/nextcloud/nextcloud/app/data/appdata_*/preview'
-        - '/mnt/source/nextcloud/nextcloud/app/data/*/files_versions'
-        - '/mnt/source/nextcloud/nextcloud/app/data/*/cache'
-        - '/mnt/source/nextcloud/nextcloud/build'
-
-        - '/mnt/source/jellyfin'
-
-        - '/mnt/source/unifi/data/backup'
-        - '/mnt/source/unifi/data/db/diagnostic.data'
-
-        - '/mnt/source/photoprism/photoprism/cache'
-
-        - '/mnt/source/monitoring/prometheus/data'
-
-        - '/mnt/source/nzbhydra/backup'
-
-        - '/mnt/source/*/*/log'
-        - '/mnt/source/*/*/log.*'
-        - '/mnt/source/*/*/logs'
-        - '/mnt/source/*/*/logs.*'
-        - '/mnt/source/*/logs'
-        - '/mnt/source/*/logs.*'
-        - '/mnt/source/*/log'
-        - '/mnt/source/*/log.*'
-        - '/mnt/source/*/*.log'
-        - '/mnt/source/*/*.log.*'
+    # exclude_patterns:
         # - '*.pyc'
         # - ~/*/.cache
         # - /etc/ssl
@@ -154,7 +125,7 @@ storage:
     # Type of compression to use when creating archives. See
     # https://borgbackup.readthedocs.org/en/stable/usage.html#borg-create for details.
     # Defaults to "lz4".
-    compression: lzma,9
+    compression: auto,lz4
 
     # Remote network upload rate limit in kiBytes/second. Defaults to unlimited.
     # remote_rate_limit: 100
@@ -301,12 +272,12 @@ hooks:
     # List of one or more shell commands or scripts to execute after creating a
     # backup, run once per configuration file.
     # after_backup:
-        # - "/etc/borgmatic.d/notifications.sh after"
+        # - "/etc/borgmatic.d/notifications.sh after {{ borgmatic_name }}"
 
     # List of one or more shell commands or scripts to execute when an exception
     # occurs during a backup or when running a before_backup or after_backup hook.
     on_error:
-        - "/etc/borgmatic.d/notifications.sh error"
+        - "/etc/borgmatic.d/notifications.sh error {{ borgmatic_name }}"
 
     # List of one or more PostgreSQL databases to dump before creating a backup,
     # run once per configuration file. The database dumps are added to your source

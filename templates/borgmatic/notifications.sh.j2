@@ -1,6 +1,7 @@
 #!/bin/sh
 
 step=$1
+name=$2
 
 if [ $step = "before" ]; then
   message="Starting backup :speaker:"
@@ -10,4 +11,4 @@ elif [ $step = "error" ]; then
   message="Error creating backup :x:"
 fi
 
-wget --spider --header="Content-Type: application/json" --post-data="{\"text\": \"$message\"}" {{ borgmatic_notification_webhook }}
+wget --spider --header="Content-Type: application/json" --post-data="{\"text\": \"${name}: ${message}\"}" {{ borgmatic_notification_webhook }}

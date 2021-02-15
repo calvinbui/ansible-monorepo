@@ -17,7 +17,8 @@
   become: true
   vars:
     network: "{{ networks.mgmt }}"
-    borgmatic_name: borgmatic-homelab
+    borgmatic_common_directory: "/borgmatic"
+    borgmatic_repository_directory: "{{ borgmatic_common_directory }}/borgbackup" # borg backup repo
     borgmatic_pass: !vault |
       $ANSIBLE_VAULT;1.1;AES256
       37626530363533323433633066656632393664313962366264363435386635346634613433303661
@@ -26,38 +27,40 @@
       3966623038626139300a666265326566373439663038393432396432356636353733643361623031
       35663138313039623361346562346234636365316164636365663439326663643261643438376334
       3361306465303461613739396564306434333033643962616664
-    borgmatic_common_directory: "{{ common_directory_backup }}/borgmatic/"
-    borgmatic_source_directory: "{{ common_directory }}" # data to backup
-    borgmatic_destination_directory: "{{ borgmatic_common_directory }}/homelab"
-    borgmatic_repository_directory: "{{ borgmatic_common_directory }}/borgbackup" # borg backup repo
     borgmatic_notification_webhook: !vault |
-          $ANSIBLE_VAULT;1.1;AES256
-          35316463616432373433336236326164616232316162646138373738656634353466653863613563
-          3135313633663131386434363036363936653763366661370a343064653032623133303638656566
-          38373633306665333363666331633339666634653737376530386263373539636262653839386238
-          6264623635633564640a643531386632323565616138376261383563353861646634646433333534
-          65363932316661303164623130656234323234323962323263636338303539643431363531343435
-          37386565336366383061353634643261616163666361656466343036386137363062336236343933
-          38386630306635626434366464386234343265333230303965303239323366386565336130306639
-          65633139313433323530
+      $ANSIBLE_VAULT;1.1;AES256
+      35316463616432373433336236326164616232316162646138373738656634353466653863613563
+      3135313633663131386434363036363936653763366661370a343064653032623133303638656566
+      38373633306665333363666331633339666634653737376530386263373539636262653839386238
+      6264623635633564640a643531386632323565616138376261383563353861646634646433333534
+      65363932316661303164623130656234323234323962323263636338303539643431363531343435
+      37386565336366383061353634643261616163666361656466343036386137363062336236343933
+      38386630306635626434366464386234343265333230303965303239323366386565336130306639
+      65633139313433323530
   module_defaults:
     docker_container:
+      image: b3vis/borgmatic
       keep_volumes: false
       state: started
       restart_policy: unless-stopped
       networks_cli_compatible: true
       purge_networks: true
+      env:
+        TZ: "{{ common_timezone }}"
+        BORG_PASSPHRASE: "{{ borgmatic_pass }}"
       networks:
         - name: "{{ network.name }}"
       dns_servers: "{{ network.dns }}"
       comparisons:
         env: strict
         labels: allow_more_present
-  handlers:
-    - name: Restart Borgmatic
-      shell: docker restart "{{ borgmatic_name }}"
-  tasks:
-    - name: Create Borgmatic directory
+      labels:
+        traefik.enable: "false"
+      container_default_behavior: no_defaults
+      network_mode: "{{ network.name }}"
+
+  pre_tasks:
+    - name: Create Borgmatic directories
       file:
         path: "{{ borgmatic_common_directory }}"
         state: directory
@@ -69,53 +72,32 @@
         dest: "{{ borgmatic_repository_directory }}"
         version: "1.1.15"
 
-    - name: Create Borgmatic container
-      docker_container:
-        name: "{{ borgmatic_name }}"
-        hostname: "{{ borgmatic_name }}"
-        image: b3vis/borgmatic
-        env:
-          TZ: "{{ common_timezone }}"
-          BORG_PASSPHRASE: "{{ borgmatic_pass }}"
-        volumes:
-          - "{{ borgmatic_source_directory }}:/mnt/source:ro" # dont mount as ro when a restore is needed
-          - "{{ borgmatic_destination_directory }}:/mnt/destination"
-          - "{{ borgmatic_repository_directory }}:/mnt/borg-repository"
-          - "{{ borgmatic_common_directory}}/borgmatic.d:/etc/borgmatic.d/"
-          - "{{ borgmatic_common_directory}}/borgmatic:/root/.borgmatic"
-          - "{{ borgmatic_common_directory}}/config/borg:/root/.config/borg"
-          - "{{ borgmatic_common_directory}}/ssh:/root/.ssh"
-          - "{{ borgmatic_common_directory}}/cache/borg:/root/.cache/borg"
-        labels:
-          traefik.enable: "false"
-        container_default_behavior: no_defaults
-        network_mode: "{{ network.name }}"
-
-    - name: Template Borgmatic configuration
-      template:
-        src: borgmatic/config.yaml.j2
-        dest: "{{ borgmatic_common_directory }}/borgmatic.d/config.yaml"
-        owner: root
-        group: root
-
-    - name: Template Borgmatic crontab
-      template:
-        src: borgmatic/crontab.txt.j2
-        dest: "{{ borgmatic_common_directory }}/borgmatic.d/crontab.txt"
-        owner: root
-        group: root
-      notify: Restart Borgmatic
-
-    - name: Template notification script
-      template:
-        src: borgmatic/notifications.sh.j2
-        dest: "{{ borgmatic_common_directory }}/borgmatic.d/notifications.sh"
-        mode: '0500'
-
-    - name: Copy SSH keys
-      copy:
-        src: files/borgmatic/ssh/
-        dest: "{{ borgmatic_common_directory}}/ssh/"
-        owner: root
-        group: root
-        mode: '0600'
+  roles:
+    - role: borgmatic
+      vars:
+        borgmatic_name: misc
+        borgmatic_source: "{{ common_directory_misc }}"
+        borgmatic_crontab: "0 2 * * *"
+        borgmatic_ssh_src: files/borgmatic/ssh/
+        borgmatic_config: "borgmatic/{{ borgmatic_name }}.yaml.j2"
+    - role: borgmatic
+      vars:
+        borgmatic_name: work
+        borgmatic_source: "{{ common_directory }}"
+        borgmatic_crontab: "30 2 * * *"
+        borgmatic_ssh_src: files/borgmatic/ssh/
+        borgmatic_config: "borgmatic/{{ borgmatic_name }}.yaml.j2"
+    - role: borgmatic
+      vars:
+        borgmatic_name: apps
+        borgmatic_source: "{{ common_directory }}"
+        borgmatic_crontab: "0 3 * * *"
+        borgmatic_ssh_src: files/borgmatic/ssh/
+        borgmatic_config: "borgmatic/{{ borgmatic_name }}.yaml.j2"
+    - role: borgmatic
+      vars:
+        borgmatic_name: photos
+        borgmatic_source: "{{ common_directory_photos }}"
+        borgmatic_crontab: "30 3 * * *"
+        borgmatic_ssh_src: files/borgmatic/ssh/
+        borgmatic_config: "borgmatic/{{ borgmatic_name }}.yaml.j2"
