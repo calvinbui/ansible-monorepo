@@ -80,13 +80,17 @@
         borgmatic_crontab: "0 2 * * *"
         borgmatic_ssh_src: files/borgmatic/ssh/
         borgmatic_config: "borgmatic/{{ borgmatic_name }}.yaml.j2"
+      tags:
+        - misc
     - role: borgmatic
       vars:
         borgmatic_name: work
-        borgmatic_source: "{{ common_directory }}"
+        borgmatic_source: "{{ common_directory_storage }}/Work"
         borgmatic_crontab: "30 2 * * *"
         borgmatic_ssh_src: files/borgmatic/ssh/
         borgmatic_config: "borgmatic/{{ borgmatic_name }}.yaml.j2"
+      tags:
+        - work
     - role: borgmatic
       vars:
         borgmatic_name: apps
@@ -94,6 +98,8 @@
         borgmatic_crontab: "0 3 * * *"
         borgmatic_ssh_src: files/borgmatic/ssh/
         borgmatic_config: "borgmatic/{{ borgmatic_name }}.yaml.j2"
+      tags:
+        - apps
     - role: borgmatic
       vars:
         borgmatic_name: photos
@@ -101,3 +107,5 @@
         borgmatic_crontab: "30 3 * * *"
         borgmatic_ssh_src: files/borgmatic/ssh/
         borgmatic_config: "borgmatic/{{ borgmatic_name }}.yaml.j2"
+      tags:
+        - photos
