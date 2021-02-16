@@ -11,7 +11,6 @@ scrape_configs:
     static_configs:
       - targets:
         - {{ cadvisor_name }}.{{ network.name }}:8080
-    scrape_interval: 15s
 
   - job_name: blackbox
     metrics_path: /probe
