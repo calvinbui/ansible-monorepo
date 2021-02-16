@@ -144,10 +144,8 @@
         image: gcr.io/cadvisor/cadvisor:v0.37.0
         command:
           - '--docker_only=true'
-          - '--disable_metrics=accelerator,cpu_topology,disk,diskIO,network,tcp,udp,percpu,sched,process,hugetlb,referenced_memory,resctrl'
-          - '--max_procs=1'
-          - '--enable_load_reader=false'
-          - '--storage_duration=0m40s'
+          - '--disable_metrics=accelerator,advtcp,cpu_topology,disk,tcp,udp,percpu,sched,process,hugetlb,referenced_memory,resctrl'
+          - '--housekeeping_interval=1m0s'
         volumes:
           - /:/rootfs:ro
           - /var/run:/var/run:ro
