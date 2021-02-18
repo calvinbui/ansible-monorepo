@@ -26,3 +26,11 @@
     resolvers = ["1.1.1.1:53", "1.0.0.1:53"]
 
 [api]
+
+[entryPoints]
+  [entryPoints.metrics]
+    address = ":8082/tcp"
+
+[metrics]
+  [metrics.prometheus]
+    entryPoint = "metrics"
