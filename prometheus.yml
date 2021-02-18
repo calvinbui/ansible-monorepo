@@ -283,6 +283,19 @@
         src: templates/grafana/prometheus.yml.j2
         dest: "{{ grafana_provisioning_directory }}/datasources/prometheus.yml"
       notify: Restart grafana
+      tags:
+        - grafana
+    - name: Download Grafana plugins
+      unarchive:
+        src: "https://grafana.com/api/plugins/{{ item.name }}/versions/{{ item.version }}/download"
+        dest: "{{ grafana_data_directory }}/plugins"
+        remote_src: yes
+      loop:
+        - name: grafana-piechart-panel
+          version: 1.6.1
+      tags:
+        - grafana
+      notify: Restart grafana
     - name: Create Grafana container
       docker_container:
         name: grafana
@@ -302,3 +315,5 @@
           traefik.http.services.grafana.loadbalancer.server.port: "3000"
         comparisons:
           labels: allow_more_present
+      tags:
+        - grafana
