@@ -1,4 +1,3 @@
-
 upstream php-handler {
 	server {{ matomo_name }}:9000;
 }
@@ -19,11 +18,13 @@ server {
 		# Check that the PHP script exists before passing it
 		try_files $fastcgi_script_name =404;
 
+		set $endpoint php-handler;
+
 		include fastcgi_params;
 		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
 		fastcgi_param PATH_INFO $fastcgi_path_info;
 		fastcgi_param HTTP_PROXY ""; # prohibit httpoxy: https://httpoxy.org/
-		fastcgi_pass php-handler;
+		fastcgi_pass $endpoint;
 
 		resolver {{ network.dns }};
 	}
