@@ -19,8 +19,12 @@
       container_default_behavior: no_defaults
       network_mode: "{{ network.name }}"
   roles:
-    - traefik
-    - portainer
+    - role: traefik
+      tags:
+        - traefik
+    - role: portainer
+      tags:
+        - portainer
   tasks:
     - name: Create Watchtower container
       docker_container:

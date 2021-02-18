@@ -1,3 +1,7 @@
+[global]
+  checkNewVersion = false
+  sendAnonymousUsage = false
+
 [providers]
   [providers.docker]
     defaultRule = "Host(`{% raw %}{{ normalize .Name }}{% endraw %}.{{ common_tld }}`)"
