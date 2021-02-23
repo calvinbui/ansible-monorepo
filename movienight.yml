@@ -105,3 +105,6 @@
           traefik.tcp.routers.movienight-rtmp.service: movienight-rtmp
           traefik.tcp.routers.movienight-rtmp.rule: HostSNI(`*`)
           traefik.tcp.services.movienight-rtmp.loadbalancer.server.port: "1935"
+
+          #### WATCHTOWER IGNORE
+          com.centurylinklabs.watchtower.enable: "false"
