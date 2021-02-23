@@ -74,6 +74,7 @@
           MATOMO_DATABASE_DBNAME: "{{ mariadb_environment_variables.MYSQL_DATABASE }}"
         labels:
           traefik.enable: "false"
+          com.centurylinklabs.watchtower.depends-on: "{{ matomo_name }}-nginx"
 
     - name: Template NGINX config
       template:
