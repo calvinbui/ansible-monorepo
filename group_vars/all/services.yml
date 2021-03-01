@@ -5,7 +5,7 @@ http_services:
   #
   #                    DOWNLOADS
   #
-  ###################################################
+  ####################################################
   - name: NZBGet
     logo: nzbget.png
     subtitle: Downloads Files From Usenet
@@ -51,7 +51,7 @@ http_services:
   #
   #                    HOME
   #
-  ###################################################
+  ####################################################
   - name: Blue Iris
     logo: blueiris.png
     subtitle: Surveillance Cameras
@@ -103,7 +103,7 @@ http_services:
   #
   #                    SHARING
   #
-  ###################################################
+  ####################################################
   - name: PsiTransfer
     icon: fas fa-cloud-upload-alt
     subtitle: File Sharing
@@ -129,7 +129,7 @@ http_services:
   #
   #                    TOOLS
   #
-  ###################################################
+  ####################################################
   - name: Shlink
     logo: shlink.png
     subtitle: Url Shortener
@@ -170,7 +170,7 @@ http_services:
   #
   #                    MONITORING
   #
-  ###################################################
+  ####################################################
   - name: Prometheus
     logo: prometheus.png
     subtitle: Monitoring system
@@ -206,12 +206,13 @@ http_services:
   #
   #                    INFRASTRUCTURE
   #
-  ###################################################
+  ####################################################
   - name: OPNsense
     logo: opnsense.png
     subtitle: Firewall and Routing
     url: https://opnsense.{{ common_local_tld }}
     group: "Infrastructure"
+    excludeMonitoring: ~
   - name: Guacamole
     logo: guacamole.png
     subtitle: Clientless Remote Desktop Gateway
