@@ -8,6 +8,12 @@
       [[http.routers.api.tls.domains]]
         main = "traefik.{{ common_tld }}"
 
+[http.routers.local-api]
+  rule = "Host(`traefik.{{ network.name }}`)"
+  entryPoints = ["web"]
+  service = "api@internal"
+  middlewares = ["myAuth"]
+
 # htpasswd -nb user password
 [http.middlewares]
   [http.middlewares.redirect.redirectScheme]

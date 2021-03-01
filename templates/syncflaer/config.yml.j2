@@ -1,0 +1,30 @@
+
+---
+
+ipProviders:
+  - http://syncflaer-dns.{{ network.name }}
+
+notifications:
+  slack:
+    webhookURL: {{ syncflaer_slack_webhook }}
+    username: syncflaer
+    channel: "#dns-updates"
+
+traefikInstances:
+  - name: traefik
+    url: http://traefik.{{ networks.mgmt.name }}
+    username: {{ htpasswd.username }}
+    password: {{ htpasswd.password }}
+    ignoredRules:
+      - {{ common_short_tld }}
+      - traefik.{{ networks.mgmt.name }}
+
+cloudflare:
+  email: {{ cloudflare_email }}
+  apiKey: {{ cloudflare_api }}
+  zoneName: {{ common_tld }}
+  deleteGrace: 1
+  defaults:
+    type: A
+    proxied: false
+    ttl: 120
