@@ -20,10 +20,11 @@
 [certificatesResolvers.letsencrypt.acme]
   email = "{{ acme_email }}"
   storage = "acme.json"
-  [certificatesResolvers.letsencrypt.acme.dnsChallenge]
+  [certificatesResolvers.letsencrypt.acme.tlsChallenge]
+  {# [certificatesResolvers.letsencrypt.acme.dnsChallenge]
     provider = "cloudflare"
     delayBeforeCheck = 1200
-    resolvers = ["1.1.1.1:53", "1.0.0.1:53"]
+    resolvers = ["1.1.1.1:53", "8.8.8.8:53", "1.0.0.1:53", "8.8.4.4:53"] #}
 
 [api]
 
