@@ -1,0 +1,75 @@
+---
+- hosts: homelab
+  become: true
+  module_defaults:
+    docker_container:
+      keep_volumes: false
+      state: started
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      networks:
+        - name: "{{ network.name }}"
+      dns_servers: "{{ network.dns }}"
+      comparisons:
+        env: allow_more_present
+        labels: allow_more_present
+      container_default_behavior: no_defaults
+      network_mode: "{{ network.name }}"
+  vars:
+    network: "{{ networks.pub }}"
+    papermerge_ftp_password: "$6$vgLah.l13sGfNWEP$/vrPocaGTCDC601velsai68JfVzIzaQ18OrO0Y8Q2FPpey7kmXfx/fwZcJQkLPkbnJ2SIS.S.CLBbP8iB4MfS0"
+  tasks:
+    - name: Add the user papermerge
+      ansible.builtin.user:
+        name: papermerge
+        create_home: false
+        home: "{{ common_directory }}/papermerge/import"
+        password: "{{ papermerge_ftp_password }}"
+      register: papermerge_user
+
+    - name: Create Papermerge folder
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: "papermerge"
+        group: "{{ common_group_id }}"
+        mode: "775"
+      loop:
+        - "{{ common_directory }}/papermerge"
+        - "{{ common_directory }}/papermerge/config"
+        - "{{ common_directory }}/papermerge/data"
+        - "{{ common_directory }}/papermerge/import"
+
+    - name: Create Papermerge Container
+      docker_container:
+        name: papermerge
+        hostname: papermerge
+        image: ghcr.io/linuxserver/papermerge
+        volumes:
+          - "{{ common_directory }}/papermerge/config:/config"
+          - "{{ common_directory }}/papermerge/data:/data"
+          - "{{ common_directory }}/papermerge/import:/import"
+        env:
+          PUID: "{{ papermerge_user.uid }}"
+          PGID: "{{ common_group_id }}"
+          TZ: "{{ common_timezone }}"
+        labels:
+          traefik.http.routers.papermerge.entrypoints: "web"
+          traefik.http.routers.papermerge.middlewares: "redirect@file"
+
+          traefik.http.routers.papermerge-secure.entrypoints: "web-secure"
+          traefik.http.routers.papermerge-secure.tls: "true"
+          traefik.http.routers.papermerge-secure.tls.certresolver: letsencrypt
+
+          traefik.http.services.papermerge.loadbalancer.server.port: "8000"
+
+    - name: Edit Papermerge config
+      lineinfile:
+        path: "{{ common_directory }}/papermerge/config/papermerge.conf.py"
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+      loop:
+        - regexp: "IMPORTER_DIR"
+          line: 'IMPORTER_DIR = "/import"'
+
