@@ -1,0 +1,95 @@
+---
+- hosts: homelab
+  become: true
+  module_defaults:
+    docker_container:
+      keep_volumes: false
+      state: started
+      restart_policy: unless-stopped
+      networks_cli_compatible: true
+      purge_networks: true
+      networks:
+        - name: "{{ network.name }}"
+      dns_servers: "{{ network.dns }}"
+      comparisons:
+        env: allow_more_present
+        labels: allow_more_present
+      container_default_behavior: no_defaults
+      network_mode: "{{ network.name }}"
+  vars:
+    network: "{{ networks.pub }}"
+
+    umami_directory: "{{ common_directory }}/umami"
+
+    umami_alt_domain: "u.{{ common_tld }}"
+    umami_hash_salt: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      37393730643433633438626261363630343865356534373330616332373263336263396430373966
+      3834636265643463623735656364323739326538626562360a643264363033336332396561663432
+      32613966323632333063646534643634636162333238373731363335343064636135336236316235
+      6431376536626536350a383831396466663033656436303232366564666166326564653261373332
+      31353630346265373230666337303235306663313337656562646364373132323337
+
+    postgres_name: umami-postgres
+    postgres_version: '12'
+    postgres_directory: "{{ umami_directory }}/postgres"
+    postgres_environment_variables:
+      POSTGRES_USER: umami
+      POSTGRES_PASSWORD: !vault |
+        $ANSIBLE_VAULT;1.1;AES256
+        37356632623934376432366231323839613236316266326363613733303462353062396461333766
+        6139666437613863333066313932663632646465323932360a333262663933366531653436643966
+        35323936653362653130346166663961313334653430306138623032633838353630366536636639
+        3163666334346136610a323432636264373066393839333436396438303561646231313062363730
+        35613131643763633863633665613266396538313562373339343665336633313461
+      POSTGRES_DB: umami
+    postgres_directory_extra: "{{ umami_directory }}/schema.postgresql.sql:/docker-entrypoint-initdb.d/schema.postgresql.sql:ro"
+  pre_tasks:
+    - name: Create umami folders
+      file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - "{{ umami_directory }}"
+        - "{{ postgres_directory }}"
+  
+    - name: Download umami sql file
+      get_url: 
+        url: https://raw.githubusercontent.com/mikecao/umami/master/sql/schema.postgresql.sql
+        dest: "{{ umami_directory }}/schema.postgresql.sql"
+
+  roles:
+    - postgres
+  
+  tasks:
+    - name: Create umami Container
+      docker_container:
+        name: umami
+        hostname: umami
+        image: ghcr.io/mikecao/umami:postgresql-latest
+        env:
+          DATABASE_URL: postgresql://{{ postgres_environment_variables.POSTGRES_USER }}:{{ postgres_environment_variables.POSTGRES_PASSWORD }}@{{ postgres_name }}.{{ network.name }}:5432/{{ postgres_environment_variables.POSTGRES_DB }}
+          DATABASE_TYPE: postgresql
+          HASH_SALT: "{{ umami_hash_salt }}"
+        labels:
+          traefik.http.routers.umami.entrypoints: "web"
+          traefik.http.routers.umami.middlewares: "redirect@file"
+
+          traefik.http.routers.umami-secure.entrypoints: "web-secure"
+          traefik.http.routers.umami-secure.tls: "true"
+          traefik.http.routers.umami-secure.tls.certresolver: letsencrypt
+
+          traefik.http.services.umami.loadbalancer.server.port: "3000"
+
+          traefik.http.routers.umami-alt.entrypoints: "web"
+          traefik.http.routers.umami-alt.middlewares: "redirect@file"
+          traefik.http.routers.umami-alt.rule: "Host(`{{ umami_alt_domain }}`)"
+
+          traefik.http.routers.umami-alt-secure.entrypoints: "web-secure"
+          traefik.http.routers.umami-alt-secure.rule: "Host(`{{ umami_alt_domain }}`)"
+          traefik.http.routers.umami-alt-secure.tls: "true"
+          traefik.http.routers.umami-alt-secure.tls.certresolver: letsencrypt
+
+          traefik.http.routers.umami-alt-secure.middlewares: "umami-script-path"
+          traefik.http.middlewares.umami-script-path.replacepathregex.regex: '^/script.js'
+          traefik.http.middlewares.umami-script-path.replacepathregex.replacement: '/umami.js'

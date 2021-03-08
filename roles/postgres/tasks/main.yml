@@ -14,6 +14,7 @@
     published_ports: "{{ postgres_ports | default(omit) }}"
     volumes:
       - "{{ postgres_directory }}:/var/lib/postgresql/data"
+      - "{{ postgres_directory_extra | default(omit) }}"
     env: "{{ postgres_environment_variables | default(omit) }}"
     labels:
       traefik.enable: "false"

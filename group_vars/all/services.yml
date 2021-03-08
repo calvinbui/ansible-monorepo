@@ -201,10 +201,10 @@ http_services:
     subtitle: WebUI for smartd S.M.A.R.T monitoring
     url: https://scrutiny.{{ common_tld }}
     group: "Monitoring"
-  - name: Matomo
-    logo: matomo.png
+  - name: umami
+    logo: umami.png
     subtitle: Web Analytics
-    url: https://mtmo.{{ common_tld }}
+    url: https://umami.{{ common_tld }}
     group: "Monitoring"
 
   ####################################################
