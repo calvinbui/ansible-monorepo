@@ -165,6 +165,11 @@ http_services:
     subtitle: Note taking
     url: https://joplin.{{ common_tld }}/login
     group: "Tools"
+  - name: Papermerge
+    logo: papermerge.svg
+    subtitle: Document Management System
+    url: https://papermerge.{{ common_tld }}
+    group: "Tools"
 
   ####################################################
   #
