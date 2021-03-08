@@ -202,7 +202,7 @@ http_services:
     url: https://scrutiny.{{ common_tld }}
     group: "Monitoring"
   - name: umami
-    logo: umami.png
+    logo: umami.svg
     subtitle: Web Analytics
     url: https://umami.{{ common_tld }}
     group: "Monitoring"
