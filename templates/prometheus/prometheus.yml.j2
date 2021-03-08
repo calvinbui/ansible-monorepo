@@ -12,10 +12,10 @@ scrape_configs:
       - targets:
         - {{ cadvisor_name }}.{{ network.name }}:8080
 
-  - job_name: opnsense
+  {# - job_name: opnsense
     static_configs:
     - targets:
-        - {{ network.gateway }}:9100
+        - {{ network.gateway }}:9100 #}
 
   - job_name: traefik
     static_configs:
