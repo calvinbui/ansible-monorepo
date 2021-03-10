@@ -23,7 +23,7 @@ cloudflare:
   email: {{ cloudflare_email }}
   apiKey: {{ cloudflare_api }}
   zoneName: {{ common_tld }}
-  deleteGrace: 1
+  deleteGrace: 50
   defaults:
     type: A
     proxied: false
