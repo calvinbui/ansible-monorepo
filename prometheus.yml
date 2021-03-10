@@ -23,6 +23,20 @@
     node_exporter_name: node_exporter
 
     cadvisor_name: cadvisor
+    cadvisor_disabled_metrics:
+      - accelerator
+      - advtcp
+      - cpu_topology
+      - disk
+      - hugetlb
+      - memory_numa
+      - percpu
+      - process
+      - referenced_memory
+      - resctrl
+      - sched
+      - tcp
+      - udp
 
     blackbox_exporter_name: blackbox_exporter
     blackbox_exporter_directory: "{{ monitoring_directory }}/blackbox_exporter"
@@ -143,9 +157,9 @@
         hostname: "{{ cadvisor_name }}"
         image: gcr.io/cadvisor/cadvisor:latest
         command:
-          - '--docker_only=true'
-          - '--disable_metrics=accelerator,advtcp,cpu_topology,disk,tcp,udp,percpu,sched,process,hugetlb,referenced_memory,resctrl'
-          - '--housekeeping_interval=1m0s'
+          - "-docker_only=true"
+          - "-disable_metrics={{ cadvisor_disabled_metrics | join(',') }}"
+          - "-housekeeping_interval=10s"
         volumes:
           - /:/rootfs:ro
           - /var/run:/var/run:ro
