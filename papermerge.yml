@@ -45,7 +45,7 @@
       docker_container:
         name: papermerge
         hostname: papermerge
-        image: ghcr.io/linuxserver/papermerge
+        image: ghcr.io/linuxserver/papermerge:v2.0.0rc38-ls28
         volumes:
           - "{{ common_directory }}/papermerge/config:/config"
           - "{{ common_directory }}/papermerge/data:/data"
