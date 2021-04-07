@@ -20,9 +20,9 @@ traefikInstances:
       - traefik.{{ networks.mgmt.name }}
 
 cloudflare:
-  email: {{ cloudflare_email }}
-  apiKey: {{ cloudflare_api }}
-  zoneName: {{ common_tld }}
+  apiToken: {{ cloudflare_token }}
+  zoneNames: 
+    - {{ common_tld }}
   deleteGrace: 50
   defaults:
     type: A

@@ -80,7 +80,7 @@
       docker_container:
         name: syncflaer
         hostname: syncflaer
-        image: containeroo/syncflaer
+        image: containeroo/syncflaer:3.0.0
         volumes:
           - "{{ common_directory }}/syncflaer/config.yml:/config.yml"
         labels:
