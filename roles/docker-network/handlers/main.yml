@@ -1,6 +1,0 @@
----
-
-- name: restart vmware-tools
-  service:
-    name: open-vm-tools
-    state: restarted

@@ -1,5 +1,5 @@
 ---
 
 pip_install_packages:
-- name: pyyaml
-- name: lxml
+  - name: pyyaml
+  - name: lxml

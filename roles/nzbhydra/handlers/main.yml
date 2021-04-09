@@ -4,4 +4,4 @@
   docker_container:
     name: "{{ nzbhydra_name }}"
     state: started
-    restart: yes
+    restart: true

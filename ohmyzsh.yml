@@ -41,7 +41,7 @@
     - name: Get zsh path
       command: which zsh
       register: omz_path
-      changed_when: no
+      changed_when: false
 
     - name: Switch user to zsh
       user:

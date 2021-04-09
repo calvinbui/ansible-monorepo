@@ -4,6 +4,7 @@
   file:
     path: "{{ item }}"
     state: directory
+    mode: "0770"
   loop:
     - "{{ radarr_config_directory }}"
 

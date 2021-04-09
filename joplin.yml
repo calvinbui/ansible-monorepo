@@ -34,7 +34,7 @@
       POSTGRES_DB: joplin
   handlers:
     - name: Restart Joplin
-      shell: docker restart joplin
+      command: docker restart joplin
   roles:
     - postgres
   tasks:

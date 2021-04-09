@@ -46,6 +46,9 @@
       file:
         path: "{{ common_directory }}/photoprism/photoprism"
         state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0770"
 
     - name: Create photoprism Container
       docker_container:

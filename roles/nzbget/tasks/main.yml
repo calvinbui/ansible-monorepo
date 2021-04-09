@@ -4,6 +4,7 @@
   file:
     path: "{{ item }}"
     state: directory
+    mode: "0770"
   loop:
     - "{{ nzbget_config_directory }}"
     - "{{ nzbget_download_directory }}"

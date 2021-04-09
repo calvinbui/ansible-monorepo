@@ -44,12 +44,15 @@
       network_mode: "{{ network.name }}"
   handlers:
     - name: Restart xBrowserSync
-      shell: docker restart "{{ xbrowsersync_name }}"
+      command: docker restart "{{ xbrowsersync_name }}"
   pre_tasks:
     - name: Create xBrowserSync directory
       file:
         path: "{{ xbrowsersync_config_directory }}"
         state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0440"
   roles:
     - mongo
   tasks:
@@ -57,6 +60,9 @@
       template:
         src: "{{ xbrowsersync_config_template }}"
         dest: "{{ xbrowsersync_config_file }}"
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0440"
       notify: Restart xBrowserSync
 
     - name: Create xBrowserSync container

@@ -32,7 +32,7 @@
       network_mode: "{{ network.name }}"
   handlers:
     - name: Restart PrivateBin
-      shell: docker restart "{{ privatebin_name }}"
+      command: docker restart "{{ privatebin_name }}"
   tasks:
     - name: Create PrivateBin config folder
       file:
@@ -40,7 +40,7 @@
         state: directory
         mode: '0700'
         owner: nobody
-        group: 82 # nobody in alpine
+        group: 82  # nobody in alpine
       loop:
         - "{{ common_directory }}/privatebin"
         - "{{ common_directory }}/privatebin/cfg"

@@ -4,6 +4,7 @@
   file:
     path: "{{ item }}"
     state: directory
+    mode: "0770"
   loop:
     - "{{ qbittorrent_config_directory }}"
 
@@ -34,8 +35,9 @@
     option: "{{ item.key.split('.')[1] }}"
     value: "{{ item.value }}"
     no_extra_spaces: true
+    mode: "0770"
   with_items: "{{ qbittorrent_config | dict2items }}"
-  check_mode: yes
+  check_mode: true
   register: qbittorrent_config_changes
 
 - name: Stop qBittorrent to make changes if required
@@ -51,6 +53,7 @@
     option: "{{ item.key.split('.')[1] }}"
     value: "{{ item.value }}"
     no_extra_spaces: true
+    mode: "0770"
   with_items: "{{ qbittorrent_config | dict2items }}"
   when: qbittorrent_config_changes.changed
   notify: Restart qBittorrent

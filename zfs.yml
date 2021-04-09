@@ -69,6 +69,9 @@
       file:
         path: "{{ item }}"
         state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0770"
       loop:
         - "{{ common_directory }}/zfswatcher"
         - "/var/log/zfswatcher"
@@ -99,7 +102,8 @@
         section: "{{ item.section }}"
         option: "{{ item.option }}"
         value: "{{ item.value }}"
-      loop: "{{ zfswatcher_config}}"
+        mode: "0444"
+      loop: "{{ zfswatcher_config }}"
       notify: Restart zfswatcher
 
     ###############
@@ -110,9 +114,8 @@
         name:
           - zfs-zed
           - msmtp
-          - msmtp-mta # provide a sendmail-compatible MTA
-          # send mails using the mail command
-          - mailutils
+          - msmtp-mta  # provide a sendmail-compatible MTA
+          - mailutils  # send mails using the mail command
           - s-nail
         state: present
 
@@ -127,6 +130,7 @@
     - name: Configure msmtp
       copy:
         dest: /etc/msmtprc
+        mode: "440"
         content: |
           defaults
           auth           on
@@ -163,15 +167,20 @@
       file:
         path: "{{ common_directory }}/scrutiny"
         state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0770"
 
     - name: Template scrutiny config
       template:
         src: templates/scrutiny/scrutiny.yaml.j2
         dest: "{{ common_directory }}/scrutiny/scrutiny.yaml"
+        mode: "0440"
 
     - name: Get disks
       shell: for line in $(lsblk --noheadings --list --scsi --output name); do echo "/dev/${line}"; done
       register: lsblk_disks
+      changed_when: false
 
     - name: Create scrutiny container
       docker_container:

@@ -1,24 +1,25 @@
 ---
 # https://torsion.org/borgmatic/
-
-# Init the backup with
-# docker exec borgmatic sh -c "borgmatic --init --encryption repokey-blake2"
-
-# Extract the encryption key with
-# borg key export /mnt/destination
-
-# Start a backup with
-# borgmatic --stats
-
-# Restore a backup with
-# borgmatic extract
+#
+# Init the backup with:
+# $ docker exec borgmatic sh -c "borgmatic --init --encryption repokey-blake2"
+#
+# Extract the encryption key with:
+# $ borg key export /mnt/destination
+#
+# Start a backup with:
+# $ borgmatic --stats
+#
+# Restore a backup with:
+# $ borgmatic extract
 
 - hosts: homelab
   become: true
   vars:
     network: "{{ networks.mgmt }}"
     borgmatic_common_directory: "/borgmatic"
-    borgmatic_repository_directory: "{{ borgmatic_common_directory }}/borgbackup" # borg backup repo
+    # borg backup repo
+    borgmatic_repository_directory: "{{ borgmatic_common_directory }}/borgbackup"
     borgmatic_pass: !vault |
       $ANSIBLE_VAULT;1.1;AES256
       37626530363533323433633066656632393664313962366264363435386635346634613433303661
@@ -64,7 +65,9 @@
       file:
         path: "{{ borgmatic_common_directory }}"
         state: directory
-
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0770"
     - name: Clone Borgbackup repo
       git:
         repo: https://github.com/borgbackup/borg

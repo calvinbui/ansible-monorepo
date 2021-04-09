@@ -40,6 +40,7 @@
       file:
         path: "{{ postgres_directory }}"
         state: directory
+        mode: "0700"
     - name: Install psycopg2
       apt:
         name: python3-psycopg2
@@ -51,9 +52,11 @@
       copy:
         src: files/guacamole/initdb.sql
         dest: "{{ guacamole_config_directory }}"
+        mode: "0444"
     - name: Get postgres IP
-      shell: docker inspect -f {% raw %}'{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'{% endraw %} "{{ postgres_name }}"
+      command: docker inspect -f {% raw %}'{{ range .NetworkSettings.Networks }}{{ .IPAddress }}{{ end }}'{% endraw %} "{{ postgres_name }}"
       register: postgres_ip
+      changed_when: false
     - name: Init DB
       postgresql_query:
         login_host: "{{ postgres_ip.stdout }}"

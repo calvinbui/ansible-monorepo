@@ -38,7 +38,7 @@
     network: "{{ networks.pub }}"
   handlers:
     - name: Restart MovieNight
-      shell: docker restart movienight
+      command: docker restart movienight
 
   tasks:
     - name: Clone MovieNight
@@ -64,6 +64,7 @@
         src: "{{ movienight_directory }}/settings_example.json"
         dest: "{{ movienight_directory }}/settings.json"
         remote_src: true
+        mode: "0640"
       changed_when: false
       tags:
         - config

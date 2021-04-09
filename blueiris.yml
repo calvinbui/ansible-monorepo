@@ -5,6 +5,7 @@
     network: "{{ networks.iot }}"
     config_directory: "{{ common_directory }}/blueiris"
     blueiris_endpoint: http://192.168.3.2
+
   pre_tasks:
     - name: Update apt cache
       apt:
@@ -12,13 +13,16 @@
         cache_valid_time: 600
       changed_when: false
       when: ansible_distribution == 'Ubuntu'
+  handlers:
+    - name: Restart NGINX proxy
+      command: docker restart blueiris-proxy
   tasks:
     - name: Install kvm packages
       apt:
         name:
           - cpu-checker
           - qemu-kvm
-          - libvirt-daemon-ssytem
+          - libvirt-daemon-system
           - virt-manager
         state: present
 
@@ -26,14 +30,21 @@
       file:
         path: "{{ config_directory }}"
         state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0770"
 
     - name: Copy NGINX config
       template:
         src: templates/blueiris/nginx.conf
         dest: "{{ config_directory }}/nginx.conf"
+        mode: "0650"
+        owner: root
+        group: root
+      notify: Restart NGINX proxy
 
     - name: Create Docker NGINX proxy
-      docker_container:
+      community.docker.docker_container:
         name: blueiris-proxy
         image: nginx
         state: started
@@ -43,9 +54,11 @@
         restart_policy: unless-stopped
         networks_cli_compatible: true
         purge_networks: true
+        container_default_behavior: no_defaults
         comparisons:
           labels: strict
         dns_servers: "{{ network.dns }}"
+        network_mode: "{{ network.name }}"
         networks:
           - name: "{{ network.name }}"
             ipv4_address: "{{ network.prefix }}.3"

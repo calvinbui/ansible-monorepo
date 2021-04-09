@@ -25,7 +25,7 @@
       61616636383239353463306637636638393333643262646133336532393464306531623034396266
       3838323433653766310a626433383939353461633030356365663438373733396265633436336330
       66346333666336353438386133636133613431623662326538343730663738386132
-    
+
     syncflaer_slack_webhook: !vault |
       $ANSIBLE_VAULT;1.1;AES256
       36323362393133353432326232656466636531366535633437313839643534336136323439323730
@@ -38,10 +38,10 @@
       63643866623438623463
   handlers:
     - name: Restart Python DNS
-      shell: docker restart syncflaer-dns
+      command: docker restart syncflaer-dns
 
     - name: Restart SyncFlaer
-      shell: docker restart syncflaer
+      command: docker restart syncflaer
   tasks:
     - name: Create SyncFlaer folder
       file:
@@ -49,11 +49,15 @@
         state: directory
         owner: "1000"
         group: "1000"
+        mode: "0640"
 
     - name: Copy Python DNS script
       copy:
         src: files/syncflaer/main.py
         dest: "{{ common_directory }}/syncflaer/main.py"
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0770"
       notify: Restart Python DNS
 
     - name: Create Python DNS Container
@@ -74,6 +78,9 @@
       template:
         src: templates/syncflaer/config.yml.j2
         dest: "{{ common_directory }}/syncflaer/config.yml"
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0770"
       notify: Restart SyncFlaer
 
     - name: Create SyncFlaer Container
@@ -86,7 +93,8 @@
         labels:
           traefik.enable: "false"
         restart_policy: "no"
-    
+        state: present
+
     - name: Run SyncFlaer container periodically
       cron:
         name: "SyncFlaer"

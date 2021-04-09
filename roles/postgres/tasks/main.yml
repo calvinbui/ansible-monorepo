@@ -4,6 +4,9 @@
   file:
     path: "{{ postgres_directory }}"
     state: directory
+    owner: "70"
+    group: "70"
+    mode: "0700"
 
 - name: Create Postgres container
   docker_container:

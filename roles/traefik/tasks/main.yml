@@ -4,6 +4,7 @@
   file:
     path: "{{ traefik_config_directory }}"
     state: directory
+    mode: "0770"
 
 - name: Create acme.json
   file:
@@ -17,12 +18,14 @@
   template:
     src: "{{ traefik_config_template }}"
     dest: "{{ traefik_config_file }}"
+    mode: "0440"
   notify: Restart Traefik
 
 - name: Template traefik dynamic config
   template:
     src: "{{ traefik_config_dynamic_template }}"
     dest: "{{ traefik_config_dynamic }}"
+    mode: "0440"
   notify: Restart Traefik
 
 - name: Set Docker container parameters

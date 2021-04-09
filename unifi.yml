@@ -24,7 +24,9 @@
       file:
         path: "{{ common_directory }}/unifi"
         state: directory
-
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0770"
     - name: Create Unifi Container
       docker_container:
         name: unifi

@@ -43,7 +43,7 @@
       network_mode: "{{ network.name }}"
   handlers:
     - name: Restart BookStack
-      shell: docker restart "{{ bookstack_name }}"
+      command: docker restart "{{ bookstack_name }}"
 
   roles:
     - mariadb
@@ -52,6 +52,9 @@
       file:
         path: "{{ bookstack_config_directory }}"
         state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0770"
 
     - name: Set Docker container parameters
       set_fact:
@@ -87,7 +90,6 @@
     - name: Wait for .env file
       wait_for:
         path: "{{ bookstack_config_directory }}/www/.env"
-      when: bookstack_container is changed
 
     - name: Configure Bookstack .env
       lineinfile:

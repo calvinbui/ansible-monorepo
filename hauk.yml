@@ -22,17 +22,23 @@
       network_mode: "{{ network.name }}"
   handlers:
     - name: Restart Hauk
-      shell: docker restart "{{ hauk_name }}"
+      command: docker restart "{{ hauk_name }}"
   tasks:
     - name: Create Hauk config directory
       file:
         path: "{{ hauk_config_directory }}"
         state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0770"
 
     - name: Copy Hauk config
       template:
         src: templates/hauk/config.php.j2
         dest: "{{ hauk_config_directory }}/config.php"
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0774"
       notify: Restart Hauk
 
     - name: Create Hauk container

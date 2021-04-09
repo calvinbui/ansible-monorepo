@@ -37,6 +37,9 @@
       file:
         path: "{{ huginn_config_directory }}"
         state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0770"
   roles:
     - mariadb
   tasks:

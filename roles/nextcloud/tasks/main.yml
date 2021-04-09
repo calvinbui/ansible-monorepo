@@ -4,6 +4,7 @@
   file:
     path: "{{ item }}"
     state: directory
+    mode: "0770"
   loop:
     - "{{ nextcloud_directory }}"
     - "{{ nextcloud_directory }}/app"
@@ -13,6 +14,7 @@
   copy:
     src: "{{ nextcloud_build_folder }}"
     dest: "{{ nextcloud_directory }}/build"
+    mode: "0770"
 
 - name: Build Nextcloud Image
   docker_image:

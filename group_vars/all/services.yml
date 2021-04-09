@@ -67,21 +67,6 @@ http_services:
     subtitle: Personal Photo Management
     url: https://photoprism.{{ common_tld }}
     group: "Home"
-  - name: Firefly III
-    logo: firefly.png
-    subtitle: Personal Finances Manager
-    url: https://firefly.{{ common_tld }}
-    group: "Home"
-  - name: Grocy
-    logo: grocy.png
-    subtitle: Groceries Household Management
-    url: https://grocy.{{ common_tld }}
-    group: "Home"
-  - name: Monica
-    logo: monica.png
-    subtitle: Personal Relationship Manager
-    url: https://monica.{{ common_tld }}
-    group: "Home"
   - name: Jellyfin
     logo: jellyfin.png
     subtitle: Software Media System

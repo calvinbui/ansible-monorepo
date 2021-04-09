@@ -4,6 +4,7 @@
   file:
     path: "{{ item.split(':')[0] }}"
     state: directory
+    mode: "0770"
   loop: "{{ bookstack_volumes }}"
 
 - name: Set Docker container parameters

@@ -22,22 +22,31 @@
       network_mode: "{{ network.name }}"
   handlers:
     - name: Restart Homer
-      shell: docker restart "{{ homer_name }}"
+      command: docker restart "{{ homer_name }}"
   pre_tasks:
     - name: Create Homer config directory
       file:
         path: "{{ homer_config_directory }}"
         state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0770"
   tasks:
     - name: Template config file
       template:
         src: templates/homer/config.yml.j2
         dest: "{{ homer_config_directory }}/config.yml"
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0770"
       notify: Restart Homer
     - name: Copy icons
       copy:
         src: files/homer/icons
         dest: "{{ homer_config_directory }}"
+        owner: 911
+        group: 911
+        mode: "0644"
     - name: Create Homer container
       docker_container:
         recreate: true

@@ -1,7 +1,7 @@
 ---
 qbittorrent_name: qbittorrent
 qbittorrent_image: linuxserver/qbittorrent
-qbittorrent_webui_port: "8090" # place in quotes
+qbittorrent_webui_port: "8090"  # place in quotes
 qbittorrent_config_directory: "{{ common_directory }}/qbittorrent"
 qbittorrent_download_directory: "{{ common_directory_download }}"
 qbittorrent_environment_variables:

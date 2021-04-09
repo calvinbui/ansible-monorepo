@@ -12,7 +12,7 @@
   handlers:
     - name: "Restart Samba"
       service:
-        name: samba
+        name: smbd
         state: restarted
   tasks:
     - name: "Install Samba"
@@ -34,6 +34,7 @@
           browseable = yes
         dest: /etc/samba/smb.conf
         validate: "testparm --suppress-prompt"
+        mode: "0440"
       notify: Restart Samba
     - name: "Allow Samba in firewall"
       ufw:

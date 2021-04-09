@@ -70,17 +70,21 @@
       file:
         path: "{{ shlink_web_client_directory }}"
         state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0770"
 
     - name: Generate shlink API key
       command: docker exec -it shlink shlink api-key:generate --no-interaction --no-ansi
       register: shlink_api
-      when: shlink_web_config.stat.exists == false
+      when: not shlink_web_config.stat.exists
 
     - name: Template shlink-web client config
       template:
         src: shlink/servers.json.j2
         dest: "{{ shlink_web_client_directory }}/servers.json"
-      when: shlink_web_config.stat.exists == false
+        mode: "0440"
+      when: not shlink_web_config.stat.exists
 
     - name: Create shlink web client container
       docker_container:

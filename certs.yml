@@ -51,6 +51,7 @@
       args:
         chdir: "{{ acme_repo_dir }}"
         executable: "/bin/bash"
+      changed_when: false
     - name: Copy scripts
       copy:
         src: files/certs/

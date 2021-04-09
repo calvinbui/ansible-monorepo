@@ -23,8 +23,9 @@
       file:
         path: "{{ common_directory }}/filebrowser"
         state: directory
-        owner: "1000"
-        group: "1000"
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0770"
 
     - name: Touch File Browser config
       file:
@@ -32,6 +33,7 @@
         state: touch
         modification_time: preserve
         access_time: preserve
+        mode: "0640"
 
     - name: Touch File Browser DB
       file:
@@ -39,6 +41,7 @@
         state: touch
         modification_time: preserve
         access_time: preserve
+        mode: "0640"
 
     - name: Create File Browser Container
       docker_container:

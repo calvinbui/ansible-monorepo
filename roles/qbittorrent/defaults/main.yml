@@ -2,7 +2,7 @@
 
 qbittorrent_name: qbittorrent
 qbittorrent_image: linuxserver/qbittorrent
-qbittorrent_webui_port: '8080' # place in quotes
+qbittorrent_webui_port: '8080'  # place in quotes
 qbittorrent_ports:
   - 6881:6881
   - 6881:6881/udp

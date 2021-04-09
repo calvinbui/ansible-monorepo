@@ -4,6 +4,7 @@
   file:
     path: "{{ item }}"
     state: directory
+    mode: "0744"
   loop:
     - "{{ borgmatic_folder }}/borgmatic.d"
     - "{{ borgmatic_folder }}/config"
@@ -16,6 +17,7 @@
     dest: "{{ borgmatic_folder }}/borgmatic.d/config.yaml"
     owner: root
     group: root
+    mode: "0744"
   notify: Restart Borgmatic
 
 - name: "Template Borgmatic {{ borgmatic_name }} crontab"
@@ -24,6 +26,7 @@
     dest: "{{ borgmatic_folder }}/borgmatic.d/crontab.txt"
     owner: root
     group: root
+    mode: "0744"
   notify: Restart Borgmatic
 
 - name: Copy SSH keys
@@ -47,8 +50,7 @@
     name: "borgmatic-{{ borgmatic_name }}"
     hostname: "borgmatic-{{ borgmatic_name }}"
     volumes:
-       # data to backup
-       # dont mount as ro when a restore is needed
+      # data to backup. dont mount as ro when a restore is needed
       - "{{ borgmatic_source }}:/mnt/source:ro"
 
       - "{{ borgmatic_repository_directory }}:/mnt/borg-repository"

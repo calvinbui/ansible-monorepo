@@ -48,16 +48,16 @@
   roles:
     - role: motd
       when: ansible_distribution == 'Ubuntu'
-    - authorized-keys
+    - authorized_keys
     - role: apt
       when: ansible_os_family == 'Debian'
     - role: yum
       when: ansible_os_family == 'RedHat'
     - pip
     - docker
-    # - nfs-client
   tasks:
-    - lineinfile:
+    - name: "No password sudo"
+      lineinfile:
         path: /etc/sudoers
         state: present
         regexp: "^{{ common_user }}"
@@ -83,3 +83,4 @@
         state: directory
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
+        mode: "0770"

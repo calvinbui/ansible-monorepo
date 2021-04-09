@@ -36,7 +36,7 @@ bazarr_config:
   sonarr.apikey: "{{ sonarr_config.ApiKey }}"
   general.path_mappings: "[['/tv', '/tv'], ['', ''], ['', ''], ['', ''], ['', '']]"
   general.serie_default_enabled: "True"
-  general.serie_default_language : "['en']"
+  general.serie_default_language: "['en']"
 
   general.use_radarr: "True"
   radarr.apikey: "{{ radarr_config.ApiKey }}"
