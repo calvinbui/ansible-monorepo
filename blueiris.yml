@@ -32,7 +32,7 @@
         state: directory
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
-        mode: "0770"
+        mode: "0771"
 
     - name: Copy NGINX config
       template:
