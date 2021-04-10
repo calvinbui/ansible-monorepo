@@ -7,7 +7,6 @@
     k3s_version: v1.20.5+k3s1
     # https://rancher.com/docs/k3s/latest/en/installation/install-options/server-config/
     k3s_options:
-      - --write-kubeconfig-mode=644
       - --disable=traefik
       - --disable=metrics-server
       - --disable=servicelb
@@ -145,6 +144,8 @@
         - dest: "/root/.kube/"
           owner: root
           group: root
+      tags:
+        - config
 
     - name: Symlink k3s kube config
       file:
@@ -154,6 +155,15 @@
       loop:
         - "/home/{{ common_user }}/.kube/config"
         - /root/.kube/config
+      tags:
+        - config
+
+    - name: Change owner of k3s kube config
+      file:
+        path: /etc/rancher/k3s/k3s.yaml
+        owner: "{{ common_user }}"
+      tags:
+        - config
 
     - name: Create CNI bin folder
       file:
