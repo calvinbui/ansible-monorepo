@@ -131,6 +131,30 @@
           tags:
             - k3s
 
+    - name: Create .kube folder
+      file:
+        dest: "{{ item.dest }}"
+        owner: "{{ item.owner }}"
+        group: "{{ item.group }}"
+        mode: "0700"
+        state: directory
+      loop:
+        - dest: "/home/{{ common_user }}/.kube"
+          owner: "{{ common_user_id }}"
+          group: "{{ common_group_id }}"
+        - dest: "/root/.kube/"
+          owner: root
+          group: root
+
+    - name: Symlink k3s kube config
+      file:
+        src: /etc/rancher/k3s/k3s.yaml
+        dest: "{{ item }}"
+        state: link
+      loop:
+        - "/home/{{ common_user }}/.kube/config"
+        - /root/.kube/config
+
     - name: Create CNI bin folder
       file:
         dest: /opt/cni/bin
@@ -191,21 +215,3 @@
       notify: Restart k3s
       tags:
         - flannel
-
-    - name: Create .kube folder
-      file:
-        dest: "/home/{{ common_user }}/.kube"
-        owner: "{{ common_user_id }}"
-        group: "{{ common_group_id }}"
-        mode: "0700"
-        state: directory
-      tags:
-        - config
-
-    - name: Symlink kube config
-      file:
-        src: /etc/rancher/k3s/k3s.yaml
-        dest: "/home/{{ common_user }}/.kube/config"
-        state: link
-      tags:
-        - config
