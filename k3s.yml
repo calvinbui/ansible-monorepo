@@ -1,0 +1,170 @@
+- hosts: homelab
+
+  become: true
+
+  vars:
+    k3s_version: v1.20.5+k3s1
+    k3s_options:
+      - --write-kubeconfig-mode=644
+      - --disable=traefik
+      - --disable=metrics-server
+      - --disable=servicelb
+      - --disable=local-storage
+      - --flannel-backend=none
+
+    k3s_cni_plugin_version: v0.9.1
+    k3s_flannel_version: v0.13.0
+
+    # shouldn't have to touch these two in most cases
+    k3s_dir: /usr/local/bin
+    k3s_systemd_dir: /etc/systemd/system
+
+  module_defaults:
+    k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+
+  pre_tasks:
+    - name: Install openshift module
+      pip:
+        name: openshift
+        state: present
+      tags:
+        - flannel
+
+  tasks:
+    - name: Create k3s folder
+      file:
+        path: "{{ common_directory }}/k3s"
+        state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0770"
+
+    - name: Check if k3s is installed
+      stat:
+        path: "{{ k3s_dir }}/k3s"
+      register: __k3s_is_installed
+      tags:
+        - k3s
+
+    - name: Get current k3s version
+      command: "{{ k3s_dir }}/k3s --version"
+      args:
+        warn: false
+      changed_when: false
+      register: __k3s_version_output
+      when: __k3s_is_installed.stat.exists
+      tags:
+        - k3s
+
+    - name: Get k3s config start
+      command: awk '/server \\/{print NR; exit}' "{{ k3s_systemd_dir }}"/k3s.service
+      register: __k3s_config_start
+      changed_when: false
+      when: __k3s_is_installed.stat.exists
+      tags:
+        - k3s
+
+    - name: Count k3s config lines
+      command: awk 'END{print NR}' "{{ k3s_systemd_dir }}"/k3s.service
+      register: __k3s_config_lines
+      changed_when: false
+      when: __k3s_is_installed.stat.exists
+      tags:
+        - k3s
+
+    - name: Check if k3s config changed
+      lineinfile:
+        path: "{{ k3s_systemd_dir }}/k3s.service"
+        regexp: "{{ item }}"
+        line: "\t'{{ item }}' \\"
+      with_items: "{{ k3s_options }}"
+      register: __k3s_config_values
+      check_mode: true
+      when: __k3s_is_installed.stat.exists
+      tags:
+        - k3s
+
+    - when:
+        ( not __k3s_is_installed.stat.exists ) or
+        ( __k3s_version_output.stdout_lines[0].split(' ')[2] != k3s_version ) or
+        ( __k3s_config_values.changed ) or
+        ( __k3s_config_lines.stdout|int - __k3s_config_start.stdout|int != k3s_options|length + 1 )  # + 1 because of the new line at the end of the file
+      block:
+        - name: Download k3s installation script
+          get_url:
+            url: https://get.k3s.io
+            dest: "{{ common_directory }}/k3s/install.sh"
+            mode: "0750"
+          tags:
+            - k3s
+
+        # https://rancher.com/docs/k3s/latest/en/installation/install-options/server-config/
+        - name: Install k3s
+          # command: "{{ common_directory }}/k3s/install.sh {{ k3s_options | join(' ') }}"
+          command: "echo $INSTALL_K3S_VERSION"
+          environment:
+            INSTALL_K3S_VERSION: "{{ k3s_version }}"
+            INSTALL_K3S_BIN_DIR: "{{ k3s_dir }}"
+            INSTALL_K3S_SYSTEMD_DIR: "{{ k3s_systemd_dir }}"
+          tags:
+            - k3s
+
+    - name: Create CNI bin folder
+      file:
+        dest: /opt/cni/bin
+        mode: "0775"
+        state: directory
+      tags:
+        - flannel
+
+    - name: Download CNI plugins
+      get_url:
+        url: https://github.com/containernetworking/plugins/releases/download/{{ k3s_cni_plugin_version }}/cni-plugins-{{ ansible_system | lower }}-{{ go_arch }}-{{ k3s_cni_plugin_version }}.tgz
+        dest: "{{ common_directory }}/k3s/"
+        checksum: sha512:https://github.com/containernetworking/plugins/releases/download/{{ k3s_cni_plugin_version }}/cni-plugins-{{ ansible_system | lower }}-{{ go_arch }}-{{ k3s_cni_plugin_version }}.tgz.sha512
+      tags:
+        - flannel
+
+    - name: Install CNI plugins
+      unarchive:
+        src: "{{ common_directory }}/k3s/cni-plugins-{{ ansible_system | lower }}-{{ go_arch }}-{{ k3s_cni_plugin_version }}.tgz"
+        dest: /opt/cni/bin/
+        remote_src: true
+      tags:
+        - flannel
+
+    - name: Download flannel manifest
+      get_url:
+        url: "https://raw.githubusercontent.com/flannel-io/flannel/{{ k3s_flannel_version }}/Documentation/kube-flannel.yml"
+        dest: "{{ common_directory }}/k3s"
+      tags:
+        - flannel
+
+    - name: Install flannel
+      k8s:
+        src: "{{ common_directory }}/k3s/kube-flannel.yml"
+        state: present
+      tags:
+        - flannel
+
+    - name: Create .kube folder
+      file:
+        dest: "/home/{{ common_user }}/.kube"
+        owner: "{{ common_user_id }}"
+        group: "{{ common_group_id }}"
+        mode: "0700"
+        state: directory
+      tags:
+        - config
+
+    - name: Symlink kube config
+      file:
+        src: /etc/rancher/k3s/k3s.yaml
+        dest: "/home/{{ common_user }}/.kube/config"
+        owner: "{{ common_user_id }}"
+        group: "{{ common_group_id }}"
+        mode: "0400"
+        state: link
+      tags:
+        - config

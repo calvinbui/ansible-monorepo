@@ -3,3 +3,4 @@ skip_list:
   - git-latest
   - line-length
   - no-handler
+  - no-tabs
