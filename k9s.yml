@@ -2,39 +2,47 @@
   become: true
   vars:
     k9s_version: v0.24.7
+    k9s_dir: /usr/local/bin
   tasks:
+    - name: Check if installed
+      stat:
+        path: "{{ k9s_dir }}/k9s"
+      register: __k9s_is_installed
+
     - name: Get current version
-      command: /usr/local/bin/k9s version --short
+      command: "{{ k9s_dir }}/k9s version --short"
       args:
         warn: false
       changed_when: false
-      check_mode: false
       register: __k9s_version_output
+      when: __k9s_is_installed.stat.exists
 
-    - when: __k9s_version_output.stdout_lines[0].split(" ")[-1] != k9s_version
+    - when:
+        ( not __k9s_is_installed.stat.exists ) or
+        ( __k9s_version_output.stdout_lines[0].split(" ")[-1] != k9s_version )
       block:
         - name: Get checksum list
           set_fact:
             __k9s_checksums: "{{ lookup('url', 'https://github.com/derailed/k9s/releases/download/' + k9s_version + '/checksums.txt', wantlist=True) | list }}"
           run_once: true
 
-        - name: Get checksum for x86_64 architecture
+        - name: Get checksum for {{ ansible_architecture }} architecture
           set_fact:
             __k9s_checksum: "{{ item.split(' ')[0] }}"
           with_items: "{{ __k9s_checksums }}"
           when:
-            - "('Linux_x86_64.tar.gz') in item"
+            - "( ansible_system + '_' + ansible_architecture + '.tar.gz') in item"
 
-        - name: Download k9s
+        - name: Download
           get_url:
-            url: "https://github.com/derailed/k9s/releases/download/{{ k9s_version }}/k9s_Linux_x86_64.tar.gz"
-            dest: /tmp/k9s_Linux_x86_64.tar.gz
+            url: "https://github.com/derailed/k9s/releases/download/{{ k9s_version }}/k9s_{{ ansible_system }}_{{ ansible_architecture }}.tar.gz"
+            dest: /tmp/k9s_{{ ansible_system }}_{{ ansible_architecture }}.tar.gz
             checksum: "sha256:{{ __k9s_checksum }}"
 
-        - name: Install k9s
+        - name: Install
           unarchive:
-            src: /tmp/k9s_Linux_x86_64.tar.gz
-            dest: /usr/local/bin/
+            src: /tmp/k9s_{{ ansible_system }}_{{ ansible_architecture }}.tar.gz
+            dest: "{{ k9s_dir }}"
             remote_src: true
             extra_opts:
-              - k9s
+              - k9s  # only extract the binary
