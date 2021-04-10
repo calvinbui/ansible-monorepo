@@ -3,7 +3,9 @@
   become: true
 
   vars:
+    k3s_config_dir: "{{ common_directory }}/k3s"
     k3s_version: v1.20.5+k3s1
+    # https://rancher.com/docs/k3s/latest/en/installation/install-options/server-config/
     k3s_options:
       - --write-kubeconfig-mode=644
       - --disable=traefik
@@ -11,17 +13,37 @@
       - --disable=servicelb
       - --disable=local-storage
       - --flannel-backend=none
+      # this is needed to configure flannel's own network
+      - --cluster_cidr="{{ k3s_cluster_cidr }}"
 
     k3s_cni_plugin_version: v0.9.1
     k3s_flannel_version: v0.13.0
 
-    # shouldn't have to touch these two in most cases
-    k3s_dir: /usr/local/bin
+    # shouldn't have to touch these in most cases as they are already defaults
+    k3s_install_dir: /usr/local/bin
     k3s_systemd_dir: /etc/systemd/system
+    k3s_cluster_cidr: 10.42.0.0/16
 
   module_defaults:
     k8s:
       kubeconfig: /etc/rancher/k3s/k3s.yaml
+
+  handlers:
+    - name: Stop k3s
+      service:
+        name: k3s
+        state: stopped
+      listen: Restart k3s
+
+    - name: k3s-killall.sh
+      command: "{{ k3s_install_dir }}/k3s-killall.sh"
+      listen: Restart k3s
+
+    - name: Start k3s
+      service:
+        name: k3s
+        state: started
+      listen: Restart k3s
 
   pre_tasks:
     - name: Install openshift module
@@ -34,7 +56,7 @@
   tasks:
     - name: Create k3s folder
       file:
-        path: "{{ common_directory }}/k3s"
+        path: "{{ k3s_config_dir }}"
         state: directory
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
@@ -42,13 +64,13 @@
 
     - name: Check if k3s is installed
       stat:
-        path: "{{ k3s_dir }}/k3s"
+        path: "{{ k3s_install_dir }}/k3s"
       register: __k3s_is_installed
       tags:
         - k3s
 
     - name: Get current k3s version
-      command: "{{ k3s_dir }}/k3s --version"
+      command: "{{ k3s_install_dir }}/k3s --version"
       args:
         warn: false
       changed_when: false
@@ -94,18 +116,17 @@
         - name: Download k3s installation script
           get_url:
             url: https://get.k3s.io
-            dest: "{{ common_directory }}/k3s/install.sh"
+            dest: "{{ k3s_config_dir }}/install.sh"
             mode: "0750"
           tags:
             - k3s
 
-        # https://rancher.com/docs/k3s/latest/en/installation/install-options/server-config/
         - name: Install k3s
-          # command: "{{ common_directory }}/k3s/install.sh {{ k3s_options | join(' ') }}"
+          # command: "{{ k3s_config_dir }}/install.sh {{ k3s_options | join(' ') }}"
           command: "echo $INSTALL_K3S_VERSION"
           environment:
             INSTALL_K3S_VERSION: "{{ k3s_version }}"
-            INSTALL_K3S_BIN_DIR: "{{ k3s_dir }}"
+            INSTALL_K3S_BIN_DIR: "{{ k3s_install_dir }}"
             INSTALL_K3S_SYSTEMD_DIR: "{{ k3s_systemd_dir }}"
           tags:
             - k3s
@@ -121,14 +142,14 @@
     - name: Download CNI plugins
       get_url:
         url: https://github.com/containernetworking/plugins/releases/download/{{ k3s_cni_plugin_version }}/cni-plugins-{{ ansible_system | lower }}-{{ go_arch }}-{{ k3s_cni_plugin_version }}.tgz
-        dest: "{{ common_directory }}/k3s/"
+        dest: "{{ k3s_config_dir }}/"
         checksum: sha512:https://github.com/containernetworking/plugins/releases/download/{{ k3s_cni_plugin_version }}/cni-plugins-{{ ansible_system | lower }}-{{ go_arch }}-{{ k3s_cni_plugin_version }}.tgz.sha512
       tags:
         - flannel
 
     - name: Install CNI plugins
       unarchive:
-        src: "{{ common_directory }}/k3s/cni-plugins-{{ ansible_system | lower }}-{{ go_arch }}-{{ k3s_cni_plugin_version }}.tgz"
+        src: "{{ k3s_config_dir }}/cni-plugins-{{ ansible_system | lower }}-{{ go_arch }}-{{ k3s_cni_plugin_version }}.tgz"
         dest: /opt/cni/bin/
         remote_src: true
       tags:
@@ -137,14 +158,37 @@
     - name: Download flannel manifest
       get_url:
         url: "https://raw.githubusercontent.com/flannel-io/flannel/{{ k3s_flannel_version }}/Documentation/kube-flannel.yml"
-        dest: "{{ common_directory }}/k3s"
+        dest: "/tmp/kube-flannel.yml"
+      changed_when: false
       tags:
         - flannel
 
-    - name: Install flannel
+    - name: Update flannel manifest network to match k3s
+      lineinfile:
+        path: "/tmp/kube-flannel.yml"
+        regexp: '(\s+)"Network": "10.244.0.0/16",'
+        line: '\g<1>"Network": "{{ k3s_cluster_cidr }}",'
+        backrefs: true
+      changed_when: false
+      tags:
+        - flannel
+
+    - name: Copy modified flannel manifest
+      copy:
+        src: "/tmp/kube-flannel.yml"
+        dest: "{{ k3s_config_dir }}/kube-flannel-modified.yml"
+        mode: preserve
+        remote_src: true
+      register: "__flannel_manifest_changed"
+      tags:
+        - flannel
+
+    - name: Install modified flannel manifest
       k8s:
-        src: "{{ common_directory }}/k3s/kube-flannel.yml"
+        src: "{{ k3s_config_dir }}/kube-flannel-modified.yml"
         state: present
+      when: __flannel_manifest_changed.changed
+      notify: Restart k3s
       tags:
         - flannel
 
@@ -162,9 +206,6 @@
       file:
         src: /etc/rancher/k3s/k3s.yaml
         dest: "/home/{{ common_user }}/.kube/config"
-        owner: "{{ common_user_id }}"
-        group: "{{ common_group_id }}"
-        mode: "0400"
         state: link
       tags:
         - config
