@@ -3,7 +3,7 @@ nextcloud_build_image: true
 nextcloud_build_folder: "files/nextcloud/full/"
 
 nextcloud_name: nextcloud
-nextcloud_version: 21.0.0
+nextcloud_version: 21.0.1
 nextcloud_image: "nextcloud-{{ nextcloud_version }}"
 nextcloud_directory: "{{ common_directory }}/nextcloud/nextcloud"
 
