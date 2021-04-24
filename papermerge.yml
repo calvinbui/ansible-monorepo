@@ -2,7 +2,7 @@
 - hosts: homelab
   become: true
   module_defaults:
-    docker_container:
+    community.docker.docker_container:
       keep_volumes: false
       state: started
       restart_policy: unless-stopped
@@ -21,7 +21,7 @@
     papermerge_ftp_password: "$6$vgLah.l13sGfNWEP$/vrPocaGTCDC601velsai68JfVzIzaQ18OrO0Y8Q2FPpey7kmXfx/fwZcJQkLPkbnJ2SIS.S.CLBbP8iB4MfS0"
   handlers:
     - name: Restart Papermerge
-      command: docker restart papermerge
+      ansible.builtin.command: docker restart papermerge
   tasks:
     - name: Add the user papermerge
       ansible.builtin.user:
@@ -32,7 +32,7 @@
       register: papermerge_user
 
     - name: Create Papermerge folder
-      file:
+      ansible.builtin.file:
         path: "{{ item }}"
         state: directory
         owner: "papermerge"
@@ -45,7 +45,7 @@
         - "{{ common_directory }}/papermerge/import"
 
     - name: Create Papermerge Container
-      docker_container:
+      community.docker.docker_container:
         name: papermerge
         hostname: papermerge
         image: ghcr.io/linuxserver/papermerge:latest
@@ -68,7 +68,7 @@
           traefik.http.services.papermerge.loadbalancer.server.port: "8000"
 
     - name: Edit Papermerge config
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: "{{ common_directory }}/papermerge/config/papermerge.conf.py"
         regexp: "{{ item.regexp }}"
         line: "{{ item.line }}"

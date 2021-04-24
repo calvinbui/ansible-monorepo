@@ -1,7 +1,7 @@
 ---
 
 - name: Create NZBHydra directories
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: "0770"
@@ -9,7 +9,7 @@
     - "{{ nzbhydra_config_directory }}"
 
 - name: Set Docker container parameters
-  set_fact:
+  ansible.builtin.set_fact:
     nzbhydra_container_parameters:
       name: "{{ nzbhydra_name }}"
       image: "{{ nzbhydra_image }}"
@@ -21,11 +21,11 @@
       env: "{{ nzbhydra_environment_variables }}"
 
 - name: Create NZBHydra container
-  docker_container: "{{ nzbhydra_container_parameters | combine(nzbhydra_docker_additional_options) }}"
+  community.docker.docker_container: "{{ nzbhydra_container_parameters | combine(nzbhydra_docker_additional_options) }}"
   register: nzbhydra_container
 
 - name: Wait until the string "completed" is in the file before continuing
-  wait_for:
+  ansible.builtin.wait_for:
     path: "{{ nzbhydra_config_directory }}/logs//nzbhydra2.log"
     search_regex: "Started NzbHydra in"
   when: nzbhydra_container is changed
@@ -57,12 +57,12 @@
   register: nzbhydra_configured_indexers
 
 - name: Init indexers configuration list vars for internal use
-  set_fact:
+  ansible.builtin.set_fact:
     nzbhydra_configured_indexers_index: []
     nzbhydra_var_indexers_index: []
 
 - name: Fill nzbhydra_configured_indexers_index with currently configured downloader indexes
-  set_fact:
+  ansible.builtin.set_fact:
     nzbhydra_configured_indexers_index: "{{ nzbhydra_configured_indexers_index + [ ansible_loop.index0 ] }}"
   loop: "{{ nzbhydra_configured_indexers.result }}"
   loop_control:
@@ -92,7 +92,7 @@
   notify: Restart NZBHydra
 
 - name: Set permissions on nzbhydra.yml
-  file:
+  ansible.builtin.file:
     path: "{{ nzbhydra_config_directory }}/nzbhydra.yml"
     owner: "{{ nzbhydra_environment_variables.PUID }}"
     group: "{{ nzbhydra_environment_variables.PGID }}"

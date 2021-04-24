@@ -1,4 +1,0 @@
----
-
-- name: Restart Borgmatic
-  command: "docker restart borgmatic-{{ borgmatic_name }}"

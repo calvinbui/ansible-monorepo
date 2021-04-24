@@ -16,7 +16,7 @@
       32366635626466623037346666646532313035663361353139366437653732343936626261393831
       38633834363363383431323437646336656338326666363535396337626234363337
   module_defaults:
-    docker_container:
+    community.docker.docker_container:
       keep_volumes: false
       state: started
       restart_policy: unless-stopped
@@ -32,10 +32,10 @@
       network_mode: "{{ network.name }}"
   handlers:
     - name: Restart PrivateBin
-      command: docker restart "{{ privatebin_name }}"
+      ansible.builtin.command: docker restart "{{ privatebin_name }}"
   tasks:
     - name: Create PrivateBin config folder
-      file:
+      ansible.builtin.file:
         path: "{{ item }}"
         state: directory
         mode: '0700'
@@ -47,7 +47,7 @@
         - "{{ common_directory }}/privatebin/data"
 
     - name: Template PrivateBin config
-      template:
+      ansible.builtin.template:
         src: privatebin/conf.php.j2
         dest: "{{ common_directory }}/privatebin/cfg/conf.php"
         mode: '0644'
@@ -56,7 +56,7 @@
       notify: Restart PrivateBin
 
     - name: Create PrivateBin container
-      docker_container:
+      community.docker.docker_container:
         name: "{{ privatebin_name }}"
         hostname: "{{ privatebin_name }}"
         image: privatebin/nginx-fpm-alpine

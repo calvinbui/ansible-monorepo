@@ -3,7 +3,7 @@
 - hosts: homelab
   become: true
   module_defaults:
-    docker_container:
+    community.docker.docker_container:
       keep_volumes: false
       state: started
       restart_policy: unless-stopped
@@ -17,7 +17,7 @@
         labels: allow_more_present
   pre_tasks:
     - name: Update apt cache
-      apt:
+      ansible.builtin.apt:
         update_cache: true
         cache_valid_time: 600
       changed_when: false
@@ -59,14 +59,14 @@
 
   handlers:
     - name: Restart zfswatcher
-      command: docker restart zfswatcher
+      ansible.builtin.command: docker restart zfswatcher
 
   tasks:
     ##################
     ### zfswatcher ###
     ##################
     - name: Create zfswatcher config folder
-      file:
+      ansible.builtin.file:
         path: "{{ item }}"
         state: directory
         owner: "{{ common_user_id }}"
@@ -76,7 +76,7 @@
         - "{{ common_directory }}/zfswatcher"
         - "/var/log/zfswatcher"
     - name: Create zfswatcher container
-      docker_container:
+      community.docker.docker_container:
         name: zfswatcher
         hostname: zfswatcher
         image: pectojin/zfswatcher:latest
@@ -97,7 +97,7 @@
 
           traefik.http.services.zfswatcher.loadbalancer.server.port: "8990"
     - name: Configure zfswatcher
-      ini_file:
+      community.general.ini_file:
         path: "{{ common_directory }}/zfswatcher/zfswatcher.conf"
         section: "{{ item.section }}"
         option: "{{ item.option }}"
@@ -110,7 +110,7 @@
     ### zfs-zed ###
     ###############
     - name: Install zfs-zed and msmtp
-      apt:
+      ansible.builtin.apt:
         name:
           - zfs-zed
           - msmtp
@@ -120,7 +120,7 @@
         state: present
 
     - name: Create msmtp files
-      file:
+      ansible.builtin.file:
         path: /var/log/msmtp.log
         state: touch
         mode: "0777"
@@ -128,7 +128,7 @@
         access_time: preserve
 
     - name: Configure msmtp
-      copy:
+      ansible.builtin.copy:
         dest: /etc/msmtprc
         mode: "440"
         content: |
@@ -149,7 +149,7 @@
           account default : alerts
 
     - name: Configure ZFS ZED
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: /etc/zfs/zed.d/zed.rc
         regexp: "^{{ item.split('=')[0] }}="
         line: "{{ item }}"
@@ -164,7 +164,7 @@
     ### scrutiny ###
     ################
     - name: Create scrutiny config folder
-      file:
+      ansible.builtin.file:
         path: "{{ common_directory }}/scrutiny"
         state: directory
         owner: "{{ common_user_id }}"
@@ -172,7 +172,7 @@
         mode: "0770"
 
     - name: Template scrutiny config
-      template:
+      ansible.builtin.template:
         src: templates/scrutiny/scrutiny.yaml.j2
         dest: "{{ common_directory }}/scrutiny/scrutiny.yaml"
         mode: "0440"
@@ -183,7 +183,7 @@
       changed_when: false
 
     - name: Create scrutiny container
-      docker_container:
+      community.docker.docker_container:
         name: scrutiny
         hostname: scrutiny
         image: analogj/scrutiny

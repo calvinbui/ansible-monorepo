@@ -1,7 +1,7 @@
 ---
 
 - name: Restart Bazarr
-  docker_container:
+  community.docker.docker_container:
     name: "{{ bazarr_name }}"
     state: started
     restart: true

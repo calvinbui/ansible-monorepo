@@ -1,7 +1,7 @@
 ---
 
 - name: Install pip3 and setuptools
-  apt:
+  ansible.builtin.apt:
     name: "{{ item }}"
     state: present
   register: result

@@ -4,28 +4,28 @@
   become: true
   pre_tasks:
     - name: Update apt cache
-      apt:
+      ansible.builtin.apt:
         update_cache: true
         cache_valid_time: 600
       changed_when: false
       when: ansible_distribution == 'Ubuntu'
   handlers:
     - name: "Restart Samba"
-      service:
+      ansible.builtin.service:
         name: smbd
         state: restarted
   tasks:
     - name: "Install Samba"
-      apt:
+      ansible.builtin.apt:
         name: samba
         state: present
     - name: "Enable Samba service"
-      service:
+      ansible.builtin.service:
         name: smbd
         state: started
         enabled: true
     - name: "Configure Samba"
-      copy:
+      ansible.builtin.copy:
         content: |
           [files]
           comment = ZFS - files

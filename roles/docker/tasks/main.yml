@@ -7,13 +7,13 @@
   when: ansible_distribution == 'CentOS'
 
 - name: Start Docker
-  service:
+  ansible.builtin.service:
     name: docker
     state: started
     enabled: true
 
 - name: Add user to Docker group
-  user:
+  ansible.builtin.user:
     name: "{{ item }}"
     groups: docker
     append: true

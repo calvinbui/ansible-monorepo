@@ -1,7 +1,7 @@
 # Based on https://docs.docker.com/engine/installation/linux/ubuntu/
 
 - name: Uninstall old versions
-  apt:
+  ansible.builtin.apt:
     name:
       - docker
       - docker-engine
@@ -11,7 +11,7 @@
     state: absent
 
 - name: Install Docker dependencies
-  apt:
+  ansible.builtin.apt:
     name:
       - apt-transport-https
       - ca-certificates
@@ -41,7 +41,7 @@
     update_cache: true
 
 - name: Install Docker
-  apt:
+  ansible.builtin.apt:
     name:
       - docker-ce
       - docker-ce-cli

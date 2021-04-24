@@ -2,22 +2,9 @@
 - hosts: homelab
   become: true
   vars:
-    network: "{{ networks.user }}"
-    bookstack_app_url: "https://{{ bookstack_name }}.{{ common_tld }}"
-    bookstack_name: bookstack
-    bookstack_config_directory: "{{ common_directory }}/bookstack/bookstack"
-    bookstack_env_options:
-      - WKHTMLTOPDF=/usr/bin/wkhtmltopdf
-      - DRAWIO=true
-      - APP_TIMEZONE="{{ common_timezone }}"
-    bookstack_php_options:
-      - post_max_size=10M
-      - upload_max_filesize=10M
-    mariadb_name: bookstack-mariadb
-    mariadb_version: '10'
-    mariadb_directory: "{{ common_directory }}/bookstack/mariadb"
-    mariadb_environment_variables:
-      MYSQL_ROOT_PASSWORD: !vault |
+    application: bookstack
+
+    mariadb_root_password: !vault |
         $ANSIBLE_VAULT;1.1;AES256
         38656365626264363335636631333233666139353539343830613135616439313063383334326438
         3362326165313130663265336166646162303132363961300a353365623239353430326635666131
@@ -25,84 +12,84 @@
         3035663661396338360a326262373836636433626536383966653037356630393763363337663365
         34303963653163323530303766303737633333616162326337643639316237333733353730386432
         3535636531613238363937636364656433393532393138333861
-      MYSQL_DATABASE: bookstackapp
-  module_defaults:
-    docker_container:
-      keep_volumes: false
-      state: started
-      restart_policy: unless-stopped
-      networks_cli_compatible: true
-      purge_networks: true
-      networks:
-        - name: "{{ network.name }}"
-      dns_servers: "{{ network.dns }}"
-      comparisons:
-        env: allow_more_present
-        labels: allow_more_present
-      container_default_behavior: no_defaults
-      network_mode: "{{ network.name }}"
-  handlers:
-    - name: Restart BookStack
-      command: docker restart "{{ bookstack_name }}"
+    mariadb_database: bookstackapp
 
-  roles:
-    - mariadb
-  tasks:
-    - name: Create BookStack directory
-      file:
-        path: "{{ bookstack_config_directory }}"
+    docker_network: "{{ networks.user }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  pre_tasks:
+    - name: Create config directory
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
         state: directory
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
-        mode: "0770"
+        mode: "0771"
 
-    - name: Set Docker container parameters
-      set_fact:
-        bookstack_container_parameters:
+  roles:
+    - role: mariadb
+      vars:
+        mariadb_name: "{{ application }}-mariadb"
+        mariadb_version: '10'
+        mariadb_directory: "{{ config_directory }}/mariadb"
+        mariadb_environment_variables:
+          MYSQL_ROOT_PASSWORD: "{{ mariadb_root_password }}"
+          MYSQL_DATABASE: "{{ mariadb_database }}"
 
-    - name: Create Bookstack container
-      docker_container:
-        name: "{{ bookstack_name }}"
+  tasks:
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}"
         image: linuxserver/bookstack
-        state: started
         volumes:
-          - "{{ bookstack_config_directory }}:/config"
+          - "{{ config_directory }}/bookstack:/config"
         env:
           PUID: "{{ common_user_id }}"
           PGID: "{{ common_group_id }}"
-          DB_HOST: "{{ mariadb_name }}.{{ network.name }}"
+          DB_HOST: "{{ application }}-mariadb.{{ docker_network.name }}"
           DB_USER: root
-          DB_PASS: "{{ mariadb_environment_variables.MYSQL_ROOT_PASSWORD }}"
-          DB_DATABASE: "{{ mariadb_environment_variables.MYSQL_DATABASE }}"
-          APP_URL: "{{ bookstack_app_url | string }}"
-        hostname: "{{ bookstack_name }}"
-        labels:
-          traefik.http.routers.bookstack.entrypoints: "web"
-          traefik.http.routers.bookstack.middlewares: "redirect@file"
-
-          traefik.http.routers.bookstack-secure.entrypoints: "web-secure"
-          traefik.http.routers.bookstack-secure.tls: "true"
-          traefik.http.routers.bookstack-secure.tls.certresolver: letsencrypt
-
-          traefik.http.services.bookstack.loadbalancer.server.port: "80"
-      register: bookstack_container
+          DB_PASS: "{{ mariadb_root_password }}"
+          DB_DATABASE: "{{ mariadb_database }}"
+          APP_URL: "https://{{ application }}.{{ common_tld }}"
+        traefik:
+          - port: 80
 
     - name: Wait for .env file
-      wait_for:
-        path: "{{ bookstack_config_directory }}/www/.env"
+      ansible.builtin.wait_for:
+        path: "{{ config_directory }}/bookstack/www/.env"
 
-    - name: Configure Bookstack .env
-      lineinfile:
-        dest: "{{ bookstack_config_directory }}/www/.env"
-        regexp: "^{{ item.split('=')[0] }}="
-        line: "{{ item }}"
-      loop: "{{ bookstack_env_options }}"
-      notify: Restart BookStack
+    - name: Configure .env
+      ansible.builtin.lineinfile:
+        dest: "{{ config_directory }}/bookstack/www/.env"
+        regexp: "^{{ item.key }}="
+        line: "{{ item.key }}={{ item.value }}"
+      loop: "{{ values | dict2items }}"
+      vars:
+        values:
+          WKHTMLTOPDF: /usr/bin/wkhtmltopdf
+          DRAWIO: "true"
+          APP_TIMEZONE: "{{ common_timezone }}"
+          MAIL_HOST: "{{ common_email_server }}"
+          MAIL_PORT: "{{ common_email_smtp_port }}"
+          MAIL_USERNAME: "{{ common_email_username }}"
+          MAIL_PASSWORD: "{{ common_email_password }}"
+          MAIL_ENCRYPTION: "{{ common_email_protocol }}"
+      notify: Restart
 
     - name: Configure PHP options
-      lineinfile:
-        dest: "{{ bookstack_config_directory }}/php/php-local.ini"
-        regexp: "^{{ item.split('=')[0] }}="
-        line: "{{ item }}"
-      loop: "{{ bookstack_php_options }}"
-      notify: Restart BookStack
+      ansible.builtin.lineinfile:
+        dest: "{{ config_directory }}/bookstack/php/php-local.ini"
+        regexp: "^{{ item.key }}="
+        line: "{{ item.key }}={{ item.value }}"
+      loop: "{{ values | dict2items }}"
+      vars:
+        values:
+          date.timezone: "{{ common_timezone }}"
+          post_max_size: 10M
+          upload_max_filesize: 10M
+      notify: Restart

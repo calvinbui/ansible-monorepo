@@ -2,7 +2,7 @@
 - hosts: homelab
   become: true
   module_defaults:
-    docker_container:
+    community.docker.docker_container:
       keep_volumes: false
       state: started
       restart_policy: unless-stopped
@@ -38,13 +38,13 @@
       63643866623438623463
   handlers:
     - name: Restart Python DNS
-      command: docker restart syncflaer-dns
+      ansible.builtin.command: docker restart syncflaer-dns
 
     - name: Restart SyncFlaer
-      command: docker restart syncflaer
+      ansible.builtin.command: docker restart syncflaer
   tasks:
     - name: Create SyncFlaer folder
-      file:
+      ansible.builtin.file:
         path: "{{ common_directory }}/syncflaer"
         state: directory
         owner: "1000"
@@ -52,7 +52,7 @@
         mode: "0640"
 
     - name: Copy Python DNS script
-      copy:
+      ansible.builtin.copy:
         src: files/syncflaer/main.py
         dest: "{{ common_directory }}/syncflaer/main.py"
         owner: "{{ common_user_id }}"
@@ -61,11 +61,11 @@
       notify: Restart Python DNS
 
     - name: Create Python DNS Container
-      docker_container:
+      community.docker.docker_container:
         name: syncflaer-dns
         hostname: syncflaer-dns
         image: gcr.io/distroless/python3
-        command:
+        ansible.builtin.command:
           - /app/main.py
         volumes:
           - "{{ common_directory }}/syncflaer:/app"
@@ -75,7 +75,7 @@
           HOSTNAME: "{{ syncflaer_domain_ip_lookup }}"
 
     - name: Template SyncFlaer config
-      template:
+      ansible.builtin.template:
         src: templates/syncflaer/config.yml.j2
         dest: "{{ common_directory }}/syncflaer/config.yml"
         owner: "{{ common_user_id }}"
@@ -84,7 +84,7 @@
       notify: Restart SyncFlaer
 
     - name: Create SyncFlaer Container
-      docker_container:
+      community.docker.docker_container:
         name: syncflaer
         hostname: syncflaer
         image: containeroo/syncflaer:3.0.0

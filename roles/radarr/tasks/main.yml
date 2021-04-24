@@ -1,7 +1,7 @@
 ---
 
 - name: Create Radarr directories
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: "0770"
@@ -9,7 +9,7 @@
     - "{{ radarr_config_directory }}"
 
 - name: Set Docker container parameters
-  set_fact:
+  ansible.builtin.set_fact:
     radarr_container_parameters:
       name: "{{ radarr_name }}"
       image: "{{ radarr_image }}"
@@ -22,11 +22,11 @@
       env: "{{ radarr_environment_variables }}"
 
 - name: Create Radarr container
-  docker_container: "{{ radarr_container_parameters | combine(radarr_docker_additional_options) }}"
+  community.docker.docker_container: "{{ radarr_container_parameters | combine(radarr_docker_additional_options) }}"
   register: radarr_container
 
 - name: Wait for Radarr start
-  wait_for:
+  ansible.builtin.wait_for:
     path: "{{ radarr_config_directory }}/config.xml"
 
 - name: Configure config.xml

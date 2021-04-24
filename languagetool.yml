@@ -2,7 +2,7 @@
 - hosts: homelab
   become: true
   module_defaults:
-    docker_container:
+    community.docker.docker_container:
       keep_volumes: false
       state: started
       restart_policy: unless-stopped
@@ -22,7 +22,7 @@
     languagetool_ngram_version: "20150817"
   tasks:
     - name: Create languagetool folder
-      file:
+      ansible.builtin.file:
         path: "{{ common_directory }}/languagetool"
         state: directory
         owner: "{{ common_user_id }}"
@@ -33,21 +33,21 @@
         - "{{ common_directory }}/languagetool/ngrams"
 
     - name: Download English ngrams
-      get_url:
+      ansible.builtin.get_url:
         url: "https://languagetool.org/download/ngram-data/ngrams-{{ languagetool_ngram_lang }}-{{ languagetool_ngram_version }}.zip"
         dest: "{{ common_directory }}/languagetool/ngrams-{{ languagetool_ngram_lang }}-{{ languagetool_ngram_version }}.zip"
         checksum: md5:ee56b280af45daf8e68fe0d69dd0914d
       register: _languagetool_ngram_download
 
     - name: Unarchive ngrams
-      unarchive:
+      ansible.builtin.unarchive:
         src: "{{ _languagetool_ngram_download.dest }}"
         dest: "{{ common_directory }}/languagetool/ngrams/"
         remote_src: true
         creates: "{{ common_directory }}/languagetool/ngrams/{{ languagetool_ngram_lang }}"
 
     - name: Create languagetool container
-      docker_container:
+      community.docker.docker_container:
         name: languagetool
         hostname: languagetool
         image: silviof/docker-languagetool:latest

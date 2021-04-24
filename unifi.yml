@@ -2,7 +2,7 @@
 - hosts: homelab
   become: true
   module_defaults:
-    docker_container:
+    community.docker.docker_container:
       keep_volumes: false
       state: started
       restart_policy: unless-stopped
@@ -21,14 +21,14 @@
     unifi_name: unifi
   tasks:
     - name: Create Unifi config folder
-      file:
+      ansible.builtin.file:
         path: "{{ common_directory }}/unifi"
         state: directory
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
         mode: "0770"
     - name: Create Unifi Container
-      docker_container:
+      community.docker.docker_container:
         name: unifi
         hostname: unifi
         image: linuxserver/unifi-controller:LTS

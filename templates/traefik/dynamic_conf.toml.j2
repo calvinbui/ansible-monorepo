@@ -9,7 +9,7 @@
         main = "traefik.{{ common_tld }}"
 
 [http.routers.local-api]
-  rule = "Host(`traefik.{{ network.name }}`)"
+  rule = "Host(`traefik.{{ docker_network.name }}`)"
   entryPoints = ["web"]
   service = "api@internal"
   middlewares = ["myAuth"]

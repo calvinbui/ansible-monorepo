@@ -32,7 +32,7 @@
         65303066316663663561653438336334626263613730636334313535383264313734
       MONGO_INITDB_DATABASE: xbrowsersync
   module_defaults:
-    docker_container:
+    community.docker.docker_container:
       keep_volumes: false
       restart_policy: unless-stopped
       networks_cli_compatible: true
@@ -44,10 +44,10 @@
       network_mode: "{{ network.name }}"
   handlers:
     - name: Restart xBrowserSync
-      command: docker restart "{{ xbrowsersync_name }}"
+      ansible.builtin.command: docker restart "{{ xbrowsersync_name }}"
   pre_tasks:
     - name: Create xBrowserSync directory
-      file:
+      ansible.builtin.file:
         path: "{{ xbrowsersync_config_directory }}"
         state: directory
         owner: "{{ common_user_id }}"
@@ -57,7 +57,7 @@
     - mongo
   tasks:
     - name: Template xBrowserSync config
-      template:
+      ansible.builtin.template:
         src: "{{ xbrowsersync_config_template }}"
         dest: "{{ xbrowsersync_config_file }}"
         owner: "{{ common_user_id }}"
@@ -66,7 +66,7 @@
       notify: Restart xBrowserSync
 
     - name: Create xBrowserSync container
-      docker_container:
+      community.docker.docker_container:
         name: "{{ xbrowsersync_name }}"
         hostname: "{{ xbrowsersync_name }}"
         image: "{{ xbrowsersync_image }}"

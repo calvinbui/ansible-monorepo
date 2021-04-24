@@ -2,7 +2,7 @@
 - hosts: homelab
   become: true
   module_defaults:
-    docker_container:
+    community.docker.docker_container:
       keep_volumes: false
       state: started
       restart_policy: unless-stopped
@@ -34,12 +34,12 @@
       POSTGRES_DB: joplin
   handlers:
     - name: Restart Joplin
-      command: docker restart joplin
+      ansible.builtin.command: docker restart joplin
   roles:
     - postgres
   tasks:
     - name: Create Joplin Container
-      docker_container:
+      community.docker.docker_container:
         name: joplin
         hostname: joplin
         image: joplin/server

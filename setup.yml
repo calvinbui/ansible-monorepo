@@ -3,7 +3,7 @@
   become: true
   pre_tasks:
     - name: Update apt cache
-      apt:
+      ansible.builtin.apt:
         update_cache: true
         cache_valid_time: 600
       changed_when: false
@@ -42,7 +42,7 @@
         executable: pip3
   handlers:
     - name: Restart Docker
-      service:
+      ansible.builtin.service:
         name: docker
         state: restarted
   roles:
@@ -57,7 +57,7 @@
     - docker
   tasks:
     - name: "No password sudo"
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: /etc/sudoers
         state: present
         regexp: "^{{ common_user }}"
@@ -78,7 +78,7 @@
       timezone:
         name: "{{ common_timezone }}"
     - name: Create common directory
-      file:
+      ansible.builtin.file:
         path: "{{ common_directory }}"
         state: directory
         owner: "{{ common_user }}"

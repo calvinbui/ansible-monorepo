@@ -1,7 +1,7 @@
 ---
 
 - name: Set Docker container parameters
-  set_fact:
+  ansible.builtin.set_fact:
     collabora_container_parameters:
       name: "{{ collabora_name }}"
       image: "{{ collabora_image }}"
@@ -10,5 +10,5 @@
       env: "{{ collabora_environment_variables }}"
 
 - name: Create Collabora container
-  docker_container: "{{ collabora_container_parameters | combine(collabora_docker_additional_options) }}"
+  community.docker.docker_container: "{{ collabora_container_parameters | combine(collabora_docker_additional_options) }}"
   register: collabora_container

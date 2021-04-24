@@ -1,7 +1,7 @@
 ---
 
 - name: Create Lidarr directories
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: "0770"
@@ -9,7 +9,7 @@
     - "{{ lidarr_config_directory }}"
 
 - name: Set Docker container parameters
-  set_fact:
+  ansible.builtin.set_fact:
     lidarr_container_parameters:
       name: "{{ lidarr_name }}"
       image: "{{ lidarr_image }}"
@@ -22,11 +22,11 @@
       env: "{{ lidarr_environment_variables }}"
 
 - name: Create Lidarr container
-  docker_container: "{{ lidarr_container_parameters | combine(lidarr_docker_additional_options) }}"
+  community.docker.docker_container: "{{ lidarr_container_parameters | combine(lidarr_docker_additional_options) }}"
   register: lidarr_container
 
 - name: Wait for Lidarr start
-  wait_for:
+  ansible.builtin.wait_for:
     path: "{{ lidarr_config_directory }}/config.xml"
 
 - name: Configure config.xml

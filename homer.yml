@@ -1,74 +1,61 @@
 ---
 
 - hosts: homelab
+
   become: true
+
   vars:
-    homer_name: homer
-    homer_config_directory: "{{ common_directory }}/{{ homer_name }}"
-    network: "{{ networks.pub }}"
-  module_defaults:
-    docker_container:
-      keep_volumes: false
-      restart_policy: unless-stopped
-      networks_cli_compatible: true
-      purge_networks: true
-      dns_servers: "{{ network.dns }}"
-      networks:
-        - name: "{{ network.name }}"
-      comparisons:
-        env: allow_more_present
-        labels: allow_more_present
-      container_default_behavior: no_defaults
-      network_mode: "{{ network.name }}"
+    application: homer
+
+    docker_network: "{{ networks.pub }}"
+
   handlers:
-    - name: Restart Homer
-      command: docker restart "{{ homer_name }}"
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
   pre_tasks:
-    - name: Create Homer config directory
-      file:
-        path: "{{ homer_config_directory }}"
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
         state: directory
-        owner: "{{ common_user_id }}"
-        group: "{{ common_root_group }}"
-        mode: "0770"
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
   tasks:
     - name: Template config file
-      template:
+      ansible.builtin.template:
         src: templates/homer/config.yml.j2
-        dest: "{{ homer_config_directory }}/config.yml"
-        owner: "{{ common_user_id }}"
-        group: "{{ common_root_group }}"
-        mode: "0770"
-      notify: Restart Homer
+        dest: "{{ config_directory }}/config.yml"
+        owner: "911"
+        group: "911"
+        mode: "0444"
+      notify: Restart
+
     - name: Copy icons
-      copy:
+      ansible.builtin.copy:
         src: files/homer/icons
-        dest: "{{ homer_config_directory }}"
-        owner: 911
-        group: 911
-        mode: "0644"
-    - name: Create Homer container
-      docker_container:
-        recreate: true
-        name: "{{ homer_name }}"
-        hostname: "{{ homer_name }}"
+        dest: "{{ config_directory }}"
+        owner: "911"
+        group: "911"
+        mode: "0444"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}"
         image: b4bz/homer:latest
         volumes:
-          - "{{ homer_config_directory }}/config.yml:/www/config.yml"
-          - "{{ homer_config_directory }}/icons:/www/assets/custom"
+          - "{{ config_directory }}/config.yml:/www/config.yml"
+          - "{{ config_directory }}/icons:/www/assets/custom"
         env:
           PUID: "{{ common_user_id }}"
           PGID: "{{ common_group_id }}"
           TZ: "{{ common_timezone }}"
-        labels:
-          traefik.http.routers.homer.entrypoints: "web"
-          traefik.http.routers.homer.middlewares: "redirect@file"
-
-          traefik.http.routers.homer-secure.entrypoints: "web-secure"
-          traefik.http.routers.homer-secure.tls: "true"
-          traefik.http.routers.homer-secure.tls.certresolver: letsencrypt
-
-          traefik.http.services.homer.loadbalancer.server.port: "8080"
-
-          traefik.http.routers.homer.rule: "Host(`{{ common_tld }}`)"
-          traefik.http.routers.homer-secure.rule: "Host(`{{ common_tld }}`)"
+        traefik:
+          - port: 8080
+            rule: "Host(`{{ common_tld }}`)"
+        comparisons:
+          env: allow_more_present
+          labels: allow_more_present

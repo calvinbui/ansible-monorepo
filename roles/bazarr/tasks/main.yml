@@ -1,7 +1,7 @@
 ---
 
 - name: Create Bazarr directories
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: "0770"
@@ -9,7 +9,7 @@
     - "{{ bazarr_config_directory }}"
 
 - name: Set Docker container parameters
-  set_fact:
+  ansible.builtin.set_fact:
     bazarr_container_parameters:
       name: "{{ bazarr_name }}"
       image: "{{ bazarr_image }}"
@@ -22,16 +22,16 @@
       env: "{{ bazarr_environment_variables }}"
 
 - name: Create Bazarr container
-  docker_container: "{{ bazarr_container_parameters | combine(bazarr_docker_additional_options) }}"
+  community.docker.docker_container: "{{ bazarr_container_parameters | combine(bazarr_docker_additional_options) }}"
   register: bazarr_container
 
 - name: Bazarr has not been configured. Go through the initial setup to generate a configuration file.
-  wait_for:
+  ansible.builtin.wait_for:
     path: "{{ bazarr_config_directory }}/config/config.ini"
     state: present
 
 - name: Configure Bazarr
-  ini_file:
+  community.general.ini_file:
     path: "{{ bazarr_config_directory }}/config/config.ini"
     section: "{{ item.key.split('.')[0] }}"
     option: "{{ item.key.split('.')[1] }}"

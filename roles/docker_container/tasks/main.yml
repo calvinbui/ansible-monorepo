@@ -1,0 +1,50 @@
+---
+
+- name: Generate Traefik labels for each route
+  when: traefik is defined
+  include_tasks: traefik.yml
+  loop: "{{ traefik }}"
+  loop_control:
+    loop_var: route
+  vars:
+    route_name: "{{ route.name | default(name) }}"
+
+- name: Merge generated Traefik and Docker labels
+  when: traefik is defined
+  ansible.builtin.set_fact:
+    combined_labels: "{{ labels | combine(traefik_labels, recursive=True) }}"
+
+- name: Disable Traefik labels
+  when: traefik is undefined
+  ansible.builtin.set_fact:
+    combined_labels: "{{ labels | combine({ 'traefik.enable': 'false' }) }}"
+
+- name: "Create docker container for {{ name }}"
+  community.docker.docker_container:
+    name: "{{ name | default(omit) }}"
+    image: "{{ image | default(omit) }}"
+    state: "{{ state | default('started') }}"
+
+    hostname: "{{ name | default(omit) }}"
+    networks:
+      - name: "{{ docker_network.name | default('bridge') }}"
+        ipv4_address: "{{ ipv4_address | default(omit) }}"
+    dns_servers: "{{ docker_network.dns | default(omit) }}"
+    network_mode: "{{ docker_network.name | default('omit') }}"
+    published_ports: "{{ published_ports | default(omit) }}"
+
+    env: "{{ env | default(omit) }}"
+
+    volumes: "{{ volumes | default(omit) }}"
+
+    keep_volumes: "{{ keep_volumes | default(false) }}"
+    restart_policy: "{{ restart_policy | default('unless-stopped') }}"
+    networks_cli_compatible: "{{ networks_cli_compatible | default(true) }}"
+    purge_networks: "{{ purge_networks | default(true) }}"
+    container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
+
+    labels: "{{ combined_labels }}"
+
+    comparisons:
+      env: "{{ comparisons.env | default('allow_more_present') }}"
+      labels: "{{ comparisons.labels | default('allow_more_present') }}"

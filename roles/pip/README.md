@@ -56,7 +56,7 @@ N/A
   become: true
   pre_tasks:
     - name: Update apt cache.
-      apt:
+      ansible.builtin.apt:
         update_cache: true
         cache_valid_time: 600
       changed_when: false

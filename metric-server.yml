@@ -11,7 +11,7 @@
 
   tasks:
     - name: Download metrics-server manifest
-      get_url:
+      ansible.builtin.get_url:
         url: "https://github.com/kubernetes-sigs/metrics-server/releases/download/{{ metrics_server_version }}/components.yaml"
         dest: "/tmp/metrics-server.yml"
       tags:

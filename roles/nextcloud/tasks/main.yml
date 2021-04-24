@@ -1,7 +1,7 @@
 ---
 
 - name: Create Nextcloud directories
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: "0770"
@@ -11,7 +11,7 @@
     - "{{ nextcloud_directory }}/build"
 
 - name: Copy Dockerfile folder
-  copy:
+  ansible.builtin.copy:
     src: "{{ nextcloud_build_folder }}"
     dest: "{{ nextcloud_directory }}/build"
     mode: "0770"
@@ -31,7 +31,7 @@
   when: nextcloud_build_image
 
 - name: Set Docker container parameters
-  set_fact:
+  ansible.builtin.set_fact:
     nextcloud_container_parameters:
       name: "{{ nextcloud_name }}"
       image: "{{ nextcloud_image }}"
@@ -41,5 +41,5 @@
       env: "{{ nextcloud_environment_variables }}"
 
 - name: Create Nextcloud container
-  docker_container: "{{ nextcloud_container_parameters | combine(nextcloud_docker_additional_options) }}"
+  community.docker.docker_container: "{{ nextcloud_container_parameters | combine(nextcloud_docker_additional_options) }}"
   register: nextcloud_container

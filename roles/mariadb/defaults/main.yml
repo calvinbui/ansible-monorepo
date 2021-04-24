@@ -1,18 +1,4 @@
 ---
 
-mariadb_name: mariadb
-mariadb_version: '10'
-mariadb_image: "mariadb:{{ mariadb_version }}"
-mariadb_ports: []
-mariadb_volumes:
-  - /tmp/mariadb:/var/lib/mysql
-mariadb_environment_variables:
-  MYSQL_ROOT_PASSWORD: 'yourdbrootpassword'
-  MYSQL_DATABASE: 'yourdb'
-  MYSQL_USER: 'yourdbuser'
-  MYSQL_PASSWORD: 'yourdbpassword'
-  MYSQL_ALLOW_EMPTY_PASSWORD: 'no'
-  MYSQL_RANDOM_ROOT_PASSWORD: 'no'
-
-mariadb_docker_additional_options:
-  restart_policy: unless-stopped
+mariadb_directory_extra: []
+mariadb_directories: "{{ [mariadb_directory + ':/var/lib/mysql'] + mariadb_directory_extra }}"

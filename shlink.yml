@@ -19,7 +19,7 @@
         6435303963373661636139393433636235386533333062343437
       MYSQL_DATABASE: shlink
   module_defaults:
-    docker_container:
+    community.docker.docker_container:
       keep_volumes: false
       state: started
       restart_policy: unless-stopped
@@ -37,7 +37,7 @@
     - mariadb
   tasks:
     - name: Create shlink container
-      docker_container:
+      community.docker.docker_container:
         name: shlink
         hostname: shlink
         image: shlinkio/shlink:stable
@@ -67,7 +67,7 @@
       register: shlink_web_config
 
     - name: Create shlink-web-client dir
-      file:
+      ansible.builtin.file:
         path: "{{ shlink_web_client_directory }}"
         state: directory
         owner: "{{ common_user_id }}"
@@ -75,19 +75,19 @@
         mode: "0770"
 
     - name: Generate shlink API key
-      command: docker exec -it shlink shlink api-key:generate --no-interaction --no-ansi
+      ansible.builtin.command: docker exec -it shlink shlink api-key:generate --no-interaction --no-ansi
       register: shlink_api
       when: not shlink_web_config.stat.exists
 
     - name: Template shlink-web client config
-      template:
+      ansible.builtin.template:
         src: shlink/servers.json.j2
         dest: "{{ shlink_web_client_directory }}/servers.json"
         mode: "0440"
       when: not shlink_web_config.stat.exists
 
     - name: Create shlink web client container
-      docker_container:
+      community.docker.docker_container:
         name: shlink-web-client
         hostname: shlink-web-client
         image: shlinkio/shlink-web-client:latest

@@ -1,7 +1,7 @@
 ---
 
 - name: Create MongoDB directory
-  file:
+  ansible.builtin.file:
     path: "{{ mongo_directory }}"
     state: directory
     owner: "999"
@@ -9,7 +9,7 @@
     mode: "700"
 
 - name: Create MongoDB container
-  docker_container:
+  community.docker.docker_container:
     name: "{{ mongo_name }}"
     hostname: "{{ mongo_name }}"
     image: "{{ mongo_image }}"

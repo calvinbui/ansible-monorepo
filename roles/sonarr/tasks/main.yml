@@ -1,7 +1,7 @@
 ---
 
 - name: Create Sonarr directories
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: "0770"
@@ -9,7 +9,7 @@
     - "{{ sonarr_config_directory }}"
 
 - name: Set Docker container parameters
-  set_fact:
+  ansible.builtin.set_fact:
     sonarr_container_parameters:
       name: "{{ sonarr_name }}"
       image: "{{ sonarr_image }}"
@@ -22,11 +22,11 @@
       env: "{{ sonarr_environment_variables }}"
 
 - name: Create Sonarr container
-  docker_container: "{{ sonarr_container_parameters | combine(sonarr_docker_additional_options) }}"
+  community.docker.docker_container: "{{ sonarr_container_parameters | combine(sonarr_docker_additional_options) }}"
   register: sonarr_container
 
 - name: Wait for Sonarr start
-  wait_for:
+  ansible.builtin.wait_for:
     path: "{{ sonarr_config_directory }}/config.xml"
 
 - name: Configure config.xml

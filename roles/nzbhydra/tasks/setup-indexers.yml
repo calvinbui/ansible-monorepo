@@ -7,11 +7,11 @@
 # 4. if doesn't exist, append it to the indexers list
 
 - name: Init list index variable
-  set_fact:
+  ansible.builtin.set_fact:
     nzbhydra_configured_indexer_index: ''
 
 - name: Find {{ nzbhydra_indexer_item['name'] }} in Indexers and store its index in the list
-  set_fact:
+  ansible.builtin.set_fact:
     nzbhydra_configured_indexer_index: "{{ nzbhydra_configured_indexer_index_loop }}"
   loop: "{{ nzbhydra_configured_indexers.result }}"
   loop_control:
@@ -21,7 +21,7 @@
     - item['name'] == nzbhydra_indexer_item['name']
 
 - name: Append to nzbhydra_var_indexers_index if exists
-  set_fact:
+  ansible.builtin.set_fact:
     nzbhydra_var_indexers_index: "{{  nzbhydra_var_indexers_index + [ nzbhydra_configured_indexer_index ] }}"
   when: nzbhydra_configured_indexer_index != ''
 

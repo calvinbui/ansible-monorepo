@@ -19,7 +19,7 @@
         38646136363563656132303534333630343136363536343666663230633466333736
       POSTGRES_DB: mattermost
   module_defaults:
-    docker_container:
+    community.docker.docker_container:
       keep_volumes: false
       state: started
       restart_policy: unless-stopped
@@ -37,7 +37,7 @@
     - postgres
   tasks:
     - name: Create Mattermost app directories
-      file:
+      ansible.builtin.file:
         path: "{{ mattermost_app_directory }}/{{ item }}"
         state: directory
         recurse: true
@@ -50,10 +50,10 @@
         - plugins
         - client-plugins
     - name: Create Mattermost container
-      docker_container:
+      community.docker.docker_container:
         name: "{{ mattermost_name }}"
         hostname: "{{ mattermost_name }}"
-        image: mattermost/mattermost-team-edition:5.31.1
+        image: mattermost/mattermost-team-edition:5
         volumes:
           - "{{ mattermost_app_directory }}/config:/mattermost/config"
           - "{{ mattermost_app_directory }}/data:/mattermost/data"

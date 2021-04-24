@@ -1,7 +1,7 @@
 ---
 
 - name: Create qBittorrent directories
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: "0770"
@@ -9,7 +9,7 @@
     - "{{ qbittorrent_config_directory }}"
 
 - name: Set Docker container parameters
-  set_fact:
+  ansible.builtin.set_fact:
     qbittorrent_container_parameters:
       name: "{{ qbittorrent_name }}"
       image: "{{ qbittorrent_image }}"
@@ -21,15 +21,15 @@
       env: "{{ qbittorrent_environment_variables }}"
 
 - name: Create qBittorrent container
-  docker_container: "{{ qbittorrent_container_parameters | combine(qbittorrent_docker_additional_options) }}"
+  community.docker.docker_container: "{{ qbittorrent_container_parameters | combine(qbittorrent_docker_additional_options) }}"
   register: qbittorrent_container
 
 - name: Wait for qBittorrent start
-  wait_for:
+  ansible.builtin.wait_for:
     path: "{{ qbittorrent_config_directory }}/qBittorrent/qBittorrent.conf"
 
 - name: Check if qBittorrent configuration changes required
-  ini_file:
+  community.general.ini_file:
     path: "{{ qbittorrent_config_directory }}/qBittorrent/qBittorrent.conf"
     section: "{{ item.key.split('.')[0] }}"
     option: "{{ item.key.split('.')[1] }}"
@@ -41,13 +41,13 @@
   register: qbittorrent_config_changes
 
 - name: Stop qBittorrent to make changes if required
-  docker_container:
+  community.docker.docker_container:
     name: "{{ qbittorrent_name }}"
     state: stopped
   when: qbittorrent_config_changes.changed
 
 - name: Configure qBittorrent
-  ini_file:
+  community.general.ini_file:
     path: "{{ qbittorrent_config_directory }}/qBittorrent/qBittorrent.conf"
     section: "{{ item.key.split('.')[0] }}"
     option: "{{ item.key.split('.')[1] }}"

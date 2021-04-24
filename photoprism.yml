@@ -2,7 +2,7 @@
 - hosts: homelab
   become: true
   module_defaults:
-    docker_container:
+    community.docker.docker_container:
       keep_volumes: false
       state: started
       restart_policy: unless-stopped
@@ -43,7 +43,7 @@
     - mariadb
   tasks:
     - name: Create photoprism config folder
-      file:
+      ansible.builtin.file:
         path: "{{ common_directory }}/photoprism/photoprism"
         state: directory
         owner: "{{ common_user_id }}"
@@ -51,7 +51,7 @@
         mode: "0770"
 
     - name: Create photoprism Container
-      docker_container:
+      community.docker.docker_container:
         name: photoprism
         hostname: photoprism
         image: photoprism/photoprism

@@ -1,7 +1,7 @@
 ---
 
 - name: Create NZBGet directories
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: "0770"
@@ -10,7 +10,7 @@
     - "{{ nzbget_download_directory }}"
 
 - name: Set Docker container parameters
-  set_fact:
+  ansible.builtin.set_fact:
     nzbget_container_parameters:
       name: "{{ nzbget_name }}"
       image: "{{ nzbget_image }}"
@@ -22,15 +22,15 @@
       env: "{{ nzbget_environment_variables }}"
 
 - name: Create NZBGet container
-  docker_container: "{{ nzbget_container_parameters | combine(nzbget_docker_additional_options) }}"
+  community.docker.docker_container: "{{ nzbget_container_parameters | combine(nzbget_docker_additional_options) }}"
   register: nzbget_container
 
 - name: Wait for NZBGet config
-  wait_for:
+  ansible.builtin.wait_for:
     path: "{{ nzbget_config_directory }}/nzbget.conf"
 
 - name: Configure NZBget
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: "{{ nzbget_config_directory }}/nzbget.conf"
     regexp: "^{{ item.key }}="
     line: "{{ item.key }}={{ item.value }}"

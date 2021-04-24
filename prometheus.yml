@@ -2,7 +2,7 @@
 - hosts: homelab
   become: true
   module_defaults:
-    docker_container:
+    community.docker.docker_container:
       keep_volumes: false
       state: started
       restart_policy: unless-stopped
@@ -74,19 +74,19 @@
 
   handlers:
     - name: Restart blackbox_exporter
-      command: docker restart blackbox_exporter
+      ansible.builtin.command: docker restart blackbox_exporter
     - name: Restart process-exporter
-      command: docker restart process-exporter
+      ansible.builtin.command: docker restart process-exporter
     - name: Restart alertmanager
-      command: docker restart alertmanager
+      ansible.builtin.command: docker restart alertmanager
     - name: Restart prometheus
-      command: docker restart prometheus
+      ansible.builtin.command: docker restart prometheus
     - name: Restart grafana
-      command: docker restart grafana
+      ansible.builtin.command: docker restart grafana
 
   pre_tasks:
     - name: Create directories
-      file:
+      ansible.builtin.file:
         path: "{{ item.path }}"
         state: directory
         owner: "{{ item.owner | default(omit) }}"
@@ -112,11 +112,11 @@
   tasks:
     ########## Node exporter
     - name: Create node_exporter container
-      docker_container:
+      community.docker.docker_container:
         name: "{{ node_exporter_name }}"
         hostname: "{{ node_exporter_name }}"
         image: quay.io/prometheus/node-exporter:latest
-        command:
+        ansible.builtin.command:
           - '--path.rootfs=/host'
           - '--collector.mountstats'
           - '--collector.filesystem.ignored-fs-types=^(tmpfs|vfat|rpc_pipefs|fuse.lxcfs|rootfs|squashfs|nsfs)$'
@@ -153,11 +153,11 @@
     ########## cAdvisor
     # https://github.com/google/cadvisor
     - name: Create cadvisor container
-      docker_container:
+      community.docker.docker_container:
         name: "{{ cadvisor_name }}"
         hostname: "{{ cadvisor_name }}"
         image: gcr.io/cadvisor/cadvisor:latest
-        command:
+        ansible.builtin.command:
           - "-docker_only=true"
           - "-disable_metrics={{ cadvisor_disabled_metrics | join(',') }}"
           - "-housekeeping_interval=10s"
@@ -177,18 +177,18 @@
 
     ########## Blackbox Exporter
     - name: Template blackbox_exporter configuration
-      template:
+      ansible.builtin.template:
         src: templates/blackbox_exporter/config.yml.j2
         dest: "{{ blackbox_exporter_directory }}/config.yml"
         mode: "0440"
       notify: Restart blackbox_exporter
     # https://github.com/prometheus/blackbox_exporter
     - name: Create blackbox_exporter container
-      docker_container:
+      community.docker.docker_container:
         name: "{{ blackbox_exporter_name }}"
         hostname: "{{ blackbox_exporter_name }}"
         image: prom/blackbox-exporter:master
-        command:
+        ansible.builtin.command:
           - --config.file=/config/config.yml
         volumes:
           - "{{ blackbox_exporter_directory }}:/config"
@@ -199,18 +199,18 @@
 
     ########## Process Exporter
     - name: Template process-exporter configuration
-      template:
+      ansible.builtin.template:
         src: templates/process-exporter/config.yml.j2
         dest: "{{ process_exporter_directory }}/config.yml"
         mode: "0440"
       notify: Restart process-exporter
     - name: Create process-exporter container
-      docker_container:
+      community.docker.docker_container:
         name: "{{ process_exporter_name }}"
         hostname: "{{ process_exporter_name }}"
         image: ncabatoff/process-exporter:latest
         privileged: true
-        command:
+        ansible.builtin.command:
           - --procfs=/host/proc
           - --config.path=/config/config.yml
         volumes:
@@ -221,17 +221,17 @@
 
     ########## Alertmanager
     - name: Template Alertmanager config
-      template:
+      ansible.builtin.template:
         src: templates/alertmanager/alertmanager.yml.j2
         dest: "{{ alertmanager_directory }}/config.yml"
         mode: "0440"
       notify: Restart alertmanager
     - name: Create Alertmanager container
-      docker_container:
+      community.docker.docker_container:
         name: alertmanager
         hostname: alertmanager
         image: prom/alertmanager:latest
-        command:
+        ansible.builtin.command:
           - "--config.file=/etc/alertmanager/config.yml"
           - "--storage.path=/alertmanager"
           - "--web.external-url=https://alertmanager.{{ common_tld }}"
@@ -252,24 +252,24 @@
 
     ########## Prometheus
     - name: Template Prometheus config
-      template:
+      ansible.builtin.template:
         src: templates/prometheus/prometheus.yml.j2
         dest: "{{ prometheus_config }}"
         mode: "0440"
       notify: Restart prometheus
     - name: Copy Prometheus rules
-      copy:
+      ansible.builtin.copy:
         src: files/prometheus/rules.yml
         dest: "{{ prometheus_rules }}"
         mode: "0440"
       notify: Restart prometheus
     # https://prometheus.io/docs/prometheus/latest/installation/
     - name: Create Prometheus container
-      docker_container:
+      community.docker.docker_container:
         name: prometheus
         hostname: prometheus
         image: prom/prometheus:latest
-        command:
+        ansible.builtin.command:
           - '--config.file=/etc/prometheus/prometheus.yml'
           # https://prometheus.io/docs/operating/security/
           - --web.enable-admin-api  # enables administrative HTTP API
@@ -299,7 +299,7 @@
 
     ########## Grafana
     - name: Template Grafana datasource
-      template:
+      ansible.builtin.template:
         src: templates/grafana/prometheus.yml.j2
         dest: "{{ grafana_provisioning_directory }}/datasources/prometheus.yml"
         mode: "0440"
@@ -307,7 +307,7 @@
       tags:
         - grafana
     - name: Download Grafana plugins
-      unarchive:
+      ansible.builtin.unarchive:
         src: "https://grafana.com/api/plugins/{{ item.name }}/versions/{{ item.version }}/download"
         dest: "{{ grafana_data_directory }}/plugins"
         remote_src: true
@@ -318,7 +318,7 @@
         - grafana
       notify: Restart grafana
     - name: Create Grafana container
-      docker_container:
+      community.docker.docker_container:
         name: grafana
         hostname: grafana
         image: grafana/grafana:latest

@@ -1,8 +1,10 @@
 ---
+
 - hosts: homelab
+
   become: true
+
   vars:
-    network: "{{ networks.pub }}"
     acme_dir: "{{ common_directory }}/acme.sh"
     acme_repo_dir: "{{ acme_dir }}/repo"
     acme_install_dir: "{{ acme_dir }}/install"
@@ -27,22 +29,19 @@
   tasks:
     # https://github.com/Neilpang/acme.sh/wiki/How-to-install
     - name: Install socat
-      apt:
+      ansible.builtin.apt:
         name: socat
         state: present
       when: ansible_os_family == 'Debian'
-    - name: Install socat
-      yum:
-        name: socat
-        state: present
-      when: ansible_os_family == 'RedHat'
+
     - name: Download Neilpang's acme.sh
-      git:
+      ansible.builtin.git:
         repo: https://github.com/acmesh-official/acme.sh.git
         dest: "{{ acme_repo_dir }}"
         version: 2.8.7
+
     - name: Setup acme.sh
-      shell: |
+      ansible.builtin.shell: |
         ./acme.sh --install \
         --home "{{ acme_install_dir }}" \
         --config-home "{{ acme_config_dir }}" \
@@ -52,13 +51,15 @@
         chdir: "{{ acme_repo_dir }}"
         executable: "/bin/bash"
       changed_when: false
+
     - name: Copy scripts
-      copy:
+      ansible.builtin.copy:
         src: files/certs/
         dest: "{{ acme_scripts_dir }}"
         mode: 0755
+
     - name: Setup Cloudflare creds
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: "{{ acme_config_dir }}/account.conf"
         regex: "{{ item.regex }}"
         line: "{{ item.line }}"
@@ -67,8 +68,9 @@
           line: "SAVED_CF_Key='{{ cert_cloudflare_api_token }}'"
         - regex: '^SAVED_CF_Email'
           line: "SAVED_CF_Email='{{ cert_cloudflare_email }}'"
+
     - name: Generate certs for each domain
-      shell: /bin/bash -ic ". acme.sh.env && acme.sh --issue {{ item.method }} --domain {{ item.domain }} --post-hook '{{ item.script }}'"
+      ansible.builtin.shell: /bin/bash -ic ". acme.sh.env && acme.sh --issue {{ item.method }} --domain {{ item.domain }} --post-hook '{{ item.script }}'"
       args:
         chdir: "{{ acme_install_dir }}"
         executable: /bin/bash

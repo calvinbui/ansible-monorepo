@@ -1,6 +1,6 @@
 ---
 - name: Install nut
-  apt:
+  ansible.builtin.apt:
     name: nut
     state: present
     update_cache: true
@@ -15,7 +15,7 @@
     daemon_reload: true
 
 - name: Install NUT configuration files.
-  template:
+  ansible.builtin.template:
     src: "{{ item }}.j2"
     dest: "/etc/nut/{{ item }}"
     owner: root

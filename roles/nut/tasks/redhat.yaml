@@ -13,7 +13,7 @@
     daemon_reload: true
 
 - name: Install NUT configuration files.
-  template:
+  ansible.builtin.template:
     src: "{{ item }}.j2"
     dest: "/etc/ups/{{ item }}"
     owner: root
@@ -28,7 +28,7 @@
   notify: Restart NUT
 
 - name: Symlink udev rules
-  file:
+  ansible.builtin.file:
     src: /lib/udev/rules.d/62-nut-usbups.rules
     dest: /etc/udev/rules.d/62-nut-usbups.rules
     state: link

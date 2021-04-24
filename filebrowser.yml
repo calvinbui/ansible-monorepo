@@ -1,63 +1,48 @@
 ---
 - hosts: homelab
+
   become: true
-  module_defaults:
-    docker_container:
-      keep_volumes: false
-      state: started
-      restart_policy: unless-stopped
-      networks_cli_compatible: true
-      purge_networks: true
-      networks:
-        - name: "{{ network.name }}"
-      dns_servers: "{{ network.dns }}"
-      comparisons:
-        env: allow_more_present
-        labels: allow_more_present
-      container_default_behavior: no_defaults
-      network_mode: "{{ network.name }}"
+
   vars:
-    network: "{{ networks.pub }}"
-  tasks:
-    - name: Create File Browser folder
-      file:
-        path: "{{ common_directory }}/filebrowser"
+    application: filebrowser
+
+    docker_network: "{{ networks.pub }}"
+
+  pre_tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
         state: directory
-        owner: "{{ common_user_id }}"
-        group: "{{ common_root_group }}"
-        mode: "0770"
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
 
-    - name: Touch File Browser config
-      file:
-        path: "{{ common_directory }}/filebrowser/filebrowser.json"
+  tasks:
+    - name: Touch config
+      ansible.builtin.file:
+        path: "{{ config_directory }}/filebrowser.json"
         state: touch
         modification_time: preserve
         access_time: preserve
         mode: "0640"
 
-    - name: Touch File Browser DB
-      file:
-        path: "{{ common_directory }}/filebrowser/filebrowser.db"
+    - name: Touch DB
+      ansible.builtin.file:
+        path: "{{ config_directory }}/filebrowser.db"
         state: touch
         modification_time: preserve
         access_time: preserve
         mode: "0640"
 
-    - name: Create File Browser Container
-      docker_container:
-        name: filebrowser
-        hostname: filebrowser
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}"
         image: filebrowser/filebrowser
         volumes:
           - "{{ common_directory_storage }}:/srv"
-          - "{{ common_directory }}/filebrowser/filebrowser.db:/database.db"
-          - "{{ common_directory }}/filebrowser/filebrowser.json:/.filebrowser.json"
-        labels:
-          traefik.http.routers.filebrowser.entrypoints: "web"
-          traefik.http.routers.filebrowser.middlewares: "redirect@file"
-
-          traefik.http.routers.filebrowser-secure.entrypoints: "web-secure"
-          traefik.http.routers.filebrowser-secure.tls: "true"
-          traefik.http.routers.filebrowser-secure.tls.certresolver: letsencrypt
-
-          traefik.http.services.filebrowser.loadbalancer.server.port: "80"
+          - "{{ config_directory }}/filebrowser.db:/database.db"
+          - "{{ config_directory }}/filebrowser.json:/.filebrowser.json"
+        traefik:
+          - port: 80

@@ -1,7 +1,7 @@
 ---
 
 - name: Set Docker container parameters
-  set_fact:
+  ansible.builtin.set_fact:
     onlyoffice_container_parameters:
       name: "{{ onlyoffice_name }}"
       image: "{{ onlyoffice_image }}"
@@ -10,5 +10,5 @@
       env: "{{ onlyoffice_environment_variables }}"
 
 - name: Create ONLYOFFICE container
-  docker_container: "{{ onlyoffice_container_parameters | combine(onlyoffice_docker_additional_options) }}"
+  community.docker.docker_container: "{{ onlyoffice_container_parameters | combine(onlyoffice_docker_additional_options) }}"
   register: onlyoffice_container

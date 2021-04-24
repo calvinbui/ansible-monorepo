@@ -29,17 +29,17 @@
 
   handlers:
     - name: Stop k3s
-      service:
+      ansible.builtin.service:
         name: k3s
         state: stopped
       listen: Restart k3s
 
     - name: k3s-killall.sh
-      command: "{{ k3s_install_dir }}/k3s-killall.sh"
+      ansible.builtin.command: "{{ k3s_install_dir }}/k3s-killall.sh"
       listen: Restart k3s
 
     - name: Start k3s
-      service:
+      ansible.builtin.service:
         name: k3s
         state: started
       listen: Restart k3s
@@ -54,7 +54,7 @@
 
   tasks:
     - name: Create k3s folder
-      file:
+      ansible.builtin.file:
         path: "{{ k3s_config_dir }}"
         state: directory
         owner: "{{ common_user_id }}"
@@ -69,7 +69,7 @@
         - k3s
 
     - name: Get current k3s version
-      command: "{{ k3s_install_dir }}/k3s --version"
+      ansible.builtin.command: "{{ k3s_install_dir }}/k3s --version"
       args:
         warn: false
       changed_when: false
@@ -79,7 +79,7 @@
         - k3s
 
     - name: Get k3s config start
-      command: awk '/server \\/{print NR; exit}' "{{ k3s_systemd_dir }}"/k3s.service
+      ansible.builtin.command: awk '/server \\/{print NR; exit}' "{{ k3s_systemd_dir }}"/k3s.service
       register: __k3s_config_start
       changed_when: false
       when: __k3s_is_installed.stat.exists
@@ -87,7 +87,7 @@
         - k3s
 
     - name: Count k3s config lines
-      command: awk 'END{print NR}' "{{ k3s_systemd_dir }}"/k3s.service
+      ansible.builtin.command: awk 'END{print NR}' "{{ k3s_systemd_dir }}"/k3s.service
       register: __k3s_config_lines
       changed_when: false
       when: __k3s_is_installed.stat.exists
@@ -95,7 +95,7 @@
         - k3s
 
     - name: Check if k3s config changed
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: "{{ k3s_systemd_dir }}/k3s.service"
         regexp: "{{ item }}"
         line: "\t'{{ item }}' \\"
@@ -113,7 +113,7 @@
         ( __k3s_config_lines.stdout|int - __k3s_config_start.stdout|int != k3s_options|length + 1 )  # + 1 because of the new line at the end of the file
       block:
         - name: Download k3s installation script
-          get_url:
+          ansible.builtin.get_url:
             url: https://get.k3s.io
             dest: "{{ k3s_config_dir }}/install.sh"
             mode: "0750"
@@ -122,7 +122,7 @@
 
         - name: Install k3s
           # command: "{{ k3s_config_dir }}/install.sh {{ k3s_options | join(' ') }}"
-          command: "echo $INSTALL_K3S_VERSION"
+          ansible.builtin.command: "echo $INSTALL_K3S_VERSION"
           environment:
             INSTALL_K3S_VERSION: "{{ k3s_version }}"
             INSTALL_K3S_BIN_DIR: "{{ k3s_install_dir }}"
@@ -131,7 +131,7 @@
             - k3s
 
     - name: Create .kube folder
-      file:
+      ansible.builtin.file:
         dest: "{{ item.dest }}"
         owner: "{{ item.owner }}"
         group: "{{ item.group }}"
@@ -148,7 +148,7 @@
         - config
 
     - name: Symlink k3s kube config
-      file:
+      ansible.builtin.file:
         src: /etc/rancher/k3s/k3s.yaml
         dest: "{{ item }}"
         state: link
@@ -159,14 +159,14 @@
         - config
 
     - name: Change owner of k3s kube config
-      file:
+      ansible.builtin.file:
         path: /etc/rancher/k3s/k3s.yaml
         owner: "{{ common_user }}"
       tags:
         - config
 
     - name: Create CNI bin folder
-      file:
+      ansible.builtin.file:
         dest: /opt/cni/bin
         mode: "0775"
         state: directory
@@ -174,7 +174,7 @@
         - flannel
 
     - name: Download CNI plugins
-      get_url:
+      ansible.builtin.get_url:
         url: https://github.com/containernetworking/plugins/releases/download/{{ k3s_cni_plugin_version }}/cni-plugins-{{ ansible_system | lower }}-{{ go_arch }}-{{ k3s_cni_plugin_version }}.tgz
         dest: "{{ k3s_config_dir }}/"
         checksum: sha512:https://github.com/containernetworking/plugins/releases/download/{{ k3s_cni_plugin_version }}/cni-plugins-{{ ansible_system | lower }}-{{ go_arch }}-{{ k3s_cni_plugin_version }}.tgz.sha512
@@ -182,7 +182,7 @@
         - flannel
 
     - name: Install CNI plugins
-      unarchive:
+      ansible.builtin.unarchive:
         src: "{{ k3s_config_dir }}/cni-plugins-{{ ansible_system | lower }}-{{ go_arch }}-{{ k3s_cni_plugin_version }}.tgz"
         dest: /opt/cni/bin/
         remote_src: true
@@ -190,7 +190,7 @@
         - flannel
 
     - name: Download flannel manifest
-      get_url:
+      ansible.builtin.get_url:
         url: "https://raw.githubusercontent.com/flannel-io/flannel/{{ k3s_flannel_version }}/Documentation/kube-flannel.yml"
         dest: "/tmp/kube-flannel.yml"
       changed_when: false
@@ -198,7 +198,7 @@
         - flannel
 
     - name: Update flannel manifest network to match k3s
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: "/tmp/kube-flannel.yml"
         regexp: '(\s+)"Network": "10.244.0.0/16",'
         line: '\g<1>"Network": "{{ k3s_cluster_cidr }}",'
@@ -208,7 +208,7 @@
         - flannel
 
     - name: Copy modified flannel manifest
-      copy:
+      ansible.builtin.copy:
         src: "/tmp/kube-flannel.yml"
         dest: "{{ k3s_config_dir }}/kube-flannel-modified.yml"
         mode: preserve

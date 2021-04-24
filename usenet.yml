@@ -4,7 +4,7 @@
   vars:
     network: "{{ networks.pub }}"
   module_defaults:
-    docker_container:
+    community.docker.docker_container:
       keep_volumes: false
       state: started
       restart_policy: unless-stopped

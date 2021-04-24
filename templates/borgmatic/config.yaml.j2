@@ -1,3 +1,5 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
+
 # Where to look for files to backup, and where to store those backups. See
 # https://borgbackup.readthedocs.io/en/stable/quickstart.html and
 # https://borgbackup.readthedocs.io/en/stable/usage.html#borg-create for details.
@@ -10,7 +12,7 @@ location:
     # repositories are backed up to in sequence. See ssh_command for SSH options like
     # identity file or port.
     repositories:
-        - lh782u97@lh782u97.repo.borgbase.com:repo
+        - {{ item.repository }}
 
     # Stay in same file system (do not cross mount points). Defaults to false.
     # one_file_system: true
@@ -64,10 +66,18 @@ location:
 
     # Any paths matching these patterns are excluded from backups. Globs and tildes
     # are expanded. See the output of "borg help patterns" for more details.
+
     # exclude_patterns:
         # - '*.pyc'
         # - ~/*/.cache
         # - /etc/ssl
+
+    {% if item.exclude_patterns is defined %}
+    exclude_patterns:
+      {% for ep in item.exclude_patterns %}
+        - '{{ ep }}'
+      {% endfor %}
+    {% endif %}
 
     # Read exclude patterns from one or more separate named files, one pattern per
     # line. See the output of "borg help patterns" for more details.
@@ -125,7 +135,7 @@ storage:
     # Type of compression to use when creating archives. See
     # https://borgbackup.readthedocs.org/en/stable/usage.html#borg-create for details.
     # Defaults to "lz4".
-    compression: none
+    compression: {{ item.compression | default('lz4') }}
 
     # Remote network upload rate limit in kiBytes/second. Defaults to unlimited.
     # remote_rate_limit: 100
@@ -272,12 +282,12 @@ hooks:
     # List of one or more shell commands or scripts to execute after creating a
     # backup, run once per configuration file.
     # after_backup:
-        # - "/etc/borgmatic.d/notifications.sh after {{ borgmatic_name }}"
+        # - "/etc/borgmatic.d/notifications.sh after {{ item.name }}"
 
     # List of one or more shell commands or scripts to execute when an exception
     # occurs during a backup or when running a before_backup or after_backup hook.
     on_error:
-        - "/etc/borgmatic.d/notifications.sh error {{ borgmatic_name }}"
+        - "/etc/borgmatic.d/notifications.sh error {{ item.name }}"
 
     # List of one or more PostgreSQL databases to dump before creating a backup,
     # run once per configuration file. The database dumps are added to your source

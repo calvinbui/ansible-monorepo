@@ -2,7 +2,7 @@
 - hosts: homelab
   become: true
   module_defaults:
-    docker_container:
+    community.docker.docker_container:
       keep_volumes: false
       state: started
       restart_policy: unless-stopped
@@ -38,11 +38,11 @@
     network: "{{ networks.pub }}"
   handlers:
     - name: Restart MovieNight
-      command: docker restart movienight
+      ansible.builtin.command: docker restart movienight
 
   tasks:
     - name: Clone MovieNight
-      git:
+      ansible.builtin.git:
         repo: 'https://github.com/zorchenhimer/MovieNight.git'
         dest: "{{ movienight_directory }}"
         update: true
@@ -60,7 +60,7 @@
 
     # should be okay as the container needs to be reloaded to take effect
     - name: Copy settings_example.json to settings.json
-      copy:
+      ansible.builtin.copy:
         src: "{{ movienight_directory }}/settings_example.json"
         dest: "{{ movienight_directory }}/settings.json"
         remote_src: true
@@ -83,7 +83,7 @@
         - config
 
     - name: Create MovieNight Container
-      docker_container:
+      community.docker.docker_container:
         name: movienight
         hostname: movienight
         image: movienight

@@ -2,7 +2,7 @@
 - hosts: homelab
   become: true
   module_defaults:
-    docker_container:
+    community.docker.docker_container:
       keep_volumes: false
       state: started
       restart_policy: unless-stopped
@@ -46,7 +46,7 @@
     postgres_directory_extra: "{{ umami_directory }}/schema.postgresql.sql:/docker-entrypoint-initdb.d/schema.postgresql.sql:ro"
   pre_tasks:
     - name: Create umami folders
-      file:
+      ansible.builtin.file:
         path: "{{ item }}"
         state: directory
         owner: "{{ common_user_id }}"
@@ -57,7 +57,7 @@
         - "{{ postgres_directory }}"
 
     - name: Download umami sql file
-      get_url:
+      ansible.builtin.get_url:
         url: https://raw.githubusercontent.com/mikecao/umami/master/sql/schema.postgresql.sql
         dest: "{{ umami_directory }}/schema.postgresql.sql"
 
@@ -66,7 +66,7 @@
 
   tasks:
     - name: Create umami Container
-      docker_container:
+      community.docker.docker_container:
         name: umami
         hostname: umami
         image: ghcr.io/mikecao/umami:postgresql-latest
