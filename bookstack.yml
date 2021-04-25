@@ -29,8 +29,10 @@
         group: "{{ common_root_group }}"
         mode: "0771"
 
-  roles:
-    - role: mariadb
+  tasks:
+    - name: Create mariadb container
+      ansible.builtin.include_role:
+        name: mariadb
       vars:
         mariadb_name: "{{ application }}-mariadb"
         mariadb_version: '10'
@@ -39,7 +41,6 @@
           MYSQL_ROOT_PASSWORD: "{{ mariadb_root_password }}"
           MYSQL_DATABASE: "{{ mariadb_database }}"
 
-  tasks:
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
