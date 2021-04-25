@@ -1,6 +1,8 @@
 ---
 - hosts: homelab
+
   become: true
+
   vars:
     nut_host: localhost
     nut_max_retry: 3
@@ -39,12 +41,52 @@
       LISTEN 127.0.0.1 3493
       LISTEN {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }} 3493
       LISTEN ::1 3493
+
+  handlers:
+    - name: Restart
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: restarted
+        enabled: true
+      with_items:
+        - nut-driver
+        - nut-monitor
+        - nut-server
+
   pre_tasks:
-    - name: Update apt cache.
+    - name: Update apt cache
       ansible.builtin.apt:
         update_cache: true
         cache_valid_time: 600
       changed_when: false
-      when: ansible_os_family == 'Debian'
-  roles:
-    - nut
+
+  tasks:
+    - name: Install nut
+      ansible.builtin.apt:
+        name: nut
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+      register: result
+      until: result is success
+      retries: 5
+      delay: 5
+
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Install NUT configuration files.
+      ansible.builtin.template:
+        src: "templates/nut/{{ item }}.j2"
+        dest: "/etc/nut/{{ item }}"
+        owner: root
+        group: nut
+        mode: '0640'
+      with_items:
+        - ups.conf
+        - upsd.conf
+        - upsd.users
+        - upsmon.conf
+        - nut.conf
+      notify: Restart

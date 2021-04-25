@@ -1,75 +1,59 @@
 ---
 - hosts: homelab
-  become: true
-  module_defaults:
-    community.docker.docker_container:
-      keep_volumes: false
-      state: started
-      restart_policy: unless-stopped
-      networks_cli_compatible: true
-      purge_networks: true
-      networks:
-        - name: "{{ network.name }}"
-      dns_servers: "{{ network.dns }}"
-      comparisons:
-        env: allow_more_present
-        labels: allow_more_present
-      container_default_behavior: no_defaults
-      network_mode: "{{ network.name }}"
-  vars:
-    network: "{{ networks.pub }}"
-    papermerge_ftp_password: "$6$vgLah.l13sGfNWEP$/vrPocaGTCDC601velsai68JfVzIzaQ18OrO0Y8Q2FPpey7kmXfx/fwZcJQkLPkbnJ2SIS.S.CLBbP8iB4MfS0"
-  handlers:
-    - name: Restart Papermerge
-      ansible.builtin.command: docker restart papermerge
-  tasks:
-    - name: Add the user papermerge
-      ansible.builtin.user:
-        name: papermerge
-        create_home: false
-        home: "{{ common_directory }}/papermerge/import"
-        password: "{{ papermerge_ftp_password }}"
-      register: papermerge_user
 
-    - name: Create Papermerge folder
+  become: true
+
+  vars:
+    application: papermerge
+
+    docker_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create folders
       ansible.builtin.file:
         path: "{{ item }}"
         state: directory
         owner: "papermerge"
         group: "{{ common_group_id }}"
-        mode: "775"
+        mode: "0775"
       loop:
-        - "{{ common_directory }}/papermerge"
-        - "{{ common_directory }}/papermerge/config"
-        - "{{ common_directory }}/papermerge/data"
-        - "{{ common_directory }}/papermerge/import"
+        - "{{ config_directory }}"
+        - "{{ config_directory }}/config"
+        - "{{ config_directory }}/data"
+        - "{{ config_directory }}/import"
 
-    - name: Create Papermerge Container
-      community.docker.docker_container:
+    - name: Add user
+      ansible.builtin.user:
         name: papermerge
-        hostname: papermerge
+        create_home: false
+        home: "{{ config_directory }}/import"
+        password: "$6$vgLah.l13sGfNWEP$/vrPocaGTCDC601velsai68JfVzIzaQ18OrO0Y8Q2FPpey7kmXfx/fwZcJQkLPkbnJ2SIS.S.CLBbP8iB4MfS0"
+      register: papermerge_user
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}"
         image: ghcr.io/linuxserver/papermerge:latest
         volumes:
-          - "{{ common_directory }}/papermerge/config:/config"
-          - "{{ common_directory }}/papermerge/data:/data"
-          - "{{ common_directory }}/papermerge/import:/import"
+          - "{{ config_directory }}/config:/config"
+          - "{{ config_directory }}/data:/data"
+          - "{{ config_directory }}/import:/import"
         env:
           PUID: "{{ papermerge_user.uid }}"
           PGID: "{{ common_group_id }}"
           TZ: "{{ common_timezone }}"
-        labels:
-          traefik.http.routers.papermerge.entrypoints: "web"
-          traefik.http.routers.papermerge.middlewares: "redirect@file"
+        traefik:
+          - port: "8000"
 
-          traefik.http.routers.papermerge-secure.entrypoints: "web-secure"
-          traefik.http.routers.papermerge-secure.tls: "true"
-          traefik.http.routers.papermerge-secure.tls.certresolver: letsencrypt
-
-          traefik.http.services.papermerge.loadbalancer.server.port: "8000"
-
-    - name: Edit Papermerge config
+    - name: Edit config
       ansible.builtin.lineinfile:
-        path: "{{ common_directory }}/papermerge/config/papermerge.conf.py"
+        path: "{{ config_directory }}/config/papermerge.conf.py"
         regexp: "{{ item.regexp }}"
         line: "{{ item.line }}"
       loop:
@@ -77,4 +61,4 @@
           line: 'IMPORTER_DIR = "/import"'
         - regexp: "BINARY_STAPLER"
           line: 'BINARY_STAPLER = "/usr/local/bin/stapler"'
-      notify: Restart Papermerge
+      notify: Restart

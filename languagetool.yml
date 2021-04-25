@@ -1,64 +1,61 @@
 ---
 - hosts: homelab
+
   become: true
-  module_defaults:
-    community.docker.docker_container:
-      keep_volumes: false
-      state: started
-      restart_policy: unless-stopped
-      networks_cli_compatible: true
-      purge_networks: true
-      networks:
-        - name: "{{ network.name }}"
-      dns_servers: "{{ network.dns }}"
-      comparisons:
-        env: allow_more_present
-        labels: allow_more_present
-      container_default_behavior: no_defaults
-      network_mode: "{{ network.name }}"
+
   vars:
-    network: "{{ networks.pub }}"
-    languagetool_ngram_lang: "en"
-    languagetool_ngram_version: "20150817"
-  tasks:
-    - name: Create languagetool folder
+    application: "languagetool"
+
+    languagetool_ngrams:
+      - lang: en
+        version: "20150817"
+        checksum: md5:ee56b280af45daf8e68fe0d69dd0914d
+
+    docker_network: "{{ networks.pub }}"
+
+  pre_tasks:
+    - name: Create config folder
       ansible.builtin.file:
-        path: "{{ common_directory }}/languagetool"
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+  tasks:
+    - name: Create ngrams folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}/ngrams"
         state: directory
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
-        mode: "0770"
-      loop:
-        - "{{ common_directory }}/languagetool"
-        - "{{ common_directory }}/languagetool/ngrams"
+        mode: "0771"
 
-    - name: Download English ngrams
+    - name: Download ngrams
       ansible.builtin.get_url:
-        url: "https://languagetool.org/download/ngram-data/ngrams-{{ languagetool_ngram_lang }}-{{ languagetool_ngram_version }}.zip"
-        dest: "{{ common_directory }}/languagetool/ngrams-{{ languagetool_ngram_lang }}-{{ languagetool_ngram_version }}.zip"
-        checksum: md5:ee56b280af45daf8e68fe0d69dd0914d
-      register: _languagetool_ngram_download
+        url: "https://languagetool.org/download/ngram-data/ngrams-{{ item.lang }}-{{ item.version }}.zip"
+        dest: "{{ config_directory }}/ngrams-{{ item.lang }}-{{ item.version }}.zip"
+        checksum: "{{ item.checksum }}"
+      loop: "{{ languagetool_ngrams }}"
 
     - name: Unarchive ngrams
       ansible.builtin.unarchive:
-        src: "{{ _languagetool_ngram_download.dest }}"
-        dest: "{{ common_directory }}/languagetool/ngrams/"
+        src: "{{ config_directory }}/ngrams-{{ item.lang }}-{{ item.version }}.zip"
+        dest: "{{ config_directory }}/ngrams/"
+        creates: "{{ config_directory }}/ngrams/{{ item.lang }}"
         remote_src: true
-        creates: "{{ common_directory }}/languagetool/ngrams/{{ languagetool_ngram_lang }}"
+      loop: "{{ languagetool_ngrams }}"
 
-    - name: Create languagetool container
-      community.docker.docker_container:
-        name: languagetool
-        hostname: languagetool
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}"
         image: silviof/docker-languagetool:latest
         volumes:
-          - "{{ common_directory }}/languagetool/ngrams/:/ngrams"
-        labels:
-          traefik.http.routers.languagetool.entrypoints: "web"
-          traefik.http.routers.languagetool.middlewares: "redirect@file"
-
-          traefik.http.routers.languagetool-secure.entrypoints: "web-secure"
-          traefik.http.routers.languagetool-secure.tls: "true"
-          traefik.http.routers.languagetool-secure.tls.certresolver: letsencrypt
-
-          traefik.http.services.languagetool.loadbalancer.server.port: "8010"
+          - "{{ config_directory }}/ngrams/:/ngrams"
+        traefik:
+          - port: 8010
+        comparisons:
+          env: allow_more_present
+          labels: allow_more_present

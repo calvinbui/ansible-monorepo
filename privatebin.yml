@@ -1,9 +1,11 @@
 ---
 - hosts: homelab
+
   become: true
+
   vars:
-    network: "{{ networks.pub }}"
-    privatebin_name: privatebin
+    application: privatebin
+
     privatebin_url_shortener: !vault |
       $ANSIBLE_VAULT;1.1;AES256
       65386565666238376234393933626533353536383832306166656631303565366335333335353031
@@ -15,24 +17,13 @@
       32323763646530643030613763353734323832353837663839343562656133313266636166633266
       32366635626466623037346666646532313035663361353139366437653732343936626261393831
       38633834363363383431323437646336656338326666363535396337626234363337
-  module_defaults:
-    community.docker.docker_container:
-      keep_volumes: false
-      state: started
-      restart_policy: unless-stopped
-      networks_cli_compatible: true
-      purge_networks: true
-      networks:
-        - name: "{{ network.name }}"
-      dns_servers: "{{ network.dns }}"
-      comparisons:
-        env: allow_more_present
-        labels: allow_more_present
-      container_default_behavior: no_defaults
-      network_mode: "{{ network.name }}"
+
+    docker_network: "{{ networks.pub }}"
+
   handlers:
-    - name: Restart PrivateBin
-      ansible.builtin.command: docker restart "{{ privatebin_name }}"
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
   tasks:
     - name: Create PrivateBin config folder
       ansible.builtin.file:
@@ -40,35 +31,29 @@
         state: directory
         mode: '0700'
         owner: nobody
-        group: 82  # nobody in alpine
+        group: "82"  # nobody in alpine
       loop:
-        - "{{ common_directory }}/privatebin"
-        - "{{ common_directory }}/privatebin/cfg"
-        - "{{ common_directory }}/privatebin/data"
+        - "{{ config_directory }}"
+        - "{{ config_directory }}/cfg"
+        - "{{ config_directory }}/data"
 
     - name: Template PrivateBin config
       ansible.builtin.template:
         src: privatebin/conf.php.j2
-        dest: "{{ common_directory }}/privatebin/cfg/conf.php"
+        dest: "{{ config_directory }}/cfg/conf.php"
         mode: '0644'
         owner: nobody
-        group: 82
-      notify: Restart PrivateBin
+        group: "82"
+      notify: Restart
 
-    - name: Create PrivateBin container
-      community.docker.docker_container:
-        name: "{{ privatebin_name }}"
-        hostname: "{{ privatebin_name }}"
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}"
         image: privatebin/nginx-fpm-alpine
         volumes:
-          - "{{ common_directory }}/privatebin/data/:/srv/data"
-          - "{{ common_directory }}/privatebin/cfg/:/srv/cfg"
-        labels:
-          traefik.http.routers.privatebin.entrypoints: "web"
-          traefik.http.routers.privatebin.middlewares: "redirect@file"
-
-          traefik.http.routers.privatebin-secure.entrypoints: "web-secure"
-          traefik.http.routers.privatebin-secure.tls: "true"
-          traefik.http.routers.privatebin-secure.tls.certresolver: letsencrypt
-
-          traefik.http.services.privatebin.loadbalancer.server.port: "8080"
+          - "{{ config_directory }}/data/:/srv/data"
+          - "{{ config_directory }}/cfg/:/srv/cfg"
+        traefik:
+          - port: "8080"

@@ -45,6 +45,8 @@
 
     labels: "{{ combined_labels }}"
 
+    security_opts: "{{ security_opts | default(omit) }}"
+
     comparisons:
       env: "{{ comparisons.env | default('allow_more_present') }}"
       labels: "{{ comparisons.labels | default('allow_more_present') }}"
