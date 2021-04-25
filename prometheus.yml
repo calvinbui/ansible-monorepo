@@ -76,7 +76,7 @@
     - name: Restart blackbox_exporter
       ansible.builtin.command: docker restart blackbox_exporter
     - name: Restart process-exporter
-      ansible.builtin.command: docker restart process-exporter
+      ansible.builtin.command: docker restart process_exporter
     - name: Restart alertmanager
       ansible.builtin.command: docker restart alertmanager
     - name: Restart prometheus
@@ -116,7 +116,7 @@
         name: "{{ node_exporter_name }}"
         hostname: "{{ node_exporter_name }}"
         image: quay.io/prometheus/node-exporter:latest
-        ansible.builtin.command:
+        command:
           - '--path.rootfs=/host'
           - '--collector.mountstats'
           - '--collector.filesystem.ignored-fs-types=^(tmpfs|vfat|rpc_pipefs|fuse.lxcfs|rootfs|squashfs|nsfs)$'
@@ -157,7 +157,7 @@
         name: "{{ cadvisor_name }}"
         hostname: "{{ cadvisor_name }}"
         image: gcr.io/cadvisor/cadvisor:latest
-        ansible.builtin.command:
+        command:
           - "-docker_only=true"
           - "-disable_metrics={{ cadvisor_disabled_metrics | join(',') }}"
           - "-housekeeping_interval=10s"
@@ -188,7 +188,7 @@
         name: "{{ blackbox_exporter_name }}"
         hostname: "{{ blackbox_exporter_name }}"
         image: prom/blackbox-exporter:master
-        ansible.builtin.command:
+        command:
           - --config.file=/config/config.yml
         volumes:
           - "{{ blackbox_exporter_directory }}:/config"
@@ -210,7 +210,7 @@
         hostname: "{{ process_exporter_name }}"
         image: ncabatoff/process-exporter:latest
         privileged: true
-        ansible.builtin.command:
+        command:
           - --procfs=/host/proc
           - --config.path=/config/config.yml
         volumes:
@@ -231,7 +231,7 @@
         name: alertmanager
         hostname: alertmanager
         image: prom/alertmanager:latest
-        ansible.builtin.command:
+        command:
           - "--config.file=/etc/alertmanager/config.yml"
           - "--storage.path=/alertmanager"
           - "--web.external-url=https://alertmanager.{{ common_tld }}"
@@ -269,7 +269,7 @@
         name: prometheus
         hostname: prometheus
         image: prom/prometheus:latest
-        ansible.builtin.command:
+        command:
           - '--config.file=/etc/prometheus/prometheus.yml'
           # https://prometheus.io/docs/operating/security/
           - --web.enable-admin-api  # enables administrative HTTP API
