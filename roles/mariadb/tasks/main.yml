@@ -32,6 +32,8 @@
     labels:
       traefik.enable: "false"
 
+    restart_policy: unless-stopped
+
     container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
 
   register: mariadb
