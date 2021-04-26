@@ -20,7 +20,7 @@
     - name: Restart
       ansible.builtin.command: docker restart "{{ application }}"
 
-  pre_tasks:
+  tasks:
     - name: Create config directory
       ansible.builtin.file:
         path: "{{ config_directory }}"
@@ -29,7 +29,6 @@
         group: "{{ common_root_group }}"
         mode: "0771"
 
-  tasks:
     - name: Create mariadb container
       ansible.builtin.include_role:
         name: mariadb

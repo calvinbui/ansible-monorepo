@@ -11,7 +11,7 @@
     - name: Restart
       ansible.builtin.command: docker restart "{{ application }}"
 
-  pre_tasks:
+  tasks:
     - name: Create config folder
       ansible.builtin.file:
         path: "{{ config_directory }}"
@@ -20,7 +20,6 @@
         group: "{{ common_group }}"
         mode: "0771"
 
-  tasks:
     - name: Template config file
       ansible.builtin.template:
         src: templates/homer/config.yml.j2

@@ -18,7 +18,7 @@
 
     docker_network: "{{ networks.user }}"
 
-  pre_tasks:
+  tasks:
     - name: Update apt cache
       ansible.builtin.apt:
         update_cache: true
@@ -42,7 +42,6 @@
         group: "{{ common_group }}"
         mode: "0771"
 
-  tasks:
     - name: Copy SQL database init script
       ansible.builtin.copy:
         src: files/guacamole/initdb.sql

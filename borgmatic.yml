@@ -91,7 +91,7 @@
 
     docker_network: "{{ networks.mgmt }}"
 
-  pre_tasks:
+  tasks:
     - name: Create Borgmatic directories
       ansible.builtin.file:
         path: "{{ borgmatic_directory }}"
@@ -107,7 +107,6 @@
         dest: "{{ borgmatic_directory }}/borgbackup"
         version: "1.1.16"
 
-  tasks:
     - name: "Create borgmatic.d directory"
       ansible.builtin.file:
         path: "{{ borgmatic_directory }}/{{ item.name }}/borgmatic.d"

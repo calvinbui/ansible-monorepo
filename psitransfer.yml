@@ -22,7 +22,7 @@
 
     docker_network: "{{ networks.pub }}"
 
-  pre_tasks:
+  tasks:
     - name: Create config folder
       ansible.builtin.file:
         path: "{{ config_directory }}"
@@ -31,7 +31,6 @@
         group: "{{ common_group }}"
         mode: "0771"
 
-  tasks:
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container

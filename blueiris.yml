@@ -9,7 +9,11 @@
 
     docker_network: "{{ networks.iot }}"
 
-  pre_tasks:
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart blueiris-proxy
+
+  tasks:
     - name: Update apt cache
       ansible.builtin.apt:
         update_cache: true
@@ -25,11 +29,6 @@
         group: "{{ common_group }}"
         mode: "0771"
 
-  handlers:
-    - name: Restart
-      ansible.builtin.command: docker restart blueiris-proxy
-
-  tasks:
     - name: Install kvm packages
       ansible.builtin.apt:
         name:

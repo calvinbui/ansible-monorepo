@@ -1,11 +1,5 @@
+[all]
+homelab ansible_host=homelab
+
 [all:vars]
 ansible_python_interpreter=/usr/bin/env python3
-
-[nextcloud]
-homelab ansible_host=homelab
-
-[usenet]
-homelab ansible_host=homelab
-
-[docker_services]
-homelab ansible_host=homelab

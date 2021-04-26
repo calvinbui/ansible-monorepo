@@ -13,7 +13,7 @@
     - name: Restart
       ansible.builtin.command: docker restart "{{ application }}"
 
-  pre_tasks:
+  tasks:
     - name: Create config folder
       ansible.builtin.file:
         path: "{{ config_directory }}"
@@ -22,7 +22,6 @@
         group: "{{ common_group }}"
         mode: "0771"
 
-  tasks:
     - name: Copy config
       ansible.builtin.template:
         src: templates/hauk/config.php.j2

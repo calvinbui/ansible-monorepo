@@ -52,14 +52,13 @@
         - nut-monitor
         - nut-server
 
-  pre_tasks:
+  tasks:
     - name: Update apt cache
       ansible.builtin.apt:
         update_cache: true
         cache_valid_time: 600
       changed_when: false
 
-  tasks:
     - name: Install nut
       ansible.builtin.apt:
         name: nut

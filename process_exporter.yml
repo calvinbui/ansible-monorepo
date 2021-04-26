@@ -16,16 +16,15 @@
     - name: Restart
       ansible.builtin.command: docker restart "{{ application }}"
 
-  pre_tasks:
-  - name: Create config folder
-    ansible.builtin.file:
-      path: "{{ config_directory }}"
-      state: directory
-      owner: "{{ common_user }}"
-      group: "{{ common_group }}"
-      mode: "0711"
-
   tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0711"
+
     - name: Template configuration
       ansible.builtin.template:
         src: templates/process-exporter/config.yml.j2

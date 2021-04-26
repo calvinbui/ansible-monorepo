@@ -12,7 +12,7 @@
 
     docker_network: "{{ networks.pub }}"
 
-  pre_tasks:
+  tasks:
     - name: Create config folder
       ansible.builtin.file:
         path: "{{ config_directory }}"
@@ -21,7 +21,6 @@
         group: "{{ common_group }}"
         mode: "0771"
 
-  tasks:
     - name: Create ngrams folder
       ansible.builtin.file:
         path: "{{ config_directory }}/ngrams"

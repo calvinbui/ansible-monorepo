@@ -2,13 +2,6 @@
 
 - hosts: homelab
 
-  pre_tasks:
-    - name: Update apt cache
-      ansible.builtin.apt:
-        update_cache: true
-        cache_valid_time: 600
-      changed_when: false
-
   handlers:
     - name: "Restart"
       ansible.builtin.service:
@@ -16,6 +9,12 @@
         state: restarted
 
   tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
+      changed_when: false
+
     - name: "Install FTP"
       ansible.builtin.apt:
         name: vsftpd
