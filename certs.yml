@@ -2,8 +2,6 @@
 
 - hosts: homelab
 
-  become: true
-
   vars:
     acme_dir: "{{ common_directory }}/acme.sh"
     acme_repo_dir: "{{ acme_dir }}/repo"

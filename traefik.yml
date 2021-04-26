@@ -2,8 +2,6 @@
 
 - hosts: homelab
 
-  become: true
-
   vars:
     application: traefik
 
@@ -45,7 +43,6 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        name: "{{ application }}"
         image: traefik:v2.4
         ipv4_address: "{{ docker_network.prefix }}.193"
         env:

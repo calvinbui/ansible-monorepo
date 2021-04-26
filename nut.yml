@@ -2,8 +2,6 @@
 
 - hosts: homelab
 
-  become: true
-
   vars:
     nut_host: localhost
     nut_max_retry: 3

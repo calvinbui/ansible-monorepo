@@ -1,8 +1,6 @@
 ---
 - hosts: docker_services
 
-  become: true
-
   vars:
     application: watchtower
 
@@ -13,7 +11,6 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        name: "{{ application }}"
         image: containrrr/watchtower
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -34,5 +31,4 @@
           #   62656439323736643766336230653435326538336564653563393362643064396563376233333362
           #   656636363437636431643461383565393234
         comparisons:
-          labels: allow_more_present
           env: strict

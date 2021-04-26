@@ -2,8 +2,6 @@
 
 - hosts: homelab
 
-  become: true
-
   vars:
     application: papermerge
 

@@ -15,8 +15,6 @@
 
 - hosts: homelab
 
-  become: true
-
   vars:
     borgmatic_directory: /borgmatic
 
