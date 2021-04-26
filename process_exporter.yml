@@ -1,0 +1,49 @@
+---
+
+- hosts: homelab
+
+  become: true
+
+  vars:
+    application: process_exporter
+
+    process_exporter_processes:
+      - upsmon
+      - upsd
+      - usbhid-ups
+
+    docker_network: "{{ networks.mgmt }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  pre_tasks:
+  - name: Create config folder
+    ansible.builtin.file:
+      path: "{{ config_directory }}"
+      state: directory
+      owner: "{{ common_user }}"
+      group: "{{ common_group }}"
+      mode: "0711"
+
+  tasks:
+    - name: Template configuration
+      ansible.builtin.template:
+        src: templates/process-exporter/config.yml.j2
+        dest: "{{ config_directory }}/config.yml"
+        mode: "0440"
+      notify: Restart
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: ncabatoff/process-exporter:latest
+        command:
+          - --procfs=/host/proc
+          - --config.path=/config/config.yml
+        volumes:
+          - /proc:/host/proc:ro
+          - "{{ config_directory }}:/config"
+        privileged: true

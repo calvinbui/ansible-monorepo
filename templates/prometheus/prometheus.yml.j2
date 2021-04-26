@@ -5,22 +5,17 @@ scrape_configs:
   - job_name: node
     static_configs:
     - targets:
-        - {{ node_exporter_name }}.{{ network.name }}:9100
+        - node_exporter.{{ docker_network.name }}:9100
 
   - job_name: cadvisor
     static_configs:
       - targets:
-        - {{ cadvisor_name }}.{{ network.name }}:8080
-
-  {# - job_name: opnsense
-    static_configs:
-    - targets:
-        - {{ network.gateway }}:9100 #}
+        - cadvisor.{{ docker_network.name }}:8080
 
   - job_name: traefik
     static_configs:
     - targets:
-        - traefik.{{ network.name }}:8082
+        - traefik.{{ docker_network.name }}:8082
 
   - job_name: blackbox
     metrics_path: /probe
@@ -39,12 +34,12 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: {{ blackbox_exporter_name }}.{{ network.name }}:9115
+        replacement: blackbox_exporter.{{ docker_network.name }}:9115
 
   - job_name: process-exporter
     static_configs:
       - targets:
-        - {{ process_exporter_name }}.{{ network.name }}:9256
+        - process_exporter.{{ docker_network.name }}:9256
 
 rule_files:
   - /etc/prometheus/rules.yml
@@ -54,4 +49,4 @@ alerting:
     - scheme: http
       static_configs:
         - targets:
-          - alertmanager.{{ network.name }}:9093
+          - alertmanager.{{ docker_network.name }}:9093

@@ -1,340 +1,81 @@
 ---
+
 - hosts: homelab
+
   become: true
-  module_defaults:
-    community.docker.docker_container:
-      keep_volumes: false
-      state: started
-      restart_policy: unless-stopped
-      networks_cli_compatible: true
-      purge_networks: true
-      container_default_behavior: no_defaults
-      network_mode: "{{ network.name }}"
-      networks:
-        - name: "{{ network.name }}"
-      dns_servers: "{{ network.dns }}"
-      comparisons:
-        env: strict
-        labels: strict
+
   vars:
-    network: "{{ networks.mgmt }}"
-    monitoring_directory: "{{ common_directory }}/monitoring"
+    application: prometheus
 
-    node_exporter_name: node_exporter
-
-    cadvisor_name: cadvisor
-    cadvisor_disabled_metrics:
-      - accelerator
-      - advtcp
-      - cpu_topology
-      - disk
-      - hugetlb
-      - memory_numa
-      - percpu
-      - process
-      - referenced_memory
-      - resctrl
-      - sched
-      - tcp
-      - udp
-
-    blackbox_exporter_name: blackbox_exporter
-    blackbox_exporter_directory: "{{ monitoring_directory }}/blackbox_exporter"
-
-    process_exporter_name: process_exporter
-    process_exporter_directory: "{{ monitoring_directory }}/process_exporter"
-    process_exporter_processes:
-      - upsmon
-      - upsd
-      - usbhid-ups
-
-    prometheus_config_directory: "{{ monitoring_directory }}/prometheus"
-    prometheus_data_directory: "{{ prometheus_config_directory }}/data/"
-    prometheus_config: "{{ prometheus_config_directory }}/prometheus.yml"
-    prometheus_rules: "{{ prometheus_config_directory }}/rules.yml"
-    prometheus_scrape_config_templates:
-      - templates/blackbox_exporter/scrape_config.yml.j2
-      - templates/node_exporter/scrape_config.yml.j2
-    prometheus_retention: "72h"
-
-    alertmanager_directory: "{{ monitoring_directory }}/alertmanager"
-    alertmanager_slack_url: !vault |
-      $ANSIBLE_VAULT;1.1;AES256
-      62623438663632393039633939656363373632363665626634346264626633313034336665363365
-      3439353764646664626231306536643962346630643661340a656436343935333232313533633033
-      63366464333665636138333165336236396563333739323133346638303932643861646130623635
-      3863313464323931640a623132333565306563333662343330323164313938396633663161626336
-      39616632633739633830396236373637313531366631326531393664333031636539663032663866
-      33333838616437616465613563646533396433373133646537383837316234333861313731383635
-      61383438643866393130393035633732373037656564313966323930386666326233346139323939
-      32383233643934386565
-
-    grafana_provisioning_directory: "{{ monitoring_directory }}/grafana/provisioning"
-    grafana_data_directory: "{{ monitoring_directory }}/grafana/data"
+    docker_network: "{{ networks.mgmt }}"
 
   handlers:
-    - name: Restart blackbox_exporter
-      ansible.builtin.command: docker restart blackbox_exporter
-    - name: Restart process-exporter
-      ansible.builtin.command: docker restart process_exporter
-    - name: Restart alertmanager
-      ansible.builtin.command: docker restart alertmanager
-    - name: Restart prometheus
-      ansible.builtin.command: docker restart prometheus
-    - name: Restart grafana
-      ansible.builtin.command: docker restart grafana
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
 
   pre_tasks:
-    - name: Create directories
+    - name: Create config folder
       ansible.builtin.file:
-        path: "{{ item.path }}"
+        path: "{{ config_directory }}"
         state: directory
-        owner: "{{ item.owner | default(omit) }}"
-        group: "{{ item.group | default(omit) }}"
-        mode: "0770"
-      loop:
-        - path: "{{ monitoring_directory }}"
-        - path: "{{ prometheus_config_directory }}"
-          owner: 65534
-          group: 65534
-        - path: "{{ prometheus_data_directory }}"
-          owner: 65534
-          group: 65534
-        - path: "{{ blackbox_exporter_directory }}"
-        - path: "{{ process_exporter_directory }}"
-        - path: "{{ alertmanager_directory }}"
-        - path: "{{ grafana_provisioning_directory }}/datasources"
-          owner: 472
-        - path: "{{ grafana_provisioning_directory }}/dashboards"
-          owner: 472
-        - path: "{{ grafana_data_directory }}"
-          owner: 472
+        owner: "65534" # nobody user
+        group: "{{ common_group }}"
+        mode: "0771"
+
   tasks:
-    ########## Node exporter
-    - name: Create node_exporter container
-      community.docker.docker_container:
-        name: "{{ node_exporter_name }}"
-        hostname: "{{ node_exporter_name }}"
-        image: quay.io/prometheus/node-exporter:latest
-        command:
-          - '--path.rootfs=/host'
-          - '--collector.mountstats'
-          - '--collector.filesystem.ignored-fs-types=^(tmpfs|vfat|rpc_pipefs|fuse.lxcfs|rootfs|squashfs|nsfs)$'
-          - '--no-collector.arp'
-          - '--no-collector.bcache'
-          - '--no-collector.bonding'
-          - '--no-collector.conntrack'
-          - '--no-collector.cpufreq'
-          - '--no-collector.edac'
-          - '--no-collector.entropy'
-          - '--no-collector.filefd'
-          - '--no-collector.infiniband'
-          - '--no-collector.ipvs'
-          - '--no-collector.netclass'
-          - '--no-collector.netdev'
-          - '--no-collector.netstat'
-          - '--no-collector.nfsd'
-          - '--no-collector.pressure'
-          - '--no-collector.sockstat'
-          - '--no-collector.stat'
-          - '--no-collector.textfile'
-          - '--no-collector.vmstat'
-          - '--no-collector.xfs'
-        pid_mode: host
-        capabilities:
-          - sys_time
-        volumes:
-          - "/:/host:ro,rslave"
-        labels:
-          traefik.enable: "false"
-        comparisons:
-          labels: allow_more_present
+    - name: Create config and data directories
+      ansible.builtin.file:
+        path: "{{ config_directory }}/{{ item }}"
+        state: directory
+        owner: "65534" # nobody user
+        group: "{{ common_group }}"
+        mode: "0771"
+      loop:
+        - config
+        - data
 
-    ########## cAdvisor
-    # https://github.com/google/cadvisor
-    - name: Create cadvisor container
-      community.docker.docker_container:
-        name: "{{ cadvisor_name }}"
-        hostname: "{{ cadvisor_name }}"
-        image: gcr.io/cadvisor/cadvisor:latest
-        command:
-          - "-docker_only=true"
-          - "-disable_metrics={{ cadvisor_disabled_metrics | join(',') }}"
-          - "-housekeeping_interval=10s"
-        volumes:
-          - /:/rootfs:ro
-          - /var/run:/var/run:ro
-          - /sys:/sys:ro
-          - /var/lib/docker/:/var/lib/docker:ro
-          - /dev/disk/:/dev/disk:ro
-        devices:
-          - /dev/kmsg
-        privileged: true
-        labels:
-          traefik.enable: "false"
-      tags:
-        - cadvisor
-
-    ########## Blackbox Exporter
-    - name: Template blackbox_exporter configuration
-      ansible.builtin.template:
-        src: templates/blackbox_exporter/config.yml.j2
-        dest: "{{ blackbox_exporter_directory }}/config.yml"
-        mode: "0440"
-      notify: Restart blackbox_exporter
-    # https://github.com/prometheus/blackbox_exporter
-    - name: Create blackbox_exporter container
-      community.docker.docker_container:
-        name: "{{ blackbox_exporter_name }}"
-        hostname: "{{ blackbox_exporter_name }}"
-        image: prom/blackbox-exporter:master
-        command:
-          - --config.file=/config/config.yml
-        volumes:
-          - "{{ blackbox_exporter_directory }}:/config"
-        labels:
-          traefik.enable: "false"
-        comparisons:
-          labels: allow_more_present
-
-    ########## Process Exporter
-    - name: Template process-exporter configuration
-      ansible.builtin.template:
-        src: templates/process-exporter/config.yml.j2
-        dest: "{{ process_exporter_directory }}/config.yml"
-        mode: "0440"
-      notify: Restart process-exporter
-    - name: Create process-exporter container
-      community.docker.docker_container:
-        name: "{{ process_exporter_name }}"
-        hostname: "{{ process_exporter_name }}"
-        image: ncabatoff/process-exporter:latest
-        privileged: true
-        command:
-          - --procfs=/host/proc
-          - --config.path=/config/config.yml
-        volumes:
-          - /proc:/host/proc:ro
-          - "{{ process_exporter_directory }}:/config"
-        labels:
-          traefik.enable: "false"
-
-    ########## Alertmanager
-    - name: Template Alertmanager config
-      ansible.builtin.template:
-        src: templates/alertmanager/alertmanager.yml.j2
-        dest: "{{ alertmanager_directory }}/config.yml"
-        mode: "0440"
-      notify: Restart alertmanager
-    - name: Create Alertmanager container
-      community.docker.docker_container:
-        name: alertmanager
-        hostname: alertmanager
-        image: prom/alertmanager:latest
-        command:
-          - "--config.file=/etc/alertmanager/config.yml"
-          - "--storage.path=/alertmanager"
-          - "--web.external-url=https://alertmanager.{{ common_tld }}"
-        volumes:
-          - "{{ alertmanager_directory }}:/etc/alertmanager"
-        labels:
-          traefik.http.routers.alertmanager.entrypoints: "web"
-          traefik.http.routers.alertmanager.middlewares: "redirect@file"
-
-          traefik.http.routers.alertmanager-secure.entrypoints: "web-secure"
-          traefik.http.routers.alertmanager-secure.middlewares: "myAuth@file"
-          traefik.http.routers.alertmanager-secure.tls: "true"
-          traefik.http.routers.alertmanager-secure.tls.certresolver: letsencrypt
-
-          traefik.http.services.alertmanager.loadbalancer.server.port: "9093"
-        comparisons:
-          labels: allow_more_present
-
-    ########## Prometheus
-    - name: Template Prometheus config
+    - name: Template configs
       ansible.builtin.template:
         src: templates/prometheus/prometheus.yml.j2
-        dest: "{{ prometheus_config }}"
-        mode: "0440"
-      notify: Restart prometheus
-    - name: Copy Prometheus rules
+        dest: "{{ config_directory }}/config/prometheus.yml"
+        owner: "65534" # nobody user
+        group: "{{ common_group }}"
+        mode: "0444"
+      notify: Restart
+
+    - name: Copy rules
       ansible.builtin.copy:
         src: files/prometheus/rules.yml
-        dest: "{{ prometheus_rules }}"
-        mode: "0440"
-      notify: Restart prometheus
-    # https://prometheus.io/docs/prometheus/latest/installation/
-    - name: Create Prometheus container
-      community.docker.docker_container:
-        name: prometheus
-        hostname: prometheus
+        dest: "{{ config_directory }}/config/rules.yml"
+        owner: "65534" # nobody user
+        group: "{{ common_group }}"
+        mode: "0444"
+      notify: Restart
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}"
         image: prom/prometheus:latest
         command:
-          - '--config.file=/etc/prometheus/prometheus.yml'
+          - --config.file=/etc/prometheus/prometheus.yml
           # https://prometheus.io/docs/operating/security/
           - --web.enable-admin-api  # enables administrative HTTP API
           - --web.enable-lifecycle  # enables HTTP reloads and shutdowns of Prometheus
           # https://prometheus.io/docs/prometheus/latest/storage/#operational-aspects
           - --storage.tsdb.path=/prometheus  # where Prometheus writes its database
-          - --storage.tsdb.retention.time="{{ prometheus_retention }}"  # when to remove old data
+          - --storage.tsdb.retention.time=72h  # when to remove old data
           # https://prometheus.io/docs/prometheus/latest/configuration/template_reference/#template-type-differences
           # so they are stored here when we create them
-          - '--web.console.libraries=/etc/prometheus/console_libraries'
-          - '--web.console.templates=/etc/prometheus/consoles'
+          - --web.console.libraries=/etc/prometheus/console_libraries
+          - --web.console.templates=/etc/prometheus/consoles
+          # https://prometheus.io/docs/prometheus/latest/configuration/https/
         volumes:
-          - "{{ prometheus_config_directory }}:/etc/prometheus"
-          - "{{ prometheus_data_directory }}:/prometheus"
-        labels:
-          traefik.http.routers.prometheus.entrypoints: "web"
-          traefik.http.routers.prometheus.middlewares: "redirect@file"
-
-          traefik.http.routers.prometheus-secure.entrypoints: "web-secure"
-          traefik.http.routers.prometheus-secure.middlewares: "myAuth@file"
-          traefik.http.routers.prometheus-secure.tls: "true"
-          traefik.http.routers.prometheus-secure.tls.certresolver: letsencrypt
-
-          traefik.http.services.prometheus.loadbalancer.server.port: "9090"
+          - "{{ config_directory }}/config:/etc/prometheus"
+          - "{{ config_directory }}/data:/prometheus"
+        traefik:
+          - port: 9090
+            auth: true
         comparisons:
           labels: allow_more_present
-
-    ########## Grafana
-    - name: Template Grafana datasource
-      ansible.builtin.template:
-        src: templates/grafana/prometheus.yml.j2
-        dest: "{{ grafana_provisioning_directory }}/datasources/prometheus.yml"
-        mode: "0440"
-      notify: Restart grafana
-      tags:
-        - grafana
-    - name: Download Grafana plugins
-      ansible.builtin.unarchive:
-        src: "https://grafana.com/api/plugins/{{ item.name }}/versions/{{ item.version }}/download"
-        dest: "{{ grafana_data_directory }}/plugins"
-        remote_src: true
-      loop:
-        - name: grafana-piechart-panel
-          version: 1.6.1
-      tags:
-        - grafana
-      notify: Restart grafana
-    - name: Create Grafana container
-      community.docker.docker_container:
-        name: grafana
-        hostname: grafana
-        image: grafana/grafana:latest
-        volumes:
-          - "{{ grafana_data_directory }}:/var/lib/grafana"
-          - "{{ grafana_provisioning_directory }}:/etc/grafana/provisioning"
-        labels:
-          traefik.http.routers.grafana.entrypoints: "web"
-          traefik.http.routers.grafana.middlewares: "redirect@file"
-
-          traefik.http.routers.grafana-secure.entrypoints: "web-secure"
-          traefik.http.routers.grafana-secure.tls: "true"
-          traefik.http.routers.grafana-secure.tls.certresolver: letsencrypt
-
-          traefik.http.services.grafana.loadbalancer.server.port: "3000"
-        comparisons:
-          labels: allow_more_present
-      tags:
-        - grafana
