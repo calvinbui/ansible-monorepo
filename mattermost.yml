@@ -1,6 +1,9 @@
 ---
+
 - hosts: homelab
+
   become: true
+
   vars:
     application: mattermost
 

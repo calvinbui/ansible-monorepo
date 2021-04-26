@@ -1,6 +1,8 @@
 ---
 - hosts: homelab
+
   become: true
+
   vars:
     application: bookstack
 

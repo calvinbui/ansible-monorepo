@@ -1,5 +1,6 @@
 ---
-- hosts: docker_services
+
+- hosts: homelab
 
   become: true
 
