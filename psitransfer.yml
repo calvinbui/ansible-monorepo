@@ -37,7 +37,6 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        name: "{{ application }}"
         image: psitrax/psitransfer:latest
         env:
           PSITRANSFER_ADMIN_PASS: "{{ psitransfer_admin_pass }}"

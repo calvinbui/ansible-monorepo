@@ -38,7 +38,6 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        name: "{{ application }}"
         image: filebrowser/filebrowser
         volumes:
           - "{{ common_directory_storage }}:/srv"

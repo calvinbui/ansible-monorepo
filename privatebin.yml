@@ -50,7 +50,6 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        name: "{{ application }}"
         image: privatebin/nginx-fpm-alpine
         volumes:
           - "{{ config_directory }}/data/:/srv/data"

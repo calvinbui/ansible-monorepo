@@ -44,7 +44,6 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        name: "{{ application }}"
         image: b4bz/homer:latest
         volumes:
           - "{{ config_directory }}/config.yml:/www/config.yml"
@@ -56,6 +55,3 @@
         traefik:
           - port: 8080
             rule: "Host(`{{ common_tld }}`)"
-        comparisons:
-          env: allow_more_present
-          labels: allow_more_present

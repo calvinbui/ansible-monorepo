@@ -77,7 +77,6 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        name: "{{ application }}"
         image: "{{ application }}"
         volumes:
           - "{{ config_directory }}/settings.json:/config/settings.json"
@@ -92,5 +91,4 @@
 
           com.centurylinklabs.watchtower.enable: "false"
         comparisons:
-          env: allow_more_present
           labels: strict

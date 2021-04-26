@@ -50,12 +50,8 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        name: "{{ application }}"
         image: silviof/docker-languagetool:latest
         volumes:
           - "{{ config_directory }}/ngrams/:/ngrams"
         traefik:
           - port: 8010
-        comparisons:
-          env: allow_more_present
-          labels: allow_more_present

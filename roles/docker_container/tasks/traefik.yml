@@ -27,3 +27,10 @@
       value: "{{ route.tls.enabled | default(true) | string | lower }}"
     - key: "traefik.{{ route.type | default('http') }}.routers.{{ route_name }}-secure.tls.certresolver"
       value: "{{ route.tls.certresolver | default('letsencrypt') }}"
+
+- name: Add Traefik basic auth
+  when:
+    - route.auth is defined
+    - route.auth
+  ansible.builtin.set_fact:
+    traefik_labels: "{{ {'traefik.http.routers.' + route_name + '-secure.middlewares': 'myAuth@file'} | combine(traefik_labels) }}"

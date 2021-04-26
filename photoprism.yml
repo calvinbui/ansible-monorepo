@@ -49,7 +49,6 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        name: "{{ application }}"
         image: photoprism/photoprism
         security_opts:
           - seccomp=unconfined

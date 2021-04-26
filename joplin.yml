@@ -33,7 +33,6 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        name: "{{ application }}"
         image: joplin/server
         env:
           APP_BASE_URL: "https://{{ application }}.{{ common_tld }}"
@@ -46,6 +45,3 @@
           POSTGRES_HOST: "{{ application }}-postgres.{{ docker_network.name }}"
         traefik:
           - port: 22300
-        comparisons:
-          env: allow_more_present
-          labels: allow_more_present

@@ -32,7 +32,6 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        name: "{{ application }}"
         image: bitwardenrs/server:alpine
         env:
           ADMIN_TOKEN: "{{ bitwarden_admin_token }}"

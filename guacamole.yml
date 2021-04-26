@@ -78,7 +78,6 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        name: "{{ application }}"
         image: guacamole/guacamole
         volumes:
           - "{{ config_directory }}/{{ application }}:/config"

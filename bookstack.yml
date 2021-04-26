@@ -45,7 +45,6 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        name: "{{ application }}"
         image: linuxserver/bookstack
         volumes:
           - "{{ config_directory }}/bookstack:/config"

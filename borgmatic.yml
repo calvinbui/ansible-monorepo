@@ -194,5 +194,4 @@
           BORG_PASSPHRASE: "{{ borgmatic_pass }}"
         comparisons:
           env: strict
-          labels: allow_more_present
       loop: "{{ borgmatic_backups }}"

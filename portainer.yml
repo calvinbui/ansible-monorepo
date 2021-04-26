@@ -22,7 +22,6 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        name: "{{ application }}"
         image: portainer/portainer-ce
         ipv4_address: "{{ docker_network.prefix }}.192"
         published_ports:

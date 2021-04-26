@@ -38,7 +38,6 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        name: "{{ application }}"
         image: bilde2910/hauk
         volumes:
           - "{{ config_directory }}:/etc/hauk"

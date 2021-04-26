@@ -38,7 +38,6 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        name: "{{ application }}"
         image: ghcr.io/linuxserver/papermerge:latest
         volumes:
           - "{{ config_directory }}/config:/config"
