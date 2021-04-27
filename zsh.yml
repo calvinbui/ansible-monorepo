@@ -1,0 +1,105 @@
+---
+
+- hosts: homelab
+
+  vars:
+    zsh_theme: powerlevel10k/powerlevel10k
+    zsh_theme_repo: https://github.com/romkatv/powerlevel10k
+    zsh_theme_version: v1.14.6
+
+    zsh_plugins:
+      - name: autojump
+      - name: docker
+      - name: git
+      - name: fast-syntax-highlighting
+        repo: https://github.com/zdharma/fast-syntax-highlighting
+        update: true
+      - name: history-search-multi-word
+        repo: https://github.com/zdharma/history-search-multi-word
+        update: true
+      - name: zsh-autosuggestions
+        repo: https://github.com/zsh-users/zsh-autosuggestions
+        update: true
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
+      changed_when: false
+      when: ansible_distribution == 'Ubuntu'
+
+    - name: Install zsh
+      ansible.builtin.apt:
+        name: zsh
+        state: present
+
+    - name: Get zsh path
+      ansible.builtin.command: which zsh
+      register: zsh_path
+      changed_when: false
+
+    - name: Switch to zsh
+      ansible.builtin.user:
+        name: "{{ common_user }}"
+        shell: "{{ zsh_path.stdout }}"
+
+    - name: Clone oh-my-zsh
+      ansible.builtin.git:
+        repo: "https://github.com/robbyrussell/oh-my-zsh"
+        dest: "~/.oh-my-zsh"
+      become_user: "{{ common_user }}"
+
+    - name: Clone custom plugins
+      ansible.builtin.git:
+        repo: "{{ item.repo }}"
+        dest: "~/.oh-my-zsh/custom/plugins/{{ item.name }}"
+        version: "{{ item.version | default(omit) }}"
+        update: "{{ item.update | bool | default(false) }}"
+      when: item.repo is defined
+      loop: "{{ zsh_plugins }}"
+      become_user: "{{ common_user }}"
+
+    - name: Clone theme
+      ansible.builtin.git:
+        repo: "{{ zsh_theme_repo }}"
+        dest: "~/.oh-my-zsh/custom/themes/{{ zsh_theme_repo.split('/')[-1] | regex_replace('.git$', '') }}"
+        version: "{{ zsh_theme_version | default(omit) }}"
+      become_user: "{{ common_user }}"
+
+    - name: Template zshrc
+      ansible.builtin.copy:
+        content: |
+          # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+          # Initialization code that may require console input (password prompts, [y/n]
+          # confirmations, etc.) must go above this block, everything else may go below.
+          if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+            source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+          fi
+
+          export ZSH=$HOME/.oh-my-zsh
+
+          ZSH_THEME={{ zsh_theme }}
+
+          plugins=(
+          {% for plugin in zsh_plugins %}
+            {{ plugin.name }}
+          {% endfor %}
+          )
+
+          source $ZSH/oh-my-zsh.sh
+
+          # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+          [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+        dest: "/home/{{ common_user }}/.zshrc"
+        mode: 0770
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+
+    - name: Copy p10k.zsh
+      ansible.builtin.copy:
+        src: files/zsh/p10k.zsh
+        dest: "/home/{{ common_user }}/.p10k.zsh"
+        mode: 0770
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
