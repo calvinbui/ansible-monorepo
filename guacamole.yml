@@ -44,7 +44,7 @@
 
     - name: Copy SQL database init script
       ansible.builtin.copy:
-        src: files/guacamole/initdb.sql
+        src: "files/{{ application }}/initdb.sql"
         dest: "{{ config_directory }}/{{ application }}"
         mode: "0444"
 

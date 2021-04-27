@@ -22,7 +22,7 @@
 
     - name: Template config file
       ansible.builtin.template:
-        src: templates/homer/config.yml.j2
+        src: "files/{{ application }}/config.yml.j2"
         dest: "{{ config_directory }}/config.yml"
         owner: "911"
         group: "911"
@@ -31,7 +31,7 @@
 
     - name: Copy icons
       ansible.builtin.copy:
-        src: files/homer/icons
+        src: "files/{{ application }}/icons"
         dest: "{{ config_directory }}"
         owner: "911"
         group: "911"

@@ -16,6 +16,8 @@
 - hosts: homelab
 
   vars:
+    application: borgmatic
+
     borgmatic_directory: /borgmatic
 
     borgmatic_backups:
@@ -107,37 +109,18 @@
         dest: "{{ borgmatic_directory }}/borgbackup"
         version: "1.1.16"
 
-    - name: "Create borgmatic.d directory"
+    - name: "Create directories"
       ansible.builtin.file:
-        path: "{{ borgmatic_directory }}/{{ item.name }}/borgmatic.d"
+        path: "{{ borgmatic_directory }}/{{ item.0.name }}/{{ item.1 }}"
         state: directory
         mode: "0744"
-      loop: "{{ borgmatic_backups }}"
-
-    - name: "Create config directory"
-      ansible.builtin.file:
-        path: "{{ borgmatic_directory }}/{{ item.name }}/config"
-        state: directory
-        mode: "0744"
-      loop: "{{ borgmatic_backups }}"
-
-    - name: "Create ssh directory"
-      ansible.builtin.file:
-        path: "{{ borgmatic_directory }}/{{ item.name }}/ssh"
-        state: directory
-        mode: "0744"
-      loop: "{{ borgmatic_backups }}"
-
-    - name: "Create cache directory"
-      ansible.builtin.file:
-        path: "{{ borgmatic_directory }}/{{ item.name }}/cache"
-        state: directory
-        mode: "0744"
-      loop: "{{ borgmatic_backups }}"
+      with_nested:
+        - "{{ borgmatic_backups }}"
+        - ['config', 'borgmatic.d', 'ssh', 'cache']
 
     - name: "Template configuration"
       ansible.builtin.template:
-        src: "borgmatic/config.yaml.j2"
+        src: "files/{{ application }}/config.yaml.j2"
         dest: "{{ borgmatic_directory }}/{{ item.name }}/borgmatic.d/config.yaml"
         owner: root
         group: root
@@ -155,7 +138,7 @@
 
     - name: Copy SSH keys
       ansible.builtin.copy:
-        src: files/borgmatic/ssh/
+        src: "files/{{ application }}/ssh/"
         dest: "{{ borgmatic_directory }}/{{ item.name }}/ssh/"
         owner: root
         group: root
@@ -164,7 +147,7 @@
 
     - name: Template notification script
       ansible.builtin.template:
-        src: borgmatic/notifications.sh.j2
+        src: "files/{{ application }}/notifications.sh.j2"
         dest: "{{ borgmatic_directory }}/{{ item.name }}/borgmatic.d/notifications.sh"
         mode: '0500'
       loop: "{{ borgmatic_backups }}"

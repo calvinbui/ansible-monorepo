@@ -2,8 +2,6 @@
 
 - hosts: homelab
 
-  become: true
-
   vars:
     application: alertmanager
 
@@ -46,7 +44,7 @@
 
     - name: Template config
       ansible.builtin.template:
-        src: templates/alertmanager/alertmanager.yml.j2
+        src: "files/{{ application }}/alertmanager.yml.j2"
         dest: "{{ config_directory }}/config/alertmanager.yml"
         owner: "65534" # nobody user
         group: "{{ common_group }}"

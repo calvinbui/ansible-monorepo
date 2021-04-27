@@ -98,7 +98,7 @@
 
     - name: Copy p10k.zsh
       ansible.builtin.copy:
-        src: files/zsh/p10k.zsh
+        src: files/{{ application }}/p10k.zsh
         dest: "/home/{{ common_user }}/.p10k.zsh"
         mode: 0770
         owner: "{{ common_user }}"

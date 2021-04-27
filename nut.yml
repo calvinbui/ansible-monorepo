@@ -3,6 +3,8 @@
 - hosts: homelab
 
   vars:
+    application: nut
+
     nut_host: localhost
     nut_max_retry: 3
     nut_mode: netserver
@@ -59,7 +61,7 @@
         cache_valid_time: 600
       changed_when: false
 
-    - name: Install nut
+    - name: Install
       ansible.builtin.apt:
         name: nut
         state: present
@@ -76,7 +78,7 @@
 
     - name: Install NUT configuration files.
       ansible.builtin.template:
-        src: "templates/nut/{{ item }}.j2"
+        src: "files/{{ application }}/{{ item }}.j2"
         dest: "/etc/nut/{{ item }}"
         owner: root
         group: nut

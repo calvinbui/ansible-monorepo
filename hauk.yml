@@ -24,7 +24,7 @@
 
     - name: Copy config
       ansible.builtin.template:
-        src: templates/hauk/config.php.j2
+        src: "files/{{ application }}/config.php.j2"
         dest: "{{ config_directory }}/config.php"
         owner: "{{ common_user_id }}"
         group: "33"

@@ -2,6 +2,7 @@
 - hosts: homelab
   become: true
   vars:
+    application: shlink
     network: "{{ networks.pub }}"
     shlink_domain: "{{ common_short_tld }}"
     shlink_web_client_directory: "{{ common_directory }}/shlink/web-client/"
@@ -81,7 +82,7 @@
 
     - name: Template shlink-web client config
       ansible.builtin.template:
-        src: shlink/servers.json.j2
+        src: "files/{{ application }}/servers.json.j2"
         dest: "{{ shlink_web_client_directory }}/servers.json"
         mode: "0440"
       when: not shlink_web_config.stat.exists

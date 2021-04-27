@@ -76,7 +76,7 @@
 
     - name: Template SyncFlaer config
       ansible.builtin.template:
-        src: templates/syncflaer/config.yml.j2
+        src: "files/{{ application }}/config.yml.j2"
         dest: "{{ common_directory }}/syncflaer/config.yml"
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"

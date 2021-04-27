@@ -2,11 +2,12 @@
 - hosts: homelab
   become: true
   vars:
+    application: xbrowsersync
     network: "{{ networks.pub }}"
     xbrowsersync_name: xbrowsersync
     xbrowsersync_image: xbrowsersync/api
     xbrowsersync_config_directory: "{{ common_directory }}/xbrowsersync"
-    xbrowsersync_config_template: templates/xbrowsersync/settings.json.j2
+    xbrowsersync_config_template: "files/{{ application }}/settings.json.j2"
     xbrowsersync_config_file: "{{ xbrowsersync_config_directory }}/settings.json"
     # https://github.com/xbrowsersync/api#4-modify-configuration-settings
     xbrowsersync_config:

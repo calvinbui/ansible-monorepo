@@ -24,7 +24,7 @@
       ansible.builtin.command: docker restart "{{ application }}"
 
   tasks:
-    - name: Create PrivateBin config folder
+    - name: Create config folders
       ansible.builtin.file:
         path: "{{ item }}"
         state: directory
@@ -36,9 +36,9 @@
         - "{{ config_directory }}/cfg"
         - "{{ config_directory }}/data"
 
-    - name: Template PrivateBin config
+    - name: Template config
       ansible.builtin.template:
-        src: privatebin/conf.php.j2
+        src: "files/{{ application }}/conf.php.j2"
         dest: "{{ config_directory }}/cfg/conf.php"
         mode: '0644'
         owner: nobody
