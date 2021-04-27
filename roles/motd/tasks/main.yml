@@ -1,7 +1,0 @@
----
-
-- name: Disable motd files
-  ansible.builtin.file:
-    path: "{{ item }}"
-    mode: "-x"
-  loop: "{{ motd_files }}"
