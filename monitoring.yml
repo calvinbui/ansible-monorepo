@@ -1,0 +1,11 @@
+---
+
+- import_playbook: blackbox_exporter.yml
+- import_playbook: cadvisor.yml
+- import_playbook: process_exporter.yml
+- import_playbook: node_exporter.yml
+
+- import_playbook: prometheus.yml
+- import_playbook: alertmanager.yml
+
+- import_playbook: grafana.yml
