@@ -1,8 +1,14 @@
 ---
 
+- name: Reset role vars
+  ansible.builtin.set_fact:
+    labels: {}
+    combined_labels: {}
+    traefik_labels: {}
+
 - name: Generate Traefik labels for each route
+  ansible.builtin.include_tasks: traefik.yml
   when: traefik is defined
-  include_tasks: traefik.yml
   loop: "{{ traefik }}"
   loop_control:
     loop_var: route
@@ -10,14 +16,14 @@
     route_name: "{{ route.name | default(name) | default(application) }}"
 
 - name: Merge generated Traefik and Docker labels
-  when: traefik is defined
   ansible.builtin.set_fact:
     combined_labels: "{{ labels | combine(traefik_labels, recursive=True) }}"
+  when: traefik is defined
 
 - name: Disable Traefik labels
-  when: traefik is undefined
   ansible.builtin.set_fact:
     combined_labels: "{{ labels | combine({ 'traefik.enable': 'false' }) }}"
+  when: traefik is undefined
 
 - name: "Create docker container for {{ name | default(application) }}"
   community.docker.docker_container:
