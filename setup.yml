@@ -13,7 +13,7 @@
         - line: Defaults !requiretty
           state: present
       vars:
-          ansible_ssh_pipelining: no
+        ansible_ssh_pipelining: no
 
     - name: Update apt cache
       ansible.builtin.apt:

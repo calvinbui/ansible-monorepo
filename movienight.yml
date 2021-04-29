@@ -48,7 +48,7 @@
         state: present
 
     - name: Check settings.json
-      stat:
+      ansible.builtin.stat:
         path: "{{ config_directory }}/settings.json"
       register: __movienight_config
 
