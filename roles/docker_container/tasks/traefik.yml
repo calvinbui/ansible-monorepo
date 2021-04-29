@@ -5,6 +5,7 @@
   ansible.builtin.set_fact:
     traefik_labels: "{{ traefik_labels | default({}) | combine({ item.key: item.value }) }}"
   loop:
+    # service
     - key: "traefik.{{ route.type | default('http') }}.routers.{{ route_name }}.service"
       value: "{{ route_name }}"
     - key: "traefik.{{ route.type | default('http') }}.routers.{{ route_name }}-secure.service"
@@ -12,6 +13,7 @@
     - key: "traefik.{{ route.type | default('http') }}.services.{{ route_name }}.loadbalancer.server.port"
       value: "{{ route.port | string }}"
 
+    # http
     - key: "traefik.{{ route.type | default('http') }}.routers.{{ route_name }}.entrypoints"
       value: "{{ route.http.entrypoints | default('web') }}"
     - key: "traefik.{{ route.type | default('http') }}.routers.{{ route_name }}.middlewares"
@@ -19,6 +21,7 @@
     - key: "traefik.{{ route.type | default('http') }}.routers.{{ route_name }}.rule"
       value: "{{ route.rule | default('Host(`' + route_name + '.' + common_tld + '`)') }}"
 
+    # https
     - key: "traefik.{{ route.type | default('http') }}.routers.{{ route_name }}-secure.entrypoints"
       value: "{{ route.https.entrypoints | default('web-secure') }}"
     - key: "traefik.{{ route.type | default('http') }}.routers.{{ route_name }}-secure.rule"

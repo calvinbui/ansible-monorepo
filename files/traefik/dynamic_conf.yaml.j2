@@ -1,0 +1,36 @@
+http:
+  routers:
+    api:
+      rule: 'Host(`traefik.{{ common_tld }}`)'
+      entryPoints:
+        - web-secure
+      service: api@internal
+      middlewares:
+        - myAuth
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: 'traefik.{{ common_tld }}'
+
+    local-api:
+      rule: 'Host(`traefik.{{ docker_network.name }}`)'
+      entryPoints:
+        - web
+      service: api@internal
+      middlewares:
+        - myAuth
+
+  middlewares:
+    redirect:
+      redirectScheme:
+        scheme: https
+
+    myAuth:
+      basicAuth:
+        users:
+          - '{{ htpasswd.username }}:{{ htpasswd.password_hashed }}'
+tls:
+  options:
+    default:
+      sniStrict: true
+      minVersion: VersionTLS12

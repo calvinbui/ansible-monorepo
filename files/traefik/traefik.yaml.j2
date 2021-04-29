@@ -1,0 +1,41 @@
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+providers:
+  docker:
+    defaultRule: 'Host(`{% raw %}{{ normalize .Name }}{% endraw %}.{{ common_tld }}`)'
+  file:
+    filename: /dynamic_conf.yaml
+
+entryPoints:
+  web:
+    address: ':80/tcp'
+    http:
+      middlewares:
+        - redirect@file
+
+  web-secure:
+    address: ':443/tcp'
+
+  rtmp:
+    address: ':1935/tcp'
+  metrics:
+    address: ':8082/tcp'
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: '{{ common_email_username }}'
+      storage: acme.json
+      tlsChallenge: {}
+
+api: {}
+
+metrics:
+  prometheus:
+    entryPoint: metrics
+
+pilot:
+  token: '{{ traefik_pilot_token }}'
+  dashboard: false
