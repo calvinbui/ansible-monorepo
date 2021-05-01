@@ -27,7 +27,10 @@
 
     volumes: "{{ postgres_directories }}"
 
-    env: "{{ postgres_environment_variables | default(omit) }}"
+    env:
+      POSTGRES_USER: "{{ postgres_user }}"
+      POSTGRES_PASSWORD: "{{ postgres_password }}"
+      POSTGRES_DB: "{{ postgres_database }}"
 
     labels:
       traefik.enable: "false"
@@ -40,4 +43,7 @@
       env: allow_more_present
       labels: strict
 
-  register: postgres
+  register: postgres_container
+
+- set_fact:
+    postgres_password: "{{ postgres_password }}"

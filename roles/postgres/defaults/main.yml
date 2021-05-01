@@ -1,4 +1,10 @@
 ---
 
+postgres_directory: "{{ config_directory }}/postgres"
 postgres_directory_extra: []
 postgres_directories: "{{ [postgres_directory + ':/var/lib/postgresql/data'] + postgres_directory_extra }}"
+
+postgres_name: "{{ application }}-postgres"
+postgres_user: "{{ application }}"
+postgres_password: "changeme"
+postgres_database: "{{ application }}"
