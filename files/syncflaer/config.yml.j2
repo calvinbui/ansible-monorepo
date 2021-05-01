@@ -2,7 +2,7 @@
 ---
 
 ipProviders:
-  - http://syncflaer-dns.{{ network.name }}
+  - http://syncflaer-dns.{{ docker_network.name }}
 
 notifications:
   slack:
@@ -21,7 +21,7 @@ traefikInstances:
 
 cloudflare:
   apiToken: {{ cloudflare_token }}
-  zoneNames: 
+  zoneNames:
     - {{ common_tld }}
   deleteGrace: 50
   defaults:

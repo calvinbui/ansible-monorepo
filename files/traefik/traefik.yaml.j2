@@ -11,9 +11,6 @@ providers:
 entryPoints:
   web:
     address: ':80/tcp'
-    http:
-      middlewares:
-        - redirect@file
 
   web-secure:
     address: ':443/tcp'
