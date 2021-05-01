@@ -12,7 +12,6 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        name: "{{ application }}"
         image: quay.io/prometheus/node-exporter:latest
         command:
           - '--path.rootfs=/host'
