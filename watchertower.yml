@@ -1,5 +1,5 @@
 ---
-- hosts: docker_services
+- hosts: homelab
 
   vars:
     application: watchtower

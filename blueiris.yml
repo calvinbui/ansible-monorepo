@@ -67,5 +67,3 @@
         traefik:
           - port: 80
             rule: Host(`{{ application }}.{{ common_tld }}`)
-        comparisons:
-          labels: strict
