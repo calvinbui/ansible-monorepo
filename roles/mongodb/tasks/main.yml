@@ -1,0 +1,47 @@
+---
+
+- name: Create MongoDB directory
+  ansible.builtin.file:
+    path: "{{ mongo_directory }}"
+    state: directory
+    owner: "999"
+    group: "999"
+    mode: "700"
+
+- name: Create MongoDB container
+  community.docker.docker_container:
+    name: "{{ mongo_name }}"
+    image: "mongo:{{ mongo_version }}"
+
+    state: started
+
+    hostname: "{{ mongo_name }}"
+    published_ports: "{{ mongo_ports | default(omit) }}"
+    networks:
+      - name: "{{ docker_network.name | default('bridge') }}"
+    network_mode: "{{ docker_network.name | default('omit') }}"
+    networks_cli_compatible: "{{ mongo_networks_cli_compatible | default(true) }}"
+    purge_networks: "{{ mongo_purge_networks | default(true) }}"
+
+    command: "{{ mongo_command | default(omit) }}"
+
+    env:
+      MONGO_INITDB_ROOT_USERNAME: "{{ mongo_username }}"
+      MONGO_INITDB_ROOT_PASSWORD: "{{ mongo_password }}"
+      MONGO_INITDB_DATABASE: "{{ mongo_database }}"
+
+    volumes:
+      - "{{ mongo_directory }}:/data/db"
+
+    labels:
+      traefik.enable: "false"
+
+    restart_policy: unless-stopped
+
+    container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
+
+- set_fact:
+    mongo_hostname: "{{ mongo_name }}.{{ docker_network.name }}"
+    mongo_username: "{{ mongo_username }}"
+    mongo_password: "{{ mongo_password }}"
+    mongo_database: "{{ mongo_database }}"
