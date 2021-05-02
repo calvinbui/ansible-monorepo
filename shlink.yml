@@ -12,14 +12,6 @@
       3134653834623636390a316662656433646336396131336534636537663536356334353830303561
       34613665313538663635613730653835393564306434613830653130613430663561
 
-    shlink_redis_password: !vault |
-      $ANSIBLE_VAULT;1.1;AES256
-      64373335636339333437663066613962306431616166663038313464323564366364633036383664
-      6637633734323765626131366166303864306462313463640a653936323436326535626664386432
-      66323937353464653165363033646664373938343133336433326531326130383664356666636665
-      3038383937303432380a623936396430613630333166323865633662636137663064366337633730
-      39643633366631613036326435353936313361353435613833623436613163643162
-
     docker_network: "{{ networks.pub }}"
 
   tasks:
@@ -35,7 +27,6 @@
     - name: Create postgres container
       ansible.builtin.include_role:
         name: postgres
-        public: false
       vars:
         postgres_version: '12'
         postgres_password: !vault |
@@ -50,7 +41,6 @@
     - name: Create mercure container
       ansible.builtin.include_role:
         name: docker_container
-        public: false
       vars:
         name: "{{ application }}-mercure"
         image: dunglas/mercure:v0.10
@@ -63,19 +53,20 @@
 
     - name: Create redis container
       ansible.builtin.include_role:
-        name: docker_container
-        public: false
+        name: redis
       vars:
-        name: "{{ application }}-redis"
-        image: redis:alpine
-        command: "redis-server --requirepass {{ shlink_redis_password }}"
-        volumes:
-          - "{{ _config_dir.path }}/redis:/data"
+        redis_version: 6
+        redis_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          64373335636339333437663066613962306431616166663038313464323564366364633036383664
+          6637633734323765626131366166303864306462313463640a653936323436326535626664386432
+          66323937353464653165363033646664373938343133336433326531326130383664356666636665
+          3038383937303432380a623936396430613630333166323865633662636137663064366337633730
+          39643633366631613036326435353936313361353435613833623436613163643162
 
     - name: Create shlink container
       ansible.builtin.include_role:
         name: docker_container
-        public: false
       vars:
         name: shlink
         image: shlinkio/shlink:stable
@@ -102,7 +93,7 @@
             3430666366383661310a343062653765326632656262313661313139643632366533363939316265
             39666461626163346464633937313064363565643364653935333364663266393366
 
-          REDIS_SERVERS: "tcp://{{ application }}-redis.{{ docker_network.name }}:6379?password={{ shlink_redis_password }}"
+          REDIS_SERVERS: "tcp://{{ redis_hostname }}:6379?password={{ redis_password }}"
 
           ANONYMIZE_REMOTE_ADDR: "false"
         traefik:
@@ -133,9 +124,9 @@
     - name: Generate shlink API key
       ansible.builtin.command: "docker exec -it {{ application }} shlink api-key:generate --no-interaction --no-ansi"
       register: shlink_api
-      when: not shlink_web_config.stat.exists
       vars:
         ansible_ssh_pipelining: no
+      when: not shlink_web_config.stat.exists
 
     - name: Template shlink-web-client config
       ansible.builtin.template:
@@ -144,12 +135,11 @@
         mode: "0770"
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
-      when: not shlink_web_config.stat.exists
+      when: shlink_api.stdout is defined
 
     - name: Create shlink-web-client container
       ansible.builtin.include_role:
         name: docker_container
-        public: false
       vars:
         name: "{{ application }}-web"
         image: shlinkio/shlink-web-client:latest
