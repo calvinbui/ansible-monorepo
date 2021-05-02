@@ -15,6 +15,8 @@
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock:ro
         env:
+          TZ: "{{ common_timezone }}"
+          WATCHTOWER_SCHEDULE: "0 30 3 * * *" # 3:30:00 AM each day
           WATCHTOWER_POLL_INTERVAL: "12960"
           WATCHTOWER_CLEANUP: "true"
           WATCHTOWER_REMOVE_VOLUMES: "true"
@@ -30,5 +32,3 @@
           #   38333130326238353262623933636331313566373830633433653337653563633964366266356166
           #   62656439323736643766336230653435326538336564653563393362643064396563376233333362
           #   656636363437636431643461383565393234
-        comparisons:
-          env: strict
