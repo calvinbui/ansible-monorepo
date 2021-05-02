@@ -19,8 +19,6 @@
   vars:
     application: borgmatic
 
-    borgmatic_directory: /borgmatic
-
     borgmatic_backups:
       - name: misc
         source: "{{ common_directory_misc }}"
@@ -97,22 +95,23 @@
   tasks:
     - name: Create Borgmatic directories
       ansible.builtin.file:
-        path: "{{ borgmatic_directory }}"
+        path: "/borgmatic"
         state: directory
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
         mode: "0771"
+      register: _config_dir
 
     - name: Clone Borgbackup repo
       ansible.builtin.git:
         repo: https://github.com/borgbackup/borg
         clone: true
-        dest: "{{ borgmatic_directory }}/borgbackup"
+        dest: "{{ _config_dir.path }}/borgbackup"
         version: "1.1.16"
 
     - name: "Create directories"
       ansible.builtin.file:
-        path: "{{ borgmatic_directory }}/{{ item.0.name }}/{{ item.1 }}"
+        path: "{{ _config_dir.path }}/{{ item.0.name }}/{{ item.1 }}"
         state: directory
         mode: "0744"
       with_nested:
@@ -122,7 +121,7 @@
     - name: "Template configuration"
       ansible.builtin.template:
         src: "{{ files_directory }}/config.yaml.j2"
-        dest: "{{ borgmatic_directory }}/{{ item.name }}/borgmatic.d/config.yaml"
+        dest: "{{ _config_dir.path }}/{{ item.name }}/borgmatic.d/config.yaml"
         owner: root
         group: root
         mode: "0744"
@@ -131,7 +130,7 @@
     - name: "Template crontab"
       ansible.builtin.copy:
         content: "{{ item.crontab }} PATH=$PATH:/usr/bin /usr/bin/borgmatic --stats --files --progress -v 0 2>&1"
-        dest: "{{ borgmatic_directory }}/{{ item.name }}/borgmatic.d/crontab.txt"
+        dest: "{{ _config_dir.path }}/{{ item.name }}/borgmatic.d/crontab.txt"
         owner: root
         group: root
         mode: "0744"
@@ -140,7 +139,7 @@
     - name: Copy SSH keys
       ansible.builtin.copy:
         src: "{{ files_directory }}/ssh/"
-        dest: "{{ borgmatic_directory }}/{{ item.name }}/ssh/"
+        dest: "{{ _config_dir.path }}/{{ item.name }}/ssh/"
         owner: root
         group: root
         mode: '0600'
@@ -149,7 +148,7 @@
     - name: Template notification script
       ansible.builtin.template:
         src: "{{ files_directory }}/notifications.sh.j2"
-        dest: "{{ borgmatic_directory }}/{{ item.name }}/borgmatic.d/notifications.sh"
+        dest: "{{ _config_dir.path }}/{{ item.name }}/borgmatic.d/notifications.sh"
         mode: '0500'
       loop: "{{ borgmatic_backups }}"
 
@@ -163,13 +162,13 @@
           # data to backup. dont mount as ro when a restore is needed
           - "{{ item.source }}:/mnt/source:ro"
 
-          - "{{ borgmatic_directory }}/borgbackup:/mnt/borg-repository"
+          - "{{ _config_dir.path }}/borgbackup:/mnt/borg-repository"
 
-          - "{{ borgmatic_directory }}/{{ item.name }}/borgmatic.d/:/etc/borgmatic.d/"
-          - "{{ borgmatic_directory }}/{{ item.name }}/borgmatic:/root/.borgmatic"
-          - "{{ borgmatic_directory }}/{{ item.name }}/config/borg:/root/.config/borg"
-          - "{{ borgmatic_directory }}/{{ item.name }}/ssh:/root/.ssh"
-          - "{{ borgmatic_directory }}/{{ item.name }}/cache/borg:/root/.cache/borg"
+          - "{{ _config_dir.path }}/{{ item.name }}/borgmatic.d/:/etc/borgmatic.d/"
+          - "{{ _config_dir.path }}/{{ item.name }}/borgmatic:/root/.borgmatic"
+          - "{{ _config_dir.path }}/{{ item.name }}/config/borg:/root/.config/borg"
+          - "{{ _config_dir.path }}/{{ item.name }}/ssh:/root/.ssh"
+          - "{{ _config_dir.path }}/{{ item.name }}/cache/borg:/root/.cache/borg"
         env:
           TZ: "{{ common_timezone }}"
           BORG_PASSPHRASE: "{{ borgmatic_pass }}"

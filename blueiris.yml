@@ -5,8 +5,6 @@
   vars:
     application: blueiris
 
-    blueiris_endpoint: http://192.168.3.2
-
     docker_network: "{{ networks.iot }}"
 
   handlers:
@@ -47,7 +45,7 @@
               listen       [::]:80;
               server_name  blueiris.{{ common_tld }};
               location / {
-                proxy_pass {{ blueiris_endpoint }};
+                proxy_pass http://192.168.3.2;
               }
           }
         dest: "{{ _config_dir.path }}/nginx.conf"
