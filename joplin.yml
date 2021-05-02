@@ -32,9 +32,9 @@
           APP_PORT: "22300"
           DB_CLIENT: pg
           POSTGRES_PASSWORD: "{{ postgres_password }}"
-          POSTGRES_DATABASE: "{{ application }}"
-          POSTGRES_USER: "{{ application }}"
+          POSTGRES_DATABASE: "{{ postgres_database }}"
+          POSTGRES_USER: "{{ postgres_username }}"
           POSTGRES_PORT: "5432"
-          POSTGRES_HOST: "{{ application }}-postgres.{{ docker_network.name }}"
+          POSTGRES_HOST: "{{ postgres_hostname }}"
         traefik:
           - port: 22300

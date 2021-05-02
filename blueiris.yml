@@ -28,6 +28,7 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
+      register: _config_dir
 
     - name: Install kvm packages
       ansible.builtin.apt:
@@ -49,7 +50,7 @@
                 proxy_pass {{ blueiris_endpoint }};
               }
           }
-        dest: "{{ config_directory }}/nginx.conf"
+        dest: "{{ _config_dir.path }}/nginx.conf"
         mode: "0650"
         owner: root
         group: root
@@ -62,7 +63,7 @@
         name: "{{ application }}-proxy"
         image: nginx
         volumes:
-          - "{{ config_directory }}/nginx.conf:/etc/nginx/conf.d/default.conf:ro"
+          - "{{ _config_dir.path }}/nginx.conf:/etc/nginx/conf.d/default.conf:ro"
         ipv4_address: "{{ docker_network.prefix }}.3"
         traefik:
           - port: 80

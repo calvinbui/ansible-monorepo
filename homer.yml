@@ -19,11 +19,12 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
+      register: _config_dir
 
     - name: Template config file
       ansible.builtin.template:
-        src: "files/{{ application }}/config.yml.j2"
-        dest: "{{ config_directory }}/config.yml"
+        src: "{{ files_directory }}/config.yml.j2"
+        dest: "{{ _config_dir.path }}/config.yml"
         owner: "911"
         group: "911"
         mode: "0444"
@@ -31,8 +32,8 @@
 
     - name: Copy icons
       ansible.builtin.copy:
-        src: "files/{{ application }}/icons"
-        dest: "{{ config_directory }}"
+        src: "{{ files_directory }}/icons"
+        dest: "{{ _config_dir.path }}"
         owner: "911"
         group: "911"
         mode: "0444"
@@ -43,8 +44,8 @@
       vars:
         image: b4bz/homer:latest
         volumes:
-          - "{{ config_directory }}/config.yml:/www/config.yml"
-          - "{{ config_directory }}/icons:/www/assets/custom"
+          - "{{ _config_dir.path }}/config.yml:/www/config.yml"
+          - "{{ _config_dir.path }}/icons:/www/assets/custom"
         env:
           PUID: "{{ common_user_id }}"
           PGID: "{{ common_group_id }}"

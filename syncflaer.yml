@@ -41,11 +41,12 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
+      register: _config_dir
 
     - name: Copy Python DNS script
       ansible.builtin.copy:
-        src: files/syncflaer/main.py
-        dest: "{{ config_directory }}/main.py"
+        src: '{{ files_directory }}/main.py'
+        dest: "{{ _config_dir.path }}/main.py"
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
         mode: "0770"
@@ -60,14 +61,14 @@
         command:
           - /app/main.py
         volumes:
-          - "{{ config_directory }}:/app"
+          - "{{ _config_dir.path }}:/app"
         env:
           HOSTNAME: "{{ syncflaer_domain_ip_lookup }}"
 
     - name: Template config
       ansible.builtin.template:
-        src: "files/{{ application }}/config.yml.j2"
-        dest: "{{ config_directory }}/config.yml"
+        src: "{{ files_directory }}/config.yml.j2"
+        dest: "{{ _config_dir.path }}/config.yml"
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
         mode: "0770"
@@ -79,8 +80,8 @@
       vars:
         image: containeroo/syncflaer:4.0.0
         volumes:
-          - "{{ config_directory }}/config.yml:/config.yml"
-        restart_policy: false
+          - "{{ _config_dir.path }}/config.yml:/config.yml"
+        restart_policy: "no"
         state: present
 
     - name: Run SyncFlaer container periodically

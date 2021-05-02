@@ -1,5 +1,7 @@
 ---
+
 - hosts: homelab
+
   vars:
     application: umami
 
@@ -13,11 +15,12 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
+      register: _config_dir
 
     - name: Download sql init file
       ansible.builtin.get_url:
         url: https://raw.githubusercontent.com/mikecao/umami/master/sql/schema.postgresql.sql
-        dest: "{{ config_directory }}/schema.postgresql.sql"
+        dest: "{{ _config_dir.path }}/schema.postgresql.sql"
       register: _sql_file
 
     - name: Create postgres container
@@ -41,7 +44,7 @@
       vars:
         image: ghcr.io/mikecao/umami:postgresql-latest
         env:
-          DATABASE_URL: postgresql://{{ application }}:{{ postgres_password }}@{{ application }}-postgres.{{ docker_network.name }}:5432/{{ application }}
+          DATABASE_URL: postgresql://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ application }}
           DATABASE_TYPE: postgresql
           HASH_SALT: !vault |
             $ANSIBLE_VAULT;1.1;AES256

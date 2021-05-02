@@ -28,10 +28,11 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
+      register: _config_dir
 
     - name: Create acme.json
       ansible.builtin.file:
-        path: "{{ config_directory }}/acme.json"
+        path: "{{ _config_dir.path }}/acme.json"
         state: touch
         mode: '0600'
         modification_time: "preserve"
@@ -39,8 +40,8 @@
 
     - name: Template traefik configs
       ansible.builtin.template:
-        src: "files/{{ application }}/{{ item }}.j2"
-        dest: "{{ config_directory }}/{{ item }}"
+        src: "{{ files_directory }}/{{ item }}.j2"
+        dest: "{{ _config_dir.path }}/{{ item }}"
         mode: "0440"
       loop:
         - traefik.yaml
@@ -58,6 +59,6 @@
           CF_API_KEY: "{{ cloudflare_api }}"
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock
-          - "{{ config_directory }}/traefik.yaml:/etc/traefik/traefik.yaml"
-          - "{{ config_directory }}/acme.json:/acme.json"
-          - "{{ config_directory }}/dynamic_conf.yaml:/dynamic_conf.yaml"
+          - "{{ _config_dir.path }}/traefik.yaml:/etc/traefik/traefik.yaml"
+          - "{{ _config_dir.path }}/acme.json:/acme.json"
+          - "{{ _config_dir.path }}/dynamic_conf.yaml:/dynamic_conf.yaml"

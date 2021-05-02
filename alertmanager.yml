@@ -30,10 +30,11 @@
         owner: "65534" # nobody user
         group: "{{ common_group }}"
         mode: "0771"
+      register: _config_dir
 
-    - name: Create config and data directories
+    - name: Create directories
       ansible.builtin.file:
-        path: "{{ config_directory }}/{{ item }}"
+        path: "{{ _config_dir.path }}/{{ item }}"
         state: directory
         owner: "65534" # nobody user
         group: "{{ common_group }}"
@@ -41,11 +42,12 @@
       loop:
         - config
         - data
+      register: _dir
 
     - name: Template config
       ansible.builtin.template:
-        src: "files/{{ application }}/alertmanager.yml.j2"
-        dest: "{{ config_directory }}/config/alertmanager.yml"
+        src: "{{ files_directory }}/alertmanager.yml.j2"
+        dest: "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}/alertmanager.yml"
         owner: "65534" # nobody user
         group: "{{ common_group }}"
         mode: "0444"
@@ -62,8 +64,8 @@
           - "--web.external-url=https://{{ application }}.{{ common_tld }}"
           - "--data.retention=72h"
         volumes:
-          - "{{ config_directory }}/config:/etc/alertmanager"
-          - "{{ config_directory }}/data:/alertmanager"
+          - "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}:/etc/alertmanager"
+          - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/alertmanager"
         traefik:
           - port: 9093
             auth: true

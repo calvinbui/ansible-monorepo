@@ -22,19 +22,12 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
-
-    - name: Create app folder
-      ansible.builtin.file:
-        path: "{{ config_directory }}/{{ application }}"
-        state: directory
-        owner: "{{ common_user }}"
-        group: "{{ common_group }}"
-        mode: "0771"
+      register: _config_dir
 
     - name: Copy SQL database init script
       ansible.builtin.copy:
-        src: "files/{{ application }}/initdb.sql"
-        dest: "{{ config_directory }}/{{ application }}"
+        src: "{{ files_directory }}/initdb.sql"
+        dest: "{{ _config_dir.path }}/initdb.sql"
         mode: "0444"
 
     - name: Create postgres container
@@ -43,7 +36,7 @@
       vars:
         postgres_version: '12'
         postgres_directory_extra:
-          - "{{ config_directory }}/{{ application }}/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql:ro"
+          - "{{ _config_dir.path }}/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql:ro"
         postgres_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           30336234666131353835373535303330653030343362616236613238323738333139393264376537
@@ -68,13 +61,13 @@
       vars:
         image: guacamole/guacamole
         volumes:
-          - "{{ config_directory }}/{{ application }}:/config"
+          - "{{ _config_dir.path }}/{{ application }}:/config"
         env:
           GUACD_HOSTNAME: "{{ application }}-guacd.{{ docker_network.name }}"
           GUACD_LOG_LEVEL: debug
-          POSTGRES_HOSTNAME: "{{ application }}-postgres.{{ docker_network.name }}"
-          POSTGRES_DATABASE: "{{ application }}"
-          POSTGRES_USER: "{{ application }}"
+          POSTGRES_HOSTNAME: "{{ postgres_hostname }}"
+          POSTGRES_DATABASE: "{{ postgres_database }}"
+          POSTGRES_USER: "{{ postgres_username }}"
           POSTGRES_PASSWORD: "{{ postgres_password }}"
         traefik:
           - port: 8080

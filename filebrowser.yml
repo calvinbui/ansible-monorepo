@@ -15,10 +15,11 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
+      register: _config_dir
 
     - name: Touch config
       ansible.builtin.file:
-        path: "{{ config_directory }}/filebrowser.json"
+        path: "{{ _config_dir.path }}/filebrowser.json"
         state: touch
         modification_time: preserve
         access_time: preserve
@@ -26,7 +27,7 @@
 
     - name: Touch DB
       ansible.builtin.file:
-        path: "{{ config_directory }}/filebrowser.db"
+        path: "{{ _config_dir.path }}/filebrowser.db"
         state: touch
         modification_time: preserve
         access_time: preserve
@@ -39,7 +40,7 @@
         image: filebrowser/filebrowser
         volumes:
           - "{{ common_directory_storage }}:/srv"
-          - "{{ config_directory }}/filebrowser.db:/database.db"
-          - "{{ config_directory }}/filebrowser.json:/.filebrowser.json"
+          - "{{ _config_dir.path }}/filebrowser.db:/database.db"
+          - "{{ _config_dir.path }}/filebrowser.json:/.filebrowser.json"
         traefik:
           - port: 80

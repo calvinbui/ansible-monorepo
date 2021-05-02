@@ -15,6 +15,7 @@
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
         mode: "0771"
+      register: _config_dir
 
     - name: Create postgres container
       ansible.builtin.include_role:
@@ -31,7 +32,7 @@
 
     - name: Create app directories
       ansible.builtin.file:
-        path: "{{ config_directory }}/mattermost/{{ item }}"
+        path: "{{ _config_dir.path }}/mattermost/{{ item }}"
         state: directory
         recurse: true
         owner: "2000"
@@ -42,6 +43,7 @@
         - logs
         - plugins
         - client-plugins
+      register: _dir
 
     - name: Create container
       ansible.builtin.include_role:
@@ -49,23 +51,20 @@
       vars:
         image: mattermost/mattermost-team-edition:5
         volumes:
-          - "{{ config_directory }}/mattermost/config:/mattermost/config"
-          - "{{ config_directory }}/mattermost/data:/mattermost/data"
-          - "{{ config_directory }}/mattermost/logs:/mattermost/logs"
-          - "{{ config_directory }}/mattermost/plugins:/mattermost/plugins"
-          - "{{ config_directory }}/mattermost/client-plugins:/mattermost/client/plugins"
+          - "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}:/mattermost/config"
+          - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/mattermost/data"
+          - "{{ _dir.results | selectattr('item', 'match', 'logs') | flatten | map(attribute='path') | first }}:/mattermost/logs"
+          - "{{ _dir.results | selectattr('item', 'match', 'plugins') | flatten | map(attribute='path') | first }}:/mattermost/plugins"
+          - "{{ _dir.results | selectattr('item', 'match', 'client-plugins') | flatten | map(attribute='path') | first }}:/mattermost/client/plugins"
           - /etc/localtime:/etc/localtime:ro
         env:
           # set same as db credentials and dbname
-          MM_USERNAME: "{{ application }}"
+          MM_USERNAME: "{{ postgres_username }}"
           MM_PASSWORD: "{{ postgres_password }}"
-          MM_DBNAME: "{{ application }}"
-          DB_HOST: "{{ application }}-postgres.{{ docker_network.name }}"
+          MM_DBNAME: "{{ postgres_database }}"
+          DB_HOST: "{{ postgres_hostname }}"
           DB_PORT_NUMBER: "5432"
           MM_SQLSETTINGS_DRIVERNAME: postgres
-          MM_SQLSETTINGS_DATASOURCE: "postgres://{{ application }}:{{ postgres_password }}@{{ application }}-postgres.{{ docker_network.name }}:5432/{{ application }}?sslmode=disable&connect_timeout=10"
+          MM_SQLSETTINGS_DATASOURCE: "postgres://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}?sslmode=disable&connect_timeout=10"
         traefik:
           - port: "8065"
-        comparisons:
-          env: strict
-          labels: strict

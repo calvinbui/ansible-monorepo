@@ -1,4 +1,5 @@
 ---
+
 # https://torsion.org/borgmatic/
 #
 # Init the backup with:
@@ -120,7 +121,7 @@
 
     - name: "Template configuration"
       ansible.builtin.template:
-        src: "files/{{ application }}/config.yaml.j2"
+        src: "{{ files_directory }}/config.yaml.j2"
         dest: "{{ borgmatic_directory }}/{{ item.name }}/borgmatic.d/config.yaml"
         owner: root
         group: root
@@ -138,7 +139,7 @@
 
     - name: Copy SSH keys
       ansible.builtin.copy:
-        src: "files/{{ application }}/ssh/"
+        src: "{{ files_directory }}/ssh/"
         dest: "{{ borgmatic_directory }}/{{ item.name }}/ssh/"
         owner: root
         group: root
@@ -147,7 +148,7 @@
 
     - name: Template notification script
       ansible.builtin.template:
-        src: "files/{{ application }}/notifications.sh.j2"
+        src: "{{ files_directory }}/notifications.sh.j2"
         dest: "{{ borgmatic_directory }}/{{ item.name }}/borgmatic.d/notifications.sh"
         mode: '0500'
       loop: "{{ borgmatic_backups }}"

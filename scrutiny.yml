@@ -15,11 +15,12 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
+      register: _config_dir
 
     - name: Template config
       ansible.builtin.template:
-        src: "files/{{ application }}/scrutiny.yaml.j2"
-        dest: "{{ config_directory }}/scrutiny.yaml"
+        src: "{{ files_directory }}/scrutiny.yaml.j2"
+        dest: "{{ _config_dir.path }}/scrutiny.yaml"
         mode: "0440"
 
     - name: Get disks
@@ -36,7 +37,7 @@
           - SYS_RAWIO
         volumes:
           - /run/udev:/run/udev:ro
-          - "{{ config_directory }}:/scrutiny/config/"
+          - "{{ _config_dir.path }}:/scrutiny/config/"
         devices: "{{ lsblk_disks.stdout_lines }}"
         traefik:
           - port: 8080

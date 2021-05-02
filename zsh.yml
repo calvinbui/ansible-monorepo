@@ -3,6 +3,8 @@
 - hosts: homelab
 
   vars:
+    application: zsh
+
     zsh_theme: powerlevel10k/powerlevel10k
     zsh_theme_repo: https://github.com/romkatv/powerlevel10k
     zsh_theme_version: v1.14.6
@@ -98,7 +100,7 @@
 
     - name: Copy p10k.zsh
       ansible.builtin.copy:
-        src: files/{{ application }}/p10k.zsh
+        src: "{{ files_directory }}/p10k.zsh"
         dest: "/home/{{ common_user }}/.p10k.zsh"
         mode: 0770
         owner: "{{ common_user }}"

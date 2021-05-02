@@ -1,4 +1,9 @@
 ---
 
+mariadb_directory: "{{ config_directory }}/mariadb"
 mariadb_directory_extra: []
 mariadb_directories: "{{ [mariadb_directory + ':/var/lib/mysql'] + mariadb_directory_extra }}"
+
+mariadb_name: "{{ application }}-mariadb"
+mariadb_password: "changeme"
+mariadb_database: "{{ application }}"

@@ -5,9 +5,6 @@
   vars:
     application: grafana
 
-    grafana_provisioning_directory: "{{ monitoring_directory }}/grafana/provisioning"
-    grafana_data_directory: "{{ monitoring_directory }}/grafana/data"
-
     docker_network: "{{ networks.mgmt }}"
 
   handlers:
@@ -22,18 +19,22 @@
         owner: "472" # grafana user
         group: "{{ common_group }}"
         mode: "0771"
+      register: _config_dir
 
     - name: Create directories
       ansible.builtin.file:
-        path: "{{ config_directory }}/{{ item }}"
+        path: "{{ _config_dir.path }}/{{ item }}"
         state: directory
         owner: "472" # grafana user
         group: "{{ common_group }}"
         mode: "0771"
       loop:
+        - "provisioning"
         - "provisioning/datasources"
         - "provisioning/dashboards"
+        - "data"
         - "data/plugins"
+      register: _dir
 
     - name: Template datasource
       ansible.builtin.copy:
@@ -49,7 +50,7 @@
               basicAuth: false
               isDefault: true
               editable: false
-        dest: "{{ config_directory }}/provisioning/datasources/prometheus.yml"
+        dest: "{{ _dir.results | selectattr('item', 'match', 'provisioning/datasources') | flatten | map(attribute='path') | first }}/prometheus.yml"
         owner: "472" # grafana user
         group: "{{ common_group }}"
         mode: "0444"
@@ -58,7 +59,7 @@
     - name: Download plugins
       ansible.builtin.unarchive:
         src: "https://grafana.com/api/plugins/{{ item.name }}/versions/{{ item.version }}/download"
-        dest: "{{ config_directory }}/data/plugins"
+        dest: "{{ _dir.results | selectattr('item', 'match', 'data/plugins') | flatten | map(attribute='path') | first }}"
         remote_src: true
       loop:
         - name: grafana-piechart-panel
@@ -71,7 +72,7 @@
       vars:
         image: grafana/grafana:latest
         volumes:
-          - "{{ config_directory }}/data:/var/lib/grafana"
-          - "{{ config_directory }}/provisioning:/etc/grafana/provisioning"
+          - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/var/lib/grafana"
+          - "{{ _dir.results | selectattr('item', 'match', 'provisioning') | flatten | map(attribute='path') | first }}:/etc/grafana/provisioning"
         traefik:
           - port: "3000"

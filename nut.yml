@@ -78,7 +78,7 @@
 
     - name: Install NUT configuration files.
       ansible.builtin.template:
-        src: "files/{{ application }}/{{ item }}.j2"
+        src: "{{ files_directory }}/{{ item }}.j2"
         dest: "/etc/nut/{{ item }}"
         owner: root
         group: nut

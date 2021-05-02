@@ -24,11 +24,12 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0711"
+      register: _config_dir
 
     - name: Template configuration
       ansible.builtin.template:
-        src: "files/{{ application }}/config.yml.j2"
-        dest: "{{ config_directory }}/config.yml"
+        src: "{{ files_directory }}/config.yml.j2"
+        dest: "{{ _config_dir.path }}/config.yml"
         mode: "0440"
       notify: Restart
 
@@ -42,5 +43,5 @@
           - --config.path=/config/config.yml
         volumes:
           - /proc:/host/proc:ro
-          - "{{ config_directory }}:/config"
+          - "{{ _config_dir.path }}:/config"
         privileged: true

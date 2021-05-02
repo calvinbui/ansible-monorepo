@@ -11,3 +11,4 @@ common_directory_misc: "{{ common_directory_storage }}/Misc"
 common_directory_backup: "{{ common_directory_storage }}/Backups"
 
 config_directory: "{{ common_directory }}/{{ application }}"
+files_directory: "files/{{ application }}"

@@ -5,11 +5,6 @@
   vars:
     application: "languagetool"
 
-    languagetool_ngrams:
-      - lang: en
-        version: "20150817"
-        checksum: md5:ee56b280af45daf8e68fe0d69dd0914d
-
     docker_network: "{{ networks.pub }}"
 
   tasks:
@@ -20,10 +15,11 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
+      register: _config_dir
 
     - name: Create ngrams folder
       ansible.builtin.file:
-        path: "{{ config_directory }}/ngrams"
+        path: "{{ _config_dir.path }}/ngrams"
         state: directory
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
@@ -32,17 +28,21 @@
     - name: Download ngrams
       ansible.builtin.get_url:
         url: "https://languagetool.org/download/ngram-data/ngrams-{{ item.lang }}-{{ item.version }}.zip"
-        dest: "{{ config_directory }}/ngrams-{{ item.lang }}-{{ item.version }}.zip"
+        dest: "{{ _config_dir.path }}/ngrams-{{ item.lang }}-{{ item.version }}.zip"
         checksum: "{{ item.checksum }}"
-      loop: "{{ languagetool_ngrams }}"
+      loop:
+        - lang: en
+          version: "20150817"
+          checksum: md5:ee56b280af45daf8e68fe0d69dd0914d
+      register: _ngrams
 
     - name: Unarchive ngrams
       ansible.builtin.unarchive:
-        src: "{{ config_directory }}/ngrams-{{ item.lang }}-{{ item.version }}.zip"
-        dest: "{{ config_directory }}/ngrams/"
-        creates: "{{ config_directory }}/ngrams/{{ item.lang }}"
+        src: "{{ item.dest }}.zip"
+        dest: "{{ _config_dir.path }}/ngrams/"
+        creates: "{{ _config_dir.path }}/ngrams/{{ item.item.lang }}"
         remote_src: true
-      loop: "{{ languagetool_ngrams }}"
+      loop: "{{ _ngrams.results }}"
 
     - name: Create container
       ansible.builtin.include_role:
@@ -50,6 +50,6 @@
       vars:
         image: silviof/docker-languagetool:latest
         volumes:
-          - "{{ config_directory }}/ngrams/:/ngrams"
+          - "{{ _config_dir.path }}/ngrams/:/ngrams"
         traefik:
           - port: 8010

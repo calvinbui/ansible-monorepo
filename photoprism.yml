@@ -5,22 +5,6 @@
   vars:
     application: photoprism
 
-    photoprism_admin_password: !vault |
-      $ANSIBLE_VAULT;1.1;AES256
-      38386537613232643363643431363462656563363261323465303631613331663664343137616634
-      3936623239366136396464303862376661633463343336310a356161363337386536303335663065
-      63656639313735346534366364636332653132623639663739386636633461333633346531386165
-      6437303836633733620a343136303966643339396562373732623037613463346531383436653733
-      39353033323936663964366261646436653339376632306133303131343234303938
-
-    mariadb_root_password: !vault |
-      $ANSIBLE_VAULT;1.1;AES256
-      64333365313038396266666464356437313234303330333165386431663537323163383232303532
-      6236323832393761376433316666313535323737623962640a316333306439616361396561396630
-      61633562336132366565613035363733333938626638366562303032343238383764333337386566
-      3239373230323530370a323133623564333865643034613537393534303736383566346566623733
-      63316265306335646264393833393330626231373832633638643830633066613036
-
     docker_network: "{{ networks.user }}"
 
   tasks:
@@ -31,17 +15,20 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
+      register: _config_dir
 
     - name: Create mariadb container
       ansible.builtin.include_role:
         name: mariadb
       vars:
-        mariadb_name: "{{ application }}-mariadb"
         mariadb_version: '10'
-        mariadb_directory: "{{ config_directory }}/mariadb"
-        mariadb_environment_variables:
-          MYSQL_ROOT_PASSWORD: "{{ mariadb_root_password }}"
-          MYSQL_DATABASE: "{{ application }}"
+        mariadb_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          64333365313038396266666464356437313234303330333165386431663537323163383232303532
+          6236323832393761376433316666313535323737623962640a316333306439616361396561396630
+          61633562336132366565613035363733333938626638366562303032343238383764333337386566
+          3239373230323530370a323133623564333865643034613537393534303736383566346566623733
+          63316265306335646264393833393330626231373832633638643830633066613036
 
     - name: Create container
       ansible.builtin.include_role:
@@ -52,7 +39,13 @@
           - seccomp=unconfined
           - apparmor=unconfined
         env:
-          PHOTOPRISM_ADMIN_PASSWORD: "{{ photoprism_admin_password }}"
+          PHOTOPRISM_ADMIN_PASSWORD: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            38386537613232643363643431363462656563363261323465303631613331663664343137616634
+            3936623239366136396464303862376661633463343336310a356161363337386536303335663065
+            63656639313735346534366364636332653132623639663739386636633461333633346531386165
+            6437303836633733620a343136303966643339396562373732623037613463346531383436653733
+            39353033323936663964366261646436653339376632306133303131343234303938
           PHOTOPRISM_PUBLIC: "false"
           PHOTOPRISM_READONLY: "true"
           PHOTOPRISM_UPLOAD_NSFW: "true"
@@ -60,9 +53,9 @@
           PHOTOPRISM_EXPERIMENTAL: "false"
           PHOTOPRISM_SITE_URL: "https://{{ application }}.{{ common_tld }}/"
           PHOTOPRISM_DATABASE_DRIVER: "mysql"
-          PHOTOPRISM_DATABASE_DSN: "root:{{ mariadb_root_password }}@tcp({{ application }}-mariadb.{{ docker_network.name }}:3306)/photoprism?charset=utf8mb4,utf8&parseTime=true"
+          PHOTOPRISM_DATABASE_DSN: "root:{{ mariadb_password }}@tcp({{ mariadb_hostname }}:3306)/photoprism?charset=utf8mb4,utf8&parseTime=true"
         volumes:
-          - "{{ config_directory }}/photoprism:/photoprism/storage"
+          - "{{ _config_dir.path }}/photoprism:/photoprism/storage"
           - "{{ common_directory_photos }}:/photoprism/originals:ro"
         traefik:
           - port: "2342"

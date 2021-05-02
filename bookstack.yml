@@ -1,18 +1,9 @@
 ---
+
 - hosts: homelab
 
   vars:
     application: bookstack
-
-    mariadb_root_password: !vault |
-        $ANSIBLE_VAULT;1.1;AES256
-        38656365626264363335636631333233666139353539343830613135616439313063383334326438
-        3362326165313130663265336166646162303132363961300a353365623239353430326635666131
-        36323938336637346237623330633937343134343730353035303735663731306539643465386364
-        3035663661396338360a326262373836636433626536383966653037356630393763363337663365
-        34303963653163323530303766303737633333616162326337643639316237333733353730386432
-        3535636531613238363937636364656433393532393138333861
-    mariadb_database: bookstackapp
 
     docker_network: "{{ networks.user }}"
 
@@ -28,17 +19,22 @@
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
         mode: "0771"
+      register: _config_dir
 
     - name: Create mariadb container
       ansible.builtin.include_role:
         name: mariadb
       vars:
-        mariadb_name: "{{ application }}-mariadb"
         mariadb_version: '10'
-        mariadb_directory: "{{ config_directory }}/mariadb"
-        mariadb_environment_variables:
-          MYSQL_ROOT_PASSWORD: "{{ mariadb_root_password }}"
-          MYSQL_DATABASE: "{{ mariadb_database }}"
+        mariadb_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          38656365626264363335636631333233666139353539343830613135616439313063383334326438
+          3362326165313130663265336166646162303132363961300a353365623239353430326635666131
+          36323938336637346237623330633937343134343730353035303735663731306539643465386364
+          3035663661396338360a326262373836636433626536383966653037356630393763363337663365
+          34303963653163323530303766303737633333616162326337643639316237333733353730386432
+          3535636531613238363937636364656433393532393138333861
+        mariadb_database: bookstackapp
 
     - name: Create container
       ansible.builtin.include_role:
@@ -46,13 +42,13 @@
       vars:
         image: linuxserver/bookstack
         volumes:
-          - "{{ config_directory }}/bookstack:/config"
+          - "{{ _config_dir.path }}/bookstack:/config"
         env:
           PUID: "{{ common_user_id }}"
           PGID: "{{ common_group_id }}"
-          DB_HOST: "{{ application }}-mariadb.{{ docker_network.name }}"
+          DB_HOST: "{{ mariadb_hostname }}"
           DB_USER: root
-          DB_PASS: "{{ mariadb_root_password }}"
+          DB_PASS: "{{ mariadb_password }}"
           DB_DATABASE: "{{ mariadb_database }}"
           APP_URL: "https://{{ application }}.{{ common_tld }}"
         traefik:
@@ -60,11 +56,11 @@
 
     - name: Wait for .env file
       ansible.builtin.wait_for:
-        path: "{{ config_directory }}/bookstack/www/.env"
+        path: "{{ _config_dir.path }}/bookstack/www/.env"
 
     - name: Configure .env
       ansible.builtin.lineinfile:
-        dest: "{{ config_directory }}/bookstack/www/.env"
+        dest: "{{ _config_dir.path }}/bookstack/www/.env"
         regexp: "^{{ item.key }}="
         line: "{{ item.key }}={{ item.value }}"
       loop: "{{ values | dict2items }}"
@@ -82,7 +78,7 @@
 
     - name: Configure PHP options
       ansible.builtin.lineinfile:
-        dest: "{{ config_directory }}/bookstack/php/php-local.ini"
+        dest: "{{ _config_dir.path }}/bookstack/php/php-local.ini"
         regexp: "^{{ item.key }}="
         line: "{{ item.key }}={{ item.value }}"
       loop: "{{ values | dict2items }}"

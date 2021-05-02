@@ -15,6 +15,7 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
+      register: _config_dir
 
     - name: Create container
       ansible.builtin.include_role:
@@ -27,5 +28,5 @@
         traefik:
           - port: 9000
         volumes:
-          - "{{ config_directory }}:/data"
+          - "{{ _config_dir.path }}:/data"
           - /var/run/docker.sock:/var/run/docker.sock

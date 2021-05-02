@@ -9,7 +9,7 @@
 
   handlers:
     - name: Restart
-      ansible.builtin.command: docker restart "{{ application }}"
+      ansible.builtin.command: "docker restart {{ application }}"
 
   tasks:
     - name: Create config folder
@@ -19,10 +19,11 @@
         owner: "65534" # nobody user
         group: "{{ common_group }}"
         mode: "0771"
+      register: _config_dir
 
     - name: Create config and data directories
       ansible.builtin.file:
-        path: "{{ config_directory }}/{{ item }}"
+        path: "{{ _config_dir.path }}/{{ item }}"
         state: directory
         owner: "65534" # nobody user
         group: "{{ common_group }}"
@@ -30,11 +31,12 @@
       loop:
         - config
         - data
+      register: _dir
 
     - name: Template configs
       ansible.builtin.template:
-        src: "files/{{ application }}/prometheus.yml.j2"
-        dest: "{{ config_directory }}/config/prometheus.yml"
+        src: "{{ files_directory }}/prometheus.yml.j2"
+        dest: "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}/prometheus.yml"
         owner: "65534" # nobody user
         group: "{{ common_group }}"
         mode: "0444"
@@ -42,8 +44,8 @@
 
     - name: Copy rules
       ansible.builtin.copy:
-        src: "files/{{ application }}/rules.yml"
-        dest: "{{ config_directory }}/config/rules.yml"
+        src: "{{ files_directory }}/rules.yml"
+        dest: "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}/rules.yml"
         owner: "65534" # nobody user
         group: "{{ common_group }}"
         mode: "0444"
@@ -68,8 +70,8 @@
           - --web.console.templates=/etc/prometheus/consoles
           # https://prometheus.io/docs/prometheus/latest/configuration/https/
         volumes:
-          - "{{ config_directory }}/config:/etc/prometheus"
-          - "{{ config_directory }}/data:/prometheus"
+          - "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}:/etc/prometheus"
+          - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/prometheus"
         traefik:
           - port: 9090
             auth: true

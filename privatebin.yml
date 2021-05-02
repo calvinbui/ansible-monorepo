@@ -5,18 +5,6 @@
   vars:
     application: privatebin
 
-    privatebin_url_shortener: !vault |
-      $ANSIBLE_VAULT;1.1;AES256
-      65386565666238376234393933626533353536383832306166656631303565366335333335353031
-      3166386136336465353136616136653933323638383234660a393466663562643938373262616238
-      31363132353165363861393666383561623531323763643930393632636665356261313565376431
-      3763646430623834350a356639373131616530366639323733613533653033373464366239613563
-      64626563356638336236626362663930346139326233363636353030333265646137303263303339
-      35373635343934323837646666383438326332646562336332656561353664646534613363663231
-      32323763646530643030613763353734323832353837663839343562656133313266636166633266
-      32366635626466623037346666646532313035663361353139366437653732343936626261393831
-      38633834363363383431323437646336656338326666363535396337626234363337
-
     docker_network: "{{ networks.pub }}"
 
   handlers:
@@ -26,15 +14,24 @@
   tasks:
     - name: Create config folders
       ansible.builtin.file:
-        path: "{{ item }}"
+        path: "{{ config_directory }}"
+        state: directory
+        mode: '0700'
+        owner: nobody
+        group: "82"  # nobody in alpine
+      register: _config_dir
+
+    - name: Create folders
+      ansible.builtin.file:
+        path: "{{ _config_dir.path }}/{{ item }}"
         state: directory
         mode: '0700'
         owner: nobody
         group: "82"  # nobody in alpine
       loop:
-        - "{{ config_directory }}"
-        - "{{ config_directory }}/cfg"
-        - "{{ config_directory }}/data"
+        - cfg
+        - data
+      register: _dir
 
     - name: Get URL shortener key
       ansible.builtin.slurp:
@@ -47,8 +44,8 @@
 
     - name: Template config
       ansible.builtin.template:
-        src: "files/{{ application }}/conf.php.j2"
-        dest: "{{ config_directory }}/cfg/conf.php"
+        src: "{{ files_directory }}/conf.php.j2"
+        dest: "{{ _dir.results | selectattr('item', 'match', 'cfg') | flatten | map(attribute='path') | first }}/conf.php"
         mode: '0644'
         owner: nobody
         group: "82"
@@ -60,7 +57,7 @@
       vars:
         image: privatebin/nginx-fpm-alpine
         volumes:
-          - "{{ config_directory }}/data/:/srv/data"
-          - "{{ config_directory }}/cfg/:/srv/cfg"
+          - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/srv/data"
+          - "{{ _dir.results | selectattr('item', 'match', 'cfg') | flatten | map(attribute='path') | first }}:/srv/cfg"
         traefik:
           - port: "8080"

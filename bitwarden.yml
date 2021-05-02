@@ -25,6 +25,7 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
+      register: _config_dir
 
     - name: Create container
       ansible.builtin.include_role:
@@ -42,7 +43,7 @@
           SMTP_SSL: "true"
           SMTP_FROM: "{{ application }}{{ common_email_to }}"
         volumes:
-          - "{{ config_directory }}:/data"
+          - "{{ _config_dir.path }}:/data"
         traefik:
           # https://github.com/dani-garcia/bitwarden_rs/wiki/Proxy-examples#traefik-v2-docker-compose-example-by-hwwilliams
           # ui routing

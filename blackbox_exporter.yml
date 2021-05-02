@@ -19,13 +19,14 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0711"
+      register: _config_dir
 
     - name: Template configuration
       ansible.builtin.template:
-        src: "files/{{ application }}/config.yml.j2"
-        dest: "{{ config_directory }}/config.yml"
+        src: "{{ files_directory }}/config.yml.j2"
+        dest: "{{ _config_dir.path }}/config.yml"
         mode: "0440"
-      notify: Restart blackbox_exporter
+      notify: Restart
 
     - name: Create container
       ansible.builtin.include_role:
@@ -33,4 +34,4 @@
       vars:
         image: prom/blackbox-exporter:master
         volumes:
-          - "{{ config_directory }}:/etc/blackbox_exporter"
+          - "{{ _config_dir.path }}:/etc/blackbox_exporter"

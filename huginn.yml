@@ -5,13 +5,7 @@
   vars:
     application: huginn
 
-    mariadb_root_password: !vault |
-      $ANSIBLE_VAULT;1.1;AES256
-      63306161303530656335316338306262653639353766346562326163616163653663646335646464
-      6535623732353431626135666439396638643039336236320a663639623134653934356461396633
-      63373865333336626263633130666133646162316130343734366563663862306236316430303435
-      6162343762643339350a323865643836653531656362323835656332656464363133346630643939
-      39613762323066333064303435643033363038623634316132393838633936373837
+    mariadb_root_password:
 
     docker_network: "{{ networks.user }}"
 
@@ -20,12 +14,15 @@
       ansible.builtin.include_role:
         name: mariadb
       vars:
-        mariadb_name: "{{ application }}-mariadb"
         mariadb_version: '10'
         mariadb_directory: "{{ config_directory }}"
-        mariadb_environment_variables:
-          MYSQL_ROOT_PASSWORD: "{{ mariadb_root_password }}"
-          MYSQL_DATABASE: "{{ application }}"
+        mariadb_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          63306161303530656335316338306262653639353766346562326163616163653663646335646464
+          6535623732353431626135666439396638643039336236320a663639623134653934356461396633
+          63373865333336626263633130666133646162316130343734366563663862306236316430303435
+          6162343762643339350a323865643836653531656362323835656332656464363133346630643939
+          39613762323066333064303435643033363038623634316132393838633936373837
 
     - name: Create container
       ansible.builtin.include_role:
@@ -34,10 +31,10 @@
         image: huginn/huginn
         env:
           HUGINN_DATABASE_ADAPTER: mysql2
-          HUGINN_DATABASE_HOST: "{{ application }}-mariadb.{{ docker_network.name }}"
+          HUGINN_DATABASE_HOST: "{{ mariadb_hostname }}"
           HUGINN_DATABASE_PORT: "3306"
           HUGINN_DATABASE_USERNAME: root
-          HUGINN_DATABASE_PASSWORD: "{{ mariadb_root_password }}"
+          HUGINN_DATABASE_PASSWORD: "{{ mariadb_password }}"
 
           HUGINN_SMTP_USER_NAME: "{{ common_email_username }}"
           HUGINN_SMTP_PASSWORD: "{{ common_email_password }}"
