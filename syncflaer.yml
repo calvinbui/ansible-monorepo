@@ -85,7 +85,7 @@
         state: present
 
     - name: Run SyncFlaer container periodically
-      cron:
+      ansible.builtin.cron:
         name: "SyncFlaer"
         minute: "*"
         job: "docker start syncflaer"
