@@ -40,7 +40,8 @@
 
   register: mariadb
 
-- set_fact:
+- name: Set variables
+  set_fact:
     mariadb_hostname: "{{ mariadb_name }}.{{ docker_network.name }}"
     mariadb_password: "{{ mariadb_password }}"
     mariadb_database: "{{ mariadb_database }}"

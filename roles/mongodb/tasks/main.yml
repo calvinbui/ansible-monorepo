@@ -40,7 +40,8 @@
 
     container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
 
-- set_fact:
+- name: Set variables
+  set_fact:
     mongo_hostname: "{{ mongo_name }}.{{ docker_network.name }}"
     mongo_username: "{{ mongo_username }}"
     mongo_password: "{{ mongo_password }}"
