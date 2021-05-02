@@ -1,7 +1,0 @@
----
-
-- name: Restart NextCloud
-  community.docker.docker_container:
-    name: "{{ nextcloud_name }}"
-    state: started
-    restart: true

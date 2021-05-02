@@ -1,44 +1,123 @@
 ---
-- hosts: nextcloud
-  become: true
+
+- hosts: homelab
+
   vars:
-    network: "{{ networks.user }}"
-    mariadb_name: nextcloud-mariadb
-    mariadb_version: '10'
-    mariadb_directory: "{{ common_directory }}/nextcloud/mariadb"
-    mariadb_environment_variables:
-      MYSQL_ROOT_PASSWORD: !vault |
-        $ANSIBLE_VAULT;1.1;AES256
-        34393861343432623031643033656336643264646638626632633335393862643965303332643463
-        3839396236373233633036643730646366373536346130360a656461663033396130623435616135
-        37613265663936396433306166373039333530623863326135656236323661396537386265333038
-        6539663361336635310a333437613932363937383838366162623031323265396232396235666336
-        65373662303434363834656234626237336438663531383232313034356234396462
-      MYSQL_DATABASE: nextcloud
-      MYSQL_ROOT_HOST: '%'
-  module_defaults:
-    community.docker.docker_container:
-      keep_volumes: false
-      restart_policy: unless-stopped
-      networks_cli_compatible: true
-      purge_networks: true
-      dns_servers: "{{ network.dns }}"
-      networks:
-        - name: "{{ network.name }}"
-      container_default_behavior: no_defaults
-      network_mode: "{{ network.name }}"
-  roles:
-    - mariadb
-    - nextcloud
-    - role: onlyoffice
-      tags: onlyoffice
-  post_tasks:
-    - name: Waits for Nextcloud
+    application: nextcloud
+
+    docker_network: "{{ networks.user }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create postgres container
+      ansible.builtin.include_role:
+        name: postgres
+      vars:
+        postgres_version: '13'
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          34393861343432623031643033656336643264646638626632633335393862643965303332643463
+          3839396236373233633036643730646366373536346130360a656461663033396130623435616135
+          37613265663936396433306166373039333530623863326135656236323661396537386265333038
+          6539663361336635310a333437613932363937383838366162623031323265396232396235666336
+          65373662303434363834656234626237336438663531383232313034356234396462
+
+    - name: Create redis container
+      ansible.builtin.include_role:
+        name: redis
+      vars:
+        redis_version: 6
+        redis_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          35383639333265303734343930383630303464313430353465306531363339646264663934346564
+          3937383165666563386238313663653931323839633266660a633032323964613734356462306434
+          36636530383134373035316266616432383330653830373237646233633865333133363964656662
+          3231366665366137380a323932633634396132376331363030613835616435626332303732303731
+          39396138663536663432663664386264386333623437616237643630663831353533
+
+    - name: Create Nextcloud container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: nextcloud:apache
+        volumes:
+          - "{{ _config_dir.path }}/nextcloud:/var/www/html"
+          - "{{ common_directory_storage }}:/mnt/zfs_files"
+        env:
+          POSTGRES_DB: "{{ postgres_database }}"
+          POSTGRES_USER: "{{ postgres_username }}"
+          POSTGRES_PASSWORD: "{{ postgres_password }}"
+          POSTGRES_HOST: "{{ postgres_hostname }}"
+
+          NEXTCLOUD_ADMIN_USER: "{{ common_user }}"
+          NEXTCLOUD_ADMIN_PASSWORD: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            34373162656662326631363762383431623164666236666434306665316263303035316336303163
+            6665626235353661313363633732383734343237356165640a333966663962356561346362366635
+            32393133663937386338343839346662623631306333653833356634393833326465613932353931
+            3138613230353462620a383130653733326661386336393737643233396464353061386431316264
+            64663865643961313431333430373362353366323836386238623831646139356537
+
+          NEXTCLOUD_TRUSTED_DOMAINS: "{{ application }}.{{ docker_network.name }} {{ application }}.{{ common_local_tld }} {{ application }}.{{ common_tld }}"
+
+          NEXTCLOUD_UPDATE: "1"
+
+          REDIS_HOST: "{{ redis_hostname }}"
+          REDIS_HOST_PORT: "6379"
+          REDIS_HOST_PASSWORD: "{{ redis_password }}"
+
+          SMTP_NAME: "{{ common_email_username }}"
+          SMTP_PASSWORD: "{{ common_email_password }}"
+          SMTP_PORT: "587"
+          SMTP_HOST: "{{ common_email_server }}"
+          SMTP_SECURE: "tls"
+        traefik:
+          - port: 80
+        labels:
+          traefik.http.routers.nextcloud-secure.middlewares: "nextcloud-dav,nextcloud-hsts"
+          traefik.http.middlewares.nextcloud-dav.redirectregex.permanent: 'true'
+          traefik.http.middlewares.nextcloud-dav.redirectregex.regex: https://(.*)/.well-known/(card|cal)dav
+          traefik.http.middlewares.nextcloud-dav.redirectregex.replacement: https://${1}/remote.php/dav/
+
+          traefik.http.middlewares.nextcloud-hsts.headers.STSSeconds: "31536000"
+          traefik.http.middlewares.nextcloud-hsts.headers.STSIncludeSubdomains: "true"
+          traefik.http.middlewares.nextcloud-hsts.headers.STSPreload: "true"
+
+    - name: Run Nextcloud cron periodically
+      ansible.builtin.cron:
+        name: "Nextcloud Cron"
+        minute: "*/5"
+        job: "docker exec -u 33 {{ application }} /usr/local/bin/php -f cron.php"
+
+    - name: Wait for Nextcloud to be ready
       ansible.builtin.wait_for:
-        host: "{{ nextcloud_name }}.{{ common_tld | string }}"
+        host: "{{ application }}.{{ common_tld | string }}"
         port: 443
+
     - name: Overwrite Nextcloud protocol to HTTPS within config
-      ansible.builtin.command: "docker exec --user www-data {{ nextcloud_name }} php occ config:system:set overwriteprotocol --value='https'"
+      ansible.builtin.command: "docker exec --user www-data {{ application }} php occ config:system:set overwriteprotocol --value='https'"
       register: command_result
       failed_when: "'System config value overwriteprotocol set to string https' not in command_result.stdout"
       changed_when: false
+
+    - name: Create OnlyOffice container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-onlyoffice"
+        image: alehoho/oo-ce-docker-license
+        traefik:
+          - port: 80
+            rule: "Host(`onlyoffice.{{ common_tld }}`)"
+        labels:
+          traefik.http.routers.nextcloud-onlyoffice-secure.middlewares: "onlyoffice-sslheaders"
+
+          traefik.http.middlewares.onlyoffice-sslheaders.headers.customrequestheaders.X-Forwarded-Proto: "https"
