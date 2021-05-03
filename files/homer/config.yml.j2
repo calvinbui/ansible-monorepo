@@ -25,11 +25,11 @@ services:
       {% endif %}
     {% endfor %}
 
-  - name: Home
-    icon: fas fa-home
+  - name: Collaboration
+    icon: fas fa-people-carry
     items:
     {% for service in http_services %}
-      {% if service.group == "Home" %}
+      {% if service.group == "Collaboration" %}
       - name: {{ service.name }}
       {% if service.logo is defined %}
         logo: assets/custom/{{ service.logo }}

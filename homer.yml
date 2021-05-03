@@ -7,10 +7,6 @@
 
     docker_network: "{{ networks.pub }}"
 
-  handlers:
-    - name: Restart
-      ansible.builtin.command: docker restart "{{ application }}"
-
   tasks:
     - name: Create config folder
       ansible.builtin.file:
@@ -28,7 +24,7 @@
         owner: "911"
         group: "911"
         mode: "0444"
-      notify: Restart
+      register: _config_file
 
     - name: Copy icons
       ansible.builtin.copy:
@@ -53,3 +49,5 @@
         traefik:
           - port: 8080
             rule: "Host(`{{ common_tld }}`)"
+        recreate: "{{ true if _config_file.changed else false }}"
+

@@ -44,71 +44,13 @@ http_services:
 
   ####################################################
   #
-  #                    HOME
+  #                    TOOLS
   #
   ####################################################
   - name: Blue Iris
     logo: blueiris.png
     subtitle: Surveillance Cameras
     url: https://blueiris.{{ common_tld }}
-    group: "Home"
-  - name: Nextcloud
-    logo: nextcloud.png
-    subtitle: File Sharing and Communication Platform
-    url: https://nextcloud.{{ common_tld }}
-    group: "Home"
-  - name: PhotoPrism
-    logo: photoprism.png
-    subtitle: Personal Photo Management
-    url: https://photoprism.{{ common_tld }}
-    group: "Home"
-  - name: Mattermost
-    logo: mattermost.png
-    subtitle: Online Chat
-    url: https://mattermost.{{ common_tld }}
-    group: "Home"
-  - name: JIRA
-    logo: jira.svg
-    subtitle: Issue Tracking
-    url: https://thingstodo.atlassian.net
-    group: "Home"
-    excludeMonitoring: ~
-
-  ####################################################
-  #
-  #                    SHARING
-  #
-  ####################################################
-  - name: PsiTransfer
-    icon: fas fa-cloud-upload-alt
-    subtitle: File Sharing
-    url: https://share.{{ common_tld }}
-    group: "Sharing"
-  - name: File Browser
-    logo: filebrowser.svg
-    subtitle: Web File Browser
-    url: https://filebrowser.{{ common_tld }}
-    group: "Sharing"
-  - name: PrivateBin
-    logo: privatebin.png
-    subtitle: Zero Knowledge Pastebin
-    url: https://privatebin.{{ common_tld }}
-    group: "Sharing"
-  - name: MovieNight
-    logo: movienight.png
-    subtitle: Video streaming server
-    url: https://movienight.{{ common_tld }}
-    group: "Sharing"
-
-  ####################################################
-  #
-  #                    TOOLS
-  #
-  ####################################################
-  - name: Shlink
-    logo: shlink.png
-    subtitle: Url Shortener
-    url: https://shlink.{{ common_tld }}
     group: "Tools"
   - name: Bookstack
     logo: bookstack.png
@@ -145,6 +87,65 @@ http_services:
     subtitle: Document Management System
     url: https://papermerge.{{ common_tld }}
     group: "Tools"
+  - name: PhotoPrism
+    logo: photoprism.png
+    subtitle: Personal Photo Management
+    url: https://photoprism.{{ common_tld }}
+    group: "Tools"
+
+  ####################################################
+  #
+  #                    SHARING
+  #
+  ####################################################
+  - name: PsiTransfer
+    icon: fas fa-cloud-upload-alt
+    subtitle: File Sharing
+    url: https://share.{{ common_tld }}
+    group: "Sharing"
+  - name: File Browser
+    logo: filebrowser.svg
+    subtitle: Web File Browser
+    url: https://filebrowser.{{ common_tld }}
+    group: "Sharing"
+  - name: PrivateBin
+    logo: privatebin.png
+    subtitle: Zero Knowledge Pastebin
+    url: https://privatebin.{{ common_tld }}
+    group: "Sharing"
+  - name: MovieNight
+    logo: movienight.png
+    subtitle: Video streaming server
+    url: https://movienight.{{ common_tld }}
+    group: "Sharing"
+  - name: Shlink
+    logo: shlink.png
+    subtitle: Url Shortener
+    url: https://shlink.{{ common_tld }}
+    group: "Sharing"
+
+  ####################################################
+  #
+  #                    COLLABORATION
+  #
+  ####################################################
+  - name: Nextcloud
+    logo: nextcloud.png
+    subtitle: File Sharing and Communication Platform
+    url: https://nextcloud.{{ common_tld }}
+    group: "Collaboration"
+  - name: Mattermost
+    logo: mattermost.png
+    subtitle: Online Chat
+    url: https://mattermost.{{ common_tld }}
+    group: "Collaboration"
+  - name: JIRA
+    logo: jira.svg
+    subtitle: Issue Tracking
+    url: https://thingstodo.atlassian.net
+    group: "Collaboration"
+    excludeMonitoring: ~
+
 
   ####################################################
   #

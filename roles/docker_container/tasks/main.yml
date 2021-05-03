@@ -33,6 +33,7 @@
     command: "{{ command | default(omit) }}"
 
     state: "{{ state | default('started') }}"
+    recreate: "{{ recreate | default(false) }}"
     restart_policy: "{{ restart_policy | default('unless-stopped') }}"
 
     env: "{{ env | default(omit) }}"
