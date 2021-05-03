@@ -1,44 +1,38 @@
 ---
+
 - hosts: homelab
-  become: true
+
   vars:
-    network: "{{ networks.pub }}"
-    mattermost_name: mattermost
-    mattermost_app_directory: "{{ common_directory }}/mattermost/mattermost"
-    postgres_name: mattermost-postgres
-    postgres_version: '12'
-    postgres_directory: "{{ common_directory }}/mattermost/postgres"
-    postgres_environment_variables:
-      POSTGRES_USER: mattermost
-      POSTGRES_PASSWORD: !vault |
-        $ANSIBLE_VAULT;1.1;AES256
-        66636138626433383439313439353435373036616161646536333333363464383163336361613931
-        3361653330393532623865393836336434363162663635330a323366346464326634373038366630
-        38323236366237633331306434366464666564376337623930386163323466623538393037333131
-        6234393131386537310a346562323563663637393763653961376137613538316638653165363637
-        38646136363563656132303534333630343136363536343666663230633466333736
-      POSTGRES_DB: mattermost
-  module_defaults:
-    docker_container:
-      keep_volumes: false
-      state: started
-      restart_policy: unless-stopped
-      networks_cli_compatible: true
-      purge_networks: true
-      dns_servers: "{{ network.dns }}"
-      networks:
-        - name: "{{ network.name }}"
-      comparisons:
-        env: strict
-        labels: strict
-      container_default_behavior: no_defaults
-      network_mode: "{{ network.name }}"
-  roles:
-    - postgres
+    application: mattermost
+
+    docker_network: "{{ networks.pub }}"
+
   tasks:
-    - name: Create Mattermost app directories
-      file:
-        path: "{{ mattermost_app_directory }}/{{ item }}"
+    - name: Create config directory
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create postgres container
+      ansible.builtin.include_role:
+        name: postgres
+      vars:
+        postgres_version: '12'
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          66636138626433383439313439353435373036616161646536333333363464383163336361613931
+          3361653330393532623865393836336434363162663635330a323366346464326634373038366630
+          38323236366237633331306434366464666564376337623930386163323466623538393037333131
+          6234393131386537310a346562323563663637393763653961376137613538316638653165363637
+          38646136363563656132303534333630343136363536343666663230633466333736
+
+    - name: Create app directories
+      ansible.builtin.file:
+        path: "{{ _config_dir.path }}/mattermost/{{ item }}"
         state: directory
         recurse: true
         owner: "2000"
@@ -49,33 +43,28 @@
         - logs
         - plugins
         - client-plugins
-    - name: Create Mattermost container
-      docker_container:
-        name: "{{ mattermost_name }}"
-        hostname: "{{ mattermost_name }}"
-        image: mattermost/mattermost-team-edition:5.31.1
+      register: _dir
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: mattermost/mattermost-team-edition:5
         volumes:
-          - "{{ mattermost_app_directory }}/config:/mattermost/config"
-          - "{{ mattermost_app_directory }}/data:/mattermost/data"
-          - "{{ mattermost_app_directory }}/logs:/mattermost/logs"
-          - "{{ mattermost_app_directory }}/plugins:/mattermost/plugins"
-          - "{{ mattermost_app_directory }}/client-plugins:/mattermost/client/plugins"
+          - "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}:/mattermost/config"
+          - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/mattermost/data"
+          - "{{ _dir.results | selectattr('item', 'match', 'logs') | flatten | map(attribute='path') | first }}:/mattermost/logs"
+          - "{{ _dir.results | selectattr('item', 'match', 'plugins') | flatten | map(attribute='path') | first }}:/mattermost/plugins"
+          - "{{ _dir.results | selectattr('item', 'match', 'client-plugins') | flatten | map(attribute='path') | first }}:/mattermost/client/plugins"
           - /etc/localtime:/etc/localtime:ro
         env:
           # set same as db credentials and dbname
-          MM_USERNAME: "{{ postgres_environment_variables.POSTGRES_USER }}"
-          MM_PASSWORD: "{{ postgres_environment_variables.POSTGRES_PASSWORD }}"
-          MM_DBNAME: "{{ postgres_environment_variables.POSTGRES_DB }}"
-          DB_HOST: "{{ postgres_name }}.{{ network.name }}"
+          MM_USERNAME: "{{ postgres_username }}"
+          MM_PASSWORD: "{{ postgres_password }}"
+          MM_DBNAME: "{{ postgres_database }}"
+          DB_HOST: "{{ postgres_hostname }}"
           DB_PORT_NUMBER: "5432"
           MM_SQLSETTINGS_DRIVERNAME: postgres
-          MM_SQLSETTINGS_DATASOURCE: "postgres://{{ postgres_environment_variables.POSTGRES_USER }}:{{ postgres_environment_variables.POSTGRES_PASSWORD }}@{{ postgres_name }}.{{ network.name }}:5432/{{ postgres_environment_variables.POSTGRES_DB }}?sslmode=disable&connect_timeout=10"
-        labels:
-          traefik.http.routers.mattermost.entrypoints: "web"
-          traefik.http.routers.mattermost.middlewares: "redirect@file"
-
-          traefik.http.routers.mattermost-secure.entrypoints: "web-secure"
-          traefik.http.routers.mattermost-secure.tls: "true"
-          traefik.http.routers.mattermost-secure.tls.certresolver: letsencrypt
-
-          traefik.http.services.mattermost.loadbalancer.server.port: "8065"
+          MM_SQLSETTINGS_DATASOURCE: "postgres://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}?sslmode=disable&connect_timeout=10"
+        traefik:
+          - port: "8065"

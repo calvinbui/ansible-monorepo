@@ -1,7 +1,0 @@
----
-
-- name: Restart Sonarr
-  docker_container:
-    name: "{{ sonarr_name }}"
-    state: started
-    restart: true

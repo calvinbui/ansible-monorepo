@@ -1,0 +1,91 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: zfswatcher
+
+    docker_network: "{{ networks.mgmt }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
+      changed_when: false
+      when: ansible_distribution == 'Ubuntu'
+
+    - name: Create folders
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      loop:
+        - "{{ config_directory }}/zfswatcher"
+        - "/var/log/zfswatcher"
+      register: _config_dir
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: pectojin/zfswatcher:latest
+        devices:
+          - /dev/zfs:/dev/zfs:rw
+        volumes:
+          - "{{ config_directory }}:/zfswatcher_config:rw"
+          - /var/log/zfswatcher:/var/log/zfswatcher:rw
+          - /dev/log:/dev/log:rw
+        traefik:
+          - port: 8990
+            auth: true
+
+    - name: Wait for config file
+      ansible.builtin.wait_for:
+        path: "{{ config_directory }}/zfswatcher.conf"
+
+    - name: Configure
+      community.general.ini_file:
+        path: "{{ config_directory }}/zfswatcher.conf"
+        section: "{{ item.section }}"
+        option: "{{ item.option }}"
+        value: "{{ item.value }}"
+        mode: "0444"
+      loop:
+        - section: www
+          option: enable
+          value: "true"
+        - section: www
+          option: bind
+          value: 0.0.0.0:8990
+        - section: email "main"
+          option: enable
+          value: "true"
+        - section: email "main"
+          option: server
+          value: "{{ common_email_server }}:{{ common_email_smtp_port }}"
+        - section: email "main"
+          option: username
+          value: "{{ common_email_username }}"
+        - section: email "main"
+          option: password
+          value: "{{ common_email_password }}"
+        - section: email "main"
+          option: from
+          value: "{{ common_email_username }}"
+        - section: email "main"
+          option: to
+          value: "zfswatcher{{ common_email_to }}"
+        - section: wwwuser "{{ htpasswd.username }}"
+          option: password
+          value: "{{ htpasswd.password_hashed }}"
+        - section: wwwuser "{{ htpasswd.username }}"
+          option: enable
+          value: "true"
+      notify: Restart

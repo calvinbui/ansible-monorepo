@@ -1,4 +1,5 @@
 ---
+
 # https://torsion.org/borgmatic/
 #
 # Init the backup with:
@@ -14,12 +15,62 @@
 # $ borgmatic extract
 
 - hosts: homelab
-  become: true
+
   vars:
-    network: "{{ networks.mgmt }}"
-    borgmatic_common_directory: "/borgmatic"
-    # borg backup repo
-    borgmatic_repository_directory: "{{ borgmatic_common_directory }}/borgbackup"
+    application: borgmatic
+
+    borgmatic_backups:
+      - name: misc
+        source: "{{ common_directory_misc }}"
+        crontab: "0 2 * * *"
+        repository: q09177h4@q09177h4.repo.borgbase.com:repo
+        compression: lz4
+
+      - name: work
+        source: "{{ common_directory_storage }}/Work"
+        crontab: "30 2 * * *"
+        repository: lh782u97@lh782u97.repo.borgbase.com:repo
+        compression: none
+
+      - name: photos
+        source: "{{ common_directory_photos }}"
+        crontab: "30 3 * * *"
+        repository: g0h7y7az@g0h7y7az.repo.borgbase.com:repo
+        compression: none
+
+      - name: apps
+        source: "{{ common_directory }}"
+        crontab: "0 3 * * *"
+        repository: y8p6ha46@y8p6ha46.repo.borgbase.com:repo
+        compression: lz4
+        exclude_patterns:
+          - '/mnt/source/languagetool'
+
+          - '/mnt/source/nextcloud/nextcloud/app/data/*/cache'
+          - '/mnt/source/nextcloud/nextcloud/build'
+
+          - '/mnt/source/jellyfin'
+
+          - '/mnt/source/unifi/data/backup'
+          - '/mnt/source/unifi/data/db/diagnostic.data'
+
+          - '/mnt/source/photoprism/photoprism/cache'
+
+          - '/mnt/source/monitoring/prometheus/data'
+
+          - '/mnt/source/nzbhydra/backup'
+
+          - '/mnt/source/*/*/log'
+          - '/mnt/source/*/*/log.*'
+          - '/mnt/source/*/*/logs'
+          - '/mnt/source/*/*/logs.*'
+          - '/mnt/source/*/logs'
+          - '/mnt/source/*/logs.*'
+          - '/mnt/source/*/log'
+          - '/mnt/source/*/log.*'
+          - '/mnt/source/*/*.log'
+          - '/mnt/source/*/*.log.*'
+
     borgmatic_pass: !vault |
       $ANSIBLE_VAULT;1.1;AES256
       37626530363533323433633066656632393664313962366264363435386635346634613433303661
@@ -38,77 +89,89 @@
       37386565336366383061353634643261616163666361656466343036386137363062336236343933
       38386630306635626434366464386234343265333230303965303239323366386565336130306639
       65633139313433323530
-  module_defaults:
-    docker_container:
-      image: b3vis/borgmatic
-      keep_volumes: false
-      state: started
-      restart_policy: unless-stopped
-      networks_cli_compatible: true
-      purge_networks: true
-      env:
-        TZ: "{{ common_timezone }}"
-        BORG_PASSPHRASE: "{{ borgmatic_pass }}"
-      networks:
-        - name: "{{ network.name }}"
-      dns_servers: "{{ network.dns }}"
-      comparisons:
-        env: strict
-        labels: allow_more_present
-      labels:
-        traefik.enable: "false"
-      container_default_behavior: no_defaults
-      network_mode: "{{ network.name }}"
 
-  pre_tasks:
+    docker_network: "{{ networks.mgmt }}"
+
+  tasks:
     - name: Create Borgmatic directories
-      file:
-        path: "{{ borgmatic_common_directory }}"
+      ansible.builtin.file:
+        path: "/borgmatic"
         state: directory
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
-        mode: "0770"
+        mode: "0771"
+      register: _config_dir
+
     - name: Clone Borgbackup repo
-      git:
+      ansible.builtin.git:
         repo: https://github.com/borgbackup/borg
         clone: true
-        dest: "{{ borgmatic_repository_directory }}"
-        version: "1.1.15"
+        dest: "{{ _config_dir.path }}/borgbackup"
+        version: "1.1.16"
 
-  roles:
-    - role: borgmatic
+    - name: "Create directories"
+      ansible.builtin.file:
+        path: "{{ _config_dir.path }}/{{ item.0.name }}/{{ item.1 }}"
+        state: directory
+        mode: "0744"
+      with_nested:
+        - "{{ borgmatic_backups }}"
+        - ['config', 'borgmatic.d', 'ssh', 'cache']
+
+    - name: "Template configuration"
+      ansible.builtin.template:
+        src: "{{ files_directory }}/config.yaml.j2"
+        dest: "{{ _config_dir.path }}/{{ item.name }}/borgmatic.d/config.yaml"
+        owner: root
+        group: root
+        mode: "0744"
+      loop: "{{ borgmatic_backups }}"
+
+    - name: "Template crontab"
+      ansible.builtin.copy:
+        content: "{{ item.crontab }} PATH=$PATH:/usr/bin /usr/bin/borgmatic --stats --files --progress -v 0 2>&1"
+        dest: "{{ _config_dir.path }}/{{ item.name }}/borgmatic.d/crontab.txt"
+        owner: root
+        group: root
+        mode: "0744"
+      loop: "{{ borgmatic_backups }}"
+
+    - name: Copy SSH keys
+      ansible.builtin.copy:
+        src: "{{ files_directory }}/ssh/"
+        dest: "{{ _config_dir.path }}/{{ item.name }}/ssh/"
+        owner: root
+        group: root
+        mode: '0600'
+      loop: "{{ borgmatic_backups }}"
+
+    - name: Template notification script
+      ansible.builtin.template:
+        src: "{{ files_directory }}/notifications.sh.j2"
+        dest: "{{ _config_dir.path }}/{{ item.name }}/borgmatic.d/notifications.sh"
+        mode: '0500'
+      loop: "{{ borgmatic_backups }}"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
       vars:
-        borgmatic_name: misc
-        borgmatic_source: "{{ common_directory_misc }}"
-        borgmatic_crontab: "0 2 * * *"
-        borgmatic_ssh_src: files/borgmatic/ssh/
-        borgmatic_config: "borgmatic/{{ borgmatic_name }}.yaml.j2"
-      tags:
-        - misc
-    - role: borgmatic
-      vars:
-        borgmatic_name: work
-        borgmatic_source: "{{ common_directory_storage }}/Work"
-        borgmatic_crontab: "30 2 * * *"
-        borgmatic_ssh_src: files/borgmatic/ssh/
-        borgmatic_config: "borgmatic/{{ borgmatic_name }}.yaml.j2"
-      tags:
-        - work
-    - role: borgmatic
-      vars:
-        borgmatic_name: apps
-        borgmatic_source: "{{ common_directory }}"
-        borgmatic_crontab: "0 3 * * *"
-        borgmatic_ssh_src: files/borgmatic/ssh/
-        borgmatic_config: "borgmatic/{{ borgmatic_name }}.yaml.j2"
-      tags:
-        - apps
-    - role: borgmatic
-      vars:
-        borgmatic_name: photos
-        borgmatic_source: "{{ common_directory_photos }}"
-        borgmatic_crontab: "30 3 * * *"
-        borgmatic_ssh_src: files/borgmatic/ssh/
-        borgmatic_config: "borgmatic/{{ borgmatic_name }}.yaml.j2"
-      tags:
-        - photos
+        name: "borgmatic-{{ item.name }}"
+        image: b3vis/borgmatic
+        volumes:
+          # data to backup. dont mount as ro when a restore is needed
+          - "{{ item.source }}:/mnt/source:ro"
+
+          - "{{ _config_dir.path }}/borgbackup:/mnt/borg-repository"
+
+          - "{{ _config_dir.path }}/{{ item.name }}/borgmatic.d/:/etc/borgmatic.d/"
+          - "{{ _config_dir.path }}/{{ item.name }}/borgmatic:/root/.borgmatic"
+          - "{{ _config_dir.path }}/{{ item.name }}/config/borg:/root/.config/borg"
+          - "{{ _config_dir.path }}/{{ item.name }}/ssh:/root/.ssh"
+          - "{{ _config_dir.path }}/{{ item.name }}/cache/borg:/root/.cache/borg"
+        env:
+          TZ: "{{ common_timezone }}"
+          BORG_PASSPHRASE: "{{ borgmatic_pass }}"
+        comparisons:
+          env: strict
+      loop: "{{ borgmatic_backups }}"

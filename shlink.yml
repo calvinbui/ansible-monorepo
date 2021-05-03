@@ -1,107 +1,151 @@
 ---
 - hosts: homelab
-  become: true
+
   vars:
-    network: "{{ networks.pub }}"
-    shlink_domain: "{{ common_short_tld }}"
-    shlink_web_client_directory: "{{ common_directory }}/shlink/web-client/"
-    mariadb_name: shlink-mariadb
-    mariadb_version: '10'
-    mariadb_directory: "{{ common_directory }}/shlink/mariadb"
-    mariadb_environment_variables:
-      MYSQL_ROOT_PASSWORD: !vault |
-        $ANSIBLE_VAULT;1.1;AES256
-        35656464313165313664643262633065613264616430643964306231386539383635616337346439
-        6464643466663366333365653765643236303964313433350a613636653665313833633835376338
-        36666634313963396137396537613163366635396363633336656435363436613630313833633638
-        3261663635383264320a386163323566336364343234613631626234653961383435316634643638
-        33393730643765623266633333616332636230333563376531376262346436396238326638633537
-        6435303963373661636139393433636235386533333062343437
-      MYSQL_DATABASE: shlink
-  module_defaults:
-    docker_container:
-      keep_volumes: false
-      state: started
-      restart_policy: unless-stopped
-      networks_cli_compatible: true
-      purge_networks: true
-      networks:
-        - name: "{{ network.name }}"
-      dns_servers: "{{ network.dns }}"
-      comparisons:
-        env: allow_more_present
-        labels: allow_more_present
-      container_default_behavior: no_defaults
-      network_mode: "{{ network.name }}"
-  roles:
-    - mariadb
+    application: shlink
+
+    shlink_mecure_jwt: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      38353539646365386133316665386439396131383531316639643838396332633337326635383764
+      3163663362393435306234376431393864656436363738650a623434633333323062343764373336
+      64636631336661356137623235343432636138633863346439346333336433646263386531343836
+      3134653834623636390a316662656433646336396131336534636537663536356334353830303561
+      34613665313538663635613730653835393564306434613830653130613430663561
+
+    docker_network: "{{ networks.pub }}"
+
   tasks:
-    - name: Create shlink container
-      docker_container:
-        name: shlink
-        hostname: shlink
-        image: shlinkio/shlink:stable
-        env:
-          DB_DRIVER: "mysql"
-          DB_HOST: "{{ mariadb_name }}.{{ network.name }}"
-          DB_USER: root
-          DB_PASSWORD: "{{ mariadb_environment_variables.MYSQL_ROOT_PASSWORD }}"
-          DB_NAME: "{{ mariadb_environment_variables.MYSQL_DATABASE }}"
-          SHORT_DOMAIN_HOST: "{{ shlink_domain }}"
-          SHORT_DOMAIN_SCHEMA: "https"
-        labels:
-          traefik.http.routers.shlink.entrypoints: "web"
-          traefik.http.routers.shlink.middlewares: "redirect@file"
-          traefik.http.routers.shlink.rule: "Host(`{{ shlink_domain }}`)"
-
-          traefik.http.routers.shlink-secure.entrypoints: "web-secure"
-          traefik.http.routers.shlink-secure.rule: "Host(`{{ shlink_domain }}`)"
-          traefik.http.routers.shlink-secure.tls: "true"
-          traefik.http.routers.shlink-secure.tls.certresolver: letsencrypt
-
-          traefik.http.services.shlink.loadbalancer.server.port: "8080"
-
-    - name: Check if shlink API config exists
-      stat:
-        path: "{{ shlink_web_client_directory }}/servers.json"
-      register: shlink_web_config
-
-    - name: Create shlink-web-client dir
-      file:
-        path: "{{ shlink_web_client_directory }}"
+    - name: Create config directory
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
         state: directory
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
-        mode: "0770"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create postgres container
+      ansible.builtin.include_role:
+        name: postgres
+      vars:
+        postgres_version: '12'
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          35656464313165313664643262633065613264616430643964306231386539383635616337346439
+          6464643466663366333365653765643236303964313433350a613636653665313833633835376338
+          36666634313963396137396537613163366635396363633336656435363436613630313833633638
+          3261663635383264320a386163323566336364343234613631626234653961383435316634643638
+          33393730643765623266633333616332636230333563376531376262346436396238326638633537
+          6435303963373661636139393433636235386533333062343437
+
+    - name: Create mercure container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-mercure"
+        image: dunglas/mercure:v0.10
+        env:
+          CORS_ALLOWED_ORIGINS: "*"
+          USE_FORWARDED_HEADERS: "1"
+          JWT_KEY: "{{ shlink_mecure_jwt }}"
+        traefik:
+          - port: 80
+
+    - name: Create redis container
+      ansible.builtin.include_role:
+        name: redis
+      vars:
+        redis_version: 6
+        redis_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          64373335636339333437663066613962306431616166663038313464323564366364633036383664
+          6637633734323765626131366166303864306462313463640a653936323436326535626664386432
+          66323937353464653165363033646664373938343133336433326531326130383664356666636665
+          3038383937303432380a623936396430613630333166323865633662636137663064366337633730
+          39643633366631613036326435353936313361353435613833623436613163643162
+
+    - name: Create shlink container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: shlink
+        image: shlinkio/shlink:stable
+        env:
+          DB_DRIVER: "postgres"
+          DB_NAME: "{{ postgres_database }}"
+          DB_USER: "{{ postgres_username }}"
+          DB_PASSWORD: "{{ postgres_password }}"
+          DB_HOST: "{{ postgres_hostname }}"
+          DB_PORT: "5432"
+
+          SHORT_DOMAIN_HOST: "{{ common_short_tld }}"
+          SHORT_DOMAIN_SCHEMA: "https"
+
+          MERCURE_PUBLIC_HUB_URL: "https://{{ application }}-mercure.{{ common_tld }}"
+          MERCURE_INTERNAL_HUB_URL: "http://{{ application }}-mercure.{{ docker_network.name }}"
+          MERCURE_JWT_SECRET: "{{ shlink_mecure_jwt }}"
+
+          GEOLITE_LICENSE_KEY: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            33613639326461363765303437323832643230343735393438313531336631393062623962623737
+            3333383232623231626336633336313632633938396463380a386134346461636562643637653833
+            38396363373538303066333534353561663161643136323764383339653563346333656636346539
+            3430666366383661310a343062653765326632656262313661313139643632366533363939316265
+            39666461626163346464633937313064363565643364653935333364663266393366
+
+          REDIS_SERVERS: "tcp://{{ redis_hostname }}:6379?password={{ redis_password }}"
+
+          ANONYMIZE_REMOTE_ADDR: "false"
+        traefik:
+          - port: 8080
+            rule: "Host(`{{ common_short_tld }}`)"
+        labels:
+          traefik.http.routers.shlink-secure.middlewares: shlink-cors
+          traefik.http.middlewares.shlink-cors.headers.accessControlAllowMethods: "GET,OPTIONS,POST"
+          traefik.http.middlewares.shlink-cors.headers.accessControlAllowHeaders: "*"
+          traefik.http.middlewares.shlink-cors.headers.accessControlAllowOrigin: "https://{{ application }}.{{ common_tld }}"
+          traefik.http.middlewares.shlink-cors.headers.accessControlMaxAge: "100"
+          traefik.http.middlewares.shlink-cors.headers.addVaryHeader: "true"
+
+    - name: Create web-client folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}/web-client"
+        state: directory
+        owner: "papermerge"
+        group: "{{ common_group_id }}"
+        mode: "0775"
+      register: _web_dir
+
+    - name: Check if shlink API config exists
+      ansible.builtin.stat:
+        path: "{{ _web_dir.path }}/web-client/servers.json"
+      register: shlink_web_config
 
     - name: Generate shlink API key
-      command: docker exec -it shlink shlink api-key:generate --no-interaction --no-ansi
+      ansible.builtin.command: "docker exec -it {{ application }} shlink api-key:generate --no-interaction --no-ansi"
       register: shlink_api
+      vars:
+        ansible_ssh_pipelining: no
       when: not shlink_web_config.stat.exists
 
-    - name: Template shlink-web client config
-      template:
-        src: shlink/servers.json.j2
-        dest: "{{ shlink_web_client_directory }}/servers.json"
-        mode: "0440"
-      when: not shlink_web_config.stat.exists
+    - name: Template shlink-web-client config
+      ansible.builtin.template:
+        src: "{{ files_directory }}/servers.json.j2"
+        dest: "{{ _web_dir.path }}/servers.json"
+        mode: "0770"
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+      when: shlink_api.stdout is defined
 
-    - name: Create shlink web client container
-      docker_container:
-        name: shlink-web-client
-        hostname: shlink-web-client
+    - name: Create shlink-web-client container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-web"
         image: shlinkio/shlink-web-client:latest
         volumes:
-          - "{{ shlink_web_client_directory }}/servers.json:/usr/share/nginx/html/servers.json"
-        labels:
-          traefik.http.routers.shlink-web-client.entrypoints: "web"
-          traefik.http.routers.shlink-web-client.middlewares: "redirect@file"
-          traefik.http.routers.shlink-web-client.rule: "Host(`shlink.{{ common_tld }}`)"
-
-          traefik.http.routers.shlink-web-client-secure.entrypoints: "web-secure"
-          traefik.http.routers.shlink-web-client-secure.rule: "Host(`shlink.{{ common_tld }}`)"
-          traefik.http.routers.shlink-web-client-secure.middlewares: "myAuth@file"
-          traefik.http.routers.shlink-web-client-secure.tls: "true"
-          traefik.http.routers.shlink-web-client-secure.tls.certresolver: letsencrypt
-
-          traefik.http.services.shlink-web-client.loadbalancer.server.port: "80"
+          - "{{ _web_dir.path }}/servers.json:/usr/share/nginx/html/servers.json"
+        traefik:
+          - port: 80
+            rule: "Host(`{{ application }}.{{ common_tld }}`)"
+            auth: true

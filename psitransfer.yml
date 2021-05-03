@@ -1,67 +1,47 @@
 ---
-- hosts: homelab
-  become: true
-  module_defaults:
-    docker_container:
-      keep_volumes: false
-      state: started
-      restart_policy: unless-stopped
-      networks_cli_compatible: true
-      purge_networks: true
-      networks:
-        - name: "{{ network.name }}"
-      dns_servers: "{{ network.dns }}"
-      comparisons:
-        env: allow_more_present
-        labels: allow_more_present
-      container_default_behavior: no_defaults
-      network_mode: "{{ network.name }}"
-  vars:
-    psitransfer_subdomain: share
-    psitransfer_admin_pass: !vault |
-      $ANSIBLE_VAULT;1.1;AES256
-      65633031663732643031663062636563363937656138376430313563393631376661316531393666
-      6264666436356165633533373431646431383264653164640a633765353861323534663838353635
-      30363263303333353532333664376632313466333563316166303139383562626337653534643965
-      3964653966393666350a306330376535393330326430343630666362336661653363613332616538
-      34626237633632656363386338366636333734373332623635663964326237626265
-    psitransfer_upload_pass: !vault |
-      $ANSIBLE_VAULT;1.1;AES256
-      31653138636531633266353331303261363536376262633961643631623838356239343435356232
-      3934636639666438656133373833316533643737646433330a346334333462393438633038616138
-      63653662636335373362396233303064386661666365633730633935666264373363633063386533
-      3863373964623030300a613335353635393237373165616464653933656334313331383436666361
-      38303465623963333337353361313637316230373138343766353234373333326262
-    network: "{{ networks.pub }}"
-  tasks:
-    - name: Create PsiTransfer folder
-      file:
-        path: "{{ common_directory }}/psitransfer"
-        state: directory
-        owner: "{{ common_user_id }}"
-        group: "{{ common_root_group }}"
-        mode: "0770"
 
-    - name: Create PsiTransfer Container
-      docker_container:
-        name: psitransfer
-        hostname: psitransfer
+- hosts: homelab
+
+  vars:
+    application: psitransfer
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
         image: psitrax/psitransfer:latest
         env:
-          PSITRANSFER_ADMIN_PASS: "{{ psitransfer_admin_pass }}"
-          PSITRANSFER_UPLOAD_PASS: "{{ psitransfer_upload_pass }}"
+          PSITRANSFER_ADMIN_PASS: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            65633031663732643031663062636563363937656138376430313563393631376661316531393666
+            6264666436356165633533373431646431383264653164640a633765353861323534663838353635
+            30363263303333353532333664376632313466333563316166303139383562626337653534643965
+            3964653966393666350a306330376535393330326430343630666362336661653363613332616538
+            34626237633632656363386338366636333734373332623635663964326237626265
+          PSITRANSFER_UPLOAD_PASS: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            31653138636531633266353331303261363536376262633961643631623838356239343435356232
+            3934636639666438656133373833316533643737646433330a346334333462393438633038616138
+            63653662636335373362396233303064386661666365633730633935666264373363633063386533
+            3863373964623030300a613335353635393237373165616464653933656334313331383436666361
+            38303465623963333337353361313637316230373138343766353234373333326262
           PSITRANSFER_RETENTIONS: '{"one-time":"one time","3600":"1 Hour","86400":"1 Day","604800": "1 Week"}'
           PSITRANSFER_DEFAULT_RETENTION: "86400"
           PSITRANSFER_MAX_AGE: "604800"
         volumes:
-          - "{{ common_directory }}/psitransfer:/data"
-        labels:
-          traefik.http.routers.psitransfer.entrypoints: "web"
-          traefik.http.routers.psitransfer.middlewares: "redirect@file"
-          traefik.http.routers.psitransfer.rule: "Host(`{{ psitransfer_subdomain }}.{{ common_tld }}`)"
-
-          traefik.http.routers.psitransfer-secure.entrypoints: "web-secure"
-          traefik.http.routers.psitransfer-secure.tls: "true"
-          traefik.http.routers.psitransfer-secure.tls.certresolver: letsencrypt
-          traefik.http.routers.psitransfer-secure.rule: "Host(`{{ psitransfer_subdomain }}.{{ common_tld }}`)"
-          traefik.http.services.psitransfer.loadbalancer.server.port: "3000"
+          - "{{ _config_dir.path }}:/data"
+        traefik:
+          - port: 3000
+            rule: "Host(`share.{{ common_tld }}`)"

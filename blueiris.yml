@@ -1,24 +1,35 @@
 ---
-- hosts: homelab
-  become: true
-  vars:
-    network: "{{ networks.iot }}"
-    config_directory: "{{ common_directory }}/blueiris"
-    blueiris_endpoint: http://192.168.3.2
 
-  pre_tasks:
+- hosts: homelab
+
+  vars:
+    application: blueiris
+
+    docker_network: "{{ networks.iot }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart blueiris-proxy
+
+  tasks:
     - name: Update apt cache
-      apt:
+      ansible.builtin.apt:
         update_cache: true
         cache_valid_time: 600
       changed_when: false
       when: ansible_distribution == 'Ubuntu'
-  handlers:
-    - name: Restart NGINX proxy
-      command: docker restart blueiris-proxy
-  tasks:
+
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
     - name: Install kvm packages
-      apt:
+      ansible.builtin.apt:
         name:
           - cpu-checker
           - qemu-kvm
@@ -26,51 +37,32 @@
           - virt-manager
         state: present
 
-    - name: Create config folder
-      file:
-        path: "{{ config_directory }}"
-        state: directory
-        owner: "{{ common_user }}"
-        group: "{{ common_group }}"
-        mode: "0771"
-
     - name: Copy NGINX config
-      template:
-        src: templates/blueiris/nginx.conf
-        dest: "{{ config_directory }}/nginx.conf"
+      ansible.builtin.copy:
+        content: |
+          server {
+              listen       80;
+              listen       [::]:80;
+              server_name  blueiris.{{ common_tld }};
+              location / {
+                proxy_pass http://192.168.3.2;
+              }
+          }
+        dest: "{{ _config_dir.path }}/nginx.conf"
         mode: "0650"
         owner: root
         group: root
-      notify: Restart NGINX proxy
+      notify: Restart
 
-    - name: Create Docker NGINX proxy
-      community.docker.docker_container:
-        name: blueiris-proxy
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-proxy"
         image: nginx
-        state: started
         volumes:
-          - "{{ config_directory }}/nginx.conf:/etc/nginx/conf.d/default.conf:ro"
-        hostname: blueiris-proxy
-        restart_policy: unless-stopped
-        networks_cli_compatible: true
-        purge_networks: true
-        container_default_behavior: no_defaults
-        comparisons:
-          labels: strict
-        dns_servers: "{{ network.dns }}"
-        network_mode: "{{ network.name }}"
-        networks:
-          - name: "{{ network.name }}"
-            ipv4_address: "{{ network.prefix }}.3"
-        labels:
-          traefik.http.routers.blueiris.entrypoints: "web"
-          traefik.http.routers.blueiris.middlewares: "redirect@file"
-
-          traefik.http.routers.blueiris-secure.entrypoints: "web-secure"
-          traefik.http.routers.blueiris-secure.tls: "true"
-          traefik.http.routers.blueiris-secure.tls.certresolver: letsencrypt
-
-          traefik.http.services.blueiris.loadbalancer.server.port: "80"
-
-          traefik.http.routers.blueiris.rule: "Host(`blueiris.{{ common_tld }}`)"
-          traefik.http.routers.blueiris-secure.rule: "Host(`blueiris.{{ common_tld }}`)"
+          - "{{ _config_dir.path }}/nginx.conf:/etc/nginx/conf.d/default.conf:ro"
+        ipv4_address: "{{ docker_network.prefix }}.3"
+        traefik:
+          - port: 80
+            rule: Host(`{{ application }}.{{ common_tld }}`)

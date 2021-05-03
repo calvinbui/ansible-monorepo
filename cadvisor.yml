@@ -1,0 +1,43 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: cadvisor
+
+    cadvisor_disabled_metrics:
+      - accelerator
+      - advtcp
+      - cpu_topology
+      - disk
+      - hugetlb
+      - memory_numa
+      - percpu
+      - process
+      - referenced_memory
+      - resctrl
+      - sched
+      - tcp
+      - udp
+
+    docker_network: "{{ networks.mgmt }}"
+
+  tasks:
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: gcr.io/cadvisor/cadvisor:latest
+        command:
+          - "-docker_only=true"
+          - "-disable_metrics={{ cadvisor_disabled_metrics | join(',') }}"
+          - "-housekeeping_interval=10s"
+        volumes:
+          - /:/rootfs:ro
+          - /var/run:/var/run:ro
+          - /sys:/sys:ro
+          - /var/lib/docker/:/var/lib/docker:ro
+          - /dev/disk/:/dev/disk:ro
+        devices:
+          - /dev/kmsg
+        privileged: true

@@ -1,0 +1,44 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: scrutiny
+
+    docker_network: "{{ networks.mgmt }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Template config
+      ansible.builtin.template:
+        src: "{{ files_directory }}/scrutiny.yaml.j2"
+        dest: "{{ _config_dir.path }}/scrutiny.yaml"
+        mode: "0440"
+
+    - name: Get disks
+      shell: for line in $(lsblk --noheadings --list --scsi --output name); do echo "/dev/${line}"; done
+      register: lsblk_disks
+      changed_when: false
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: analogj/scrutiny
+        capabilities:
+          - SYS_RAWIO
+        volumes:
+          - /run/udev:/run/udev:ro
+          - "{{ _config_dir.path }}:/scrutiny/config/"
+        devices: "{{ lsblk_disks.stdout_lines }}"
+        traefik:
+          - port: 8080
+            auth: true

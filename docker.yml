@@ -1,0 +1,99 @@
+---
+
+- hosts: homelab
+
+  handlers:
+    - name: Restart
+      ansible.builtin.service:
+        name: docker
+        state: restarted
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
+      changed_when: false
+      when: ansible_distribution == 'Ubuntu'
+
+    # Based on https://docs.docker.com/engine/installation/linux/ubuntu/
+    - name: Uninstall old versions
+      ansible.builtin.apt:
+        name:
+          - docker
+          - docker-engine
+          - docker.io
+          - containerd
+          - runc
+        state: absent
+
+    - name: Install dependencies
+      ansible.builtin.apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+        state: present
+      register: result
+      until: result is success
+      retries: 5
+      delay: 5
+
+    - name: Add Docker's official GPG key
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+        keyring: /usr/share/keyrings/docker-archive-keyring.gpg
+      register: result
+      until: result is success
+      retries: 5
+      delay: 5
+
+    - name: Add Docker Repository
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+        update_cache: true
+
+    - name: Install Docker
+      ansible.builtin.apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+      register: result
+      until: result is success
+      retries: 5
+      delay: 5
+
+    - name: Start Docker
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Add user to Docker group
+      ansible.builtin.user:
+        name: "{{ common_user }}"
+        groups: docker
+        append: true
+
+    - name: Install docker pip package
+      pip:
+        name: docker
+        executable: pip3
+
+    - name: Create Docker networks
+      community.docker.docker_network:
+        name: "{{ item.value.name }}"
+        driver: "{{ item.value.driver }}"
+        ipam_config:
+          - gateway: "{{ item.value.gateway }}"
+            subnet: "{{ item.value.gateway + item.value.subnet }}"
+            iprange: "{{ item.value.iprange }}"
+        driver_options:
+          parent: "{{ item.value.parent }}.{{ item.value.vlan }}"
+      loop: "{{ networks | dict2items }}"

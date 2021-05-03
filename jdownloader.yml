@@ -1,0 +1,36 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: jdownloader
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: jlesage/jdownloader-2
+        env:
+          TZ: "{{ common_timezone }}"
+          USER_ID: "{{ common_user_id }}"
+          GROUP_ID: "{{ common_root_group }}"
+          DISPLAY_WIDTH: "1920"
+          DISPLAY_HEIGHT: "1080"
+        volumes:
+          - "{{ _config_dir.path }}:/config"
+          - "{{ common_directory_download }}:/output"
+        traefik:
+          - port: 5800
+            auth: true

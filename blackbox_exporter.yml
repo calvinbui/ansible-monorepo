@@ -1,0 +1,37 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: blackbox_exporter
+
+    docker_network: "{{ networks.mgmt }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0711"
+      register: _config_dir
+
+    - name: Template configuration
+      ansible.builtin.template:
+        src: "{{ files_directory }}/config.yml.j2"
+        dest: "{{ _config_dir.path }}/config.yml"
+        mode: "0440"
+      notify: Restart
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: prom/blackbox-exporter:master
+        volumes:
+          - "{{ _config_dir.path }}:/etc/blackbox_exporter"

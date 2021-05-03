@@ -1,59 +1,43 @@
 ---
 
 - hosts: homelab
-  become: true
+
   vars:
-    # https://hub.docker.com/r/bilde2910/hauk
-    hauk_name: hauk
-    hauk_config_directory: "{{ common_directory }}/{{ hauk_name }}"
-    hauk_domain: "hauk.{{ common_tld }}"
+    application: hauk
+
     hauk_password: "$2y$10$ABxFMeoCHxEFplmmHQpVk.fO2bfUCta4BS0jF9fGonvzLSTmJIMYi"
-    network: "{{ networks.pub }}"
-  module_defaults:
-    docker_container:
-      keep_volumes: false
-      restart_policy: unless-stopped
-      networks_cli_compatible: true
-      purge_networks: true
-      dns_servers: "{{ network.dns }}"
-      networks:
-        - name: "{{ network.name }}"
-      container_default_behavior: no_defaults
-      network_mode: "{{ network.name }}"
+
+    docker_network: "{{ networks.pub }}"
+
   handlers:
-    - name: Restart Hauk
-      command: docker restart "{{ hauk_name }}"
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
   tasks:
-    - name: Create Hauk config directory
-      file:
-        path: "{{ hauk_config_directory }}"
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
         state: directory
-        owner: "{{ common_user_id }}"
-        group: "{{ common_root_group }}"
-        mode: "0770"
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
 
-    - name: Copy Hauk config
-      template:
-        src: templates/hauk/config.php.j2
-        dest: "{{ hauk_config_directory }}/config.php"
+    - name: Copy config
+      ansible.builtin.template:
+        src: "{{ files_directory }}/config.php.j2"
+        dest: "{{ _config_dir.path }}/config.php"
         owner: "{{ common_user_id }}"
-        group: "{{ common_root_group }}"
-        mode: "0774"
-      notify: Restart Hauk
+        group: "33"
+        mode: "0440"
+      notify: Restart
 
-    - name: Create Hauk container
-      docker_container:
-        name: "{{ hauk_name }}"
-        hostname: "{{ hauk_name }}"
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
         image: bilde2910/hauk
         volumes:
-          - "{{ hauk_config_directory }}:/etc/hauk"
-        labels:
-          traefik.http.routers.hauk.entrypoints: "web"
-          traefik.http.routers.hauk.middlewares: "redirect@file"
-
-          traefik.http.routers.hauk-secure.entrypoints: "web-secure"
-          traefik.http.routers.hauk-secure.tls: "true"
-          traefik.http.routers.hauk-secure.tls.certresolver: letsencrypt
-
-          traefik.http.services.hauk.loadbalancer.server.port: "80"
+          - "{{ _config_dir.path }}:/etc/hauk"
+        traefik:
+          - port: 80

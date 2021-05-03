@@ -67,11 +67,6 @@ http_services:
     subtitle: Personal Photo Management
     url: https://photoprism.{{ common_tld }}
     group: "Home"
-  - name: Jellyfin
-    logo: jellyfin.png
-    subtitle: Software Media System
-    url: https://jellyfin.{{ common_local_tld }}:8920
-    group: "Home"
   - name: Mattermost
     logo: mattermost.png
     subtitle: Online Chat

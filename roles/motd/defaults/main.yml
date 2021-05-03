@@ -1,5 +1,0 @@
----
-
-motd_files:
-  - /etc/update-motd.d/50-motd-news
-  - /etc/update-motd.d/10-help-text

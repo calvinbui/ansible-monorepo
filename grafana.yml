@@ -1,0 +1,78 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: grafana
+
+    docker_network: "{{ networks.mgmt }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "472" # grafana user
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create directories
+      ansible.builtin.file:
+        path: "{{ _config_dir.path }}/{{ item }}"
+        state: directory
+        owner: "472" # grafana user
+        group: "{{ common_group }}"
+        mode: "0771"
+      loop:
+        - "provisioning"
+        - "provisioning/datasources"
+        - "provisioning/dashboards"
+        - "data"
+        - "data/plugins"
+      register: _dir
+
+    - name: Template datasource
+      ansible.builtin.copy:
+        content: |
+          apiVersion: 1
+
+          datasources:
+            - name: Prometheus
+              type: prometheus
+              access: proxy
+              orgId: 1
+              url: http://prometheus.{{ docker_network.name }}:9090
+              basicAuth: false
+              isDefault: true
+              editable: false
+        dest: "{{ _dir.results | selectattr('item', 'match', 'provisioning/datasources') | flatten | map(attribute='path') | first }}/prometheus.yml"
+        owner: "472" # grafana user
+        group: "{{ common_group }}"
+        mode: "0444"
+      notify: Restart
+
+    - name: Download plugins
+      ansible.builtin.unarchive:
+        src: "https://grafana.com/api/plugins/{{ item.name }}/versions/{{ item.version }}/download"
+        dest: "{{ _dir.results | selectattr('item', 'match', 'data/plugins') | flatten | map(attribute='path') | first }}"
+        remote_src: true
+      loop:
+        - name: grafana-piechart-panel
+          version: 1.6.1
+      notify: Restart
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: grafana/grafana:latest
+        volumes:
+          - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/var/lib/grafana"
+          - "{{ _dir.results | selectattr('item', 'match', 'provisioning') | flatten | map(attribute='path') | first }}:/etc/grafana/provisioning"
+        traefik:
+          - port: "3000"

@@ -1,0 +1,42 @@
+---
+
+- name: Create Redis directory
+  ansible.builtin.file:
+    path: "{{ redis_directory }}"
+    state: directory
+    owner: "999"
+    group: "0"
+    mode: "0771"
+
+- name: Create Redis container
+  community.docker.docker_container:
+    name: "{{ redis_name }}"
+    image: "redis:{{ redis_version }}-alpine"
+
+    state: started
+
+    hostname: "{{ redis_name }}"
+    published_ports: "{{ redis_ports | default(omit) }}"
+    networks:
+      - name: "{{ docker_network.name | default('bridge') }}"
+    network_mode: "{{ docker_network.name | default('omit') }}"
+    networks_cli_compatible: "{{ redis_networks_cli_compatible | default(true) }}"
+    purge_networks: "{{ redis_purge_networks | default(true) }}"
+
+    command: "{{ redis_command | default('redis-server --requirepass ' + redis_password) }}"
+
+    volumes: "{{ redis_directory }}:/data"
+
+    labels:
+      traefik.enable: "false"
+
+    restart_policy: unless-stopped
+
+    container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
+
+  register: redis
+
+- name: Set variables
+  set_fact:
+    redis_hostname: "{{ redis_name }}.{{ docker_network.name }}"
+    redis_password: "{{ redis_password }}"

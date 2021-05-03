@@ -1,0 +1,32 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: portainer
+
+    docker_network: "{{ networks.mgmt }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: portainer/portainer-ce
+        ipv4_address: "{{ docker_network.prefix }}.192"
+        published_ports:
+          - 9000:9000
+        traefik:
+          - port: 9000
+        volumes:
+          - "{{ _config_dir.path }}:/data"
+          - /var/run/docker.sock:/var/run/docker.sock

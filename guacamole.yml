@@ -1,101 +1,76 @@
 ---
 
 - hosts: homelab
-  become: true
+
   vars:
-    network: "{{ networks.user }}"
-    guacamole_name: guacamole
-    guacamole_config_directory: "{{ common_directory }}/{{ guacamole_name }}"
-    guacd_name: guacamole-guacd
-    postgres_name: guacamole-postgres
-    postgres_version: '12'
-    postgres_directory: "{{ common_directory }}/guacamole/postgres"
-    postgres_environment_variables:
-      POSTGRES_USER: guacamole
-      POSTGRES_PASSWORD: !vault |
-        $ANSIBLE_VAULT;1.1;AES256
-        30336234666131353835373535303330653030343362616236613238323738333139393264376537
-        6432333034306266303937623965396261633734323437300a356662623666346363623565363431
-        38613263636132383361323763363939363531356566636138323463376239323238343863373930
-        3430326538393062370a353631663063333532396530326264333763383233373664383538666665
-        30323233326666313636313831393065623339356633613535313961333131323033653933336639
-        3031393834336639313964353266363665366634646235346539
-      POSTGRES_DB: guacamole
-  module_defaults:
-    docker_container:
-      keep_volumes: false
-      restart_policy: unless-stopped
-      networks_cli_compatible: true
-      purge_networks: true
-      dns_servers: "{{ network.dns }}"
-      networks:
-        - name: "{{ network.name }}"
-      comparisons:
-        env: allow_more_present
-        labels: allow_more_present
-      container_default_behavior: no_defaults
-      network_mode: "{{ network.name }}"
-  pre_tasks:
-    - name: Create Postgres config directory
-      file:
-        path: "{{ postgres_directory }}"
-        state: directory
-        mode: "0700"
-    - name: Install psycopg2
-      apt:
-        name: python3-psycopg2
-        state: present
-  roles:
-    - postgres
+    application: guacamole
+
+    docker_network: "{{ networks.user }}"
+
   tasks:
-    - name: Copy SQL database init script
-      copy:
-        src: files/guacamole/initdb.sql
-        dest: "{{ guacamole_config_directory }}"
-        mode: "0444"
-    - name: Get postgres IP
-      command: docker inspect -f {% raw %}'{{ range .NetworkSettings.Networks }}{{ .IPAddress }}{{ end }}'{% endraw %} "{{ postgres_name }}"
-      register: postgres_ip
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
       changed_when: false
-    - name: Init DB
-      postgresql_query:
-        login_host: "{{ postgres_ip.stdout }}"
-        login_user: "{{ postgres_environment_variables.POSTGRES_USER }}"
-        login_password: "{{ postgres_environment_variables.POSTGRES_PASSWORD }}"
-        db: "{{ postgres_environment_variables.POSTGRES_DB }}"
-        path_to_script: "{{ guacamole_config_directory }}/initdb.sql"
-      ignore_errors: true
+      when: ansible_distribution == 'Ubuntu'
+
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Copy SQL database init script
+      ansible.builtin.copy:
+        src: "{{ files_directory }}/initdb.sql"
+        dest: "{{ _config_dir.path }}/initdb.sql"
+        mode: "0444"
+
+    - name: Create postgres container
+      ansible.builtin.include_role:
+        name: postgres
+      vars:
+        postgres_version: '12'
+        postgres_directory_extra:
+          - "{{ _config_dir.path }}/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql:ro"
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          30336234666131353835373535303330653030343362616236613238323738333139393264376537
+          6432333034306266303937623965396261633734323437300a356662623666346363623565363431
+          38613263636132383361323763363939363531356566636138323463376239323238343863373930
+          3430326538393062370a353631663063333532396530326264333763383233373664383538666665
+          30323233326666313636313831393065623339356633613535313961333131323033653933336639
+          3031393834336639313964353266363665366634646235346539
+
     - name: Create guacd container
-      docker_container:
-        name: "{{ guacd_name }}"
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-guacd"
         image: guacamole/guacd
         env:
           GUACD_LOG_LEVEL: debug
-        labels:
-          traefik.enable: "false"
-    - name: Create Guacamole container
-      docker_container:
-        name: "{{ guacamole_name }}"
-        hostname: "{{ guacamole_name }}"
+
+    - name: Create guacamole container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
         image: guacamole/guacamole
         volumes:
-          - "{{ guacamole_config_directory }}:/config"
+          - "{{ _config_dir.path }}/{{ application }}:/config"
         env:
-          GUACD_HOSTNAME: "{{ guacd_name }}.{{ network.name }}"
+          GUACD_HOSTNAME: "{{ application }}-guacd.{{ docker_network.name }}"
           GUACD_LOG_LEVEL: debug
-          POSTGRES_HOSTNAME: "{{ postgres_name }}.{{ network.name }}"
-          POSTGRES_DATABASE: "{{ postgres_environment_variables.POSTGRES_DB }}"
-          POSTGRES_USER: "{{ postgres_environment_variables.POSTGRES_USER }}"
-          POSTGRES_PASSWORD: "{{ postgres_environment_variables.POSTGRES_PASSWORD }}"
+          POSTGRES_HOSTNAME: "{{ postgres_hostname }}"
+          POSTGRES_DATABASE: "{{ postgres_database }}"
+          POSTGRES_USER: "{{ postgres_username }}"
+          POSTGRES_PASSWORD: "{{ postgres_password }}"
+        traefik:
+          - port: 8080
         labels:
-          traefik.http.routers.guacamole.entrypoints: "web"
-          traefik.http.routers.guacamole.middlewares: "redirect@file"
-
-          traefik.http.routers.guacamole-secure.entrypoints: "web-secure"
-          traefik.http.routers.guacamole-secure.tls: "true"
-          traefik.http.routers.guacamole-secure.tls.certresolver: letsencrypt
-
           traefik.http.routers.guacamole-secure.middlewares: "guacamole-addprefix"
           traefik.http.middlewares.guacamole-addprefix.addprefix.prefix: "/guacamole"
-
-          traefik.http.services.guacamole.loadbalancer.server.port: "8080"

@@ -1,0 +1,8 @@
+---
+
+mongo_directory: "{{ config_directory }}/mongodb"
+
+mongo_name: "{{ application }}-mongodb"
+mongo_username: "{{ application }}"
+mongo_password: "changeme"
+mongo_database: "{{ application }}"

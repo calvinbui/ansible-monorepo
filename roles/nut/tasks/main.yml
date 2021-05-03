@@ -1,6 +1,0 @@
----
-- import_tasks: ./debian.yaml
-  when: ansible_os_family == 'Debian'
-
-- import_tasks: ./redhat.yaml
-  when: ansible_os_family == 'RedHat'

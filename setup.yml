@@ -1,16 +1,67 @@
 ---
 - hosts: homelab
-  become: true
-  pre_tasks:
+
+  tasks:
+    - name: Disable requiretty to enable Ansible pipelining
+      ansible.builtin.lineinfile:
+        dest: /etc/sudoers
+        line: "{{ item.line }}"
+        state: "{{ item.state }}"
+      loop:
+        - line: Defaults requiretty
+          state: absent
+        - line: Defaults !requiretty
+          state: present
+      vars:
+        ansible_ssh_pipelining: no
+
     - name: Update apt cache
-      apt:
+      ansible.builtin.apt:
         update_cache: true
         cache_valid_time: 600
       changed_when: false
       when: ansible_distribution == 'Ubuntu'
-  vars:
-    apt_install_packages:
-      - name:
+
+    - name: Install pip3 and setuptools
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+      register: result
+      until: result is success
+      retries: 5
+      delay: 5
+      loop:
+        - python3-pip
+        - python3-setuptools
+
+    - name: Set authorized keys
+      ansible.posix.authorized_key:
+        user: "{{ item }}"
+        state: present
+        key: https://github.com/calvinbui.keys
+      loop:
+        - root
+        - "{{ common_user }}"
+
+    - name: Disable motd files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        mode: "-x"
+      loop:
+        - /etc/update-motd.d/50-motd-news
+        - /etc/update-motd.d/10-help-text
+
+    - name: No password sudo
+      ansible.builtin.lineinfile:
+        path: /etc/sudoers
+        state: present
+        regexp: "^{{ common_user }}"
+        line: "{{ common_user }} ALL=(ALL) NOPASSWD: ALL"
+        validate: 'visudo -cf %s'
+
+    - name: Install packages
+      apt:
+        name:
           - neovim
           - htop
           - iftop
@@ -24,61 +75,20 @@
           - git
           - zfsutils-linux
         state: present
-      - name:
+
+    - name: Remove packages
+      ansible.builtin.apt:
+        name:
           - popularity-contest
           - pastebinit
-        state: absent
-    authorized_keys_config:
-      - user: root
         state: present
-        key: https://github.com/calvinbui.keys
-      - user: "{{ common_user }}"
-        state: present
-        key: https://github.com/calvinbui.keys
-    docker_users:
-      - "{{ common_user }}"
-    pip_install_packages:
-      - name: docker
-        executable: pip3
-  handlers:
-    - name: Restart Docker
-      service:
-        name: docker
-        state: restarted
-  roles:
-    - role: motd
-      when: ansible_distribution == 'Ubuntu'
-    - authorized_keys
-    - role: apt
-      when: ansible_os_family == 'Debian'
-    - role: yum
-      when: ansible_os_family == 'RedHat'
-    - pip
-    - docker
-  tasks:
-    - name: "No password sudo"
-      lineinfile:
-        path: /etc/sudoers
-        state: present
-        regexp: "^{{ common_user }}"
-        line: "{{ common_user }} ALL=(ALL) NOPASSWD: ALL"
-        validate: 'visudo -cf %s'
-    - name: Create Docker networks
-      docker_network:
-        name: "{{ item.value.name }}"
-        driver: "{{ item.value.driver }}"
-        ipam_config:
-          - gateway: "{{ item.value.gateway }}"
-            subnet: "{{ item.value.gateway + item.value.subnet }}"
-            iprange: "{{ item.value.iprange }}"
-        driver_options:
-          parent: "{{ item.value.parent }}.{{ item.value.vlan }}"
-      loop: "{{ networks|dict2items }}"
+
     - name: Set timezone
-      timezone:
+      community.general.timezone:
         name: "{{ common_timezone }}"
+
     - name: Create common directory
-      file:
+      ansible.builtin.file:
         path: "{{ common_directory }}"
         state: directory
         owner: "{{ common_user }}"

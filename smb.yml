@@ -1,31 +1,34 @@
 ---
 
 - hosts: homelab
-  become: true
-  pre_tasks:
+
+  handlers:
+    - name: Restart
+      ansible.builtin.service:
+        name: smbd
+        state: restarted
+
+  tasks:
     - name: Update apt cache
-      apt:
+      ansible.builtin.apt:
         update_cache: true
         cache_valid_time: 600
       changed_when: false
       when: ansible_distribution == 'Ubuntu'
-  handlers:
-    - name: "Restart Samba"
-      service:
-        name: smbd
-        state: restarted
-  tasks:
-    - name: "Install Samba"
-      apt:
+
+    - name: Install
+      ansible.builtin.apt:
         name: samba
         state: present
-    - name: "Enable Samba service"
-      service:
+
+    - name: Enable service
+      ansible.builtin.service:
         name: smbd
         state: started
         enabled: true
-    - name: "Configure Samba"
-      copy:
+
+    - name: Configure
+      ansible.builtin.copy:
         content: |
           [files]
           comment = ZFS - files
@@ -35,11 +38,13 @@
         dest: /etc/samba/smb.conf
         validate: "testparm --suppress-prompt"
         mode: "0440"
-      notify: Restart Samba
-    - name: "Allow Samba in firewall"
+      notify: Restart
+
+    - name: Allow in firewall
       ufw:
         name: samba
         rule: allow
-    - name: "Reminder"
+
+    - name: Reminder
       debug:
         msg: Create an smb password using `sudo smbpasswd calvin`

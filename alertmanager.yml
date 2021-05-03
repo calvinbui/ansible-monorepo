@@ -1,0 +1,73 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: alertmanager
+
+    alertmanager_slack_url: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      62623438663632393039633939656363373632363665626634346264626633313034336665363365
+      3439353764646664626231306536643962346630643661340a656436343935333232313533633033
+      63366464333665636138333165336236396563333739323133346638303932643861646130623635
+      3863313464323931640a623132333565306563333662343330323164313938396633663161626336
+      39616632633739633830396236373637313531366631326531393664333031636539663032663866
+      33333838616437616465613563646533396433373133646537383837316234333861313731383635
+      61383438643866393130393035633732373037656564313966323930386666326233346139323939
+      32383233643934386565
+
+    docker_network: "{{ networks.mgmt }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "65534" # nobody user
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create directories
+      ansible.builtin.file:
+        path: "{{ _config_dir.path }}/{{ item }}"
+        state: directory
+        owner: "65534" # nobody user
+        group: "{{ common_group }}"
+        mode: "0771"
+      loop:
+        - config
+        - data
+      register: _dir
+
+    - name: Template config
+      ansible.builtin.template:
+        src: "{{ files_directory }}/alertmanager.yml.j2"
+        dest: "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}/alertmanager.yml"
+        owner: "65534" # nobody user
+        group: "{{ common_group }}"
+        mode: "0444"
+      notify: Restart
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: prom/alertmanager:latest
+        command:
+          - "--config.file=/etc/alertmanager/alertmanager.yml"
+          - "--storage.path=/alertmanager"
+          - "--web.external-url=https://{{ application }}.{{ common_tld }}"
+          - "--data.retention=72h"
+        volumes:
+          - "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}:/etc/alertmanager"
+          - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/alertmanager"
+        traefik:
+          - port: 9093
+            auth: true
+        comparisons:
+          labels: allow_more_present

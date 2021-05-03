@@ -1,10 +1,29 @@
 ---
+
 - hosts: homelab
-  become: true
+
   vars:
-    network: "{{ networks.user }}"
-    bitwardenrs_config_directory: "{{ common_directory }}/bitwarden"
-    bitwarden_admin_token: !vault |
+    application: "bitwarden"
+
+    docker_network: "{{ networks.user }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: bitwardenrs/server:alpine
+        env:
+          ADMIN_TOKEN: !vault |
             $ANSIBLE_VAULT;1.1;AES256
             66613739613330623637326234343739613134323763316439663336336534336137353639326462
             3366623464653634363164306237366234326164396435610a363934613834613166363135373433
@@ -13,21 +32,6 @@
             31636661393936656664653463303161653835363939626464623261613037353031386264666466
             35633861653837353232323936383561656336346539396535636463663638353130646365373762
             363134643934313733666639313530323764
-  tasks:
-    - name: Create Bitwarden config directory
-      file:
-        path: "{{ bitwardenrs_config_directory }}"
-        state: directory
-        owner: "{{ common_user_id }}"
-        group: "{{ common_root_group }}"
-        mode: "0770"
-    - name: Create Bitwarden RS container
-      docker_container:
-        name: bitwarden
-        image: bitwardenrs/server:alpine
-        state: started
-        env:
-          ADMIN_TOKEN: "{{ bitwarden_admin_token }}"
           WEBSOCKET_ENABLED: "true"
           SIGNUPS_ALLOWED: "false"
           SMTP_HOST: "{{ common_email_server }}"
@@ -35,44 +39,16 @@
           SMTP_USERNAME: "{{ common_email_username }}"
           SMTP_PASSWORD: "{{ common_email_password }}"
           SMTP_SSL: "true"
-          SMTP_FROM: "bitwarden{{ common_email_to }}"
+          SMTP_FROM: "{{ application }}{{ common_email_to }}"
         volumes:
-          - "{{ bitwardenrs_config_directory }}:/data"
-        hostname: bitwarden
-        keep_volumes: false
-        restart_policy: unless-stopped
-        networks_cli_compatible: true
-        purge_networks: true
-        networks:
-          - name: "{{ network.name }}"
-        dns_servers: "{{ network.dns }}"
-        container_default_behavior: no_defaults
-        network_mode: "{{ network.name }}"
-        comparisons:
-          env: allow_more_present
-          labels: allow_more_present
-        labels:
+          - "{{ _config_dir.path }}:/data"
+        traefik:
           # https://github.com/dani-garcia/bitwarden_rs/wiki/Proxy-examples#traefik-v2-docker-compose-example-by-hwwilliams
           # ui routing
-          traefik.http.routers.bitwarden-ui.entrypoints: "web"
-          traefik.http.routers.bitwarden-ui.middlewares: "redirect@file"
-          traefik.http.routers.bitwarden-ui.service: bitwarden-ui
-
-          traefik.http.routers.bitwarden-ui-secure.entrypoints: "web-secure"
-          traefik.http.routers.bitwarden-ui-secure.tls: "true"
-          traefik.http.routers.bitwarden-ui-secure.tls.certresolver: letsencrypt
-          traefik.http.routers.bitwarden-ui-secure.service: bitwarden-ui
-
-          traefik.http.services.bitwarden-ui.loadbalancer.server.port: "80"
+          - name: "{{ application }}-ui"
+            port: 80
+            rule: Host(`{{ application }}.{{ common_tld }}`)
           # websocket for syncing
-          traefik.http.routers.bitwarden-websocket.entrypoints: "web"
-          traefik.http.routers.bitwarden-websocket.middlewares: "redirect@file"
-          traefik.http.routers.bitwarden-websocket.service: bitwarden-websocket
-
-          traefik.http.routers.bitwarden-websocket.rule: Host(`bitwarden.{{ common_tld }}`) && Path(`/notifications/hub`)
-          traefik.http.routers.bitwarden-websocket-secure.entrypoints: "web-secure"
-          traefik.http.routers.bitwarden-websocket-secure.rule: Host(`bitwarden.{{ common_tld }}`) && Path(`/notifications/hub`)
-          traefik.http.routers.bitwarden-websocket-secure.tls: "true"
-          traefik.http.routers.bitwarden-websocket-secure.service: bitwarden-websocket
-
-          traefik.http.services.bitwarden-websocket.loadbalancer.server.port: "3012"
+          - name: "{{ application }}-websocket"
+            port: 3012
+            rule: Host(`{{ application }}.{{ common_tld }}`) && Path(`/notifications/hub`)

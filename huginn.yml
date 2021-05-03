@@ -1,59 +1,38 @@
 ---
 
 - hosts: homelab
-  become: true
+
   vars:
-    network: "{{ networks.user }}"
-    huginn_name: huginn
-    huginn_config_directory: "{{ common_directory }}/huginn/{{ huginn_name }}"
-    mariadb_name: huginn-mariadb
-    mariadb_version: '10'
-    mariadb_directory: "{{ common_directory }}/huginn/mariadb"
-    mariadb_environment_variables:
-      MYSQL_DATABASE: huginn
-      MYSQL_ROOT_PASSWORD: !vault |
-        $ANSIBLE_VAULT;1.1;AES256
-        63306161303530656335316338306262653639353766346562326163616163653663646335646464
-        6535623732353431626135666439396638643039336236320a663639623134653934356461396633
-        63373865333336626263633130666133646162316130343734366563663862306236316430303435
-        6162343762643339350a323865643836653531656362323835656332656464363133346630643939
-        39613762323066333064303435643033363038623634316132393838633936373837
-  module_defaults:
-    docker_container:
-      keep_volumes: false
-      restart_policy: unless-stopped
-      networks_cli_compatible: true
-      purge_networks: true
-      dns_servers: "{{ network.dns }}"
-      networks:
-        - name: "{{ network.name }}"
-      comparisons:
-        env: strict
-        labels: strict
-      container_default_behavior: no_defaults
-      network_mode: "{{ network.name }}"
-  pre_tasks:
-    - name: Create Huginn config directory
-      file:
-        path: "{{ huginn_config_directory }}"
-        state: directory
-        owner: "{{ common_user_id }}"
-        group: "{{ common_root_group }}"
-        mode: "0770"
-  roles:
-    - mariadb
+    application: huginn
+
+    docker_network: "{{ networks.user }}"
+
   tasks:
-    - name: Create Huginn container
-      docker_container:
-        name: "{{ huginn_name }}"
-        hostname: "{{ huginn_name }}"
+    - name: Create mariadb container
+      ansible.builtin.include_role:
+        name: mariadb
+      vars:
+        mariadb_version: '10'
+        mariadb_directory: "{{ config_directory }}"
+        mariadb_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          63306161303530656335316338306262653639353766346562326163616163653663646335646464
+          6535623732353431626135666439396638643039336236320a663639623134653934356461396633
+          63373865333336626263633130666133646162316130343734366563663862306236316430303435
+          6162343762643339350a323865643836653531656362323835656332656464363133346630643939
+          39613762323066333064303435643033363038623634316132393838633936373837
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
         image: huginn/huginn
         env:
           HUGINN_DATABASE_ADAPTER: mysql2
-          HUGINN_DATABASE_HOST: "{{ mariadb_name }}.{{ network.name }}"
+          HUGINN_DATABASE_HOST: "{{ mariadb_hostname }}"
           HUGINN_DATABASE_PORT: "3306"
           HUGINN_DATABASE_USERNAME: root
-          HUGINN_DATABASE_PASSWORD: "{{ mariadb_environment_variables.MYSQL_ROOT_PASSWORD }}"
+          HUGINN_DATABASE_PASSWORD: "{{ mariadb_password }}"
 
           HUGINN_SMTP_USER_NAME: "{{ common_email_username }}"
           HUGINN_SMTP_PASSWORD: "{{ common_email_password }}"
@@ -70,12 +49,8 @@
         volumes:
           - /etc/timezone:/etc/timezone:ro
           - /etc/localtime:/etc/localtime:ro
-        labels:
-          traefik.http.routers.huginn.entrypoints: "web"
-          traefik.http.routers.huginn.middlewares: "redirect@file"
-
-          traefik.http.routers.huginn-secure.entrypoints: "web-secure"
-          traefik.http.routers.huginn-secure.tls: "true"
-          traefik.http.routers.huginn-secure.tls.certresolver: letsencrypt
-
-          traefik.http.services.huginn.loadbalancer.server.port: "3000"
+        traefik:
+          - port: 3000
+        comparisons:
+          env: strict
+          labels: strict

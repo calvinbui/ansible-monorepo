@@ -1,7 +1,7 @@
 ---
 
 - name: Create Postgres data directory
-  file:
+  ansible.builtin.file:
     path: "{{ postgres_directory }}"
     state: directory
     owner: "70"
@@ -9,15 +9,45 @@
     mode: "0700"
 
 - name: Create Postgres container
-  docker_container:
+  community.docker.docker_container:
     name: "{{ postgres_name }}"
-    hostname: "{{ postgres_name }}"
-    image: "{{ postgres_image }}"
+    image: "postgres:{{ postgres_version }}-alpine"
+
     state: started
+
+    hostname: "{{ postgres_name }}"
     published_ports: "{{ postgres_ports | default(omit) }}"
-    volumes:
-      - "{{ postgres_directory }}:/var/lib/postgresql/data"
-      - "{{ postgres_directory_extra | default(omit) }}"
-    env: "{{ postgres_environment_variables | default(omit) }}"
+    networks:
+      - name: "{{ docker_network.name | default('bridge') }}"
+    network_mode: "{{ docker_network.name | default('omit') }}"
+    networks_cli_compatible: "{{ postgres_networks_cli_compatible | default(true) }}"
+    purge_networks: "{{ postgres_purge_networks | default(true) }}"
+
+    command: "{{ postgres_command | default(omit) }}"
+
+    volumes: "{{ postgres_directories }}"
+
+    env:
+      POSTGRES_USER: "{{ postgres_user }}"
+      POSTGRES_PASSWORD: "{{ postgres_password }}"
+      POSTGRES_DB: "{{ postgres_database }}"
+
     labels:
       traefik.enable: "false"
+
+    restart_policy: unless-stopped
+
+    container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
+
+    comparisons:
+      env: allow_more_present
+      labels: strict
+
+  register: postgres_container
+
+- name: Set variables
+  set_fact:
+    postgres_hostname: "{{ postgres_name }}.{{ docker_network.name }}"
+    postgres_username: "{{ postgres_user }}"
+    postgres_password: "{{ postgres_password }}"
+    postgres_database: "{{ postgres_database }}"

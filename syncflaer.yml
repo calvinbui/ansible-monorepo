@@ -1,23 +1,10 @@
 ---
+
 - hosts: homelab
-  become: true
-  module_defaults:
-    docker_container:
-      keep_volumes: false
-      state: started
-      restart_policy: unless-stopped
-      networks_cli_compatible: true
-      purge_networks: true
-      networks:
-        - name: "{{ network.name }}"
-      dns_servers: "{{ network.dns }}"
-      comparisons:
-        env: allow_more_present
-        labels: allow_more_present
-      container_default_behavior: no_defaults
-      network_mode: "{{ network.name }}"
+
   vars:
-    network: "{{ networks.mgmt }}"
+    application: syncflaer
+
     syncflaer_domain_ip_lookup: !vault |
       $ANSIBLE_VAULT;1.1;AES256
       64346463303536643164343666613961613938666231626562666339313761363161313932653739
@@ -36,67 +23,69 @@
       66646131623838346162393936363733313966336330333764643639333763303063316432373738
       32363133643731626135363763313764303539633461343237383264333433363864363135356437
       63643866623438623463
+
+    docker_network: "{{ networks.mgmt }}"
+
   handlers:
     - name: Restart Python DNS
-      command: docker restart syncflaer-dns
+      ansible.builtin.command: "docker restart {{ application }}-dns"
 
     - name: Restart SyncFlaer
-      command: docker restart syncflaer
+      ansible.builtin.command: "docker restart {{ application }}"
+
   tasks:
-    - name: Create SyncFlaer folder
-      file:
-        path: "{{ common_directory }}/syncflaer"
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
         state: directory
-        owner: "1000"
-        group: "1000"
-        mode: "0640"
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
 
     - name: Copy Python DNS script
-      copy:
-        src: files/syncflaer/main.py
-        dest: "{{ common_directory }}/syncflaer/main.py"
+      ansible.builtin.copy:
+        src: '{{ files_directory }}/main.py'
+        dest: "{{ _config_dir.path }}/main.py"
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
         mode: "0770"
       notify: Restart Python DNS
 
     - name: Create Python DNS Container
-      docker_container:
-        name: syncflaer-dns
-        hostname: syncflaer-dns
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-dns"
         image: gcr.io/distroless/python3
         command:
           - /app/main.py
         volumes:
-          - "{{ common_directory }}/syncflaer:/app"
-        labels:
-          traefik.enable: "false"
+          - "{{ _config_dir.path }}:/app"
         env:
           HOSTNAME: "{{ syncflaer_domain_ip_lookup }}"
 
-    - name: Template SyncFlaer config
-      template:
-        src: templates/syncflaer/config.yml.j2
-        dest: "{{ common_directory }}/syncflaer/config.yml"
+    - name: Template config
+      ansible.builtin.template:
+        src: "{{ files_directory }}/config.yml.j2"
+        dest: "{{ _config_dir.path }}/config.yml"
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
         mode: "0770"
       notify: Restart SyncFlaer
 
-    - name: Create SyncFlaer Container
-      docker_container:
-        name: syncflaer
-        hostname: syncflaer
-        image: containeroo/syncflaer:3.0.0
+    - name: Create SyncFlaer container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: containeroo/syncflaer:4.0.0
         volumes:
-          - "{{ common_directory }}/syncflaer/config.yml:/config.yml"
-        labels:
-          traefik.enable: "false"
+          - "{{ _config_dir.path }}/config.yml:/config.yml"
         restart_policy: "no"
         state: present
 
     - name: Run SyncFlaer container periodically
-      cron:
+      ansible.builtin.cron:
         name: "SyncFlaer"
         minute: "*"
         job: "docker start syncflaer"

@@ -1,0 +1,90 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: bazarr
+
+    docker_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: linuxserver/bazarr
+        volumes:
+          - "{{ _config_dir.path }}:/config"
+          - "{{ common_directory_movies }}:/movies"
+          - "{{ common_directory_tv }}:/tv"
+        env:
+          PUID: "{{ common_user_id }}"
+          PGID: "{{ common_root_group }}"
+          TZ: "{{ common_timezone }}"
+        traefik:
+          - port: 6767
+            auth: true
+
+    - name: If "{{ application }}" has not been configured, go through the initial setup to generate a configuration file.
+      ansible.builtin.wait_for:
+        path: "{{ _config_dir.path }}/config/config.ini"
+        state: present
+
+    - name: Configure
+      community.general.ini_file:
+        path: "{{ _config_dir.path }}/config/config.ini"
+        section: "{{ item.key.split('.')[0] }}"
+        option: "{{ item.key.split('.')[1] }}"
+        value: "{{ item.value | string }}"
+      loop: "{{ _bazarr_config | dict2items }}"
+      notify: Restart
+      vars:
+        _bazarr_config:
+          analytics.enabled: "False"
+
+          general.single_language: "True"
+          general.upgrade_manual: "False"
+          general.upgrade_subs: "False"
+
+          general.use_sonarr: "True"
+          sonarr.ip: "sonarr.{{ docker_network.name }}"
+          sonarr.apikey: "{{ sonarr_api_key }}"
+          general.path_mappings: "[['/tv', '/tv'], ['', ''], ['', ''], ['', ''], ['', '']]"
+          general.serie_default_enabled: "True"
+          general.serie_default_language: "['en']"
+
+          general.use_radarr: "True"
+          radarr.apikey: "{{ radarr_api_key }}"
+          radarr.ip: "radarr.{{ docker_network.name }}"
+          general.path_mappings_movie: "[['/movies', '/movies'], ['', ''], ['', ''], ['', ''], ['', '']]"
+          general.movie_default_enabled: "True"
+          general.movie_default_language: "['en']"
+
+          general.enabled_providers: "['opensubtitles']"
+          opensubtitles.username: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            39656539646536396338386439663465373431616138303031306266626561626161636566353636
+            3864373564303438613230316430653464373363336532390a393965333533343939636534323665
+            34306137653730376230363631363966346633326633396634393039376331323165303931313965
+            6430626262393439620a336463633265636533373066323437623662396437643265316430353963
+            3466
+          opensubtitles.password: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            39623062646266613831323762336365313433383861393463323337316265353039353232323134
+            3666613430343335326531343338326134616439366566300a616438343763663836653165633731
+            65646133326133643164313231633638613734636533646439336239383962313237353633613131
+            3535326633666365310a333161306131643437643330343934303330613362663434653161653165
+            37336362373337326662333435306333633662343533636636633662613365663330

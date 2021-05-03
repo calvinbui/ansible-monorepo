@@ -1,64 +1,40 @@
 ---
+
 - hosts: homelab
-  become: true
-  module_defaults:
-    docker_container:
-      keep_volumes: false
-      state: started
-      restart_policy: unless-stopped
-      networks_cli_compatible: true
-      purge_networks: true
-      networks:
-        - name: "{{ network.name }}"
-      dns_servers: "{{ network.dns }}"
-      comparisons:
-        env: allow_more_present
-        labels: allow_more_present
-      container_default_behavior: no_defaults
-      network_mode: "{{ network.name }}"
+
   vars:
-    network: "{{ networks.pub }}"
-    joplin_directory: "{{ common_directory }}/joplin"
-    postgres_name: joplin-postgres
-    postgres_version: '13.1'
-    postgres_directory: "{{ joplin_directory }}/postgres"
-    postgres_environment_variables:
-      POSTGRES_USER: joplin
-      POSTGRES_PASSWORD: !vault |
-        $ANSIBLE_VAULT;1.1;AES256
-        35653433323264373163316330633630656530656563383235393138656430653631393739633563
-        3334656263653131643831313236656632373332373734330a643938376636383138313631316335
-        39373333626133386331353664366333303233303066666332363435363339393639393863343565
-        3531623666383865640a356635323461323636306362656436656534623265363935386362653961
-        31356438623962306539663438343965303763663266613361336338653064623966
-      POSTGRES_DB: joplin
-  handlers:
-    - name: Restart Joplin
-      command: docker restart joplin
-  roles:
-    - postgres
+    application: "joplin"
+
+    docker_network: "{{ networks.pub }}"
+
   tasks:
-    - name: Create Joplin Container
-      docker_container:
-        name: joplin
-        hostname: joplin
+    - name: Create postgres container
+      ansible.builtin.include_role:
+        name: postgres
+      vars:
+        postgres_version: '13.1'
+        postgres_directory: "{{ config_directory }}"
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          35653433323264373163316330633630656530656563383235393138656430653631393739633563
+          3334656263653131643831313236656632373332373734330a643938376636383138313631316335
+          39373333626133386331353664366333303233303066666332363435363339393639393863343565
+          3531623666383865640a356635323461323636306362656436656534623265363935386362653961
+          31356438623962306539663438343965303763663266613361336338653064623966
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
         image: joplin/server
         env:
-          APP_BASE_URL: "https://joplin.{{ common_tld }}"
+          APP_BASE_URL: "https://{{ application }}.{{ common_tld }}"
           APP_PORT: "22300"
           DB_CLIENT: pg
-          POSTGRES_PASSWORD: "{{ postgres_environment_variables.POSTGRES_PASSWORD }}"
-          POSTGRES_DATABASE: "{{ postgres_environment_variables.POSTGRES_DB }}"
-          POSTGRES_USER: "{{ postgres_environment_variables.POSTGRES_USER }}"
+          POSTGRES_PASSWORD: "{{ postgres_password }}"
+          POSTGRES_DATABASE: "{{ postgres_database }}"
+          POSTGRES_USER: "{{ postgres_username }}"
           POSTGRES_PORT: "5432"
-          POSTGRES_HOST: "{{ postgres_name }}.{{ network.name }}"
-        labels:
-          #### WEB
-          traefik.http.routers.joplin.entrypoints: "web"
-          traefik.http.routers.joplin.middlewares: "redirect@file"
-
-          traefik.http.routers.joplin-secure.entrypoints: "web-secure"
-          traefik.http.routers.joplin-secure.tls: "true"
-          traefik.http.routers.joplin-secure.tls.certresolver: letsencrypt
-
-          traefik.http.services.joplin.loadbalancer.server.port: "22300"
+          POSTGRES_HOST: "{{ postgres_hostname }}"
+        traefik:
+          - port: 22300

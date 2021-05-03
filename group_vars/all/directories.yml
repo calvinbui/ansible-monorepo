@@ -1,3 +1,5 @@
+---
+
 common_directory_storage: "/mnt/files"
 common_directory_download: "{{ common_directory_storage }}/Downloads"
 common_directory_tv: "{{ common_directory_storage }}/TV"
@@ -7,3 +9,6 @@ common_directory_photos: "{{ common_directory_storage }}/Photos"
 common_directory_music: "{{ common_directory_storage }}/Music"
 common_directory_misc: "{{ common_directory_storage }}/Misc"
 common_directory_backup: "{{ common_directory_storage }}/Backups"
+
+config_directory: "{{ common_directory }}/{{ application }}"
+files_directory: "files/{{ application }}"

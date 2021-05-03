@@ -1,0 +1,65 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: zfs-zed
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
+      changed_when: false
+      when: ansible_distribution == 'Ubuntu'
+
+    - name: Install zfs-zed and msmtp
+      ansible.builtin.apt:
+        name:
+          - zfs-zed
+          - msmtp
+          - msmtp-mta  # provide a sendmail-compatible MTA
+          - mailutils  # send mails using the mail command
+          - s-nail
+        state: present
+
+    - name: Create msmtp files
+      ansible.builtin.file:
+        path: /var/log/msmtp.log
+        state: touch
+        mode: "0777"
+        modification_time: preserve
+        access_time: preserve
+
+    - name: Configure msmtp
+      ansible.builtin.copy:
+        dest: /etc/msmtprc
+        mode: "440"
+        content: |
+          defaults
+          auth           on
+          tls            on
+          tls_trust_file /etc/ssl/certs/ca-certificates.crt
+          logfile        /var/log/msmtp.log
+
+          account alerts
+          host           {{ common_email_server }}
+          port           {{ common_email_smtp_port }}
+          tls            on
+          from           {{ common_email_username }}
+          user           {{ common_email_username }}
+          password       {{ common_email_password }}
+
+          account default : alerts
+
+    - name: Configure ZFS ZED
+      ansible.builtin.lineinfile:
+        path: /etc/zfs/zed.d/zed.rc
+        regexp: "^{{ item.split('=')[0] }}="
+        line: "{{ item }}"
+        state: present
+      loop:
+        - ZED_EMAIL_ADDR="zfszed{{ common_email_to }}"
+        - ZED_EMAIL_PROG="mailx"
+        - ZED_NOTIFY_VERBOSE=1
+        - ZED_NOTIFY_DATA=1

@@ -1,84 +1,54 @@
 ---
+
 - hosts: homelab
-  become: true
+
   vars:
-    network: "{{ networks.pub }}"
-    xbrowsersync_name: xbrowsersync
-    xbrowsersync_image: xbrowsersync/api
-    xbrowsersync_config_directory: "{{ common_directory }}/xbrowsersync"
-    xbrowsersync_config_template: templates/xbrowsersync/settings.json.j2
-    xbrowsersync_config_file: "{{ xbrowsersync_config_directory }}/settings.json"
-    # https://github.com/xbrowsersync/api#4-modify-configuration-settings
-    xbrowsersync_config:
-      db:
-        host: "{{ mongo_name }}.{{ network.name }}"
-        username: "{{ mongo_environment_variables.MONGO_INITDB_ROOT_USERNAME }}"
-        password: "{{ mongo_environment_variables.MONGO_INITDB_ROOT_PASSWORD }}"
-        name: "{{ mongo_environment_variables.MONGO_INITDB_DATABASE }}"
-      status:
-        message: "Hi {{ common_user }}"
-        allowNewSyncs: "false"
-    mongo_name: xbrowsersync-mongo
-    mongo_version: 4
-    mongo_directory: "{{ common_directory }}/xbrowsersync/mongodb"
-    mongo_environment_variables:
-      MONGO_INITDB_ROOT_USERNAME: xbrowsersync
-      MONGO_INITDB_ROOT_PASSWORD: !vault |
-        $ANSIBLE_VAULT;1.1;AES256
-        35303335326561353461653964643033363136646366656539653965303533653534343965303262
-        3335613833376166373532383634336537646563656431620a363133343734303434366464616137
-        35653735666364306633633430373866663061313764656637363864366132343939343130633961
-        3537663937333437390a646634326339366561373465316339373934356365326630616564316332
-        65303066316663663561653438336334626263613730636334313535383264313734
-      MONGO_INITDB_DATABASE: xbrowsersync
-  module_defaults:
-    docker_container:
-      keep_volumes: false
-      restart_policy: unless-stopped
-      networks_cli_compatible: true
-      purge_networks: true
-      dns_servers: "{{ network.dns }}"
-      networks:
-        - name: "{{ network.name }}"
-      container_default_behavior: no_defaults
-      network_mode: "{{ network.name }}"
+    application: xbrowsersync
+
+    docker_network: "{{ networks.pub }}"
+
   handlers:
-    - name: Restart xBrowserSync
-      command: docker restart "{{ xbrowsersync_name }}"
-  pre_tasks:
-    - name: Create xBrowserSync directory
-      file:
-        path: "{{ xbrowsersync_config_directory }}"
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create config directory
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
         state: directory
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
-        mode: "0440"
-  roles:
-    - mongo
-  tasks:
-    - name: Template xBrowserSync config
-      template:
-        src: "{{ xbrowsersync_config_template }}"
-        dest: "{{ xbrowsersync_config_file }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create mongodb container
+      ansible.builtin.include_role:
+        name: mongodb
+      vars:
+        mongo_version: 4
+        mongo_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          35303335326561353461653964643033363136646366656539653965303533653534343965303262
+          3335613833376166373532383634336537646563656431620a363133343734303434366464616137
+          35653735666364306633633430373866663061313764656637363864366132343939343130633961
+          3537663937333437390a646634326339366561373465316339373934356365326630616564316332
+          65303066316663663561653438336334626263613730636334313535383264313734
+
+    - name: Template config
+      ansible.builtin.template:
+        src: "{{ files_directory }}/settings.json.j2"
+        dest: "{{ _config_dir.path }}/settings.json"
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
-        mode: "0440"
-      notify: Restart xBrowserSync
+        mode: "0444"
+      notify: Restart
 
-    - name: Create xBrowserSync container
-      docker_container:
-        name: "{{ xbrowsersync_name }}"
-        hostname: "{{ xbrowsersync_name }}"
-        image: "{{ xbrowsersync_image }}"
-        state: started
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: xbrowsersync/api
         volumes:
-          - "{{ xbrowsersync_config_file }}:/usr/src/api/config/settings.json"
-        labels:
-          traefik.http.routers.xbrowsersync.entrypoints: "web"
-          traefik.http.routers.xbrowsersync.middlewares: "redirect@file"
-
-          traefik.http.routers.xbrowsersync-secure.entrypoints: "web-secure"
-          traefik.http.routers.xbrowsersync-secure.tls: "true"
-          traefik.http.routers.xbrowsersync-secure.tls.certresolver: letsencrypt
-
-          traefik.http.services.xbrowsersync.loadbalancer.server.port: "8080"
+          - "{{ _config_dir.path }}/settings.json:/usr/src/api/config/settings.json"
+        traefik:
+          - port: 8080

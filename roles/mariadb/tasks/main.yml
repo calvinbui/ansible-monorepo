@@ -1,7 +1,7 @@
 ---
 
 - name: Create MariaDB directory
-  file:
+  ansible.builtin.file:
     path: "{{ mariadb_directory }}"
     state: directory
     owner: "999"
@@ -9,15 +9,39 @@
     mode: "0775"
 
 - name: Create MariaDB container
-  docker_container:
+  community.docker.docker_container:
     name: "{{ mariadb_name }}"
-    hostname: "{{ mariadb_name }}"
-    image: "{{ mariadb_image }}"
+    image: "mariadb:{{ mariadb_version }}"
+
     state: started
+
+    hostname: "{{ mariadb_name }}"
     published_ports: "{{ mariadb_ports | default(omit) }}"
+    networks:
+      - name: "{{ docker_network.name | default('bridge') }}"
+    network_mode: "{{ docker_network.name | default('omit') }}"
+    networks_cli_compatible: "{{ mariadb_networks_cli_compatible | default(true) }}"
+    purge_networks: "{{ mariadb_purge_networks | default(true) }}"
+
     command: "{{ mariadb_command | default(omit) }}"
-    volumes:
-      - "{{ mariadb_directory }}:/var/lib/mysql"
-    env: "{{ mariadb_environment_variables | default(omit) }}"
+
+    volumes: "{{ mariadb_directories }}"
+
+    env:
+      MYSQL_ROOT_PASSWORD: "{{ mariadb_password }}"
+      MYSQL_DATABASE: "{{ mariadb_database }}"
+
     labels:
       traefik.enable: "false"
+
+    restart_policy: unless-stopped
+
+    container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
+
+  register: mariadb
+
+- name: Set variables
+  set_fact:
+    mariadb_hostname: "{{ mariadb_name }}.{{ docker_network.name }}"
+    mariadb_password: "{{ mariadb_password }}"
+    mariadb_database: "{{ mariadb_database }}"

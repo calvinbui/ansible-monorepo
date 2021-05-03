@@ -1,0 +1,46 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: node_exporter
+
+    docker_network: "{{ networks.mgmt }}"
+
+  tasks:
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: quay.io/prometheus/node-exporter:latest
+        command:
+          - '--path.rootfs=/host'
+          - '--collector.mountstats'
+          - '--collector.filesystem.ignored-fs-types=^(tmpfs|vfat|rpc_pipefs|fuse.lxcfs|rootfs|squashfs|nsfs)$'
+          - '--no-collector.arp'
+          - '--no-collector.bcache'
+          - '--no-collector.bonding'
+          - '--no-collector.conntrack'
+          - '--no-collector.cpufreq'
+          - '--no-collector.edac'
+          - '--no-collector.entropy'
+          - '--no-collector.filefd'
+          - '--no-collector.infiniband'
+          - '--no-collector.ipvs'
+          - '--no-collector.netclass'
+          - '--no-collector.netdev'
+          - '--no-collector.netstat'
+          - '--no-collector.nfsd'
+          - '--no-collector.pressure'
+          - '--no-collector.sockstat'
+          - '--no-collector.stat'
+          - '--no-collector.textfile'
+          - '--no-collector.vmstat'
+          - '--no-collector.xfs'
+        pid_mode: host
+        capabilities:
+          - sys_time
+        volumes:
+          - "/:/host:ro,rslave"
+        comparisons:
+          labels: allow_more_present

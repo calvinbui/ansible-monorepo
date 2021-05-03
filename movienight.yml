@@ -1,111 +1,93 @@
 ---
+
 - hosts: homelab
-  become: true
-  module_defaults:
-    docker_container:
-      keep_volumes: false
-      state: started
-      restart_policy: unless-stopped
-      networks_cli_compatible: true
-      purge_networks: true
-      networks:
-        - name: "{{ network.name }}"
-      dns_servers: "{{ network.dns }}"
-      comparisons:
-        env: allow_more_present
-        labels: allow_more_present
-      container_default_behavior: no_defaults
-      network_mode: "{{ network.name }}"
+
   vars:
-    movienight_directory: "{{ common_directory }}/movienight"
-    movienight_settings:
-      RegenAdminPass: false
-      LetThemLurk: true
-      AdminPassword: !vault |
-        $ANSIBLE_VAULT;1.1;AES256
-        32373661356532373061373132346535313337663062333432343233643664626539643461626364
-        3662656531383364323661626339343938623365636630650a643434306335326662363162353530
-        34653431323364373662636232303362383234363639363261623136323537386336323230613035
-        6330306361363930390a633264323064626436393633646238356631313531383033663166646138
-        30386531653131353465633366623566363137336638396238343436376561336636
-      StreamKey: !vault |
-        $ANSIBLE_VAULT;1.1;AES256
-        37623831366266663663336439656336373231646438666166656132306566343562353763323433
-        3662323730316330343136366138373763643663356632630a633531663637663136613036643738
-        64353235623337666431333033356635333864663061306263653164656237356631643632623634
-        3230333237326238640a613930356537373838396235633733326632353366326461303666353863
-        62383438373166303939653830643132663962306463396362666663376263613465
-    network: "{{ networks.pub }}"
+    application: movienight
+
+    docker_network: "{{ networks.pub }}"
+
   handlers:
-    - name: Restart MovieNight
-      command: docker restart movienight
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
 
   tasks:
-    - name: Clone MovieNight
-      git:
+    - name: Clone
+      ansible.builtin.git:
         repo: 'https://github.com/zorchenhimer/MovieNight.git'
-        dest: "{{ movienight_directory }}"
+        dest: "{{ config_directory }}"
         update: true
 
-    - name: Build MovieNight image
-      docker_image:
-        name: movienight
+    - name: Build image
+      community.docker.docker_image:
+        name: "{{ application }}"
         build:
-          path: "{{ movienight_directory }}"
+          path: "{{ config_directory }}"
           dockerfile: Dockerfile
           pull: true
-          network: "{{ network.name }}"
+          network: "{{ docker_network.name }}"
         source: build
         state: present
 
+    - name: Check settings.json
+      ansible.builtin.stat:
+        path: "{{ config_directory }}/settings.json"
+      register: __movienight_config
+
     # should be okay as the container needs to be reloaded to take effect
-    - name: Copy settings_example.json to settings.json
-      copy:
-        src: "{{ movienight_directory }}/settings_example.json"
-        dest: "{{ movienight_directory }}/settings.json"
+    - name: Create to settings.json
+      ansible.builtin.copy:
+        src: "{{ config_directory }}/settings_example.json"
+        dest: "{{ config_directory }}/settings.json"
         remote_src: true
         mode: "0640"
-      changed_when: false
-      tags:
-        - config
+      when: not __movienight_config.stat.exists
 
-    - name: Create MovieNight settings file
+    - name: Update settings.json
       json_patch:
-        src: "{{ movienight_directory }}/settings.json"
+        src: "{{ config_directory }}/settings.json"
         operations:
           - op: replace
             path: "{{ item.key }}"
             value: "{{ item.value }}"
         pretty: true
-      loop: "{{ movienight_settings | dict2items }}"
-      notify: Restart MovieNight
-      tags:
-        - config
+      loop: "{{ movienight_config | dict2items }}"
+      notify: Restart
+      vars:
+        movienight_config:
+          RegenAdminPass: false
+          LetThemLurk: true
+          AdminPassword: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              32373661356532373061373132346535313337663062333432343233643664626539643461626364
+              3662656531383364323661626339343938623365636630650a643434306335326662363162353530
+              34653431323364373662636232303362383234363639363261623136323537386336323230613035
+              6330306361363930390a633264323064626436393633646238356631313531383033663166646138
+              30386531653131353465633366623566363137336638396238343436376561336636
+          StreamKey: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              37623831366266663663336439656336373231646438666166656132306566343562353763323433
+              3662323730316330343136366138373763643663356632630a633531663637663136613036643738
+              64353235623337666431333033356635333864663061306263653164656237356631643632623634
+              3230333237326238640a613930356537373838396235633733326632353366326461303666353863
+              62383438373166303939653830643132663962306463396362666663376263613465
 
-    - name: Create MovieNight Container
-      docker_container:
-        name: movienight
-        hostname: movienight
-        image: movienight
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: "{{ application }}"
         volumes:
-          - "{{ movienight_directory }}/settings.json:/config/settings.json"
+          - "{{ config_directory }}/settings.json:/config/settings.json"
+        traefik:
+          - port: "8089"
         labels:
-          #### WEB
-          traefik.http.routers.movienight.entrypoints: "web"
-          traefik.http.routers.movienight.middlewares: "redirect@file"
-
-          traefik.http.routers.movienight-secure.entrypoints: "web-secure"
-          traefik.http.routers.movienight-secure.tls: "true"
-          traefik.http.routers.movienight-secure.tls.certresolver: letsencrypt
-
-          traefik.http.services.movienight.loadbalancer.server.port: "8089"
-
-          #### RTMP
           # rtmps/tls is not currently working on Traefik with OBS for me
           traefik.tcp.routers.movienight-rtmp.entrypoints: "rtmp"
-          traefik.tcp.routers.movienight-rtmp.service: movienight-rtmp
-          traefik.tcp.routers.movienight-rtmp.rule: HostSNI(`*`)
+          traefik.tcp.routers.movienight-rtmp.rule: "HostSNI(`*`)"
+          traefik.tcp.routers.movienight-rtmp.service: "{{ application }}-rtmp"
           traefik.tcp.services.movienight-rtmp.loadbalancer.server.port: "1935"
 
-          #### WATCHTOWER IGNORE
           com.centurylinklabs.watchtower.enable: "false"
+        comparisons:
+          labels: strict

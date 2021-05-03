@@ -1,0 +1,63 @@
+---
+
+- name: Reset role vars
+  ansible.builtin.set_fact:
+    labels: {}
+    combined_labels: {}
+    traefik_labels: {}
+
+- name: Generate Traefik labels for each route
+  ansible.builtin.include_tasks: traefik.yml
+  when: traefik is defined
+  loop: "{{ traefik }}"
+  loop_control:
+    loop_var: route
+  vars:
+    route_name: "{{ route.name | default(name) | default(application) }}"
+
+- name: Merge generated Traefik and Docker labels
+  ansible.builtin.set_fact:
+    combined_labels: "{{ labels | combine(traefik_labels, recursive=True) }}"
+  when: traefik is defined
+
+- name: Disable Traefik labels
+  ansible.builtin.set_fact:
+    combined_labels: "{{ labels | combine({ 'traefik.enable': 'false' }) }}"
+  when: traefik is undefined
+
+- name: "Create docker container for {{ name | default(application) }}"
+  community.docker.docker_container:
+    name: "{{ name | default(application) }}"
+
+    image: "{{ image | default(omit) }}"
+    command: "{{ command | default(omit) }}"
+
+    state: "{{ state | default('started') }}"
+    restart_policy: "{{ restart_policy | default('unless-stopped') }}"
+
+    env: "{{ env | default(omit) }}"
+
+    volumes: "{{ volumes | default(omit) }}"
+    keep_volumes: "{{ keep_volumes | default(false) }}"
+
+    hostname: "{{ name | default(omit) }}"
+    networks:
+      - name: "{{ docker_network.name | default('bridge') }}"
+        ipv4_address: "{{ ipv4_address | default(omit) }}"
+    dns_servers: "{{ docker_network.dns | default(omit) }}"
+    network_mode: "{{ docker_network.name | default('omit') }}"
+    published_ports: "{{ published_ports | default(omit) }}"
+    networks_cli_compatible: "{{ networks_cli_compatible | default(true) }}"
+    purge_networks: "{{ purge_networks | default(true) }}"
+
+    security_opts: "{{ security_opts | default(omit) }}"
+    capabilities: "{{ capabilities | default(omit) }}"
+    pid_mode: "{{ pid_mode | default(omit) }}"
+    privileged: "{{ privileged | default(omit) }}"
+    devices: "{{ devices | default(omit) }}"
+
+    container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
+
+    labels: "{{ combined_labels }}"
+
+    comparisons: "{{ comparisons | default(omit) }}"
