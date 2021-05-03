@@ -1,0 +1,146 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: qbittorrent
+
+    docker_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: linuxserver/qbittorrent
+        env:
+          PUID: "{{ common_user_id }}"
+          PGID: "{{ common_root_group }}"
+          TZ: "{{ common_timezone }}"
+          UMASK: "022"
+          WEBUI_PORT: "8090"
+        volumes:
+          - "{{ _config_dir.path }}:/config/qBittorrent"
+          - "{{ common_directory_download }}:/downloads"
+        ipv4_address: "{{ docker_network.prefix }}.2"
+        traefik:
+          - port: 8090
+            auth: true
+
+    - name: Wait for config
+      ansible.builtin.wait_for:
+        path: "{{ _config_dir.path }}/qBittorrent.conf"
+      register: _config_file
+
+    - name: Check if config changes required
+      community.general.ini_file:
+        path: "{{ _config_file.path }}"
+        section: "{{ item.key.split('.')[0] }}"
+        option: "{{ item.key.split('.')[1] }}"
+        value: "{{ item.value }}"
+        no_extra_spaces: true
+        mode: "0770"
+      loop: "{{ qbittorrent_config | dict2items }}"
+      check_mode: true
+      register: _qbittorrent_config
+      vars:
+        qbittorrent_config:
+          # Downloads
+          ## When adding a torrent
+          BitTorrent.Session\CreateTorrentSubfolder: "true"
+          Preferences.Downloads\StartInPause: "false"
+
+          ## Gap inbetween
+          Preferences.Downloads\PreAllocation: "false"
+          Preferences.Downloads\UseIncompleteExtension: "true"
+
+          # Saving Management
+          Preferences.Downloads\TempPath: /downloads/Intermediate/
+
+          # Connections
+          ## Enabled Protocol
+          BitTorrent.Session\BTProtocol: Both
+          Preferences.WebUI\UseUPnP: "false"
+          Preferences.General\UseRandomPort: "false"
+
+          ## Listening Port
+          Preferences.Connection\PortRangeMin: 62615
+
+          ## Connection Limits
+          Preferences.Bittorrent\MaxConnecs: -1
+          Preferences.Bittorrent\MaxConnecsPerTorrent: -1
+          Preferences.Bittorrent\MaxUploads: -1
+          Preferences.Bittorrent\MaxUploadsPerTorrent: -1
+
+          # Speed
+          ## Global Rate Limits
+          Preferences.Connection\GlobalUPLimit: 0
+          Preferences.Connection\GlobalDLLimit: 0
+          Preferences.Connection\GlobalDLLimitAlt: 0
+          Preferences.Connection\GlobalUPLimitAlt: 0
+          Preferences.Connection\alt_speeds_on: "false"
+
+          ## Rate Limit Settings
+          Preferences.Bittorrent\uTP_rate_limited: "false"
+          Preferences.Advanced\IncludeOverhead: "false"
+          Preferences.Advanced\IgnoreLimitsLAN: "true"
+
+          # BitTorrent
+          ## Privacy
+          Preferences.Bittorrent\DHT: "true"
+          Preferences.Bittorrent\LSD: "true"
+          Preferences.Bittorrent\PeX: "true"
+          Preferences.Bittorrent\Encryption: 1
+          Preferences.Advanced\AnonymousMode: "true"
+
+          ## Torrent Queueing
+          Preferences.Queueing\MaxActiveDownloads: 20
+          Preferences.Queueing\MaxActiveTorrents: 20
+
+          ## Seeding Limits
+          Preferences.Bittorrent\MaxRatio: 0
+          Preferences.Bittorrent\MaxRatioAction: 0
+
+          # Web UI
+          ## Language
+          Preferences.General\Locale: en_AU
+
+          ## Authentication
+          Preferences.WebUI\AuthSubnetWhitelist: 0.0.0.0/0
+          Preferences.WebUI\AuthSubnetWhitelistEnabled: "true"
+          Preferences.WebUI\CSRFProtection: "false"
+          Preferences.WebUI\ClickjackingProtection: "false"
+
+          # Advanced
+          ## qBittorrent Section
+          Preferences.Connection\ResolvePeerCountries: "false"
+          LegalNotice.Accepted: "true"
+
+    - name: Stop to make changes
+      ansible.builtin.command: docker stop "{{ application }}"
+      when: _qbittorrent_config.changed
+
+    - name: Configure
+      community.general.ini_file:
+        path: "{{ _config_file.path }}"
+        section: "{{ item.key.split('.')[0] }}"
+        option: "{{ item.key.split('.')[1] }}"
+        value: "{{ item.value }}"
+        no_extra_spaces: true
+        mode: "0770"
+      loop: "{{ _qbittorrent_config.results | selectattr('changed', 'equalto', true) | map(attribute='item') }}"
+      when: _qbittorrent_config.changed
+      notify: Restart

@@ -1,0 +1,142 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: nzbget
+
+    docker_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: linuxserver/nzbget
+        volumes:
+          - "{{ _config_dir.path }}:/config"
+          - "{{ common_directory_download }}:/downloads"
+        env:
+          PUID: "{{ common_user_id }}"
+          PGID: "{{ common_root_group }}"
+          TZ: "{{ common_timezone }}"
+        traefik:
+          - port: 6789
+            auth: true
+
+    - name: Wait for config
+      ansible.builtin.wait_for:
+        path: "{{ _config_dir.path }}/nzbget.conf"
+
+    - name: Configure
+      ansible.builtin.lineinfile:
+        dest: "{{ _config_dir.path }}/nzbget.conf"
+        regexp: "^{{ item.key }}="
+        line: "{{ item.key }}={{ item.value }}"
+      loop: "{{ nzbget_config | dict2items }}"
+      notify: Restart
+      vars:
+        nzbget_config:
+          # PATHS
+          MainDir: '/downloads'
+          DestDir: '${MainDir}'
+          InterDir: '${MainDir}/Intermediate/Incomplete'
+          NzbDir: '${MainDir}/Intermediate/Watch'
+          QueueDir: '${MainDir}/Intermediate/Queue'
+          TempDir: '${MainDir}/Intermediate/Temp'
+          WebDir: '${AppDir}/webui'
+          ScriptDir: '/config/scripts'
+          LockFile: '/config/nzbget.lock'
+          LogFile: '/config/nzbget.log'
+          ConfigTemplate: '${AppDir}/webui/nzbget.conf.template'
+
+          # NEWS-SERVERS
+          Server1.Name: 'news.newsdemon.com'
+          Server1.Level: '0'
+          Server1.Optional: 'no'
+          Server1.Group: '0'
+          Server1.Host: 'news.newsdemon.com'
+          Server1.Port: '563'
+          Server1.Username: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            35306662613632343031383634366561656532323335353531373063656337366430353464373936
+            3239336161363237643338386461636365393433616139660a623966653565623132346437666132
+            39626232613437326661383838353934383631623931363032626130316163313631323362306664
+            3666343230306262380a656365393139626161663862653062346333663034363664313161323836
+            3934
+          Server1.Password: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            37633239306639313966306438373763393638383137633039396663666534366464366261633161
+            3134323063613738646666633031383538353538383831320a343566663163653664653034653536
+            37326365306231316163333262623832383361303264313061303062353766306231313038353938
+            3761643965323363640a353135333966613432373338393464303363663535373433656363353962
+            3030
+          Server1.JoinGroup: 'no'
+          Server1.Encryption: 'yes'
+          Server1.Cipher: 'AES128-SHA'
+          Server1.Connections: '50'
+          Server1.Retention: "{{ common_usenet_retention }}"
+          Server1.IpVersion: 'ipv4'
+          Server1.Notes: ''
+
+          # SECURITY
+          ControlUsername:
+          ControlPassword:
+
+          # CATEGORIES
+          Category1.Name: 'Movies'
+          Category1.DestDir: 'Movies'
+          Category1.Aliases: 'movies*'
+          Category2.Name: 'TV'
+          Category2.DestDir: 'TV'
+          Category2.Unpack: 'yes'
+          Category3.Name: 'Games'
+          Category3.DestDir: 'Games'
+          Category3.Aliases: 'Games'
+          Category4.Name: 'Books'
+          Category4.DestDir: 'Books'
+          Category4.Aliases: 'Books'
+          Category5.Name: 'Music'
+          Category5.DestDir: 'Music'
+          Category5.Aliases: 'Music'
+          Server1.Active: 'yes'
+
+          # INCOMING NZBS
+          DupeCheck: 'no'
+
+          # DOWNLOAD QUEUE
+          FlushQueue: 'no'
+          ContinuePartial: 'no'
+          ArticleCache: '500'
+          WriteBuffer: '1024'
+          PostStrategy: 'rocket'
+
+          # LOGGING
+          WriteLog: 'rotate'
+
+          # CHECK AND REPAIR
+          ParBuffer: '128'
+          DirectRename: 'yes'
+          ParPauseQueue: 'yes'
+
+          # UNPACK
+          DirectUnpack: 'yes'
+          UnpackPauseQueue: 'yes'
+          UnrarCmd: '${AppDir}/unrar'
+          SevenZipCmd: '${AppDir}/7za'
+
+          # EXTENSION SCRIPTS
+          ScriptPauseQueue: 'yes'

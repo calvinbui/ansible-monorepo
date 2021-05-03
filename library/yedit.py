@@ -93,9 +93,18 @@ options:
     default: false
     aliases: []
     type: bool
+  insert:
+    description:
+    - Whether to insert to an array/list. When the key does not exist or is
+    - null, a new array is created. When the key is of a non-list type,
+    - nothing is done.
+    required: false
+    default: false
+    aliases: []
+    type: bool
   index:
     description:
-    - Used in conjunction with the update parameter.  This will update a
+    - Used in conjunction with the update or insert parameter.  This will update / insert to a
     - specific index in an array/list.
     required: false
     aliases: []
@@ -617,6 +626,22 @@ class Yedit(object):
         entry.append(value)
         return (True, self.yaml_dict)
 
+    def insert(self, path, value, index=0):
+        '''insert value to a list'''
+        try:
+            entry = Yedit.get_entry(self.yaml_dict, path, self.separator)
+        except KeyError:
+            entry = None
+
+        if entry is None:
+            self.put(path, [])
+            entry = Yedit.get_entry(self.yaml_dict, path, self.separator)
+        if not isinstance(entry, list):
+            return (False, self.yaml_dict)
+
+        entry.insert(index, value)
+        return (True, self.yaml_dict)
+
     # pylint: disable=too-many-arguments
     def update(self, path, value, index=None, curr_value=None):
         ''' put path, value into a dict '''
@@ -796,6 +821,9 @@ class Yedit(object):
             elif edit.get('action') == 'append':
                 rval = yamlfile.append(edit['key'], value)
 
+            elif edit.get('action') == 'insert':
+                rval = yamlfile.insert(edit['key'], value, edit['index'])
+
             else:
                 rval = yamlfile.put(edit['key'], value)
 
@@ -880,6 +908,10 @@ class Yedit(object):
                 elif params['append']:
                     _edit['action'] = 'append'
 
+                elif params['insert']:
+                    _edit['action'] = 'insert'
+                    _edit['index'] = params['index']
+
                 edits.append(_edit)
 
             elif params['edits'] is not None:
@@ -905,6 +937,10 @@ class Yedit(object):
             return {'changed': False, 'result': yamlfile.yaml_dict, 'state': state}
         return {'failed': True, 'msg': 'Unkown state passed'}
 
+def json_roundtrip_clean(js):
+    ''' Clean-up any non-string keys from a Python object, to ensure it can be serialized as JSON '''
+    cleaned_json = json.dumps(js, skipkeys=True)
+    return json.loads(cleaned_json)
 
 # pylint: disable=too-many-branches
 def main():
@@ -923,6 +959,7 @@ def main():
             value_type=dict(default='', type='str'),
             update=dict(default=False, type='bool'),
             append=dict(default=False, type='bool'),
+            insert=dict(default=False, type='bool'),
             index=dict(default=None, type='int'),
             curr_value=dict(default=None, type='str'),
             curr_value_format=dict(default='yaml',
@@ -943,7 +980,7 @@ def main():
         key_error = False
         edit_error = False
 
-        if module.params['key'] in [None, '']:
+        if module.params['key'] is None:
             key_error = True
 
         if module.params['edits'] in [None, []]:
@@ -958,7 +995,7 @@ def main():
         if key_error and edit_error:
             return module.fail_json(failed=True, msg='Empty value for parameter key not allowed.')
 
-    rval = Yedit.run_ansible(module.params)
+    rval = json_roundtrip_clean(Yedit.run_ansible(module.params))
     if 'failed' in rval and rval['failed']:
         return module.fail_json(**rval)
 

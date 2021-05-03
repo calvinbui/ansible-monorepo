@@ -1,38 +1,23 @@
 ---
-- hosts: usenet
-  become: true
+
+- hosts: homelab
+
   vars:
-    network: "{{ networks.pub }}"
-  module_defaults:
-    community.docker.docker_container:
-      keep_volumes: false
-      state: started
-      restart_policy: unless-stopped
-      networks_cli_compatible: true
-      purge_networks: true
-      networks:
-        - name: "{{ network.name }}"
-      dns_servers: "{{ network.dns }}"
-      comparisons:
-        env: allow_more_present
-        labels: allow_more_present
-      container_default_behavior: no_defaults
-      network_mode: "{{ network.name }}"
-  roles:
-    - pip
-    - role: nzbget
-      tags: nzbget
-    - role: qbittorrent
-      tags: qbittorrent
-    - role: nzbhydra
-      tags: nzbhydra
-    - role: sonarr
-      tags: sonarr
-    - role: jdownloader
-      tags: jdownloader
-    - role: radarr
-      tags: radarr
-    - role: lidarr
-      tags: lidarr
-    - role: bazarr
-      tags: bazarr
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create download folder
+      ansible.builtin.file:
+        path: "{{ common_directory_download }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+
+- ansible.builtin.import_playbook: nzbget.yml
+- ansible.builtin.import_playbook: qbittorrent.yml
+- ansible.builtin.import_playbook: jdownloader.yml
+- ansible.builtin.import_playbook: nzbhydra.yml
+- ansible.builtin.import_playbook: sonarr.yml
+- ansible.builtin.import_playbook: radarr.yml
+- ansible.builtin.import_playbook: bazarr.yml

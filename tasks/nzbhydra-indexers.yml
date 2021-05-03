@@ -27,18 +27,18 @@
 
 - name: Configure indexer if exists using its index in the list
   yedit:
-    src: "{{ nzbhydra_config_directory }}/nzbhydra.yml"
+    src: "{{ _config_dir.path }}/nzbhydra.yml"
     key: "indexers.[{{ nzbhydra_configured_indexer_index }}].{{ item.key }}"
     value: "{{ item.value }}"
   loop: "{{ nzbhydra_indexer_item | dict2items }}"
   when: nzbhydra_configured_indexer_index != ''
-  notify: Restart NZBHydra
+  notify: Restart
 
 - name: Append indexer to list if not found
   yedit:
-    src: "{{ nzbhydra_config_directory }}/nzbhydra.yml"
+    src: "{{ _config_dir.path }}/nzbhydra.yml"
     key: "indexers"
     value: "{{ nzbhydra_indexer_item }}"
     append: true
   when: nzbhydra_configured_indexer_index == ''
-  notify: Restart NZBHydra
+  notify: Restart

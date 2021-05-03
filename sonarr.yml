@@ -1,0 +1,61 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: sonarr
+
+    docker_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: linuxserver/sonarr
+        volumes:
+          - "{{ _config_dir.path }}:/config"
+          - "{{ common_directory_tv }}:/tv"
+          - "{{ common_directory_download }}:/downloads"
+        env:
+          PUID: "{{ common_user_id }}"
+          PGID: "{{ common_root_group }}"
+          TZ: "{{ common_timezone }}"
+        traefik:
+          - port: 8989
+            auth: true
+
+    - name: Wait for config
+      ansible.builtin.wait_for:
+        path: "{{ _config_dir.path }}/config.xml"
+
+    - name: Install lxml
+      ansible.builtin.pip:
+        name: lxml
+        executable: pip3
+
+    - name: Configure
+      ansible.builtin.xml:
+        path: "{{ _config_dir.path }}/config.xml"
+        xpath: "/Config/{{ item.key }}"
+        value: "{{ item.value | string }}"
+      loop: "{{ _sonarr_config | dict2items }}"
+      notify: Restart
+      vars:
+        _sonarr_config:
+          ApiKey: "{{ sonarr_api_key }}"
+          LaunchBrowser: "False"
+          AnalyticsEnabled: "False"

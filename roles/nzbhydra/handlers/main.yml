@@ -1,7 +1,0 @@
----
-
-- name: Restart NZBHydra
-  community.docker.docker_container:
-    name: "{{ nzbhydra_name }}"
-    state: started
-    restart: true

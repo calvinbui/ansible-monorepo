@@ -1,7 +1,0 @@
----
-
-- name: Restart Radarr
-  community.docker.docker_container:
-    name: "{{ radarr_name }}"
-    state: started
-    restart: true
