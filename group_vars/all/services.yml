@@ -41,11 +41,6 @@ http_services:
     subtitle: Manages and Downloads Subtitles
     url: https://bazarr.{{ common_tld }}
     group: "Download"
-  - name: Lidarr
-    logo: lidarr.png
-    subtitle: Manages and Downloads Music
-    url: https://lidarr.{{ common_tld }}
-    group: "Download"
 
   ####################################################
   #
