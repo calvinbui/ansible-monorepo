@@ -33,6 +33,7 @@
           PUID: "{{ common_user_id }}"
           PGID: "{{ common_root_group }}"
           TZ: "{{ common_timezone }}"
+          UMASK: "022"
         traefik:
           - port: 6789
             auth: true
