@@ -25,7 +25,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: linuxserver/nzbget
+        image: ghcr.io/linuxserver/nzbget
         volumes:
           - "{{ _config_dir.path }}:/config"
           - "{{ common_directory_download }}:/downloads"

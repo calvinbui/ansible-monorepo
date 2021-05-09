@@ -25,7 +25,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: linuxserver/sonarr
+        image: ghcr.io/linuxserver/sonarr
         volumes:
           - "{{ _config_dir.path }}:/config"
           - "{{ common_directory_tv }}:/tv"

@@ -25,7 +25,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: linuxserver/bazarr
+        image: ghcr.io/linuxserver/bazarr
         volumes:
           - "{{ _config_dir.path }}:/config"
           - "{{ common_directory_movies }}:/movies"
