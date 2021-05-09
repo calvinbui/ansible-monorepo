@@ -1,5 +1,4 @@
 ---
-
 - hosts: homelab
 
   vars:
@@ -38,6 +37,7 @@
         name: docker_container
       vars:
         image: filebrowser/filebrowser
+        user: "{{ common_user_id }}:{{ common_group_id }}"
         volumes:
           - "{{ common_directory_storage }}:/srv"
           - "{{ _config_dir.path }}/filebrowser.db:/database.db"

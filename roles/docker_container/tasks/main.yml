@@ -1,5 +1,4 @@
 ---
-
 - name: Reset role vars
   ansible.builtin.set_fact:
     labels: {}
@@ -35,6 +34,8 @@
     state: "{{ state | default('started') }}"
     recreate: "{{ recreate | default(false) }}"
     restart_policy: "{{ restart_policy | default('unless-stopped') }}"
+
+    user: "{{ user | default(omit) }}"
 
     env: "{{ env | default(omit) }}"
 
