@@ -78,7 +78,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: containeroo/syncflaer:4.0.0
+        image: containeroo/syncflaer:4.0.1
         volumes:
           - "{{ _config_dir.path }}/config.yml:/config.yml"
         restart_policy: "no"
