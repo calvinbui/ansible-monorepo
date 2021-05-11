@@ -41,8 +41,11 @@
         name: docker_container
       vars:
         image: vaultwarden/server:alpine
+        user: "{{ common_user_id }}:{{ common_group_id }}"
         env:
           DOMAIN: "https://{{ application }}.{{ common_tld }}"
+
+          DISABLE_ADMIN_TOKEN: "false"
           ADMIN_TOKEN: !vault |
             $ANSIBLE_VAULT;1.1;AES256
             66613739613330623637326234343739613134323763316439663336336534336137353639326462
@@ -52,23 +55,29 @@
             31636661393936656664653463303161653835363939626464623261613037353031386264666466
             35633861653837353232323936383561656336346539396535636463663638353130646365373762
             363134643934313733666639313530323764
+
           WEBSOCKET_ENABLED: "true"
+
           SIGNUPS_ALLOWED: "false"
+          INVITATIONS_ALLOWED: "true"
+
           SMTP_HOST: "{{ common_email_server }}"
           SMTP_PORT: "{{ common_email_smtp_port }}"
+          SMTP_SSL: "true"
           SMTP_USERNAME: "{{ common_email_username }}"
           SMTP_PASSWORD: "{{ common_email_password }}"
-          SMTP_SSL: "true"
           SMTP_FROM: "{{ application }}{{ common_email_to }}"
+
           DATABASE_URL: "postgresql://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}"
+
+          ROCKET_PORT: "8080"
         volumes:
           - "{{ _config_dir.path }}/vaultwarden:/data"
         traefik:
           # https://github.com/dani-garcia/vaultwarden/wiki/Proxy-examples#traefik-v2-docker-compose-example-by-hwwilliams
-          # duplicate entries because syncflaer is dumb
           # ui routing
           - name: "{{ application }}-ui"
-            port: 80
+            port: 8080
             rule: Host(`{{ application }}.{{ common_tld }}`, `bitwarden.{{ common_tld }}`)
           # websocket for syncing
           - name: "{{ application }}-websocket"
