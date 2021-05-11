@@ -49,17 +49,11 @@
           # ui routing
           - name: "{{ application }}-ui"
             port: 80
-            rule: Host(`{{ application }}.{{ common_tld }}`)
-          - name: "bitwarden-ui"
-            port: 80
-            rule: Host(`bitwarden.{{ common_tld }}`)
+            rule: Host(`{{ application }}.{{ common_tld }}`, `bitwarden.{{ common_tld }}`)
           # websocket for syncing
           - name: "{{ application }}-websocket"
             port: 3012
-            rule: Host(`{{ application }}.{{ common_tld }}`) && Path(`/notifications/hub`)
-          - name: "bitwarden-websocket"
-            port: 3012
-            rule: Host(`bitwarden.{{ common_tld }}`) && Path(`/notifications/hub`)
+            rule: Host(`{{ application }}.{{ common_tld }}`, `bitwarden.{{ common_tld }}`) && Path(`/notifications/hub`)
 
     - name: Update config
       json_patch:
