@@ -1,9 +1,11 @@
 ---
 
+# previously known as bitwarden_rs/bitwarden
+
 - hosts: homelab
 
   vars:
-    application: "bitwarden"
+    application: vaultwarden
 
     docker_network: "{{ networks.user }}"
 
@@ -17,11 +19,24 @@
         mode: "0771"
       register: _config_dir
 
+    - name: Create postgres container
+      ansible.builtin.include_role:
+        name: postgres
+      vars:
+        postgres_version: '13'
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          35393133643464346162626134323933353965623330656535353265383533663961323138616538
+          6363313833656530363063663166303363313066343133310a623763316639303764666436616362
+          31643163326630306166323431303533626665306437636461313664626537656161346666343431
+          3436653764366235390a653332393364323733353135633564346463316366363032383663323132
+          30303764383431623866386361643938343964626462366466646139353332363031
+
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: bitwardenrs/server:alpine
+        image: vaultwarden/server:alpine
         env:
           ADMIN_TOKEN: !vault |
             $ANSIBLE_VAULT;1.1;AES256
@@ -40,15 +55,23 @@
           SMTP_PASSWORD: "{{ common_email_password }}"
           SMTP_SSL: "true"
           SMTP_FROM: "{{ application }}{{ common_email_to }}"
+          DATABASE_URL: "postgresql://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}"
         volumes:
-          - "{{ _config_dir.path }}:/data"
+          - "{{ _config_dir.path }}/vaultwarden:/data"
         traefik:
-          # https://github.com/dani-garcia/bitwarden_rs/wiki/Proxy-examples#traefik-v2-docker-compose-example-by-hwwilliams
+          # https://github.com/dani-garcia/vaultwarden/wiki/Proxy-examples#traefik-v2-docker-compose-example-by-hwwilliams
+          # duplicate entries because syncflaer is dumb
           # ui routing
           - name: "{{ application }}-ui"
             port: 80
             rule: Host(`{{ application }}.{{ common_tld }}`)
+          - name: "bitwarden-ui"
+            port: 80
+            rule: Host(`bitwarden.{{ common_tld }}`)
           # websocket for syncing
           - name: "{{ application }}-websocket"
             port: 3012
             rule: Host(`{{ application }}.{{ common_tld }}`) && Path(`/notifications/hub`)
+          - name: "bitwarden-websocket"
+            port: 3012
+            rule: Host(`bitwarden.{{ common_tld }}`) && Path(`/notifications/hub`)
