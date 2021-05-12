@@ -45,3 +45,5 @@
           - /proc:/host/proc:ro
           - "{{ _config_dir.path }}:/config"
         privileged: true
+        metrics:
+          - port: 9256

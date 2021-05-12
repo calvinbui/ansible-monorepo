@@ -1,0 +1,19 @@
+---
+
+- name: "Generating Prometheus service discovery labels"
+  when: metrics is defined
+  ansible.builtin.set_fact:
+    metrics_labels: "{{ metrics_labels | default({}) | combine({ item.key: item.value }) }}"
+  loop:
+    - key: "prometheus-scrape.enabled"
+      value: "true"
+    - key: "prometheus-scrape.job_name"
+      value: "{{ metric.job_name | default(name) | default(application) }}"
+    - key: "prometheus-scrape.hostname"
+      value: "{{ (name | default(application)) + '.' + docker_network.name }}"
+    - key: "prometheus-scrape.port"
+      value: "{{ metric.port | default('9090') }}"
+    - key: "prometheus-scrape.scheme"
+      value: "{{ metric.scheme | default('http') }}"
+    - key: "prometheus-scrape.metrics_path"
+      value: "{{ metric.path | default('/metrics') }}"

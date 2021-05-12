@@ -62,3 +62,5 @@
           - "{{ _config_dir.path }}/traefik.yaml:/etc/traefik/traefik.yaml"
           - "{{ _config_dir.path }}/acme.json:/acme.json"
           - "{{ _config_dir.path }}/dynamic_conf.yaml:/dynamic_conf.yaml"
+        metrics:
+          - port: 8082

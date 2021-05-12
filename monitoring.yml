@@ -5,6 +5,7 @@
 - ansible.builtin.import_playbook: process_exporter.yml
 - ansible.builtin.import_playbook: node_exporter.yml
 
+- ansible.builtin.import_playbook: prometheus-docker-sd.yml
 - ansible.builtin.import_playbook: prometheus.yml
 - ansible.builtin.import_playbook: alertmanager.yml
 

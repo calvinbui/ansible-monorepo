@@ -41,3 +41,5 @@
         devices:
           - /dev/kmsg
         privileged: true
+        metrics:
+          - port: 8080

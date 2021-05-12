@@ -44,3 +44,5 @@
           - "/:/host:ro,rslave"
         comparisons:
           labels: allow_more_present
+        metrics:
+          - port: 9100

@@ -72,6 +72,7 @@
         volumes:
           - "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}:/etc/prometheus"
           - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/prometheus"
+          - "{{ _config_dir.path }}/prometheus-docker-sd:/prometheus-docker-sd:ro"
         traefik:
           - port: 9090
             auth: true
