@@ -74,6 +74,7 @@
           - dnsutils
           - git
           - zfsutils-linux
+          - jq
         state: present
 
     - name: Remove packages
