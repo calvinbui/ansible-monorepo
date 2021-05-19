@@ -75,6 +75,8 @@
           - git
           - zfsutils-linux
           - jq
+          - yq
+          - ripgrep
         state: present
 
     - name: Remove packages
