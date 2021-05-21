@@ -1,0 +1,21 @@
+groups:
+  - name: alertmanager
+    rules:
+      - alert: Configuration Reload Failure
+        expr: alertmanager_config_last_reload_successful != 1
+        for: 0m
+        annotations:
+          title: AlertManager configuration reload failure
+          description: "AlertManager configuration reload error"
+      - alert: Config Not Synced
+        expr: count(count_values("config_hash", alertmanager_config_hash)) > 1
+        for: 0m
+        annotations:
+          title: AlertManager config not synced
+          description: "Configurations of AlertManager cluster instances are out of sync"
+      - alert: Notification Failing
+        expr: rate(alertmanager_notifications_failed_total[1m]) > 0
+        for: 0m
+        annotations:
+          summary: AlertManager notification failing
+          description: "Alertmanager is failing sending notifications"

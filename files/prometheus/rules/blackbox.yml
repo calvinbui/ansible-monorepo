@@ -1,0 +1,23 @@
+---
+
+groups:
+  - name: http
+    rules:
+      - alert: HTTP Connection
+        expr: probe_success{instance!~".*ipmi.*"} == 0
+        for: 5m
+        annotations:
+          title: "HTTP Connection"
+          description: "The URL {{ $labels.instance }} is not responding successfully"
+      - alert: HTTP SSL
+        expr: probe_http_ssl{instance!~".*ipmi.*"} == 0 AND probe_success{instance!~".*ipmi.*"} == 1
+        for: 5m
+        annotations:
+          title: "SSL Connection"
+          description: "The SSL Connection to {{ $labels.instance }} is unsuccessful"
+      - alert: Certificate Expiration
+        expr: probe_ssl_earliest_cert_expiry{job="blackbox"} - time() < 86400 * 7
+        for: 5m
+        annotations:
+          title: "Certificate is expiring soon"
+          description: "The certificate for {{ $labels.instance }} is expiring soon"

@@ -23,5 +23,7 @@ receivers:
 
 route:
   receiver: mattermost
-  repeat_interval: 24h
   group_by: ['alertname','name']
+  group_wait: 10s
+  group_interval: 30s
+  repeat_interval: 24h

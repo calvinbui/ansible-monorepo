@@ -1,7 +1,24 @@
 #jinja2: lstrip_blocks: "true", trim_blocks: "false"
 ---
 
+global:
+  scrape_interval: 20s
+  evaluation_interval: 20s
+
+rule_files:
+  - '/rules/*.yml'
+
 scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets:
+          - localhost:9090
+
+  - job_name: alertmanager
+    static_configs:
+      - targets:
+          - alertmanager.{{ docker_network.name }}:9093
+
   - job_name: prometheus-docker-sd
     file_sd_configs:
       - files:
@@ -25,9 +42,6 @@ scrape_configs:
         target_label: instance
       - target_label: __address__
         replacement: blackbox_exporter.{{ docker_network.name }}:9115
-
-rule_files:
-  - /etc/prometheus/rules.yml
 
 alerting:
   alertmanagers:
