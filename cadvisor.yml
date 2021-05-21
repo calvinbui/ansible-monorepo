@@ -29,9 +29,16 @@
       vars:
         image: gcr.io/cadvisor/cadvisor:latest
         command:
-          - "-docker_only=true"
-          - "-disable_metrics={{ cadvisor_disabled_metrics | join(',') }}"
-          - "-housekeeping_interval=10s"
+          - --allow_dynamic_housekeeping=true
+          - --docker_only=true
+          - --event_storage_age_limit=default=0
+          - --event_storage_event_limit=default=0
+          - --global_housekeeping_interval=30s
+          - --housekeeping_interval=30s
+          - --max_housekeeping_interval=35s
+          - --storage_duration=1m0s
+          - --store_container_labels=false
+          - "--disable_metrics={{ cadvisor_disabled_metrics | join(',') }}"
         volumes:
           - /:/rootfs:ro
           - /var/run:/var/run:ro
