@@ -42,7 +42,7 @@ groups:
           title: Prometheus configuration reload failure
           description: "Prometheus configuration reload error"
       - alert: Too Many Restarts
-        expr: changes(process_start_time_seconds{}[15m]) > 2
+        expr: changes(process_start_time_seconds{}[15m]) > 5
         for: 0m
         annotations:
           title: Prometheus too many restarts
