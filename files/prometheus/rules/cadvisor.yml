@@ -1,10 +1,10 @@
 ---
 
 groups:
-  - name: Containers
+  - name: containers
     rules:
       - alert: Container Down
-        expr: time() - container_last_seen{name=~".+", image!~"synflaer.*"} > 60
+        expr: time() - container_last_seen{name=~".+"} > 120
         for: 2m
         annotations:
           title: "Container missing"
