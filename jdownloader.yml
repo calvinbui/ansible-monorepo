@@ -28,6 +28,8 @@
           GROUP_ID: "{{ common_root_group }}"
           DISPLAY_WIDTH: "1920"
           DISPLAY_HEIGHT: "1080"
+          KEEP_APP_RUNNING: "1"
+          UMASK: "022"
         volumes:
           - "{{ _config_dir.path }}:/config"
           - "{{ common_directory_download }}:/output"
