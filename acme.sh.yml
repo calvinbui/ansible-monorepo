@@ -15,15 +15,9 @@
       - domain: "homelab-ipmi.{{ common_local_tld }}"
         method: --dns dns_cf
         script: "{{ acme_scripts_dir }}/ipmi.py --ipmi-url=https://homelab-ipmi.{{ common_local_tld }} --username=ADMIN --password=ADMIN --cert-file={{ acme_cert_dir }}/homelab-ipmi.{{ common_local_tld }}/fullchain.cer --key-file={{ acme_cert_dir }}/homelab-ipmi.{{ common_local_tld }}/homelab-ipmi.{{ common_local_tld }}.key"
-      - domain: "freenas-ipmi.{{ common_local_tld }}"
-        method: --dns dns_cf
-        script: "{{ acme_scripts_dir }}/ipmi.py --ipmi-url https://freenas-ipmi.{{ common_local_tld }} --username ADMIN --password ADMIN --cert-file {{ acme_cert_dir }}/freenas-ipmi.{{ common_local_tld }}/fullchain.cer --key-file {{ acme_cert_dir }}/freenas-ipmi.{{ common_local_tld }}/freenas-ipmi.{{ common_local_tld }}.key"
       - domain: "unifi.{{ common_local_tld }}"
         method: --dns dns_cf
         script: "{{ acme_scripts_dir }}/unifi-docker.sh {{ acme_cert_dir }}/unifi.{{ common_local_tld }}/fullchain.cer {{ acme_cert_dir }}/unifi.{{ common_local_tld }}/unifi.{{ common_local_tld }}.key {{ common_directory }}/unifi/data"
-      - domain: "jellyfin.{{ common_local_tld }}"
-        method: --dns dns_cf
-        script: "{{ acme_scripts_dir }}/jellyfin.sh {{ acme_cert_dir }}/jellyfin.{{ common_local_tld }} {{ common_directory }}/jellyfin/cert.pfx"
   tasks:
     # https://github.com/Neilpang/acme.sh/wiki/How-to-install
     - name: Install socat
@@ -36,7 +30,7 @@
       ansible.builtin.git:
         repo: https://github.com/acmesh-official/acme.sh.git
         dest: "{{ acme_repo_dir }}"
-        version: 2.8.7
+        version: 2.8.9
 
     - name: Setup acme.sh
       ansible.builtin.shell: |
