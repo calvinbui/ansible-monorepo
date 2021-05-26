@@ -77,7 +77,7 @@
           Preferences.General\UseRandomPort: "false"
 
           ## Listening Port
-          Preferences.Connection\PortRangeMin: 62615
+          Preferences.Connection\PortRangeMin: 54935
 
           ## Connection Limits
           Preferences.Bittorrent\MaxConnecs: -1
