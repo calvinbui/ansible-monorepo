@@ -27,4 +27,4 @@
           PGID: "{{ common_root_group }}"
         volumes:
           - "{{ _config_dir.path }}:/config"
-        ipv4_address: "{{ networks.user.prefix }}.3"
+        ipv4_address: "{{ docker_network.prefix }}.3"
