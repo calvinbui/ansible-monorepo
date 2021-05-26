@@ -30,6 +30,8 @@
         env:
           PUID: "{{ common_user_id }}"
           PGID: "{{ common_root_group }}"
+          VERSION: "latest"
+          # PLEX_CLAIM: ""
         volumes:
           - "{{ _config_dir.path }}:/config"
           - "{{ common_directory_movies }}:/movies"
