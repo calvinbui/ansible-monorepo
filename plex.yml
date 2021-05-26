@@ -25,16 +25,17 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/linuxserver/plex:latest
+        image: plexinc/pms-docker:latest
         ipv4_address: "{{ docker_network.prefix }}.3"
         env:
-          PUID: "{{ common_user_id }}"
-          PGID: "{{ common_root_group }}"
-          VERSION: "latest"
+          PLEX_UID: "{{ common_user_id }}"
+          PLEX_GID: "{{ common_root_group }}"
+          TZ: "{{ common_timezone }}"
           # PLEX_CLAIM: ""
         volumes:
           - "{{ _config_dir.path }}:/config"
-          - "{{ common_directory_movies }}:/movies"
-          - "{{ common_directory_tv }}:/tv"
+          - /tmp/plex:/transcode
+          - "{{ common_directory_movies }}:/data/movies"
+          - "{{ common_directory_tv }}:/data/tv"
         traefik:
           - port: 32400
