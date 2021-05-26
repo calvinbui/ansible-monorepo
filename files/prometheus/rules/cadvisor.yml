@@ -4,8 +4,8 @@ groups:
   - name: containers
     rules:
       - alert: Container Down
-        expr: time() - container_last_seen{name=~".+"} > 120
-        for: 2m
+        expr: time() - container_last_seen{name=~".+"} > 60
+        for: 4m
         annotations:
           title: "Container missing"
           description: "The container {{ $labels.name }} was last seen a while ago"
