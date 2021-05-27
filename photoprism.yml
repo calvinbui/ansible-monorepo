@@ -65,4 +65,4 @@
       ansible.builtin.cron:
         name: "chown+chmod photos periodically"
         minute: "*"
-        job: "chown {{ common_user_id }}:33 -R {{ common_directory_photos }} && chmod -R 755 {{ common_directory_photos }}"
+        job: "chown {{ common_user_id }}:33 -R {{ common_directory_photos }} && chmod -R 775 {{ common_directory_photos }}"
