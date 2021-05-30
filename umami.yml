@@ -59,6 +59,9 @@
           - name: umami-alt
             port: 3000
             rule: "Host(`u.{{ common_tld }}`)"
+          - name: umami-public
+            port: 3000
+            rule: "Host(`umami.calvin.me`)"
         labels:
           traefik.http.routers.umami-alt-secure.middlewares: "umami-script-path"
           traefik.http.middlewares.umami-script-path.replacepathregex.regex: '^/script.js'
