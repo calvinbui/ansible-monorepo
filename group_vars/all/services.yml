@@ -98,6 +98,11 @@ http_services:
   #                    SHARING
   #
   ####################################################
+  - name: Plex
+    logo: plex.png
+    subtitle: Media Server
+    url: https://plex.{{ common_tld }}
+    group: "Sharing"
   - name: PsiTransfer
     icon: fas fa-cloud-upload-alt
     subtitle: File Sharing
