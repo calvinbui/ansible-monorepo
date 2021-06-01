@@ -54,15 +54,9 @@
             6431376536626536350a383831396466663033656436303232366564666166326564653261373332
             31353630346265373230666337303235306663313337656562646364373132323337
         traefik:
-          - name: umami
-            port: 3000
-          - name: umami-alt
-            port: 3000
-            rule: "Host(`u.{{ common_tld }}`)"
-          - name: umami-public
-            port: 3000
-            rule: "Host(`umami.calvin.me`)"
+          - port: 3000
+            rule: "Host(`{{ application }}.{{ common_tld }}`, `u.{{ common_tld }}`, `umami.calvin.me`, `u.calvin.me`)"
         labels:
-          traefik.http.routers.umami-alt-secure.middlewares: "umami-script-path"
+          traefik.http.routers.umami-secure.middlewares: "umami-script-path"
           traefik.http.middlewares.umami-script-path.replacepathregex.regex: '^/script.js'
           traefik.http.middlewares.umami-script-path.replacepathregex.replacement: '/umami.js'
