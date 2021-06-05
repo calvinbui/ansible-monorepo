@@ -17,7 +17,7 @@
         path: "{{ config_directory }}"
         state: directory
         owner: "{{ common_user_id }}"
-        group: "{{ common_root_group }}"
+        group: "{{ common_group_id }}"
         mode: "0771"
       register: _config_dir
 
