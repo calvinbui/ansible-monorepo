@@ -70,6 +70,10 @@
           # Saving Management
           Preferences.Downloads\TempPath: /downloads/Intermediate/
 
+          # Run external program on torrent completion
+          AutoRun.enabled: "true"
+          AutoRun.program: chmod -R 770 \"%F/\"
+
           # Connections
           ## Enabled Protocol
           BitTorrent.Session\BTProtocol: Both
