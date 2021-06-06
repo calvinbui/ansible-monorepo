@@ -16,7 +16,7 @@
       ansible.builtin.file:
         path: "{{ config_directory }}"
         state: directory
-        owner: "472" # grafana user
+        owner: "472"  # grafana user
         group: "{{ common_group }}"
         mode: "0771"
       register: _config_dir
@@ -25,7 +25,7 @@
       ansible.builtin.file:
         path: "{{ _config_dir.path }}/{{ item }}"
         state: directory
-        owner: "472" # grafana user
+        owner: "472"  # grafana user
         group: "{{ common_group }}"
         mode: "0771"
       loop:
@@ -51,7 +51,7 @@
               isDefault: true
               editable: false
         dest: "{{ _dir.results | selectattr('item', 'match', 'provisioning/datasources') | flatten | map(attribute='path') | first }}/prometheus.yml"
-        owner: "472" # grafana user
+        owner: "472"  # grafana user
         group: "{{ common_group }}"
         mode: "0444"
       notify: Restart

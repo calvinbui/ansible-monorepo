@@ -24,7 +24,7 @@
       register: _config_dir
 
     - name: Create postgres container
-      ansible.builtin.include_role:
+      ansible.builtin.import_role:
         name: postgres
       vars:
         postgres_version: '13'

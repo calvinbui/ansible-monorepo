@@ -159,6 +159,7 @@
         value: "{{ item.value }}"
         state: present
       loop: "{{ _nzbhydra_config | dict2items }}"
+      become: false
       become_user: "{{ common_user }}"
       notify: Restart
       vars:
@@ -185,6 +186,7 @@
         key: "downloading.downloaders"
         value: "{{ _nzbhydra_downloaders | to_yaml }}"
         state: present
+      become: false
       become_user: "{{ common_user }}"
       vars:
         _nzbhydra_downloaders:
@@ -204,6 +206,7 @@
         key: "indexers"
         state: list
       register: nzbhydra_configured_indexers
+      become: false
       become_user: "{{ common_user }}"
 
     - name: Init indexers configuration list vars for internal use
@@ -237,6 +240,7 @@
         src: "{{ _config_dir.path }}/nzbhydra.yml"
         key: "indexers[{{ item }}]"
         state: absent
+      become: false
       become_user: "{{ common_user }}"
       loop: "{{ nzbhydra_configured_indexers_index | difference(nzbhydra_var_indexers_index) | sort(reverse=true) }}"
       when: nzbhydra_configured_indexers_index | difference(nzbhydra_var_indexers_index) | length > 0

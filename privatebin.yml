@@ -17,6 +17,7 @@
         name: jmespath
         executable: pip3
       delegate_to: localhost
+      become: false
       become_user: "{{ common_user }}"
 
     - name: Create config folders

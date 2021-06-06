@@ -125,7 +125,7 @@
       ansible.builtin.command: "docker exec -it {{ application }} shlink api-key:generate --no-interaction --no-ansi"
       register: shlink_api
       vars:
-        ansible_ssh_pipelining: no
+        ansible_ssh_pipelining: false
       when: not shlink_web_config.stat.exists
 
     - name: Template shlink-web-client config

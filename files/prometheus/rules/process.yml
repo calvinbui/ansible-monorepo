@@ -26,4 +26,3 @@ groups:
         annotations:
           title: "NUT Server Service"
           description: "The nut-server service is abnormal"
-

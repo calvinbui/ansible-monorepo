@@ -27,7 +27,7 @@
       ansible.builtin.file:
         path: "{{ config_directory }}"
         state: directory
-        owner: "65534" # nobody user
+        owner: "65534"  # nobody user
         group: "{{ common_group }}"
         mode: "0771"
       register: _config_dir
@@ -36,7 +36,7 @@
       ansible.builtin.file:
         path: "{{ _config_dir.path }}/{{ item }}"
         state: directory
-        owner: "65534" # nobody user
+        owner: "65534"  # nobody user
         group: "{{ common_group }}"
         mode: "0771"
       loop:
@@ -48,7 +48,7 @@
       ansible.builtin.template:
         src: "{{ files_directory }}/alertmanager.yml.j2"
         dest: "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}/alertmanager.yml"
-        owner: "65534" # nobody user
+        owner: "65534"  # nobody user
         group: "{{ common_group }}"
         mode: "0444"
       notify: Restart

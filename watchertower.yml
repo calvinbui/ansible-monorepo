@@ -16,7 +16,7 @@
           - /var/run/docker.sock:/var/run/docker.sock:ro
         env:
           TZ: "{{ common_timezone }}"
-          WATCHTOWER_SCHEDULE: "0 30 3 * * *" # 3:30:00 AM each day
+          WATCHTOWER_SCHEDULE: "0 30 3 * * *"  # 3:30:00 AM each day
           WATCHTOWER_POLL_INTERVAL: "12960"
           WATCHTOWER_CLEANUP: "true"
           WATCHTOWER_REMOVE_VOLUMES: "true"

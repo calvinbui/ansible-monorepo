@@ -50,4 +50,3 @@
           - port: 8080
             rule: "Host(`{{ common_tld }}`)"
         recreate: "{{ true if _config_file.changed else false }}"
-
