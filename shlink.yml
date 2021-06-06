@@ -118,7 +118,7 @@
 
     - name: Check if shlink API config exists
       ansible.builtin.stat:
-        path: "{{ _web_dir.path }}/web-client/servers.json"
+        path: "{{ _web_dir.path }}/servers.json"
       register: shlink_web_config
 
     - name: Generate shlink API key
