@@ -59,7 +59,7 @@
         line: "{{ common_user }} ALL=(ALL) NOPASSWD: ALL"
         validate: 'visudo -cf %s'
 
-    - name: Install packages
+    - name: Install apt packages
       apt:
         name:
           - neovim
@@ -75,10 +75,14 @@
           - git
           - zfsutils-linux
           - jq
-          - yq
           - ripgrep
           - sqlite3
         state: present
+
+    - name: Install snap packages
+      community.general.snap:
+        name:
+          - yq
 
     - name: Remove packages
       ansible.builtin.apt:
