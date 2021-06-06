@@ -138,7 +138,7 @@
           - "{{ common_directory_download }}:/downloads"
         env:
           PUID: "{{ common_user_id }}"
-          PGID: "{{ common_group }}"
+          PGID: "{{ common_group_id }}"
           TZ: "{{ common_timezone }}"
         traefik:
           - port: 5076
@@ -159,6 +159,7 @@
         value: "{{ item.value }}"
         state: present
       loop: "{{ _nzbhydra_config | dict2items }}"
+      become_user: "{{ common_user }}"
       notify: Restart
       vars:
         _nzbhydra_config:
@@ -182,8 +183,9 @@
       yedit:
         src: "{{ _config_dir.path }}/nzbhydra.yml"
         key: "downloading.downloaders"
-        value: "{{ _nzbhydra_downloaders }}"
+        value: "{{ _nzbhydra_downloaders | to_yaml }}"
         state: present
+      become_user: "{{ common_user }}"
       vars:
         _nzbhydra_downloaders:
           - downloadType: NZB
@@ -202,6 +204,7 @@
         key: "indexers"
         state: list
       register: nzbhydra_configured_indexers
+      become_user: "{{ common_user }}"
 
     - name: Init indexers configuration list vars for internal use
       ansible.builtin.set_fact:
@@ -234,6 +237,7 @@
         src: "{{ _config_dir.path }}/nzbhydra.yml"
         key: "indexers[{{ item }}]"
         state: absent
+      become_user: "{{ common_user }}"
       loop: "{{ nzbhydra_configured_indexers_index | difference(nzbhydra_var_indexers_index) | sort(reverse=true) }}"
       when: nzbhydra_configured_indexers_index | difference(nzbhydra_var_indexers_index) | length > 0
       notify: Restart

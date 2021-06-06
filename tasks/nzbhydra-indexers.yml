@@ -30,6 +30,7 @@
     src: "{{ _config_dir.path }}/nzbhydra.yml"
     key: "indexers.[{{ nzbhydra_configured_indexer_index }}].{{ item.key }}"
     value: "{{ item.value }}"
+  become_user: "{{ common_user }}"
   loop: "{{ nzbhydra_indexer_item | dict2items }}"
   when: nzbhydra_configured_indexer_index != ''
   notify: Restart
@@ -40,5 +41,6 @@
     key: "indexers"
     value: "{{ nzbhydra_indexer_item }}"
     append: true
+  become_user: "{{ common_user }}"
   when: nzbhydra_configured_indexer_index == ''
   notify: Restart
