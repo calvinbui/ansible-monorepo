@@ -41,7 +41,7 @@
     container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
 
 - name: Set variables
-  set_fact:
+  ansible.builtin.set_fact:
     mongo_hostname: "{{ mongo_name }}.{{ docker_network.name }}"
     mongo_username: "{{ mongo_username }}"
     mongo_password: "{{ mongo_password }}"

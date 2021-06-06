@@ -39,7 +39,7 @@
       register: _url_shortener_config
 
     - name: Set URL shortener value
-      set_fact:
+      ansible.builtin.set_fact:
         _url_shortener_value: "https://{{ common_short_tld }}/rest/v1/short-urls/shorten?apiKey={{ _url_shortener_config['content'] | b64decode | from_json | first | json_query('apiKey') }}&format=txt&longUrl="
 
     - name: Template config

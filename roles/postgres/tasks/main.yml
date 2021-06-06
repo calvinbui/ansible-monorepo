@@ -46,7 +46,7 @@
   register: postgres_container
 
 - name: Set variables
-  set_fact:
+  ansible.builtin.set_fact:
     postgres_hostname: "{{ postgres_name }}.{{ docker_network.name }}"
     postgres_username: "{{ postgres_user }}"
     postgres_password: "{{ postgres_password }}"
