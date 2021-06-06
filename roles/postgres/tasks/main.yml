@@ -1,12 +1,5 @@
 ---
 
-- name: Set variables
-  ansible.builtin.set_fact:
-    postgres_hostname: "{{ postgres_name }}.{{ docker_network.name }}"
-    postgres_username: "{{ postgres_user }}"
-    postgres_password: "{{ postgres_password }}"
-    postgres_database: "{{ postgres_database }}"
-
 - name: Create Postgres data directory
   ansible.builtin.file:
     path: "{{ postgres_directory }}"
@@ -51,3 +44,10 @@
       labels: strict
 
   register: postgres_container
+
+- name: Set variables
+  ansible.builtin.set_fact:
+    _postgres_hostname: "{{ postgres_name }}.{{ docker_network.name }}"
+    _postgres_username: "{{ postgres_user }}"
+    _postgres_password: "{{ postgres_password }}"
+    _postgres_database: "{{ postgres_database }}"

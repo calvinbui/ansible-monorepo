@@ -59,12 +59,12 @@
           - /etc/localtime:/etc/localtime:ro
         env:
           # set same as db credentials and dbname
-          MM_USERNAME: "{{ postgres_username }}"
-          MM_PASSWORD: "{{ postgres_password }}"
-          MM_DBNAME: "{{ postgres_database }}"
-          DB_HOST: "{{ postgres_hostname }}"
+          MM_USERNAME: "{{ _postgres_username }}"
+          MM_PASSWORD: "{{ _postgres_password }}"
+          MM_DBNAME: "{{ _postgres_database }}"
+          DB_HOST: "{{ _postgres_hostname }}"
           DB_PORT_NUMBER: "5432"
           MM_SQLSETTINGS_DRIVERNAME: postgres
-          MM_SQLSETTINGS_DATASOURCE: "postgres://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}?sslmode=disable&connect_timeout=10"
+          MM_SQLSETTINGS_DATASOURCE: "postgres://{{ _postgres_username }}:{{ _postgres_password }}@{{ _postgres_hostname }}:5432/{{ _postgres_database }}?sslmode=disable&connect_timeout=10"
         traefik:
           - port: "8065"

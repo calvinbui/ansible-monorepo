@@ -38,5 +38,5 @@
 
 - name: Set variables
   ansible.builtin.set_fact:
-    redis_hostname: "{{ redis_name }}.{{ docker_network.name }}"
-    redis_password: "{{ redis_password }}"
+    _redis_hostname: "{{ redis_name }}.{{ docker_network.name }}"
+    _redis_password: "{{ redis_password }}"

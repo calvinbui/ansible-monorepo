@@ -53,7 +53,7 @@
           PHOTOPRISM_EXPERIMENTAL: "false"
           PHOTOPRISM_SITE_URL: "https://{{ application }}.{{ common_tld }}/"
           PHOTOPRISM_DATABASE_DRIVER: "mysql"
-          PHOTOPRISM_DATABASE_DSN: "root:{{ mariadb_password }}@tcp({{ mariadb_hostname }}:3306)/photoprism?charset=utf8mb4,utf8&parseTime=true"
+          PHOTOPRISM_DATABASE_DSN: "root:{{ _mariadb_password }}@tcp({{ _mariadb_hostname }}:3306)/photoprism?charset=utf8mb4,utf8&parseTime=true"
         volumes:
           - "{{ _config_dir.path }}/photoprism:/photoprism/storage"
           - "{{ common_directory_photos }}:/photoprism/originals:ro"

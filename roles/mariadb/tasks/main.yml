@@ -42,6 +42,6 @@
 
 - name: Set variables
   ansible.builtin.set_fact:
-    mariadb_hostname: "{{ mariadb_name }}.{{ docker_network.name }}"
-    mariadb_password: "{{ mariadb_password }}"
-    mariadb_database: "{{ mariadb_database }}"
+    _mariadb_hostname: "{{ mariadb_name }}.{{ docker_network.name }}"
+    _mariadb_password: "{{ mariadb_password }}"
+    _mariadb_database: "{{ mariadb_database }}"

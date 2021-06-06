@@ -46,10 +46,10 @@
         env:
           PUID: "{{ common_user_id }}"
           PGID: "{{ common_group_id }}"
-          DB_HOST: "{{ mariadb_hostname }}"
+          DB_HOST: "{{ _mariadb_hostname }}"
           DB_USER: root
-          DB_PASS: "{{ mariadb_password }}"
-          DB_DATABASE: "{{ mariadb_database }}"
+          DB_PASS: "{{ _mariadb_password }}"
+          DB_DATABASE: "{{ _mariadb_database }}"
           APP_URL: "https://{{ application }}.{{ common_tld }}"
         traefik:
           - port: 80

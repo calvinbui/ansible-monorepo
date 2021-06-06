@@ -29,10 +29,10 @@
         image: huginn/huginn
         env:
           HUGINN_DATABASE_ADAPTER: mysql2
-          HUGINN_DATABASE_HOST: "{{ mariadb_hostname }}"
+          HUGINN_DATABASE_HOST: "{{ _mariadb_hostname }}"
           HUGINN_DATABASE_PORT: "3306"
           HUGINN_DATABASE_USERNAME: root
-          HUGINN_DATABASE_PASSWORD: "{{ mariadb_password }}"
+          HUGINN_DATABASE_PASSWORD: "{{ _mariadb_password }}"
 
           HUGINN_SMTP_USER_NAME: "{{ common_email_username }}"
           HUGINN_SMTP_PASSWORD: "{{ common_email_password }}"

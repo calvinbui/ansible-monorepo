@@ -72,10 +72,10 @@
         image: shlinkio/shlink:stable
         env:
           DB_DRIVER: "postgres"
-          DB_NAME: "{{ postgres_database }}"
-          DB_USER: "{{ postgres_username }}"
-          DB_PASSWORD: "{{ postgres_password }}"
-          DB_HOST: "{{ postgres_hostname }}"
+          DB_NAME: "{{ _postgres_database }}"
+          DB_USER: "{{ _postgres_username }}"
+          DB_PASSWORD: "{{ _postgres_password }}"
+          DB_HOST: "{{ _postgres_hostname }}"
           DB_PORT: "5432"
 
           SHORT_DOMAIN_HOST: "{{ common_short_tld }}"
@@ -93,7 +93,7 @@
             3430666366383661310a343062653765326632656262313661313139643632366533363939316265
             39666461626163346464633937313064363565643364653935333364663266393366
 
-          REDIS_SERVERS: "tcp://{{ redis_hostname }}:6379?password={{ redis_password }}"
+          REDIS_SERVERS: "tcp://{{ _redis_hostname }}:6379?password={{ _redis_password }}"
 
           ANONYMIZE_REMOTE_ADDR: "false"
         traefik:

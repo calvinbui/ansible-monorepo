@@ -31,10 +31,10 @@
           APP_BASE_URL: "https://{{ application }}.{{ common_tld }}"
           APP_PORT: "22300"
           DB_CLIENT: pg
-          POSTGRES_PASSWORD: "{{ postgres_password }}"
-          POSTGRES_DATABASE: "{{ postgres_database }}"
-          POSTGRES_USER: "{{ postgres_username }}"
+          POSTGRES_PASSWORD: "{{ _postgres_password }}"
+          POSTGRES_DATABASE: "{{ _postgres_database }}"
+          POSTGRES_USER: "{{ _postgres_username }}"
           POSTGRES_PORT: "5432"
-          POSTGRES_HOST: "{{ postgres_hostname }}"
+          POSTGRES_HOST: "{{ _postgres_hostname }}"
         traefik:
           - port: 22300
