@@ -1,0 +1,93 @@
+---
+
+# https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html
+
+- hosts: homelab
+
+  vars:
+    docker_network: "{{ networks.mgmt }}"
+
+  tasks:
+    - name: Set distribution variable
+      ansible.builtin.set_fact:
+        _distribution: "{{ ansible_distribution | lower }}{{ ansible_distribution_version | regex_replace('\\.', '') }}"
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
+      changed_when: false
+
+    - name: Install kernel headers and development packages for the currently running kernel
+      ansible.builtin.apt:
+        name: "linux-headers-{{ ansible_kernel }}"
+        state: present
+      register: result
+      until: result is success
+      retries: 5
+      delay: 5
+
+    - name: Ensure packages on the CUDA network repository have priority over the Canonical repository
+      ansible.builtin.get_url:
+        url: "https://developer.download.nvidia.com/compute/cuda/repos/{{ _distribution }}/x86_64/cuda-{{ _distribution }}.pin"
+        dest: /etc/apt/preferences.d/cuda-repository-pin-600
+
+    - name: Add CUDA GPG key
+      ansible.builtin.apt_key:
+        url: https://developer.download.nvidia.com/compute/cuda/repos/{{ _distribution }}/x86_64/7fa2af80.pub
+        state: present
+      register: result
+      until: result is success
+      retries: 5
+      delay: 5
+
+    - name: Add CUDA Repository
+      ansible.builtin.apt_repository:
+        repo: "deb http://developer.download.nvidia.com/compute/cuda/repos/{{ _distribution }}/x86_64 /"
+        filename: /etc/apt/sources.list.d/cuda.list
+        state: present
+        update_cache: true
+
+    # - name: Install CUDA drivers
+    #   ansible.builtin.apt:
+    #     name: cuda-drivers
+    #     state: present
+    #   register: result
+    #   until: result is success
+    #   retries: 5
+    #   delay: 5
+
+    - name: Add NVIDIA's Docker GPG key
+      ansible.builtin.apt_key:
+        url: https://nvidia.github.io/nvidia-docker/gpgkey
+        state: present
+      register: result
+      until: result is success
+      retries: 5
+      delay: 5
+
+    - name: Download NVIDIA's Docker Repository
+      ansible.builtin.get_url:
+        url: "https://nvidia.github.io/nvidia-docker/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/nvidia-docker.list"
+        dest: /etc/apt/sources.list.d/nvidia-docker.list
+      register: __apt_repository
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+      when: __apt_repository.changed
+
+    # - name: Install NVIDIA Container Toolkit
+    #   ansible.builtin.apt:
+    #     name: nvidia-docker2
+    #     state: present
+    #   register: result
+    #   until: result is success
+    #   retries: 5
+    #   delay: 5
+
+    - name: Restart Docker to complete installation
+      ansible.builtin.service:
+        name: docker
+        state: restarted
+      when: result.changed
