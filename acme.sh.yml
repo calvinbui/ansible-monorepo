@@ -30,7 +30,7 @@
       ansible.builtin.git:
         repo: https://github.com/acmesh-official/acme.sh.git
         dest: "{{ acme_repo_dir }}"
-        version: 2.8.9
+        version: 2.9.0
 
     - name: Setup acme.sh
       ansible.builtin.shell: |
@@ -46,7 +46,7 @@
 
     - name: Copy scripts
       ansible.builtin.copy:
-        src: files/certs/
+        src: files/acme.sh/
         dest: "{{ acme_scripts_dir }}"
         mode: 0755
 
