@@ -5,6 +5,14 @@
   vars:
     application: glauth
 
+    ui_secret_key: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      34323739613031306166633535366632653930363064346438663736626637323935386337373031
+      3338376231613432323537346636623163363863373233320a376631313634646139643534616464
+      32343064346637326563623763393833376665343535623631343566323061616634333161316432
+      3337303763613137380a393030613432316265386264323135326262343331646438303738316163
+      39373436666131626132633563613165393434653539626361333664346439316363
+
     docker_network: "{{ networks.mgmt }}"
 
   handlers:
@@ -63,7 +71,7 @@
         volumes:
           - "{{ _config_dir.path }}/config:/home/ldap/db"
         env:
-          SECRET_KEY: mysuperlongsecretkeythatnobodywillguess
+          SECRET_KEY: "{{ ui_secret_key }}"
           MAIL_SERVER: "{{ common_email_server }}"
           MAIL_PORT: "{{ common_email_smtp_port }}"
           MAIL_USE_TLS: "{{ '1' if common_email_protocol == 'tls' else '0' }}"
