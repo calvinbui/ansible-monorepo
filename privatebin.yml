@@ -12,14 +12,6 @@
       ansible.builtin.command: docker restart "{{ application }}"
 
   tasks:
-    - name: Install jmespath locally
-      ansible.builtin.pip:
-        name: jmespath
-        executable: pip3
-      delegate_to: localhost
-      become: false
-      become_user: "{{ common_user }}"
-
     - name: Create config folders
       ansible.builtin.file:
         path: "{{ config_directory }}"
@@ -40,6 +32,14 @@
         - cfg
         - data
       register: _dir
+
+    - name: Install jmespath locally
+      ansible.builtin.pip:
+        name: jmespath
+        executable: pip3
+      delegate_to: localhost
+      become: false
+      become_user: "{{ common_user }}"
 
     - name: Get URL shortener key
       ansible.builtin.slurp:
