@@ -71,7 +71,7 @@
           MAIL_PASSWORD: "{{ common_email_password }}"
           MAIL_ADMIN: "{{ application }}{{ common_email_to }}"
         traefik:
-          - port: "5000"
+          - port: 5000
             rule: "Host(`{{ application }}.{{ common_tld }}`)"
         labels:
           com.centurylinklabs.watchtower.enable: "false"

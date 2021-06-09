@@ -56,7 +56,7 @@
           PGID: "{{ common_group_id }}"
           TZ: "{{ common_timezone }}"
         traefik:
-          - port: "8000"
+          - port: 8000
 
     - name: Edit config
       ansible.builtin.lineinfile:

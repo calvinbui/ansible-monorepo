@@ -68,4 +68,4 @@
           - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/srv/data"
           - "{{ _dir.results | selectattr('item', 'match', 'cfg') | flatten | map(attribute='path') | first }}:/srv/cfg"
         traefik:
-          - port: "8080"
+          - port: 8080

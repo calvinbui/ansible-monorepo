@@ -75,4 +75,4 @@
           - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/var/lib/grafana"
           - "{{ _dir.results | selectattr('item', 'match', 'provisioning') | flatten | map(attribute='path') | first }}:/etc/grafana/provisioning"
         traefik:
-          - port: "3000"
+          - port: 3000
