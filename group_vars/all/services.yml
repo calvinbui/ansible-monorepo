@@ -92,6 +92,11 @@ http_services:
     subtitle: Personal Photo Management
     url: https://photoprism.{{ common_tld }}
     group: "Tools"
+  - name: GLAuth
+    icon: fas fa-address-book
+    subtitle: LDAP
+    url: https://glauth.{{ common_tld }}
+    group: "Tools"
 
   ####################################################
   #
