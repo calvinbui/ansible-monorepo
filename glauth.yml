@@ -1,0 +1,77 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: glauth
+
+    docker_network: "{{ networks.mgmt }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create config folders
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: glauth/glauth
+        volumes:
+          - "{{ _config_dir.path }}/config:/app/config"
+
+    - name: Touch config
+      notify: Restart
+      ansible.builtin.file:
+        dest: "{{ _config_dir.path }}/config/config.cfg"
+        mode: "0644"
+        owner: "{{ common_user_id }}"
+        group: "{{ common_group_id }}"
+
+    - name: Clone UI
+      ansible.builtin.git:
+        repo: 'https://github.com/sonicnkt/glauth-ui.git'
+        dest: "{{ _config_dir.path }}/glauth-ui"
+        update: true
+
+    - name: Build UI image
+      community.docker.docker_image:
+        name: "{{ application }}-ui"
+        build:
+          path: "{{ _config_dir.path }}/glauth-ui"
+          dockerfile: Dockerfile
+          pull: true
+          network: "{{ docker_network.name }}"
+        source: build
+        state: present
+
+    - name: Create UI container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-ui"
+        image: "{{ application }}-ui"
+        volumes:
+          - "{{ _config_dir.path }}/config:/home/ldap/db"
+        env:
+          SECRET_KEY: mysuperlongsecretkeythatnobodywillguess
+          MAIL_SERVER: "{{ common_email_server }}"
+          MAIL_PORT: "{{ common_email_smtp_port }}"
+          MAIL_USE_TLS: "{{ '1' if common_email_protocol == 'tls' else '0' }}"
+          MAIL_USERNAME: "{{ common_email_username }}"
+          MAIL_PASSWORD: "{{ common_email_password }}"
+          MAIL_ADMIN: "{{ application }}{{ common_email_to }}"
+        traefik:
+          - port: "5000"
+            rule: "Host(`{{ application }}.{{ common_tld }}`)"
+        labels:
+          com.centurylinklabs.watchtower.enable: "false"
