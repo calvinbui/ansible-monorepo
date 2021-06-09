@@ -81,7 +81,7 @@
           value: "{{ common_email_username }}"
         - section: email "main"
           option: to
-          value: "zfswatcher{{ common_email_to }}"
+          value: "{{ application }}{{ common_email_to }}"
         - section: wwwuser "{{ htpasswd.username }}"
           option: password
           value: "{{ htpasswd.password_hashed }}"
