@@ -146,7 +146,7 @@ http_services:
   #
   ####################################################
   - name: Nextcloud
-    logo: nextcloud.png
+    logo: nextcloud.svg
     subtitle: File Sharing and Communication Platform
     url: https://nextcloud.{{ common_tld }}
     group: "Collaboration"
