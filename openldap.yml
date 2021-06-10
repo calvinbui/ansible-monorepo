@@ -1,0 +1,58 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: openldap
+
+    ldap_admin_password: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      35313865303335373162353033363861613464663232346137363632306530646532663962613664
+      3266646366356565336632376262333133356230326531640a373139356563653936663338356431
+      64326138336438623633313438306461633935616435663164343836396561316434656233383135
+      3964633832313735310a343434333565626564366566616431373735376432333439663263653438
+      31636139636530356137663735623433643062623931303333303066663666323539343336353537
+      63653630663738636163326163356665643366383639636535643732343662333761303934323862
+      33333439663964366136303131613962393130616437306232376131623530343134636665376364
+      64653664356536396639
+
+    docker_network: "{{ networks.mgmt }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create {{ application }} container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: osixia/openldap
+        env:
+          LDAP_ORGANISATION: "homelab"
+          LDAP_DOMAIN: "{{ common_local_tld }}"
+          LDAP_ADMIN_PASSWORD: "{{ ldap_admin_password }}"
+        volumes:
+          - "{{ _config_dir.path }}/database:/var/lib/ldap"
+          - "{{ _config_dir.path }}/config:/etc/ldap/slapd.d"
+
+    - name: Create phpLDAPadmin container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: phpldapadmin
+        image: osixia/phpldapadmin
+        env:
+          PHPLDAPADMIN_LDAP_HOSTS: "{{ application }}.{{ docker_network.name }}"
+          PHPLDAPADMIN_HTTPS: "false"
+        traefik:
+          - port: 80
