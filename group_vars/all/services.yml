@@ -136,7 +136,7 @@ http_services:
   - name: MinIO
     logo: minio.png
     subtitle: Object storage
-    url: https://minio.{{ common_tld }}
+    url: https://minio.{{ common_tld }}/minio/login
     group: "Sharing"
 
   ####################################################
