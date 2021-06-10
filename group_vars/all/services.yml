@@ -73,7 +73,7 @@ http_services:
     url: https://octopi.{{ common_local_tld }}
     group: "Tools"
   - name: Huginn
-    logo: huginn.png
+    logo: huginn.svg
     subtitle: Web-based Scheduler
     url: https://huginn.{{ common_tld }}
     group: "Tools"
@@ -88,14 +88,14 @@ http_services:
     url: https://papermerge.{{ common_tld }}
     group: "Tools"
   - name: PhotoPrism
-    logo: photoprism.png
+    logo: photoprism.svg
     subtitle: Personal Photo Management
     url: https://photoprism.{{ common_tld }}
     group: "Tools"
-  - name: GLAuth
+  - name: OpenLDAP
     icon: fas fa-address-book
     subtitle: LDAP
-    url: https://glauth.{{ common_tld }}
+    url: https://openldap.{{ common_tld }}
     group: "Tools"
 
   ####################################################
@@ -132,6 +132,11 @@ http_services:
     logo: shlink.png
     subtitle: Url Shortener
     url: https://shlink.{{ common_tld }}
+    group: "Sharing"
+  - name: MinIO
+    logo: minio.png
+    subtitle: Object storage
+    url: https://minio.{{ common_tld }}
     group: "Sharing"
 
   ####################################################
@@ -230,7 +235,7 @@ http_services:
     subtitle: Supermicro IPMI
     group: "Infrastructure"
   - name: BorgBase
-    logo: borgmatic.png
+    logo: borgmatic.svg
     subtitle: Hosting For Borg Backup Repos
     url: https://www.borgbase.com
     group: "Infrastructure"
