@@ -92,10 +92,10 @@ http_services:
     subtitle: Personal Photo Management
     url: https://photoprism.{{ common_tld }}
     group: "Tools"
-  - name: OpenLDAP
+  - name: phpLDAPadmin
     icon: fas fa-address-book
     subtitle: LDAP
-    url: https://openldap.{{ common_tld }}
+    url: https://phpldapadmin.{{ common_tld }}
     group: "Tools"
 
   ####################################################
@@ -136,8 +136,9 @@ http_services:
   - name: MinIO
     logo: minio.png
     subtitle: Object storage
-    url: https://minio.{{ common_tld }}/minio/login
+    url: https://minio.{{ common_tld }}
     group: "Sharing"
+    excludeMonitoring: ~
 
   ####################################################
   #
