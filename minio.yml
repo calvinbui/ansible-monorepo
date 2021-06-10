@@ -1,0 +1,49 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: minio
+
+    minio_password: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      39343030393438393162313362353633646239356433366430643961633132343337373131666138
+      6331663530373364613431396638643932383438333330310a306336633837666463363161373662
+      35386639666164346439663532373732373037643165393464663662326564323562356461613262
+      6331323639396236390a383332643161353961313237346334613832633766636164376363653664
+      63663633646633353164373666303635363762653862626530623838326162393061393661656234
+      31346136646538333834626564646139613061666466343161303735636633373537656130323635
+      32653732663738323665666563653437376235326534303733633662333233616463646566323737
+      35376237343864333036
+
+    docker_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: minio/minio
+        command:
+          - server
+          - /data
+        env:
+          MINIO_ROOT_USER: "3fiCArUB7qYUPiqBcJGS"
+          MINIO_ROOT_PASSWORD: "{{ minio_password }}"
+        volumes:
+          - "{{ _config_dir.path }}:/data"
+        traefik:
+          - port: 9000
