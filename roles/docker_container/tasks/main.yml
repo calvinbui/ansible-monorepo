@@ -50,6 +50,7 @@
     name: "{{ name | default(application) }}"
 
     image: "{{ image | default(omit) }}"
+    entrypoint: "{{ entrypoint | default(omit) }}"
     command: "{{ command | default(omit) }}"
 
     state: "{{ state | default('started') }}"

@@ -5,6 +5,7 @@
   vars:
     application: minio
 
+    minio_user: 3fiCArUB7qYUPiqBcJGS
     minio_password: !vault |
       $ANSIBLE_VAULT;1.1;AES256
       39343030393438393162313362353633646239356433366430643961633132343337373131666138
@@ -19,8 +20,8 @@
     docker_network: "{{ networks.pub }}"
 
   handlers:
-    - name: Restart
-      ansible.builtin.command: docker restart "{{ application }}"
+    - name: Restart mc
+      ansible.builtin.command: docker restart "{{ application }}-mc"
 
   tasks:
     - name: Create config folder
@@ -32,7 +33,7 @@
         mode: "0771"
       register: _config_dir
 
-    - name: Create container
+    - name: Create minio container
       ansible.builtin.include_role:
         name: docker_container
       vars:
@@ -41,9 +42,40 @@
           - server
           - /data
         env:
-          MINIO_ROOT_USER: "3fiCArUB7qYUPiqBcJGS"
+          MINIO_ROOT_USER: "{{ minio_user }}"
           MINIO_ROOT_PASSWORD: "{{ minio_password }}"
         volumes:
-          - "{{ _config_dir.path }}:/data"
+          - "{{ _config_dir.path }}/data:/data"
         traefik:
           - port: 9000
+
+    - name: Create mc config
+      notify: Restart mc
+      ansible.builtin.copy:
+        dest: "{{ _config_dir.path }}/config.json"
+        content: |
+          {
+            "version": "10",
+            "aliases": {
+              "minio": {
+                "url": "http://{{ application }}.{{ docker_network.name }}:9000",
+                "accessKey": "{{ minio_user }}",
+                "secretKey": "{{ minio_password }}",
+                "api": "S3v4",
+                "path": "auto"
+              }
+            }
+          }
+
+    - name: Create mc container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-mc"
+        entrypoint:
+          - tail
+          - -f
+          - /dev/null
+        image: minio/mc
+        volumes:
+          - "{{ _config_dir.path }}/config.json:/root/.mc/config.json"
