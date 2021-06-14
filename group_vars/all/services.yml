@@ -95,7 +95,7 @@ http_services:
   - name: LDAP User Manager
     icon: fas fa-address-book
     subtitle: LDAP
-    url: https://lum.{{ common_tld }}
+    url: https://lum.{{ common_tld }}/log_in/
     group: "Tools"
 
   ####################################################
