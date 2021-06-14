@@ -148,4 +148,4 @@
         traefik:
           - port: 80
             rule: "Host(`{{ application }}.{{ common_tld }}`)"
-            auth: true
+            auth: page

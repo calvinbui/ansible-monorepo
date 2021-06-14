@@ -36,7 +36,7 @@
           TZ: "{{ common_timezone }}"
         traefik:
           - port: 7878
-            auth: true
+            auth: basic
 
     - name: Wait for config
       ansible.builtin.wait_for:

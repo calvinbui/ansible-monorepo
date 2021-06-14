@@ -44,7 +44,7 @@
           - /dev/log:/dev/log:rw
         traefik:
           - port: 8990
-            auth: true
+            auth: page
 
     - name: Wait for config file
       ansible.builtin.wait_for:

@@ -36,7 +36,7 @@
           TZ: "{{ common_timezone }}"
         traefik:
           - port: 6767
-            auth: true
+            auth: basic
 
     - name: If "{{ application }}" has not been configured, go through the initial setup to generate a configuration file.
       ansible.builtin.wait_for:

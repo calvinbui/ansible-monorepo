@@ -142,7 +142,7 @@
           TZ: "{{ common_timezone }}"
         traefik:
           - port: 5076
-            auth: true
+            auth: basic
       register: _docker_container
 
     # General config

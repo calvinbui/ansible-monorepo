@@ -68,6 +68,6 @@
           - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/alertmanager"
         traefik:
           - port: 9093
-            auth: true
+            auth: page
         comparisons:
           labels: allow_more_present

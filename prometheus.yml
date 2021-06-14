@@ -78,6 +78,6 @@
           - "{{ _config_dir.path }}/prometheus-docker-sd:/prometheus-docker-sd:ro"
         traefik:
           - port: 9090
-            auth: true
+            auth: page
         comparisons:
           labels: allow_more_present

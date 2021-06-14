@@ -31,9 +31,16 @@
     - key: "traefik.{{ route.type | default('http') }}.routers.{{ route_name }}-secure.tls.certresolver"
       value: "{{ route.tls.certresolver | default('letsencrypt') }}"
 
-- name: Add Traefik basic auth
+- name: Add Authelia basic auth
   when:
     - route.auth is defined
-    - route.auth
+    - route.auth == "basic"
   ansible.builtin.set_fact:
-    traefik_labels: "{{ {'traefik.http.routers.' + route_name + '-secure.middlewares': 'myAuth@file'} | combine(traefik_labels) }}"
+    traefik_labels: "{{ {'traefik.http.routers.' + route_name + '-secure.middlewares': 'authelia-basic@docker'} | combine(traefik_labels) }}"
+
+- name: Add Authelia login page
+  when:
+    - route.auth is defined
+    - route.auth == "page"
+  ansible.builtin.set_fact:
+    traefik_labels: "{{ {'traefik.http.routers.' + route_name + '-secure.middlewares': 'authelia@docker'} | combine(traefik_labels) }}"

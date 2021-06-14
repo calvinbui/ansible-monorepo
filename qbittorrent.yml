@@ -38,7 +38,7 @@
         ipv4_address: "{{ docker_network.prefix }}.2"
         traefik:
           - port: 8090
-            auth: true
+            auth: basic
 
     - name: Wait for config
       ansible.builtin.wait_for:
