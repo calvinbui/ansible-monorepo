@@ -38,15 +38,55 @@
       ansible.builtin.file:
         path: "{{ config_directory }}"
         state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create redis container
+      ansible.builtin.include_role:
+        name: redis
+      vars:
+        redis_version: '6'
+        redis_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          30306365373164346565373038643030313035363630306431663036323335663335316665323064
+          3862363762396432306164636136323037333138333237650a363336653265656634393833643338
+          64353239313235356138356339633363646234353862343361306165666337386332656437303165
+          3461316439616566390a353664363061383631623335366237386538323731376261373761343065
+          34353333613036653836663634383936323063636630616362353063316333343566356536656463
+          37656163313130623037393165396262633565323562353330316339663932613135353931613336
+          31306638373464626635633961656461633537363562626561396439643138393833643233666263
+          66376261656237373431
+
+    - name: Create postgres container
+      ansible.builtin.import_role:
+        name: postgres
+      vars:
+        postgres_version: '13'
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          33343066663538356436376464353631623537343964353361313366636231633537313136383363
+          3132663437323563626666663032333338663635386333610a326266653331313238346661353763
+          31363932656662396232303333396363316230663937383133366133383131333362646264353032
+          3434656465363436320a633131333230373539656531613032373535613130353962373165356238
+          63613835303936373164303465326537333433636264366434306534636136383665343263643731
+          33656364643466386133306239306665633030353532613764363933306333656561613730303566
+          61333835396264303136326464623766663464313535613364343335616436396535646236383963
+          63303336633366386562
+
+    - name: Create authelia folder
+      ansible.builtin.file:
+        path: "{{ _config_dir.path }}/authelia"
+        state: directory
         owner: "root"
         group: "root"
         mode: "0771"
-      register: _config_dir
 
     - name: Template config
       notify: Restart
       ansible.builtin.copy:
-        dest: "{{ _config_dir.path }}/configuration.yml"
+        dest: "{{ _config_dir.path }}/authelia/configuration.yml"
         owner: "0"
         group: "0"
         mode: "0444"
@@ -88,12 +128,10 @@
             name: authelia_session
             secret: "{{ session_secret }}"
             domain: {{ common_tld }}
-
-            # redis:
-            #   host: redis
-            #   port: 6379
-            #   # This secret can also be set using the env variables AUTHELIA_SESSION_REDIS_PASSWORD_FILE
-            #   # password: authelia
+            redis:
+              host: {{ _redis_hostname }}
+              port: 6379
+              password: {{ _redis_password }}
 
           regulation:
             max_retries: 3
@@ -101,8 +139,12 @@
             ban_time: 300
 
           storage:
-            local:
-              path: /config/db.sqlite3
+            postgres:
+              host: {{ _postgres_hostname }}
+              port: 5432
+              database: {{ _postgres_database }}
+              username: "{{ _postgres_username }}"
+              password: "{{ _postgres_password }}"
 
           notifier:
             smtp:
@@ -123,7 +165,7 @@
         traefik:
           - port: 9091
         volumes:
-          - "{{ _config_dir.path }}:/config"
+          - "{{ _config_dir.path }}/authelia:/config"
         labels:
           # login page
           traefik.http.middlewares.authelia.forwardauth.address: "http://{{ application }}:9091/api/verify?rd=https://{{ application }}.{{ common_tld }}"
