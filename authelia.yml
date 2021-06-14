@@ -1,0 +1,136 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: authelia
+
+    jwt_secret: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      66396262326366303736353531333235613932333130326233333863303735323361366335633239
+      3966663366333833666465656138383366326439643432610a623463656533663237336630306566
+      31653332633737663736653762663962333233636133613233616335313231356430303262363563
+      3933666339666530340a346663356334333066643163663130353965646630356231396166626563
+      64393435356563393034363763383961643933626139663166646433623631393862613565376132
+      37326465653335373432666362306464363636633334353463376338363030336533616632666463
+      61393138343739303763666237323065313964333931653231336164646239363330376264393039
+      62636435363239373535
+
+    session_secret: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      64383263376261633637386336623362666431343539313565623361383639303136326535653862
+      3134666265633532653335633333636236346537336431300a626261656432306634663837356435
+      66643832343239363063323261646231393339366433656561373338393333336566363139363963
+      3837346163333761330a663461393861633639333031333561303066666137303861346439383134
+      65326133336538653335313233633033623062653165373237333765666264636635333737343733
+      38633038316230333431373261616361333031323063333834396534333139313334643162333736
+      39366232376564356432353165303631303161646235353636343433396138643539306431376630
+      61386161323538383264
+
+    docker_network: "{{ networks.mgmt }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "root"
+        group: "root"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Template config
+      notify: Restart
+      ansible.builtin.copy:
+        dest: "{{ _config_dir.path }}/configuration.yml"
+        owner: "0"
+        group: "0"
+        mode: "0444"
+        content: |
+          host: 0.0.0.0
+          port: 9091
+
+          theme: dark
+
+          log_level: debug
+
+          jwt_secret: "{{ jwt_secret }}"
+
+          default_redirection_url: https://{{ application }}.{{ common_tld }}
+
+          authentication_backend:
+            disable_reset_password: false
+            refresh_interval: 5m
+            ldap:
+              implementation: custom
+              url: ldap://openldap.{{ networks.mgmt.name }}
+
+              username_attribute: uid
+              base_dn: {{ ldap_base_dn }}
+
+              additional_users_dn: ou={{ ldap_user_ou }}
+              additional_groups_dn: ou={{ ldap_group_ou }}
+
+              users_filter: (&({username_attribute}={input})(objectClass=person))
+              groups_filter: (&(uniquemember={dn})(objectclass=groupOfUniqueNames))
+
+              user: {{ ldap_admin_dn }}
+              password: {{ ldap_admin_password }}
+
+          access_control:
+            default_policy: one_factor
+
+          session:
+            name: authelia_session
+            secret: "{{ session_secret }}"
+            domain: {{ common_tld }}
+
+            # redis:
+            #   host: redis
+            #   port: 6379
+            #   # This secret can also be set using the env variables AUTHELIA_SESSION_REDIS_PASSWORD_FILE
+            #   # password: authelia
+
+          regulation:
+            max_retries: 3
+            find_time: 120
+            ban_time: 300
+
+          storage:
+            local:
+              path: /config/db.sqlite3
+
+          notifier:
+            smtp:
+              username: "{{ common_email_username }}"
+              password: "{{ common_email_password }}"
+              host: "{{ common_email_server }}"
+              port: "{{ common_email_smtp_port }}"
+              sender: "{{ application }}{{ common_email_to }}"
+              disable_require_tls: "{{ 'false' if common_email_protocol=='tls' else 'true' }}"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: authelia/authelia
+        env:
+          TZ: "{{ common_timezone }}"
+        traefik:
+          - port: 9091
+        volumes:
+          - "{{ _config_dir.path }}:/config"
+        labels:
+          # login page
+          traefik.http.middlewares.authelia.forwardauth.address: "http://{{ application }}:9091/api/verify?rd=https://{{ application }}.{{ common_tld }}"
+          traefik.http.middlewares.authelia.forwardauth.trustForwardHeader: "true"
+          traefik.http.middlewares.authelia.forwardauth.authResponseHeaders: "Remote-User,Remote-Groups,Remote-Name,Remote-Email"
+
+          # basic auth
+          traefik.http.middlewares.authelia-basic.forwardauth.address: "http://{{ application }}:9091/api/verify?auth=basic"
+          traefik.http.middlewares.authelia-basic.forwardauth.trustForwardHeader: "true"
+          traefik.http.middlewares.authelia-basic.forwardauth.authResponseHeaders: "Remote-User, Remote-Groups, Remote-Name, Remote-Email"
