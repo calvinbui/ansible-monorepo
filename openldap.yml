@@ -5,17 +5,6 @@
   vars:
     application: openldap
 
-    ldap_admin_password: !vault |
-      $ANSIBLE_VAULT;1.1;AES256
-      35313865303335373162353033363861613464663232346137363632306530646532663962613664
-      3266646366356565336632376262333133356230326531640a373139356563653936663338356431
-      64326138336438623633313438306461633935616435663164343836396561316434656233383135
-      3964633832313735310a343434333565626564366566616431373735376432333439663263653438
-      31636139636530356137663735623433643062623931303333303066663666323539343336353537
-      63653630663738636163326163356665643366383639636535643732343662333761303934323862
-      33333439663964366136303131613962393130616437306232376131623530343134636665376364
-      64653664356536396639
-
     docker_network: "{{ networks.mgmt }}"
 
   handlers:
@@ -41,18 +30,43 @@
           LDAP_ORGANISATION: "homelab"
           LDAP_DOMAIN: "{{ common_local_tld }}"
           LDAP_ADMIN_PASSWORD: "{{ ldap_admin_password }}"
+
+          LDAP_RFC2307BIS_SCHEMA: "true"
         volumes:
           - "{{ _config_dir.path }}/database:/var/lib/ldap"
           - "{{ _config_dir.path }}/config:/etc/ldap/slapd.d"
 
-    - name: Create phpLDAPadmin container
+    - name: Create ldap-user-manager container
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        name: phpldapadmin
-        image: osixia/phpldapadmin
+        name: lum
+        image: wheelybird/ldap-user-manager
         env:
-          PHPLDAPADMIN_LDAP_HOSTS: "{{ application }}.{{ docker_network.name }}"
-          PHPLDAPADMIN_HTTPS: "false"
+          SERVER_HOSTNAME: "lum.{{ common_tld }}"
+
+          LDAP_URI: "ldap://{{ application }}.{{ docker_network.name }}"
+          LDAP_BASE_DN: "{{ ldap_base_dn }}"
+
+          LDAP_ADMIN_BIND_DN: "{{ ldap_admin_dn }}"
+          LDAP_ADMIN_BIND_PWD: "{{ ldap_admin_password }}"
+          LDAP_ADMINS_GROUP: "admins"
+
+          LDAP_USER_OU: "{{ ldap_user_ou }}"
+          LDAP_GROUP_OU: "{{ ldap_group_ou }}"
+          LDAP_ACCOUNT_ATTRIBUTE: "{{ ldap_account_attribute }}"
+
+          LDAP_IGNORE_CERT_ERRORS: "true"
+          LDAP_REQUIRE_STARTTLS: "false"
+          NO_HTTPS: "true"
+
+          SMTP_HOSTNAME: "{{ common_email_server }}"
+          SMTP_HOST_PORT: "{{ common_email_smtp_port }}"
+          SMTP_USERNAME: "{{ common_email_username }}"
+          SMTP_PASSWORD: "{{ common_email_password }}"
+          SMTP_USE_TLS: "{{ 'TRUE' if common_email_protocol=='tls' else 'FALSE' }}"
+          EMAIL_FROM_ADDRESS: "lum{{ common_email_to }}"
+          EMAIL_FROM_NAME: "ldap-user-manager"
+
         traefik:
           - port: 80

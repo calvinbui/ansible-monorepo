@@ -92,10 +92,10 @@ http_services:
     subtitle: Personal Photo Management
     url: https://photoprism.{{ common_tld }}
     group: "Tools"
-  - name: phpLDAPadmin
+  - name: LDAP User Manager
     icon: fas fa-address-book
     subtitle: LDAP
-    url: https://phpldapadmin.{{ common_tld }}
+    url: https://lum.{{ common_tld }}
     group: "Tools"
 
   ####################################################
