@@ -241,3 +241,8 @@ http_services:
     url: https://www.borgbase.com
     group: "Infrastructure"
     excludeMonitoring: ~
+  - name: Authelia
+    logo: authelia.png
+    subtitle: Authentication and Authorization
+    url: "https://authelia.{{ common_tld }}"
+    group: "Infrastructure"
