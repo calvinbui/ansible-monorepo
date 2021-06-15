@@ -1,6 +1,9 @@
 ---
 
-- hosts: homelab
+- hosts: octopi
+
+  vars:
+    common_user: pi
 
   tasks:
     - name: Disable requiretty to enable Ansible pipelining
@@ -23,18 +26,6 @@
       changed_when: false
       when: ansible_distribution == 'Ubuntu'
 
-    - name: Install pip3 and setuptools
-      ansible.builtin.apt:
-        name: "{{ item }}"
-        state: present
-      register: result
-      until: result is success
-      retries: 5
-      delay: 5
-      loop:
-        - python3-pip
-        - python3-setuptools
-
     - name: Set authorized keys
       ansible.posix.authorized_key:
         user: "{{ item }}"
@@ -43,14 +34,6 @@
       loop:
         - root
         - "{{ common_user }}"
-
-    - name: Disable motd files
-      ansible.builtin.file:
-        path: "{{ item }}"
-        mode: "-x"
-      loop:
-        - /etc/update-motd.d/50-motd-news
-        - /etc/update-motd.d/10-help-text
 
     - name: No password sudo
       ansible.builtin.lineinfile:
@@ -74,16 +57,7 @@
           - wget
           - dnsutils
           - git
-          - zfsutils-linux
-          - jq
-          - ripgrep
-          - sqlite3
         state: present
-
-    - name: Install snap packages
-      community.general.snap:
-        name:
-          - yq
 
     - name: Remove packages
       ansible.builtin.apt:
@@ -95,11 +69,3 @@
     - name: Set timezone
       community.general.timezone:
         name: "{{ common_timezone }}"
-
-    - name: Create common directory
-      ansible.builtin.file:
-        path: "{{ common_directory }}"
-        state: directory
-        owner: "{{ common_user }}"
-        group: "{{ common_group }}"
-        mode: "0771"
