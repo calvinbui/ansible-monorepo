@@ -69,8 +69,13 @@ http_services:
     group: "Tools"
   - name: OctoPrint
     logo: octoprint.png
-    subtitle: 3D Print Controller
+    subtitle: 3D Printer Controller
     url: https://octopi.{{ common_local_tld }}
+    group: "Tools"
+  - name: The Spaghetti Detective
+    logo: thespaghettidetective.png
+    subtitle: 3D Printer Management & Failure Detection
+    url: https://thespaghettidetective.{{ common_tld }}
     group: "Tools"
   - name: Huginn
     logo: huginn.svg
