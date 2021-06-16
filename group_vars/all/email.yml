@@ -22,4 +22,4 @@ common_email_to: !vault |
   3363
 common_email_smtp_port: "587"
 common_email_server: smtp.gmail.com
-common_email_protocol: 'tls'
+common_email_protocol: tls

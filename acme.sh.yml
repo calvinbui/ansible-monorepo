@@ -24,7 +24,7 @@
       ansible.builtin.apt:
         name: socat
         state: present
-      when: ansible_os_family == 'Debian'
+      when: ansible_os_family == "Ubuntu"
 
     - name: Download Neilpang's acme.sh
       ansible.builtin.git:
@@ -56,9 +56,9 @@
         regex: "{{ item.regex }}"
         line: "{{ item.line }}"
       loop:
-        - regex: '^SAVED_CF_Key'
+        - regex: "^SAVED_CF_Key"
           line: "SAVED_CF_Key='{{ cert_cloudflare_api_token }}'"
-        - regex: '^SAVED_CF_Email'
+        - regex: "^SAVED_CF_Email"
           line: "SAVED_CF_Email='{{ cert_cloudflare_email }}'"
 
     - name: Generate certs for each domain

@@ -142,14 +142,14 @@
         dest: "{{ _config_dir.path }}/{{ item.name }}/ssh/"
         owner: root
         group: root
-        mode: '0600'
+        mode: "0600"
       loop: "{{ borgmatic_backups }}"
 
     - name: Template notification script
       ansible.builtin.template:
         src: "{{ files_directory }}/notifications.sh.j2"
         dest: "{{ _config_dir.path }}/{{ item.name }}/borgmatic.d/notifications.sh"
-        mode: '0500'
+        mode: "0500"
       loop: "{{ borgmatic_backups }}"
 
     - name: Create container

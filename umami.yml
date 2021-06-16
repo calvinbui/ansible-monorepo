@@ -27,7 +27,7 @@
       ansible.builtin.include_role:
         name: postgres
       vars:
-        postgres_version: '12'
+        postgres_version: 12
         postgres_directory_extra:
           - "{{ _sql_file.dest }}:/docker-entrypoint-initdb.d/schema.postgresql.sql:ro"
         postgres_password: !vault |
@@ -58,5 +58,5 @@
             rule: "Host(`{{ application }}.{{ common_tld }}`, `u.{{ common_tld }}`, `umami.calvin.me`, `u.calvin.me`)"
         labels:
           traefik.http.routers.umami-secure.middlewares: "umami-script-path"
-          traefik.http.middlewares.umami-script-path.replacepathregex.regex: '^/script.js'
-          traefik.http.middlewares.umami-script-path.replacepathregex.replacement: '/umami.js'
+          traefik.http.middlewares.umami-script-path.replacepathregex.regex: "^/script.js"
+          traefik.http.middlewares.umami-script-path.replacepathregex.replacement: "/umami.js"

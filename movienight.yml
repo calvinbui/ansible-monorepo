@@ -14,7 +14,7 @@
   tasks:
     - name: Clone
       ansible.builtin.git:
-        repo: 'https://github.com/zorchenhimer/MovieNight.git'
+        repo: "https://github.com/zorchenhimer/MovieNight.git"
         dest: "{{ config_directory }}"
         update: true
 

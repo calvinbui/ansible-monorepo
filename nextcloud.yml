@@ -21,7 +21,7 @@
       ansible.builtin.import_role:
         name: postgres
       vars:
-        postgres_version: '13'
+        postgres_version: 13
         postgres_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           34393861343432623031643033656336643264646638626632633335393862643965303332643463
@@ -83,7 +83,7 @@
           - port: 80
         labels:
           traefik.http.routers.nextcloud-secure.middlewares: "nextcloud-dav,nextcloud-hsts"
-          traefik.http.middlewares.nextcloud-dav.redirectregex.permanent: 'true'
+          traefik.http.middlewares.nextcloud-dav.redirectregex.permanent: "true"
           traefik.http.middlewares.nextcloud-dav.redirectregex.regex: https://(.*)/.well-known/(card|cal)dav
           traefik.http.middlewares.nextcloud-dav.redirectregex.replacement: https://${1}/remote.php/dav/
 

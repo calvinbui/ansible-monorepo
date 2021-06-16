@@ -34,7 +34,7 @@
       ansible.builtin.file:
         path: "{{ _config_dir.path }}/acme.json"
         state: touch
-        mode: '0600'
+        mode: "0600"
         modification_time: "preserve"
         access_time: "preserve"
 

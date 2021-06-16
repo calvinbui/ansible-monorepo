@@ -13,7 +13,7 @@
         update_cache: true
         cache_valid_time: 600
       changed_when: false
-      when: ansible_distribution == 'Ubuntu'
+      when: ansible_distribution == "Ubuntu"
 
     - name: Create config folder
       ansible.builtin.file:
@@ -34,7 +34,7 @@
       ansible.builtin.include_role:
         name: postgres
       vars:
-        postgres_version: '12'
+        postgres_version: 12
         postgres_directory_extra:
           - "{{ _config_dir.path }}/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql:ro"
         postgres_password: !vault |

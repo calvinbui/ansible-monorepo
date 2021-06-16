@@ -21,7 +21,7 @@
         update_cache: true
         cache_valid_time: 600
       changed_when: false
-      when: ansible_distribution == 'Ubuntu'
+      when: ansible_distribution == "Ubuntu"
 
     - name: Install pip3 and setuptools
       ansible.builtin.apt:
@@ -58,7 +58,7 @@
         state: present
         regexp: "^{{ common_user }}"
         line: "{{ common_user }} ALL=(ALL) NOPASSWD: ALL"
-        validate: 'visudo -cf %s'
+        validate: "visudo -cf %s"
 
     - name: Install apt packages
       apt:

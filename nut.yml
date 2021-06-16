@@ -82,7 +82,7 @@
         dest: "/etc/nut/{{ item }}"
         owner: root
         group: nut
-        mode: '0640'
+        mode: "0640"
       with_items:
         - ups.conf
         - upsd.conf

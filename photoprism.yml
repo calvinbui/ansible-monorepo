@@ -21,7 +21,7 @@
       ansible.builtin.include_role:
         name: mariadb
       vars:
-        mariadb_version: '10'
+        mariadb_version: 10
         mariadb_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           64333365313038396266666464356437313234303330333165386431663537323163383232303532

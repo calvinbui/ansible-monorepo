@@ -29,7 +29,7 @@
         update_cache: true
         cache_valid_time: 600
       changed_when: false
-      when: ansible_distribution == 'Ubuntu'
+      when: ansible_distribution == "Ubuntu"
 
     - name: Install zsh
       ansible.builtin.apt:

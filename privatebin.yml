@@ -16,7 +16,7 @@
       ansible.builtin.file:
         path: "{{ config_directory }}"
         state: directory
-        mode: '0700'
+        mode: "0700"
         owner: nobody
         group: "82"  # nobody in alpine
       register: _config_dir
@@ -25,7 +25,7 @@
       ansible.builtin.file:
         path: "{{ _config_dir.path }}/{{ item }}"
         state: directory
-        mode: '0700'
+        mode: "0700"
         owner: nobody
         group: "82"  # nobody in alpine
       loop:
@@ -54,7 +54,7 @@
       ansible.builtin.template:
         src: "{{ files_directory }}/conf.php.j2"
         dest: "{{ _dir.results | selectattr('item', 'match', 'cfg') | flatten | map(attribute='path') | first }}/conf.php"
-        mode: '0644'
+        mode: "0644"
         owner: nobody
         group: "82"
       notify: Restart
