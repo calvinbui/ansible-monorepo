@@ -90,6 +90,7 @@
         name:
           - popularity-contest
           - pastebinit
+          - ubuntu-advantage-tools
         state: present
 
     - name: Set timezone
