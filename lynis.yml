@@ -1,0 +1,52 @@
+---
+
+# https://packages.cisofy.com/community/#debian-ubuntu
+
+- hosts: homelab
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
+      changed_when: false
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Import key
+      ansible.builtin.apt_key:
+        url: https://packages.cisofy.com/keys/cisofy-software-public.key
+        state: present
+      register: result
+      until: result is success
+      retries: 5
+      delay: 5
+
+    - name: Install dependencies
+      ansible.builtin.apt:
+        name:
+          - apt-transport-https
+        state: present
+      register: result
+      until: result is success
+      retries: 5
+      delay: 5
+
+    - name: Skip downloading translations
+      ansible.builtin.copy:
+        content: 'Acquire::Languages "none";'
+        dest: /etc/apt/apt.conf.d/99disable-translations
+
+    - name: Add repository
+      ansible.builtin.apt_repository:
+        repo: "deb https://packages.cisofy.com/community/lynis/deb/ stable main"
+        state: present
+        update_cache: true
+
+    - name: Install lynis
+      ansible.builtin.apt:
+        name: lynis
+        state: present
+      register: result
+      until: result is success
+      retries: 5
+      delay: 5

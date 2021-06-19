@@ -16,6 +16,11 @@
       vars:
         ansible_ssh_pipelining: false
 
+    - name: Set hostname
+      ansible.builtin.copy:
+        content: "homelab.{{ common_local_tld }}"
+        dest: /etc/hostname
+
     - name: Update apt cache
       ansible.builtin.apt:
         update_cache: true
@@ -78,6 +83,12 @@
           - jq
           - ripgrep
           - sqlite3
+          # https://cisofy.com/lynis/controls/AUTH-9262/
+          - libpam-passwdqc
+          # https://cisofy.com/lynis/controls/PKGS-7370/
+          - debsums
+          # https://cisofy.com/lynis/controls/PKGS-7394/
+          - apt-show-versions
         state: present
 
     - name: Install snap packages
@@ -105,3 +116,77 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
+
+    - name: Disable core dumps
+      community.general.pam_limits:
+        domain: '*'
+        limit_type: hard
+        limit_item: core
+        value: 0
+
+    - name: Configure logins.def
+      ansible.builtin.lineinfile:
+        path: /etc/login.defs
+        state: present
+        regexp: "^{{ item.key | upper }}"
+        line: "{{ item.key | upper }} {{ item.value }}"
+      loop: "{{ items | dict2items }}"
+      vars:
+        items:
+          # https://cisofy.com/lynis/controls/AUTH-9328/
+          umask: "027"
+          # https://cisofy.com/lynis/controls/AUTH-9286/
+          pass_min_days: "1"
+          pass_max_days: "90"
+          # https://cisofy.com/lynis/controls/AUTH-9230/
+          sha_crypt_min_rounds: "5000"
+          sha_crypt_max_rounds: "5000"
+
+    # https://cisofy.com/lynis/controls/NETW-3200/
+    - name: Disable unused protocols
+      block:
+        - name: Prevent module from being loaded
+          ansible.builtin.copy:
+            dest: "/etc/modprobe.d/{{ item }}.conf"
+            content: "install {{ item }} /bin/true"
+          loop:
+            - dccp
+            - sctp
+            - rds
+            - tipc
+
+        - name: Blacklist modules
+          ansible.builtin.lineinfile:
+            dest: /etc/modprobe.d/blacklist.conf
+            state: present
+            regex: "^blacklist {{ item }}$"
+            line: "blacklist {{ item }}"
+          loop:
+            - dccp
+            - sctp
+            - rds
+            - tipc
+
+    # https://cisofy.com/lynis/controls/SSH-7408/
+    - name: Harden SSH configuration
+      ansible.builtin.lineinfile:
+        dest: /etc/ssh/sshd_config
+        state: present
+        regex: "^{{ item.key }}"
+        line: "{{ item.key }} {{ item.value }}"
+      loop: "{{ items | dict2items }}"
+      vars:
+        items:
+          AllowTcpForwarding: "no"
+          ClientAliveCountMax: "2"
+          Compression: "no"
+          LogLevel: "VERBOSE"
+          MaxAuthTries: "3"
+          MaxSessions: "2"
+          TCPKeepAlive: "no"
+          AllowAgentForwarding: "no"
+
+    - name: Set root email
+      ansible.builtin.copy:
+        dest: "/root/.forward"
+        content: "homelab{{ common_email_to }}"

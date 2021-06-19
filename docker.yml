@@ -7,6 +7,8 @@
       ansible.builtin.service:
         name: docker
         state: restarted
+    - name: Update grub
+      ansible.builtin.command: update-grub
 
   tasks:
     - name: Update apt cache
@@ -97,3 +99,11 @@
         driver_options:
           parent: "{{ item.value.parent }}.{{ item.value.vlan }}"
       loop: "{{ networks | dict2items }}"
+
+    - name: Enable swap limit support
+      ansible.builtin.lineinfile:
+        dest: /etc/default/grub
+        state: present
+        regex: '^GRUB_CMDLINE_LINUX='
+        line: 'GRUB_CMDLINE_LINUX="cgroup_enable=memory swapaccount=1"'
+      notify: Update grub
