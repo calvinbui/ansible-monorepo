@@ -57,7 +57,7 @@
         image: "{{ application }}-ml_api"
         command: bash -c "gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi"
         env:
-          DEBUG: "True"
+          DEBUG: "False"
           FLASK_APP: "server.py"
 
     - name: Build web image
