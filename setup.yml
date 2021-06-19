@@ -84,6 +84,7 @@
       community.general.snap:
         name:
           - yq
+        state: present
 
     - name: Remove packages
       ansible.builtin.apt:
@@ -91,7 +92,7 @@
           - popularity-contest
           - pastebinit
           - ubuntu-advantage-tools
-        state: present
+        state: absent
 
     - name: Set timezone
       community.general.timezone:
