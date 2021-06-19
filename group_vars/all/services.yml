@@ -77,10 +77,10 @@ http_services:
     subtitle: 3D Printer Management & Failure Detection
     url: https://thespaghettidetective.{{ common_tld }}
     group: "Tools"
-  - name: Huginn
-    logo: huginn.svg
-    subtitle: Web-based Scheduler
-    url: https://huginn.{{ common_tld }}
+  - name: Change Detection
+    icon: fas fa-columns
+    subtitle: Website change detection
+    url: https://changedetection.{{ common_tld }}
     group: "Tools"
   - name: Joplin
     logo: joplin.svg

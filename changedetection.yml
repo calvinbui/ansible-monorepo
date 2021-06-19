@@ -1,0 +1,21 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: changedetection
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: dgtlmoon/changedetection.io
+        volumes:
+          - "{{ config_directory }}:/datastore"
+        env:
+          BASE_URL: "https://{{ application }}.{{ common_tld }}"
+        traefik:
+          - port: 5000
