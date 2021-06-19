@@ -4,3 +4,6 @@ skip_list:
   - line-length
   - no-handler
   - no-tabs
+
+exclude_paths:
+  - inventory.yml

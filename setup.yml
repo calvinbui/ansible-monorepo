@@ -61,7 +61,7 @@
         validate: "visudo -cf %s"
 
     - name: Install apt packages
-      apt:
+      ansible.builtin.apt:
         name:
           - neovim
           - htop
