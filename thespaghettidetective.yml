@@ -88,7 +88,7 @@
           EMAIL_HOST_USER: "{{ common_email_username }}"
           EMAIL_HOST_PASSWORD: "{{ common_email_password }}"
           EMAIL_PORT: "{{ common_email_smtp_port }}"
-          EMAIL_USE_TLS: "True"
+          EMAIL_USE_TLS: "{{ 'True' if common_email_protocol == 'tls' else 'False' | string }}"
           DEFAULT_FROM_EMAIL: "{{ application }}{{ common_email_to }}"
 
           DEBUG: "False"
