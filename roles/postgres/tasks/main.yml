@@ -51,3 +51,4 @@
     _postgres_username: "{{ postgres_user }}"
     _postgres_password: "{{ postgres_password }}"
     _postgres_database: "{{ postgres_database }}"
+    _postgres_url: "postgres://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_name }}.{{ docker_network.name }}:5432/{{ postgres_database }}"

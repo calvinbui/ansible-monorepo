@@ -65,6 +65,6 @@
           DB_HOST: "{{ _postgres_hostname }}"
           DB_PORT_NUMBER: "5432"
           MM_SQLSETTINGS_DRIVERNAME: postgres
-          MM_SQLSETTINGS_DATASOURCE: "postgres://{{ _postgres_username }}:{{ _postgres_password }}@{{ _postgres_hostname }}:5432/{{ _postgres_database }}?sslmode=disable&connect_timeout=10"
+          MM_SQLSETTINGS_DATASOURCE: "{{ _postgres_url }}?sslmode=disable&connect_timeout=10"
         traefik:
           - port: 8065
