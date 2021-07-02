@@ -34,7 +34,7 @@
           WEBUI_PORT: "8090"
         volumes:
           - "{{ _config_dir.path }}:/config/qBittorrent"
-          - "{{ common_directory_download }}:/downloads"
+          - "{{ common_directory_download }}:{{ common_mounted_directory_download }}"
         ipv4_address: "{{ docker_network.prefix }}.2"
         traefik:
           - port: 8090
@@ -68,7 +68,8 @@
           Preferences.Downloads\UseIncompleteExtension: "true"
 
           # Saving Management
-          Preferences.Downloads\TempPath: /downloads/Intermediate/
+          Preferences.Downloads\SavePath: "{{ common_mounted_directory_download }}"
+          Preferences.Downloads\TempPath: "{{ common_mounted_directory_download }}/Intermediate/"
 
           # Run external program on torrent completion
           AutoRun.enabled: "true"

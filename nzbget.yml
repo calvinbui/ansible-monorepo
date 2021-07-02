@@ -28,7 +28,7 @@
         image: ghcr.io/linuxserver/nzbget
         volumes:
           - "{{ _config_dir.path }}:/config"
-          - "{{ common_directory_download }}:/downloads"
+          - "{{ common_directory_download }}:{{ common_mounted_directory_download }}"
         env:
           PUID: "{{ common_user_id }}"
           PGID: "{{ common_root_group }}"
@@ -52,7 +52,7 @@
       vars:
         nzbget_config:
           # PATHS
-          MainDir: '/downloads'
+          MainDir: "{{ common_mounted_directory_download }}"
           DestDir: '${MainDir}'
           InterDir: '${MainDir}/Intermediate/Incomplete'
           NzbDir: '${MainDir}/Intermediate/Watch'
