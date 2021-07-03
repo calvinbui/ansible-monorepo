@@ -8,7 +8,7 @@ http:
       middlewares:
         - myAuth
       tls:
-        certResolver: letsencrypt
+        certResolver: '{{ traefik_certresolver }}'
         domains:
           - main: 'traefik.{{ common_tld }}'
 

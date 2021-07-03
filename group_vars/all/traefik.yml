@@ -1,0 +1,5 @@
+---
+
+traefik_certresolver: letsencrypt
+traefik_middleware_authelia: authelia@docker
+traefik_middleware_authelia_basic: authelia-basic@docker
