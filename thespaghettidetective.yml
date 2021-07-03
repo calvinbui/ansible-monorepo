@@ -59,6 +59,8 @@
         env:
           DEBUG: "False"
           FLASK_APP: "server.py"
+        labels:
+          com.centurylinklabs.watchtower.enable: "false"
 
     - name: Build web image
       community.docker.docker_image:
@@ -106,6 +108,8 @@
           ACCOUNT_ALLOW_SIGN_UP: "False"
 
           WEBPACK_LOADER_ENABLED: ""
+        labels:
+          com.centurylinklabs.watchtower.enable: "false"
 
     - name: Create tasks container
       ansible.builtin.include_role:
@@ -116,3 +120,5 @@
         command: sh -c "celery -A config worker --beat -l info -c 2 -Q realtime,celery"
         volumes: *web_volumes
         env: *web_env
+        labels:
+          com.centurylinklabs.watchtower.enable: "false"
