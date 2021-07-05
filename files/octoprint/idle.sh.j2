@@ -1,0 +1,28 @@
+#!/bin/bash
+
+set -e
+
+url=http://localhost/api/job
+apikey={{ _octoprint_api_key.result }}
+
+response=$(curl \
+  --silent \
+  --request GET \
+  --url "${url}" \
+  --header "X-Api-Key: ${apikey}")
+
+# https://github.com/OctoPrint/OctoPrint/blob/b6ebe7c8539b86acb217483b853910d23518967f/src/octoprint/util/comm.py#L913
+idle_states=(
+  "Operational"
+  "Offline"
+  "Offline after error"
+  "Error"
+)
+
+for state in "${idle_states[@]}"; do
+  if echo "${response}" | grep "\"state\":\"${state}\""; then
+    exit 0
+  fi
+done
+
+exit 1

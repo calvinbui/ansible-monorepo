@@ -8,6 +8,15 @@
     docker_network: "{{ networks.iot }}"
 
   tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0755"
+      register: _config_dir
+
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
@@ -20,16 +29,39 @@
           - /dev/video0
         env:
           ENABLE_MJPG_STREAMER: "true"
-          MJPG_STREAMER_INPUT: "-n -r 1920x1080"
+          MJPG_STREAMER_INPUT: "-n -r 1280x720"
         traefik:
           - port: 80
+            auth: page
         labels:
-          # auth on the webcam
-          traefik.http.routers.octoprint-webcam.entrypoints: web-secure
-          traefik.http.routers.octoprint-webcam.tls: "true"
-          traefik.http.routers.octoprint-webcam.service: "{{ application }}"
-          traefik.http.routers.octoprint-webcam.rule: Host(`{{ application }}.{{ common_tld }}`) && PathPrefix(`/webcam`)
-          traefik.http.routers.octoprint-webcam.middlewares: "{{ traefik_middleware_authelia }}"
+          com.centurylinklabs.watchtower.lifecycle.pre-update: /octoprint/idle.sh
 
-          # in case it's printing
-          com.centurylinklabs.watchtower.enable: "false"
+    - name: Wait for config file
+      ansible.builtin.wait_for:
+        path: "{{ _config_dir.path }}/octoprint/config.yaml"
+
+    - name: Update config
+      yedit:
+        src: "{{ _config_dir.path }}/octoprint/config.yaml"
+        key: "{{ item.key }}"
+        value: "{{ item.value }}"
+      loop:
+        - key: accessControl.remoteUserHeader
+          value: Remote-User
+        - key: accessControl.trustRemoteUser
+          value: true
+
+    - name: Get API key
+      yedit:
+        src: "{{ _config_dir.path }}/octoprint/config.yaml"
+        key: api.key
+        state: list
+      register: _octoprint_api_key
+
+    - name: Template idle check
+      ansible.builtin.template:
+        src: "{{ files_directory }}/idle.sh.j2"
+        dest: "{{ _config_dir.path }}/idle.sh"
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0755"
