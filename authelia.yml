@@ -122,7 +122,15 @@
               password: {{ ldap_admin_password }}
 
           access_control:
-            default_policy: one_factor
+            default_policy: deny
+
+            rules:
+              - domain:
+                  - "*.{{ common_tld }}"
+                  - "*.{{ common_local_tld }}"
+                subject:
+                  - "group:humans"
+                policy: one_factor
 
           session:
             name: authelia_session
