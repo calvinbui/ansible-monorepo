@@ -46,6 +46,8 @@
         key: "{{ item.key }}"
         value: "{{ item.value }}"
       loop:
+        - key: server.commands.serverRestartCommand
+          value: s6-svc -r /var/run/s6/services/octoprint
         - key: accessControl.remoteUserHeader
           value: Remote-User
         - key: accessControl.trustRemoteUser
