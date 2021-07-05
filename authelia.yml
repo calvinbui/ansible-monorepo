@@ -86,7 +86,7 @@
     - name: Template config
       ansible.builtin.template:
         src: "{{ files_directory }}/configuration.yml.j2"
-        dest: "{{ _config_dir.path }}/configuration.yml"
+        dest: "{{ _config_dir.path }}/authelia/configuration.yml"
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
         mode: "0444"
