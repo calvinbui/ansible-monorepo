@@ -34,6 +34,12 @@ access_control:
   default_policy: deny
 
   rules:
+    - domain: octoprint.{{ common_tld }}
+      subject:
+        - "user:octoprint"
+        - "group:humans"
+      policy: one_factor
+
     - domain:
         - "*.{{ common_tld }}"
         - "*.{{ common_local_tld }}"
