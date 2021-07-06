@@ -17,6 +17,7 @@
         repo: "https://github.com/zorchenhimer/MovieNight.git"
         dest: "{{ config_directory }}"
         update: true
+      register: _movienight_repo_updated
 
     - name: Build image
       community.docker.docker_image:
@@ -28,6 +29,7 @@
           network: "{{ docker_network.name }}"
         source: build
         state: present
+        force_source: "{{ true if _movienight_repo_updated.changed else false }}"
 
     - name: Check settings.json
       ansible.builtin.stat:

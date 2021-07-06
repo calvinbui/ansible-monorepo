@@ -37,6 +37,7 @@
         repo: "https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git"
         dest: "{{ _config_dir.path }}/repo"
         update: true
+      register: _tsd_repo_updated
 
     - name: Build ml_api image
       community.docker.docker_image:
@@ -48,6 +49,7 @@
           network: "{{ docker_network.name }}"
         source: build
         state: present
+        force_source: "{{ true if _tsd_repo_updated.changed else false }}"
 
     - name: Create ml_api container
       ansible.builtin.include_role:
@@ -72,6 +74,7 @@
           network: "{{ docker_network.name }}"
         source: build
         state: present
+        force_source: "{{ true if _tsd_repo_updated.changed else false }}"
 
     - name: Create web container
       ansible.builtin.include_role:
