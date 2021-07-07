@@ -69,3 +69,8 @@
     - name: Set timezone
       community.general.timezone:
         name: "{{ common_timezone }}"
+
+    - name: Remove git sanity check
+      ansible.builtin.file:
+        path: /root/bin/git
+        state: absent
