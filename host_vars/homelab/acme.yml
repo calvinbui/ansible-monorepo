@@ -1,0 +1,11 @@
+---
+
+cert_domains:
+  - domain: "homelab-ipmi.{{ common_local_tld }}"
+    method: --dns dns_cf
+    script: "ipmi.py"
+    script_args: "--ipmi-url=https://homelab-ipmi.{{ common_local_tld }} --username=ADMIN --password=ADMIN --cert-file={{ acme_cert_dir }}/homelab-ipmi.{{ common_local_tld }}/fullchain.cer --key-file={{ acme_cert_dir }}/homelab-ipmi.{{ common_local_tld }}/homelab-ipmi.{{ common_local_tld }}.key"
+  - domain: "unifi.{{ common_local_tld }}"
+    method: --dns dns_cf
+    script: "unifi-docker.sh"
+    script_args: "{{ acme_cert_dir }}/unifi.{{ common_local_tld }}/fullchain.cer {{ acme_cert_dir }}/unifi.{{ common_local_tld }}/unifi.{{ common_local_tld }}.key {{ common_directory }}/unifi/data"

@@ -1,0 +1,7 @@
+---
+
+cert_domains:
+  - domain: "octopi.{{ common_local_tld }}"
+    method: --dns dns_cf
+    script: "octoprint.sh"
+    script_args: "{{ acme_cert_dir }}/octopi.{{ common_local_tld }}/fullchain.cer {{ acme_cert_dir }}/octopi.{{ common_local_tld }}/octopi.{{ common_local_tld }}.key"

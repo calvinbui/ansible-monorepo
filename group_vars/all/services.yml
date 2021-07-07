@@ -70,7 +70,7 @@ http_services:
   - name: OctoPrint
     logo: octoprint.png
     subtitle: 3D Printer Controller
-    url: http://octopi.{{ common_local_tld }}
+    url: https://octopi.{{ common_local_tld }}
     group: "Tools"
   - name: The Spaghetti Detective
     logo: thespaghettidetective.png
