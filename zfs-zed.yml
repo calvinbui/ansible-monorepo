@@ -55,11 +55,18 @@
     - name: Configure ZFS ZED
       ansible.builtin.lineinfile:
         path: /etc/zfs/zed.d/zed.rc
-        regexp: "^{{ item.split('=')[0] }}="
+        regexp: "^#?{{ item.split('=')[0] }}="
         line: "{{ item }}"
         state: present
       loop:
-        - ZED_EMAIL_ADDR="zfszed{{ common_email_to }}"
+        - ZED_EMAIL_ADDR="{{ application }}{{ common_email_to }}"
         - ZED_EMAIL_PROG="mailx"
+        - ZED_EMAIL_OPTS="-s '@SUBJECT@' @ADDRESS@ -r {{ application }}{{ common_email_to }}"
         - ZED_NOTIFY_VERBOSE=1
         - ZED_NOTIFY_DATA=1
+
+    - name: Enable service
+      ansible.builtin.service:
+        name: zfs-zed
+        state: started
+        enabled: true
