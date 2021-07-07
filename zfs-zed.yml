@@ -1,5 +1,13 @@
 ---
 
+# to test:
+# cd /tmp
+# dd if=/dev/zero of=sparse_file bs=1 count=0 seek=512M
+# zpool create test /tmp/sparse_file
+# zpool scrub test
+# zpool export test
+# rm sparse_file
+
 - hosts: homelab
 
   vars:
