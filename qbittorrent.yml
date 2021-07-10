@@ -92,16 +92,16 @@
 
           # Speed
           ## Global Rate Limits
-          Preferences.Connection\GlobalUPLimit: 0
+          Preferences.Connection\GlobalUPLimit: 200
           Preferences.Connection\GlobalDLLimit: 0
           Preferences.Connection\GlobalDLLimitAlt: 0
           Preferences.Connection\GlobalUPLimitAlt: 0
           Preferences.Connection\alt_speeds_on: "false"
 
           ## Rate Limit Settings
-          Preferences.Bittorrent\uTP_rate_limited: "false"
-          Preferences.Advanced\IncludeOverhead: "false"
-          Preferences.Advanced\IgnoreLimitsLAN: "true"
+          Preferences.Bittorrent\uTP_rate_limited: "true"
+          Preferences.Advanced\IncludeOverhead: "true"
+          Preferences.Advanced\IgnoreLimitsLAN: "false"
 
           # BitTorrent
           ## Privacy
