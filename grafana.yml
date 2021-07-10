@@ -63,7 +63,7 @@
         remote_src: true
       loop:
         - name: grafana-piechart-panel
-          version: 1.6.1
+          version: 1.6.2
       notify: Restart
 
     - name: Create container
