@@ -57,6 +57,7 @@
           - wget
           - dnsutils
           - git
+          - avrdude
         state: present
 
     - name: Remove packages
