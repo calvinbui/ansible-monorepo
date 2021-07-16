@@ -44,7 +44,6 @@
           - /dev/log:/dev/log:rw
         traefik:
           - port: 8990
-            auth: page
 
     - name: Wait for config file
       ansible.builtin.wait_for:
@@ -85,7 +84,11 @@
         - section: wwwuser "{{ htpasswd.username }}"
           option: password
           value: "{{ htpasswd.password_hashed }}"
+        # there has to be some auth
         - section: wwwuser "{{ htpasswd.username }}"
           option: enable
           value: "true"
+        - section: wwwuser "root"
+          option: enable
+          value: "false"
       notify: Restart
