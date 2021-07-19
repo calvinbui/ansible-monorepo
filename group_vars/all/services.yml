@@ -72,6 +72,12 @@ http_services:
     subtitle: 3D Printer Controller
     url: https://octopi.{{ common_local_tld }}
     group: "Tools"
+  - name: OctoPrint Webcam
+    icon: fas fa-camera-retro
+    subtitle: Direct link to OctoPrint webcam
+    url: https://octopi.{{ common_local_tld }}/webcam/?action=stream
+    group: "Tools"
+    excludeMonitoring: ~
   - name: The Spaghetti Detective
     logo: thespaghettidetective.png
     subtitle: 3D Printer Management & Failure Detection
