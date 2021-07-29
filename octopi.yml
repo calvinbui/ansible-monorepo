@@ -44,7 +44,7 @@
         validate: "visudo -cf %s"
 
     - name: Install apt packages
-      apt:
+      ansible.builtin.apt:
         name:
           - neovim
           - htop
@@ -75,3 +75,121 @@
       ansible.builtin.file:
         path: /root/bin/git
         state: absent
+
+    # hyperpixel installation
+    - name: Install hyperpixel dependencies
+      ansible.builtin.apt:
+        name:
+          - device-tree-compiler
+          - xinput
+        state: present
+
+    - name: Clone hyperpixel drivers repo
+      ansible.builtin.git:
+        repo: https://github.com/pimoroni/hyperpixel4.git
+        # update if changing devices
+        version: pi3
+        dest: /root/hyperpixel4
+        single_branch: true
+        update: true
+      register: _hyperpixel_driver_clone
+
+    - name: Install hyperpixel drivers
+      ansible.builtin.shell: sudo ./install.sh
+      args:
+        chdir: /root/hyperpixel4
+        executable: "/bin/bash"
+      when: _hyperpixel_driver_clone.changed
+      register: _hyperpixel_driver_install
+
+    - name: Print hyperpixel installation output
+      ansible.builtin.debug:
+        msg: "{{ _hyperpixel_driver_install.stdout_lines }}"
+      when: _hyperpixel_driver_clone.changed
+
+    - name: Rotate hyperpixel display
+      ansible.builtin.lineinfile:
+        dest: /boot/config.txt
+        regexp: "^display_rotate="
+        line: "display_rotate=3"
+
+    - name: Reboot to load hyperpixel drivers
+      ansible.builtin.shell: "sleep 5 && reboot"
+      async: 1
+      poll: 0
+      when: _hyperpixel_driver_clone.changed
+
+    - name: Wait for reboot to complete
+      ansible.builtin.wait_for_connection:
+        connect_timeout: 20
+        sleep: 5
+        delay: 5
+        timeout: 300
+      when: _hyperpixel_driver_clone.changed
+
+    # octodash installation
+    # https://github.com/UnchartedBull/OctoDash/wiki/Installation#manual-installation
+    - name: Install octodash dependencies
+      ansible.builtin.apt:
+        name:
+          - libgtk-3-0
+          - libnotify4
+          - libnss3
+          - libxss1
+          - libxtst6
+          - xdg-utils
+          - libatspi2.0-0
+          - libuuid1
+          - libappindicator3-1
+          - libsecret-1-0
+          - gir1.2-gnomekeyring-1.0
+          # packages below needed starting octodash on boot
+          - xserver-xorg
+          - ratpoison
+          - x11-xserver-utils
+          - xinit
+          - libgtk-3-0
+
+    - name: Install octodash
+      ansible.builtin.apt:
+        deb: "https://github.com/UnchartedBull/OctoDash/releases/download/v{{ octodash_version }}/octodash_{{ octodash_version }}_armv7l.deb"
+      vars:
+        octodash_version: 2.2.0
+      register: _octodash_install
+
+    - name: Enable Console Autologin
+      ansible.builtin.shell: sudo raspi-config nonint do_boot_behaviour B2
+      args:
+        executable: "/bin/bash"
+      become_user: "{{ common_user }}"
+      changed_when: false
+
+    - name: Create .xinitrc file
+      ansible.builtin.copy:
+        content: |
+          #!/bin/sh
+
+          xset s off
+          xset s noblank
+          xset -dpms
+
+          ratpoison&
+          octodash
+        dest: "/home/{{ common_user }}/.xinitrc"
+        mode: "0755"
+        owner: "{{ common_user }}"
+        group: "{{ common_user }}"
+
+    - name: Make xinit autostart on boot
+      ansible.builtin.blockinfile:
+        block: |
+          if [ -z "$SSH_CLIENT" ] || [ -z "$SSH_TTY" ]; then
+            xinit -- -nocursor
+          fi
+        path: "/home/{{ common_user }}/.bashrc"
+
+    - name: Reboot to start octodash
+      ansible.builtin.shell: "sleep 5 && reboot"
+      async: 1
+      poll: 0
+      when: _octodash_install.changed
