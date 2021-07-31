@@ -65,7 +65,7 @@
 
           ## Gap inbetween
           Preferences.Downloads\PreAllocation: "false"
-          Preferences.Downloads\UseIncompleteExtension: "true"
+          Preferences.Downloads\UseIncompleteExtension: "false"
 
           # Saving Management
           Preferences.Downloads\SavePath: "{{ common_mounted_directory_download }}"
