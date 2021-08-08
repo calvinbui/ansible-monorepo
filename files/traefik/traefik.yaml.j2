@@ -33,6 +33,10 @@ api: {}
 metrics:
   prometheus:
     entryPoint: metrics
+    addEntryPointsLabels: true
+    # 2.5 only
+    # addRoutersLabels: true
+    addServicesLabels: true
 
 pilot:
   token: '{{ traefik_pilot_token }}'
