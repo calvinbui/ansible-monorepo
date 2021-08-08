@@ -53,10 +53,10 @@
             path: "{{ item.key }}"
             value: "{{ item.value }}"
         pretty: true
-      loop: "{{ movienight_config | dict2items }}"
+      loop: "{{ _movienight_config_options | dict2items }}"
       notify: Restart
       vars:
-        movienight_config:
+        _movienight_config_options:
           RegenAdminPass: false
           LetThemLurk: true
           AdminPassword: !vault |
