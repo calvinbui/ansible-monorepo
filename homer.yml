@@ -17,7 +17,7 @@
         mode: "0771"
       register: _config_dir
 
-    - name: Template config file
+    - name: Template base config file
       ansible.builtin.template:
         src: "{{ files_directory }}/config.yml.j2"
         dest: "{{ _config_dir.path }}/config.yml"
@@ -25,6 +25,14 @@
         group: "911"
         mode: "0444"
       register: _config_file
+
+    # - name: Touch final config
+    #   ansible.builtin.file:
+    #     path: "{{ _config_dir.path }}/config.yml"
+    #     state: touch
+    #     modification_time: preserve
+    #     access_time: preserve
+    #     mode: "0640"
 
     - name: Copy icons
       ansible.builtin.copy:
@@ -34,7 +42,7 @@
         group: "911"
         mode: "0444"
 
-    - name: Create container
+    - name: "Create {{ application }} container"
       ansible.builtin.include_role:
         name: docker_container
       vars:
@@ -50,3 +58,12 @@
           - port: 8080
             rule: "Host(`{{ common_tld }}`)"
         recreate: "{{ true if _config_file.changed else false }}"
+
+    # - name: "Create {{ application }}-service-discovery container"
+    #   ansible.builtin.include_role:
+    #     name: docker_container
+    #   vars:
+    #     image: ghcr.io/calvinbui/homer-service-discovery:latest
+    #     volumes:
+    #       - "{{ _config_dir.path }}/config.yml:/config.yml"
+    #       - "{{ _config_dir.path }}/base.yml:/base.yml"
