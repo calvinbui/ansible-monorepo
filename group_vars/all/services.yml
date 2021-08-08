@@ -26,6 +26,11 @@ http_services:
     subtitle: Meta Search For Nzb Indexers
     url: https://nzbhydra.{{ common_tld }}
     group: "Download"
+  - name: Jackett
+    logo: jackett.png
+    subtitle: Meta Search For Torrents
+    url: https://jackett.{{ common_tld }}
+    group: "Download"
   - name: Sonarr
     logo: sonarr.png
     subtitle: Manages and Downloads TV Shows
