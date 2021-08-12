@@ -21,7 +21,7 @@
         mode: "0771"
       register: _config_dir
 
-    - name: Create container
+    - name: "Create {{ application }} container"
       ansible.builtin.include_role:
         name: docker_container
       vars:
@@ -39,3 +39,33 @@
           - "{{ common_directory_tv }}:/data/tv"
         traefik:
           - port: 32400
+
+    - name: Create tautulli container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: tautulli
+        image: tautulli/tautulli
+        env:
+          PUID: "{{ common_user_id }}"
+          PGID: "{{ common_root_group }}"
+          TZ: "{{ common_timezone }}"
+        volumes:
+          - "{{ _config_dir.path }}/tautulli:/config"
+        traefik:
+          - port: 8181
+
+    - name: Create ombi container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: ombi
+        image: ghcr.io/linuxserver/ombi
+        env:
+          PUID: "{{ common_user_id }}"
+          PGID: "{{ common_root_group }}"
+          TZ: "{{ common_timezone }}"
+        volumes:
+          - "{{ _config_dir.path }}/ombi:/config"
+        traefik:
+          - port: 3579

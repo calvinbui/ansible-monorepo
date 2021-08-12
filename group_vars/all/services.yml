@@ -172,6 +172,11 @@ http_services:
     url: https://thingstodo.atlassian.net
     group: "Collaboration"
     excludeMonitoring: ~
+  - name: Ombi
+    logo: ombi.png
+    subtitle: Media request tool
+    url: https://ombi.{{ common_tld }}
+    group: "Collaboration"
 
 
   ####################################################
@@ -208,6 +213,11 @@ http_services:
     logo: umami.svg
     subtitle: Web Analytics
     url: https://umami.{{ common_tld }}
+    group: "Monitoring"
+  - name: Tautulli
+    logo: tautulli.svg
+    subtitle: Monitoring and tracking tool for Plex
+    url: https://tautulli.{{ common_tld }}
     group: "Monitoring"
 
   ####################################################
