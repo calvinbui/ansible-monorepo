@@ -71,6 +71,12 @@
       retries: 5
       delay: 5
 
+    - name: Install docker-compose
+      ansible.builtin.get_url:
+        url: "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}"
+        dest: /usr/local/bin/docker-compose
+        mode: 0755
+
     - name: Start Docker
       ansible.builtin.service:
         name: docker
