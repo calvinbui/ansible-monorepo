@@ -96,6 +96,10 @@
           REDIS_SERVERS: "tcp://{{ _redis_hostname }}:6379?password={{ _redis_password }}"
 
           ANONYMIZE_REMOTE_ADDR: "false"
+
+          INVALID_SHORT_URL_REDIRECT_TO: "https://{{ application }}.{{ common_tld }}"
+          REGULAR_404_REDIRECT_TO: "https://{{ application }}.{{ common_tld }}"
+          BASE_URL_REDIRECT_TO: "https://{{ application }}.{{ common_tld }}"
         traefik:
           - port: 8080
             rule: "Host(`{{ common_short_tld }}`)"
