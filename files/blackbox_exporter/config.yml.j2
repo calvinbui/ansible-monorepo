@@ -3,13 +3,20 @@
 modules:
   http:
     prober: http
-    timeout: 15s
+    timeout: 30s
     http:
       method: GET
       valid_status_codes:
         - 200
         - 301
+        - 400
         - 401
+        - 403
       fail_if_ssl: false
       fail_if_not_ssl: true
       preferred_ip_protocol: "ipv4"
+      basic_auth:
+        username: {{ blackbox_auth_username }}
+        password: {{ blackbox_auth_password }}
+      headers:
+        Proxy-Authorization: Basic {{ (blackbox_auth_username + ":" + blackbox_auth_password) | b64encode }}
