@@ -36,3 +36,8 @@
         traefik:
           - port: 5800
             auth: page
+        homer:
+          name: jDownloader
+          service: Download
+          priority: 970
+          subtitle: "Download manager for hosting sites"

@@ -1,0 +1,25 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: prometheus-traefik-sd
+
+    docker_network: "{{ networks.mgmt }}"
+
+  tasks:
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: ghcr.io/calvinbui/prometheus-traefik-sd:latest
+        volumes:
+          - "{{ common_directory }}/prometheus/{{ application }}:/{{ application }}:rw"
+        env:
+          TRAEFIK_URL: "https://traefik.{{ common_tld }}"
+          TRAEFIK_USERNAME: "{{ htpasswd.username }}"
+          TRAEFIK_PASSWORD: "{{ htpasswd.password }}"
+          LOG_LEVEL: "Info"
+          OUTPUT_DIR: "/{{ application }}"
+          INTERVAL: "600"
+          GRACE_PERIOD: "6"

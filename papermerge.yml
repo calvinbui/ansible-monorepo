@@ -57,6 +57,11 @@
           TZ: "{{ common_timezone }}"
         traefik:
           - port: 8000
+        homer:
+          name: Papermerge
+          service: Tools
+          priority: 490
+          subtitle: "Document scanner"
 
     - name: Edit config
       ansible.builtin.lineinfile:

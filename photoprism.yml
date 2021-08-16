@@ -59,6 +59,11 @@
           - "{{ common_directory_photos }}:/photoprism/originals:ro"
         traefik:
           - port: 2342
+        homer:
+          name: PhotoPrism
+          service: Tools
+          priority: 790
+          subtitle: "Photo management"
 
     # Nextcloud uses 33:33 (www-data) as the owner of all its files
     - name: Update photos permissions cronjob

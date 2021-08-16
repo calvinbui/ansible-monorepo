@@ -36,6 +36,11 @@
         traefik:
           - port: 6767
             auth: basic
+        homer:
+          name: Bazarr
+          service: Download
+          priority: 690
+          subtitle: "Manage and download subtitles"
 
     - name: If "{{ application }}" has not been configured, go through the initial setup to generate a configuration file.
       ansible.builtin.wait_for:

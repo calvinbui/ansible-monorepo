@@ -37,6 +37,11 @@
         traefik:
           - port: 6789
             auth: basic
+        homer:
+          name: NZBGet
+          service: Download
+          priority: 990
+          subtitle: "Download files from Usenet"
 
     - name: Wait for config
       ansible.builtin.wait_for:

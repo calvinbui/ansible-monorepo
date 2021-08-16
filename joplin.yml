@@ -38,3 +38,8 @@
           POSTGRES_HOST: "{{ _postgres_hostname }}"
         traefik:
           - port: 22300
+        homer:
+          name: Joplin
+          service: Tools
+          priority: 290
+          subtitle: "Note taking"

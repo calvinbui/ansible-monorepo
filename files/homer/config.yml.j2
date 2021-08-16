@@ -1,5 +1,6 @@
 #jinja2: lstrip_blocks: "true", trim_blocks: "false"
 ---
+
 title: Services
 subtitle: {{ common_tld }}
 logo: logo.png
@@ -9,98 +10,19 @@ footer: false
 connectivityCheck: false
 
 services:
-  - name: Download
-    icon: fas fa-cloud-download-alt
-    items:
-    {% for service in http_services %}
-      {% if service.group == "Download" %}
-      - name: {{ service.name }}
-      {% if service.logo is defined %}
-        logo: assets/custom/{{ service.logo }}
-      {% elif service.icon is defined %}
-        icon: {{ service.icon }}
-      {% endif %}
-        subtitle: {{ service.subtitle }}
-        url: {{ service.url }}
-      {% endif %}
-    {% endfor %}
-
-  - name: Collaboration
-    icon: fas fa-people-carry
-    items:
-    {% for service in http_services %}
-      {% if service.group == "Collaboration" %}
-      - name: {{ service.name }}
-      {% if service.logo is defined %}
-        logo: assets/custom/{{ service.logo }}
-      {% elif service.icon is defined %}
-        icon: {{ service.icon }}
-      {% endif %}
-        subtitle: {{ service.subtitle }}
-        url: {{ service.url }}
-      {% endif %}
-    {% endfor %}
-
-  - name: Sharing
-    icon: fas fa-people-arrows
-    items:
-    {% for service in http_services %}
-      {% if service.group == "Sharing" %}
-      - name: {{ service.name }}
-      {% if service.logo is defined %}
-        logo: assets/custom/{{ service.logo }}
-      {% elif service.icon is defined %}
-        icon: {{ service.icon }}
-      {% endif %}
-        subtitle: {{ service.subtitle }}
-        url: {{ service.url }}
-      {% endif %}
-    {% endfor %}
-
-  - name: Tools
-    icon: fas fa-tools
-    items:
-    {% for service in http_services %}
-      {% if service.group == "Tools" %}
-      - name: {{ service.name }}
-      {% if service.logo is defined %}
-        logo: assets/custom/{{ service.logo }}
-      {% elif service.icon is defined %}
-        icon: {{ service.icon }}
-      {% endif %}
-        subtitle: {{ service.subtitle }}
-        url: {{ service.url }}
-      {% endif %}
-    {% endfor %}
-
-  - name: Monitoring
-    icon: fas fa-chart-area
-    items:
-    {% for service in http_services %}
-      {% if service.group == "Monitoring" %}
-      - name: {{ service.name }}
-      {% if service.logo is defined %}
-        logo: assets/custom/{{ service.logo }}
-      {% elif service.icon is defined %}
-        icon: {{ service.icon }}
-      {% endif %}
-        subtitle: {{ service.subtitle }}
-        url: {{ service.url }}
-      {% endif %}
-    {% endfor %}
-
-  - name: Infrastructure
-    icon: fas fa-server
-    items:
-    {% for service in http_services %}
-      {% if service.group == "Infrastructure" %}
-      - name: {{ service.name }}
-      {% if service.logo is defined %}
-        logo: assets/custom/{{ service.logo }}
-      {% elif service.icon is defined %}
-        icon: {{ service.icon }}
-      {% endif %}
-        subtitle: {{ service.subtitle }}
-        url: {{ service.url }}
-      {% endif %}
-    {% endfor %}
+{% for service in services %}
+    - name: {{ service.group }}
+      icon: {{ service.homer_icon }}
+      items:
+      {% for item in service['items'] %}
+        - name: {{ item.name }}
+        {% if item.logo is defined %}
+          logo: logos/{{ item.logo }}
+        {% elif item.icon is defined %}
+          icon: {{ item.icon }}
+        {% endif %}
+          subtitle: {{ item.subtitle }}
+          url: {{ item.url }}
+          priority: {{ item.priority }}
+      {% endfor %}
+{% endfor %}

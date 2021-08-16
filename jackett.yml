@@ -37,6 +37,11 @@
         traefik:
           - port: 9117
             auth: basic
+        homer:
+          name: Jackett
+          service: Download
+          priority: 880
+          subtitle: "Torrent meta search"
 
     - name: Wait for config
       ansible.builtin.wait_for:

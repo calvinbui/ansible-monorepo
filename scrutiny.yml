@@ -42,3 +42,8 @@
         traefik:
           - port: 8080
             auth: page
+        homer:
+          name: scrutiny
+          service: Monitoring
+          priority: 780
+          subtitle: "S.M.A.R.T. monitoring"

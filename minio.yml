@@ -49,6 +49,11 @@
           - "{{ _config_dir.path }}/data:/data"
         traefik:
           - port: 9001
+        homer:
+          name: MinIO
+          service: Sharing
+          priority: 590
+          subtitle: "Object storage"
 
     - name: Create mc config
       notify: Restart mc

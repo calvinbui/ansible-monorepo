@@ -153,3 +153,9 @@
           - port: 80
             rule: "Host(`{{ application }}.{{ common_tld }}`)"
             auth: page
+        homer:
+          name: Shlink
+          service: Sharing
+          priority: 690
+          subtitle: "URL shortener"
+          url: "https://{{ application }}.{{ common_tld }}"

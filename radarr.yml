@@ -36,6 +36,11 @@
         traefik:
           - port: 7878
             auth: basic
+        homer:
+          name: Radarr
+          service: Download
+          priority: 780
+          subtitle: "Manage and download movies"
 
     - name: Wait for config
       ansible.builtin.wait_for:

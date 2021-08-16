@@ -39,6 +39,11 @@
         traefik:
           - port: 8090
             auth: basic
+        homer:
+          name: qBittorrent
+          service: Download
+          priority: 980
+          subtitle: "Download torrents"
 
     - name: Wait for config
       ansible.builtin.wait_for:

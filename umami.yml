@@ -56,6 +56,11 @@
         traefik:
           - port: 3000
             rule: "Host(`{{ application }}.{{ common_tld }}`, `umami.calvin.me`, `u.calvin.me`)"
+        homer:
+          name: umami
+          service: Monitoring
+          priority: 790
+          subtitle: "Web analytics"
         labels:
           traefik.http.routers.umami-secure.middlewares: "umami-script-path"
           traefik.http.middlewares.umami-script-path.replacepathregex.regex: "^/script.js"

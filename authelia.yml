@@ -101,6 +101,11 @@
           TZ: "{{ common_timezone }}"
         traefik:
           - port: 9091
+        homer:
+          name: Authelia
+          service: Infrastructure
+          priority: 380
+          subtitle: "Authentication and authorization"
         volumes:
           - "{{ _config_dir.path }}/authelia:/config"
         labels:

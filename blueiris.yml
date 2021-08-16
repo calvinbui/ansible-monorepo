@@ -9,7 +9,7 @@
 
   handlers:
     - name: Restart
-      ansible.builtin.command: docker restart blueiris-proxy
+      ansible.builtin.command: "docker restart {{ application }}-proxy"
 
   tasks:
     - name: Update apt cache
@@ -66,3 +66,9 @@
         traefik:
           - port: 80
             rule: Host(`{{ application }}.{{ common_tld }}`)
+        homer:
+          name: Blue Iris
+          service: Tools
+          priority: 990
+          subtitle: "Surveillance cameras"
+          url: "https://{{ application }}.{{ common_tld }}"

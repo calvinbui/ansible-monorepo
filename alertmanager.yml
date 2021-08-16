@@ -71,3 +71,8 @@
             auth: page
         comparisons:
           labels: allow_more_present
+        homer:
+          name: Alertmanager
+          service: Monitoring
+          priority: 980
+          subtitle: "Alerting"

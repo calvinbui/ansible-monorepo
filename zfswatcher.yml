@@ -44,6 +44,11 @@
           - /dev/log:/dev/log:rw
         traefik:
           - port: 8990
+        homer:
+          name: zfswatcher
+          service: Monitoring
+          priority: 890
+          subtitle: "ZFS pool monitoring"
 
     - name: Wait for config file
       ansible.builtin.wait_for:

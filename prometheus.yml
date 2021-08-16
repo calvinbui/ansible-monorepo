@@ -76,8 +76,14 @@
           - "{{ _dir.results | selectattr('item', 'match', 'rules') | flatten | map(attribute='path') | first }}:/rules"
           - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/prometheus"
           - "{{ _config_dir.path }}/prometheus-docker-sd:/prometheus-docker-sd:ro"
+          - "{{ _config_dir.path }}/prometheus-traefik-sd:/prometheus-traefik-sd:ro"
         traefik:
           - port: 9090
             auth: page
+        homer:
+          name: Prometheus
+          service: Monitoring
+          priority: 990
+          subtitle: "Monitoring system"
         comparisons:
           labels: allow_more_present

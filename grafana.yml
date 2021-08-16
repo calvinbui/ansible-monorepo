@@ -76,3 +76,8 @@
           - "{{ _dir.results | selectattr('item', 'match', 'provisioning') | flatten | map(attribute='path') | first }}:/etc/grafana/provisioning"
         traefik:
           - port: 3000
+        homer:
+          name: Grafana
+          service: Monitoring
+          priority: 970
+          subtitle: "Dashboards"

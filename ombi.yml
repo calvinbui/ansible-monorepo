@@ -3,7 +3,7 @@
 - hosts: homelab
 
   vars:
-    application: plex
+    application: ombi
 
     docker_network: "{{ networks.pub }}"
 
@@ -21,26 +21,21 @@
         mode: "0771"
       register: _config_dir
 
-    - name: "Create {{ application }} container"
+    - name: Create container
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: plexinc/pms-docker:latest
-        ipv4_address: "{{ docker_network.prefix }}.3"
+        image: ghcr.io/linuxserver/ombi
         env:
-          PLEX_UID: "{{ common_user_id }}"
-          PLEX_GID: "{{ common_root_group }}"
+          PUID: "{{ common_user_id }}"
+          PGID: "{{ common_root_group }}"
           TZ: "{{ common_timezone }}"
-          # PLEX_CLAIM: ""
         volumes:
           - "{{ _config_dir.path }}:/config"
-          - /tmp/plex:/transcode
-          - "{{ common_directory_movies }}:/data/movies"
-          - "{{ common_directory_tv }}:/data/tv"
         traefik:
-          - port: 32400
+          - port: 3579
         homer:
-          name: Plex
-          service: Sharing
-          priority: 990
-          subtitle: "Media server"
+          name: Ombi
+          service: Collaboration
+          priority: 690
+          subtitle: "Media request tool"

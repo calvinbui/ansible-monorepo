@@ -86,6 +86,12 @@
         traefik:
           - port: 3334
             rule: Host(`{{ application }}.{{ common_tld }}`)
+        homer:
+          name: The Spaghetti Detective
+          service: Tools
+          priority: 390
+          subtitle: "3D printing failure detection"
+          url: "https://{{ application }}.{{ common_tld }}"
         volumes: &web_volumes
           - "{{ config_directory }}/repo/web:/app"
         env: &web_env

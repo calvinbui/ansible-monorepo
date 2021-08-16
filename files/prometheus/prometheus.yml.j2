@@ -2,8 +2,8 @@
 ---
 
 global:
-  scrape_interval: 20s
-  evaluation_interval: 20s
+  scrape_interval: 30s
+  evaluation_interval: 30s
 
 rule_files:
   - '/rules/*.yml'
@@ -20,21 +20,28 @@ scrape_configs:
           - alertmanager.{{ docker_network.name }}:9093
 
   - job_name: prometheus-docker-sd
+    scrape_timeout: 20s
     file_sd_configs:
       - files:
         - /prometheus-docker-sd/docker-targets.json
 
   - job_name: blackbox
+    scrape_timeout: 30s
     metrics_path: /probe
     params:
       module: [http]
+    file_sd_configs:
+      - files:
+        - /prometheus-traefik-sd/*.json
     static_configs:
       - targets:
-      {% for service in http_services %}
-        {% if 'excludeMonitoring' not in service %}
-        - {{ service.url }}
+    {% for service in services %}
+      {% for item in service['items'] %}
+        {% if item.monitor %}
+        - {{ item.url }}
         {% endif %}
       {% endfor %}
+    {% endfor %}
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target

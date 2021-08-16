@@ -36,6 +36,11 @@
         traefik:
           - port: 8989
             auth: basic
+        homer:
+          name: Sonarr
+          service: Download
+          priority: 790
+          subtitle: "Manage and download TV shows"
 
     - name: Wait for config
       ansible.builtin.wait_for:

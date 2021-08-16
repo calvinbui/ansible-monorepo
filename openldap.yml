@@ -67,6 +67,12 @@
           SMTP_USE_TLS: "{{ 'TRUE' if common_email_protocol=='tls' else 'FALSE' }}"
           EMAIL_FROM_ADDRESS: "lum{{ common_email_to }}"
           EMAIL_FROM_NAME: "ldap-user-manager"
-
         traefik:
           - port: 80
+        homer:
+          name: LDAP User Manager
+          icon: fas fa-address-book
+          service: Infrastructure
+          priority: 390
+          subtitle: "LDAP"
+          url: "https://lum.{{ common_tld }}/log_in/"

@@ -5,6 +5,7 @@
     combined_labels: {}
     prometheus_labels: {}
     traefik_labels: {}
+    homer_labels: {}
 
 # User-provided labels
 - name: Merge labels into combined_labels
@@ -43,6 +44,18 @@
   ansible.builtin.set_fact:
     combined_labels: "{{ combined_labels | combine({ 'traefik.enable': 'false' }) }}"
   when: traefik is undefined
+
+# homer-service-discovery labels and icon
+- name: Generate homer-service-discovery
+  ansible.builtin.include_tasks: homer.yml
+  when: homer is defined
+  vars:
+    app_name: "{{ name | default(application) }}"
+
+- name: Merge generated Homer and Docker labels
+  ansible.builtin.set_fact:
+    combined_labels: "{{ combined_labels | combine(homer_labels, recursive=True) }}"
+  when: homer is defined
 
 # Create container
 - name: "Create docker container for {{ name | default(application) }}"

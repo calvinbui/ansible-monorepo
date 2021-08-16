@@ -81,6 +81,11 @@
           SMTP_SECURE: "tls"
         traefik:
           - port: 80
+        homer:
+          name: Nextcloud
+          service: Collaboration
+          priority: 990
+          subtitle: "Productivity platform"
         labels:
           traefik.http.routers.nextcloud-secure.middlewares: "nextcloud-dav,nextcloud-hsts"
           traefik.http.middlewares.nextcloud-dav.redirectregex.permanent: "true"

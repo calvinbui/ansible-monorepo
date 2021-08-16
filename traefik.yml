@@ -57,6 +57,11 @@
         env:
           CF_API_EMAIL: "{{ cloudflare_email }}"
           CF_API_KEY: "{{ cloudflare_api }}"
+        homer:
+          name: Traefik
+          service: Infrastructure
+          priority: 690
+          subtitle: "Reverse proxy"
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock
           - "{{ _config_dir.path }}/traefik.yaml:/etc/traefik/traefik.yaml"

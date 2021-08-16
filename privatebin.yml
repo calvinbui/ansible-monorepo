@@ -69,3 +69,8 @@
           - "{{ _dir.results | selectattr('item', 'match', 'cfg') | flatten | map(attribute='path') | first }}:/srv/cfg"
         traefik:
           - port: 8080
+        homer:
+          name: PrivateBin
+          service: Sharing
+          priority: 790
+          subtitle: "Zero knowledge pastebin"

@@ -83,6 +83,11 @@
           - "{{ config_directory }}/settings.json:/config/settings.json"
         traefik:
           - port: 8089
+        homer:
+          name: MovieNight
+          service: Sharing
+          priority: 99
+          subtitle: "Video streaming server"
         labels:
           # rtmps/tls is not currently working on Traefik with OBS for me
           traefik.tcp.routers.movienight-rtmp.entrypoints: "rtmp"

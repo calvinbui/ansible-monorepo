@@ -143,6 +143,11 @@
         traefik:
           - port: 5076
             auth: basic
+        homer:
+          name: NZBGet
+          service: Download
+          priority: 890
+          subtitle: "Usenet meta search"
       register: _docker_container
 
     # General config

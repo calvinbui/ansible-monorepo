@@ -19,3 +19,9 @@
           BASE_URL: "https://{{ application }}.{{ common_tld }}"
         traefik:
           - port: 5000
+        homer:
+          name: Change Detection
+          icon: fas fa-columns
+          service: Tools
+          priority: 690
+          subtitle: "Website change detection"

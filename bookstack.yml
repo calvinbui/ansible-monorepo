@@ -53,6 +53,11 @@
           APP_URL: "https://{{ application }}.{{ common_tld }}"
         traefik:
           - port: 80
+        homer:
+          name: Bookstack
+          service: Collaboration
+          priority: 690
+          subtitle: "Documentation"
 
     - name: Wait for .env file
       ansible.builtin.wait_for:

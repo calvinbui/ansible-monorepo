@@ -83,3 +83,8 @@
           - name: "{{ application }}-websocket"
             port: 3012
             rule: Host(`{{ application }}.{{ common_tld }}`, `bitwarden.{{ common_tld }}`) && Path(`/notifications/hub`)
+        homer:
+          name: Bitwarden
+          service: Tools
+          priority: 590
+          subtitle: "Password manager"

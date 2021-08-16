@@ -44,3 +44,8 @@
           - "{{ _config_dir.path }}/filebrowser.json:/.filebrowser.json"
         traefik:
           - port: 80
+        homer:
+          name: File Browser
+          service: Sharing
+          priority: 880
+          subtitle: "Web file browser"

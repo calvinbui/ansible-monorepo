@@ -14,33 +14,16 @@
         state: directory
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
-        mode: "0771"
+        mode: "0777"
       register: _config_dir
 
-    - name: Template base config file
-      ansible.builtin.template:
-        src: "{{ files_directory }}/config.yml.j2"
-        dest: "{{ _config_dir.path }}/config.yml"
-        owner: "911"
-        group: "911"
-        mode: "0444"
-      register: _config_file
-
-    # - name: Touch final config
-    #   ansible.builtin.file:
-    #     path: "{{ _config_dir.path }}/config.yml"
-    #     state: touch
-    #     modification_time: preserve
-    #     access_time: preserve
-    #     mode: "0640"
-
-    - name: Copy icons
+    - name: Copy logos
       ansible.builtin.copy:
-        src: "{{ files_directory }}/icons"
+        src: "{{ files_directory }}/logos"
         dest: "{{ _config_dir.path }}"
-        owner: "911"
-        group: "911"
-        mode: "0444"
+        owner: "{{ common_user_id }}"
+        group: "{{ common_group_id }}"
+        mode: "0775"
 
     - name: "Create {{ application }} container"
       ansible.builtin.include_role:
@@ -48,22 +31,34 @@
       vars:
         image: b4bz/homer:latest
         volumes:
-          - "{{ _config_dir.path }}/config.yml:/www/config.yml"
-          - "{{ _config_dir.path }}/icons:/www/assets/custom"
+          - "{{ _config_dir.path }}/assets/:/www/assets/"
+          - "{{ _config_dir.path }}/logos/:/www/logos/"
         env:
-          PUID: "{{ common_user_id }}"
-          PGID: "{{ common_group_id }}"
-          TZ: "{{ common_timezone }}"
+          UID: "{{ common_user_id }}"
+          GID: "{{ common_group_id }}"
         traefik:
           - port: 8080
             rule: "Host(`{{ common_tld }}`)"
-        recreate: "{{ true if _config_file.changed else false }}"
 
-    # - name: "Create {{ application }}-service-discovery container"
-    #   ansible.builtin.include_role:
-    #     name: docker_container
-    #   vars:
-    #     image: ghcr.io/calvinbui/homer-service-discovery:latest
-    #     volumes:
-    #       - "{{ _config_dir.path }}/config.yml:/config.yml"
-    #       - "{{ _config_dir.path }}/base.yml:/base.yml"
+    - name: Template base config file
+      ansible.builtin.template:
+        src: "{{ files_directory }}/config.yml.j2"
+        dest: "{{ _config_dir.path }}/hsd.yml"
+        owner: "{{ common_user_id }}"
+        group: "{{ common_group_id }}"
+        mode: "0775"
+
+    - name: "Create {{ application }}-service-discovery container"
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-service-discovery"
+        image: ghcr.io/calvinbui/homer-service-discovery:latest
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock:ro # docker socket
+          - "{{ _config_dir.path }}/assets/config.yml:/config.yml" # homer final config
+          - "{{ _config_dir.path }}/hsd.yml:/base.yml" # base
+        env:
+          LOG_LEVEL: Debug
+          HOMER_BASE_CONFIG: /base.yml
+          HOMER_CONFIG: /config.yml

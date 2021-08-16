@@ -45,3 +45,10 @@
         traefik:
           - port: 3000
             rule: "Host(`share.{{ common_tld }}`)"
+        homer:
+          name: PsiTransfer
+          icon: fas fa-cloud-upload-alt
+          service: Sharing
+          priority: 890
+          subtitle: "File sharing"
+          url: "https://share.{{ common_tld }}"
