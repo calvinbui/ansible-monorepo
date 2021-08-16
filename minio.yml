@@ -41,13 +41,14 @@
         command:
           - server
           - /data
+          - --console-address ":9001"
         env:
           MINIO_ROOT_USER: "{{ minio_user }}"
           MINIO_ROOT_PASSWORD: "{{ minio_password }}"
         volumes:
           - "{{ _config_dir.path }}/data:/data"
         traefik:
-          - port: 9000
+          - port: 9001
 
     - name: Create mc config
       notify: Restart mc
