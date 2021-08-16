@@ -69,10 +69,12 @@
         traefik:
           - port: 9093
             auth: page
-        comparisons:
-          labels: allow_more_present
         homer:
           name: Alertmanager
           service: Monitoring
           priority: 980
           subtitle: "Alerting"
+        metrics:
+          - port: 9093
+        comparisons:
+          labels: allow_more_present

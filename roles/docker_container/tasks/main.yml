@@ -84,6 +84,7 @@
     dns_servers: "{{ docker_network.dns | default(omit) }}"
     network_mode: "{{ docker_network.name | default('omit') }}"
     published_ports: "{{ published_ports | default(omit) }}"
+    exposed_ports: "{{ exposed_ports | default(omit) }}"
     networks_cli_compatible: "{{ networks_cli_compatible | default(true) }}"
     purge_networks: "{{ purge_networks | default(true) }}"
 
