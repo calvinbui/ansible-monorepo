@@ -14,13 +14,13 @@
         state: directory
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
-        mode: "0777"
+        mode: "0775"
       register: _config_dir
 
     - name: Copy logos
       ansible.builtin.copy:
-        src: "{{ files_directory }}/logos"
-        dest: "{{ _config_dir.path }}"
+        src: "{{ homer_logos_local_dir }}/"
+        dest: "{{ homer_logos_remote_dir }}/"
         owner: "{{ common_user_id }}"
         group: "{{ common_group_id }}"
         mode: "0775"
@@ -32,7 +32,7 @@
         image: b4bz/homer:latest
         volumes:
           - "{{ _config_dir.path }}/assets/:/www/assets/"
-          - "{{ _config_dir.path }}/logos/:/www/logos/"
+          - "{{ homer_logos_remote_dir }}/:/www/logos/"
         env:
           UID: "{{ common_user_id }}"
           GID: "{{ common_group_id }}"
