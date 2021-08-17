@@ -10,7 +10,8 @@ services:
   - group: Collaboration
     homer_icon: fas fa-people-carry
     items:
-      - name: JIRA
+      -
+        name: JIRA
         logo: jira.svg
         subtitle: Project management
         url: https://thingstodo.atlassian.net
@@ -24,13 +25,15 @@ services:
   - group: Tools
     homer_icon: fas fa-tools
     items:
-      - name: OctoPrint
+      -
+        name: OctoPrint
         logo: octoprint.png
         subtitle: 3D printing controller
         url: https://octopi.{{ common_local_tld }}
         priority: 890
         monitor: true
-      - name: OctoPrint Webcam
+      -
+        name: OctoPrint Webcam
         icon: fas fa-camera-retro
         subtitle: Direct link to OctoPrint webcam
         url: https://octopi.{{ common_local_tld }}/webcam/?action=stream
@@ -44,25 +47,29 @@ services:
   - group: Infrastructure
     homer_icon: fas fa-server
     items:
-      - name: OPNsense
+      -
+        name: OPNsense
         logo: opnsense.png
         subtitle: Firewall and router
         url: https://opnsense-web.{{ common_local_tld }}
         priority: 990
         monitor: true
-      - name: Unifi
+      -
+        name: Unifi
         logo: unifi.png
         subtitle: Unifi controller
         url: https://unifi.{{ common_local_tld }}:8443
         priority: 590
         monitor: true
-      - name: Homelab IPMI
+      -
+        name: Homelab IPMI
         url: https://homelab-ipmi.{{ common_local_tld }}
         logo: ipmi.png
         subtitle: Supermicro IPMI
         priority: 490
         monitor: true
-      - name: BorgBase
+      -
+        name: BorgBase
         logo: borgmatic.svg
         subtitle: Hosting For BorgBackup
         url: https://www.borgbase.com

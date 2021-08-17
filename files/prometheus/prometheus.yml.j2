@@ -13,27 +13,27 @@ scrape_configs:
     docker_sd_configs:
       - host: unix:///var/run/docker.sock
     relabel_configs:
-      # Only keep containers that have a `prometheus.enabled = true` label.
-      - action: keep
+      - # Only keep containers that have a `prometheus.enabled = true` label.
+        action: keep
         source_labels: [__meta_docker_container_label_prometheus_enable]
         regex: true
-      # Use the task labels that are prefixed by `prometheus(.-_)`.
-      - action: labelmap
+      - # Use the task labels that are prefixed by `prometheus(.-_)`.
+        action: labelmap
         regex: __meta_docker_container_label_prometheus_(.+)
         replacement: $1
-      # replace the default port 80 with our own
-      - action: replace
+      - # replace the default port 80 with our own
+        action: replace
         source_labels: [__address__, __meta_docker_container_label_prometheus_port]
         regex: ([^:]+)(?::\d+)?;(\d+)
         replacement: $1:$2
         target_label: __address__
-      # replace the scheme with our own
-      - action: replace
+      - # replace the scheme with our own
+        action: replace
         source_labels: [__meta_docker_container_label_prometheus_scheme]
         target_label: __scheme__
         regex: (https?)
-      # replace the path with our own
-      - action: replace
+      - # replace the path with our own
+        action: replace
         source_labels: [__meta_docker_container_label_prometheus_path]
         target_label: __metrics_path__
         regex: (.+)
@@ -56,11 +56,14 @@ scrape_configs:
       {% endfor %}
     {% endfor %}
     relabel_configs:
-      - source_labels: [__address__]
+      -
+        source_labels: [__address__]
         target_label: __param_target
-      - source_labels: [__param_target]
+      -
+        source_labels: [__param_target]
         target_label: instance
-      - target_label: __address__
+      -
+        target_label: __address__
         replacement: blackbox_exporter.{{ docker_network.name }}:9115
 
 alerting:
