@@ -45,15 +45,27 @@
         env:
           MINIO_ROOT_USER: "{{ minio_user }}"
           MINIO_ROOT_PASSWORD: "{{ minio_password }}"
+
+          MINIO_SERVER_URL: "https://{{ application }}.{{ common_tld }}"
+
+          MINIO_BROWSER_REDIRECT_URL: "https://{{ application }}-console.{{ common_tld }}"
         volumes:
           - "{{ _config_dir.path }}/data:/data"
         traefik:
-          - port: 9001
+          # api
+          - name: "{{ application }}-api"
+            port: 9000
+            rule: Host(`{{ application }}.{{ common_tld }}`)
+          # console
+          - name: "{{ application }}-console"
+            port: 9001
+            rule: Host(`{{ application }}-console.{{ common_tld }}`)
         homer:
           name: MinIO
           service: Sharing
           priority: 590
           subtitle: "Object storage"
+          url: "https://{{ application }}-console.{{ common_tld }}"
 
     - name: Create mc config
       notify: Restart mc
