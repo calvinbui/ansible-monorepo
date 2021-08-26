@@ -41,6 +41,7 @@
         owner: "65534"  # nobody user
         group: "{{ common_group }}"
         mode: "0444"
+        validate: "docker run --rm --name promtool -v %s:/tmp/rule.yml --entrypoint /bin/promtool prom/prometheus:latest check rules /tmp/rule.yml"
       notify: Restart
 
     - name: Template configs
@@ -50,6 +51,7 @@
         owner: "65534"  # nobody user
         group: "{{ common_group }}"
         mode: "0444"
+        validate: "docker run --rm --name promtool -v %s:/tmp/config.yml --entrypoint /bin/promtool prom/prometheus:latest check config /tmp/config.yml"
       notify: Restart
 
     - name: Create container

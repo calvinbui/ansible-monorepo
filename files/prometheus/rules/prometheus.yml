@@ -1,4 +1,5 @@
 ---
+
 groups:
   - name: prometheus_exporters
     rules:

@@ -1,4 +1,5 @@
 ---
+
 groups:
   - name: process_exporter
     rules:

@@ -29,14 +29,14 @@ scrape_configs:
         target_label: __address__
       - # replace the scheme with our own
         action: replace
+        regex: (https?)
         source_labels: [__meta_docker_container_label_prometheus_scheme]
         target_label: __scheme__
-        regex: (https?)
       - # replace the path with our own
         action: replace
+        regex: (.+)
         source_labels: [__meta_docker_container_label_prometheus_path]
         target_label: __metrics_path__
-        regex: (.+)
 
   - job_name: blackbox
     scrape_timeout: 30s
