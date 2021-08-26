@@ -190,3 +190,20 @@
       ansible.builtin.copy:
         dest: "/root/.forward"
         content: "homelab{{ common_email_to }}"
+
+    - name: Configure unattended-upgrades
+      ansible.builtin.lineinfile:
+        dest: /etc/apt/apt.conf.d/50unattended-upgrades
+        state: present
+        regex: "^{{ item.key }}"
+        line: "{{ item.key }} {{ item.value }};"
+        validate: "echo %s && unattended-upgrades --dry-run"
+      loop: "{{ items | dict2items }}"
+      vars:
+        items:
+          "Unattended-Upgrade::MinimalSteps": "true"
+          # "Unattended-Upgrade::Mail": ""
+          # "Unattended-Upgrade::MailReport": "always"
+          "Unattended-Upgrade::Remove-Unused-Kernel-Packages": "true"
+          "Unattended-Upgrade::Remove-New-Unused-Dependencies": "true"
+          "Unattended-Upgrade::Remove-Unused-Dependencies": "true"
