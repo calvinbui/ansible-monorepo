@@ -8,21 +8,21 @@ templates:
   - '/etc/alertmanager/template/*.tmpl'
 
 receivers:
-  - name: mattermost
+  - name: mattermost-home-lab-alerts
     slack_configs:
       - channel: '#home-lab-alerts'
         send_resolved: true
-        {%- raw %}
+      {%- raw %}
         title: |-
           {{ with index .Alerts 0 }}{{ if .Annotations.title }}{{ .Annotations.title }}{{ end }}{{ end }}
         text: >-
           {{ range .Alerts }}
             {{ .Annotations.description }}
           {{ end }}
-        {% endraw %}
+      {% endraw %}
 
 route:
-  receiver: mattermost
+  receiver: mattermost-home-lab-alerts
   group_by: ['alertname','name']
   group_wait: 10s
   group_interval: 30s
