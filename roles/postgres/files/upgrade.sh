@@ -47,6 +47,12 @@ docker run --rm \
 
 echo "host all all all md5" >> "${work_dir}/${PG_NEW_VERSION}/data/pg_hba.conf"
 
-mv "$PG_PATH" "${PG_PATH}-${PG_OLD_VERSION}"
-
+backup_path="${PG_PATH}-${PG_OLD_VERSION}"
+mv "$PG_PATH" "$backup_path"
 mv "${work_dir}/${PG_NEW_VERSION}/data" "$PG_PATH"
+
+echo ""
+echo ""
+echo "$PG_PATH has been upgraded from $PG_OLD_VERSION to $PG_NEW_VERSION"
+echo "A backup has been created at $backup_path"
+echo "Updated the postgres db to $PG_NEW_VERSION"
