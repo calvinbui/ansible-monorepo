@@ -89,7 +89,7 @@
         - section: wwwuser "{{ htpasswd.username }}"
           option: password
           value: "{{ htpasswd.password_hashed }}"
-        # there has to be some auth
+        # there has to be some auth, even if there's already auth from traefik
         - section: wwwuser "{{ htpasswd.username }}"
           option: enable
           value: "true"
