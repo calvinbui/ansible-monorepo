@@ -36,6 +36,7 @@
         src: "{{ files_directory }}/config.yml.j2"
         dest: "{{ _config_dir.path }}/config.yml"
         mode: "0440"
+        validate: "docker run --rm --name {{ application }}_config_check -v %s:/tmp/config.yml prom/blackbox-exporter:master --config.check --config.file=/tmp/config.yml"
       notify: Restart
 
     - name: Create container
