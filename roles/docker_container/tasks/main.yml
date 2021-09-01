@@ -3,9 +3,10 @@
 - name: Reset role vars
   ansible.builtin.set_fact:
     combined_labels: {}
-    prometheus_labels: {}
+    metrics_labels: {}
     traefik_labels: {}
     homer_labels: {}
+    blackbox_labels: {}
 
 # User-provided labels
 - name: Merge labels into combined_labels
@@ -56,6 +57,19 @@
   ansible.builtin.set_fact:
     combined_labels: "{{ combined_labels | combine(homer_labels, recursive=True) }}"
   when: homer is defined
+
+# Prometheus Blackbox service discovery using Traefik
+- name: Generate blackbox service discovery labels via Traefik
+  ansible.builtin.include_tasks: blackbox.yml
+  when: traefik is defined
+  vars:
+    route: "{{ traefik | first }}" # only loop once on the main entrypoint
+    route_name: "{{ route.name | default(name) | default(application) }}"
+    
+- name: Merge generated Blackbox and Docker labels
+  ansible.builtin.set_fact:
+    combined_labels: "{{ combined_labels | combine(blackbox_labels, recursive=True) }}"
+  when: traefik is defined
 
 # Create container
 - name: "Create docker container for {{ name | default(application) }}"

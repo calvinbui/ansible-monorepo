@@ -1,0 +1,16 @@
+---
+
+- name: "Generating blackbox service discovery labels"
+  when: traefik is defined
+  ansible.builtin.set_fact:
+    blackbox_labels: "{{ blackbox_labels | default({}) | combine({ item.key: item.value }) }}"
+  loop:
+    -
+      key: "blackbox.enable"
+      value: "true"
+    - 
+      key: "blackbox.auth"
+      value: "{{ route.auth | default('none') }}"
+    -
+      key: "blackbox.target"
+      value: "https://{{ (route.rule | regex_replace('^Host\\(`(.*)`\\)$', '\\1')) if route.rule is defined else (route_name + '.' + common_tld) }}"

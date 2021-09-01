@@ -1,22 +1,31 @@
 #jinja2: lstrip_blocks: "true", trim_blocks: "false"
 ---
 modules:
-  http:
+  http: &module
     prober: http
     timeout: 30s
-    http:
+    http: &probe
       method: GET
       valid_status_codes:
         - 200
-        - 301
         - 400
         - 401
         - 403
       fail_if_ssl: false
       fail_if_not_ssl: true
       preferred_ip_protocol: "ipv4"
+  
+  http_basic_auth: 
+    <<: *module
+    http: 
+      <<: *probe
       basic_auth:
         username: {{ blackbox_auth_username }}
         password: {{ blackbox_auth_password }}
+  
+  http_page_auth: 
+    <<: *module
+    http: 
+      <<: *probe
       headers:
         Proxy-Authorization: Basic {{ (blackbox_auth_username + ":" + blackbox_auth_password) | b64encode }}
