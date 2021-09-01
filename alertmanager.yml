@@ -51,7 +51,7 @@
         owner: "65534"  # nobody user
         group: "{{ common_group }}"
         mode: "0444"
-        validate: "docker run --rm --name amtool -v %s:/tmp/config.yml --entrypoint /bin/amtool prom/alertmanager:latest check-config /tmp/config.yml"
+        validate: "docker run --rm --name {{ application }}_config_check -v %s:/tmp/config.yml --entrypoint /bin/amtool prom/alertmanager:latest check-config /tmp/config.yml"
       notify: Restart
 
     - name: Create container
