@@ -4,14 +4,6 @@
   vars:
     application: shlink
 
-    shlink_mecure_jwt: !vault |
-      $ANSIBLE_VAULT;1.1;AES256
-      38353539646365386133316665386439396131383531316639643838396332633337326635383764
-      3163663362393435306234376431393864656436363738650a623434633333323062343764373336
-      64636631336661356137623235343432636138633863346439346333336433646263386531343836
-      3134653834623636390a316662656433646336396131336534636537663536356334353830303561
-      34613665313538663635613730653835393564306434613830653130613430663561
-
     docker_network: "{{ networks.pub }}"
 
   tasks:
@@ -38,40 +30,6 @@
           33393730643765623266633333616332636230333563376531376262346436396238326638633537
           6435303963373661636139393433636235386533333062343437
 
-    - name: Create mercure container
-      ansible.builtin.include_role:
-        name: docker_container
-      vars:
-        name: "{{ application }}-mercure"
-        image: dunglas/mercure:v0.12.2
-        env:
-          SERVER_NAME: ":80" # disable built-in Caddy HTTPS
-          MERCURE_PUBLISHER_JWT_KEY: "{{ shlink_mecure_jwt }}"
-          MERCURE_SUBSCRIBER_JWT_KEY: "{{ shlink_mecure_jwt }}"
-          MERCURE_EXTRA_DIRECTIVES: "cors_origins https://{{ application }}.{{ common_tld }} https://{{ common_short_tld }}"
-        traefik:
-          - port: 80
-        labels:
-          traefik.http.routers.shlink-mercure-secure.middlewares: shlink-mercure-cors
-          traefik.http.middlewares.shlink-mercure-cors.headers.accessControlAllowMethods: "GET,OPTIONS,POST,DELETE"
-          traefik.http.middlewares.shlink-mercure-cors.headers.accessControlAllowHeaders: "*"
-          traefik.http.middlewares.shlink-mercure-cors.headers.accessControlAllowOrigin: "https://{{ application }}.{{ common_tld }}"
-          traefik.http.middlewares.shlink-mercure-cors.headers.accessControlMaxAge: "100"
-          traefik.http.middlewares.shlink-mercure-cors.headers.addVaryHeader: "true"
-
-    - name: Create redis container
-      ansible.builtin.include_role:
-        name: redis
-      vars:
-        redis_version: 6
-        redis_password: !vault |
-          $ANSIBLE_VAULT;1.1;AES256
-          64373335636339333437663066613962306431616166663038313464323564366364633036383664
-          6637633734323765626131366166303864306462313463640a653936323436326535626664386432
-          66323937353464653165363033646664373938343133336433326531326130383664356666636665
-          3038383937303432380a623936396430613630333166323865633662636137663064366337633730
-          39643633366631613036326435353936313361353435613833623436613163643162
-
     - name: Create shlink container
       ansible.builtin.include_role:
         name: docker_container
@@ -89,10 +47,6 @@
           SHORT_DOMAIN_HOST: "{{ common_short_tld }}"
           SHORT_DOMAIN_SCHEMA: "https"
 
-          MERCURE_PUBLIC_HUB_URL: "https://{{ application }}-mercure.{{ common_tld }}"
-          MERCURE_INTERNAL_HUB_URL: "http://{{ application }}-mercure.{{ docker_network.name }}"
-          MERCURE_JWT_SECRET: "{{ shlink_mecure_jwt }}"
-
           GEOLITE_LICENSE_KEY: !vault |
             $ANSIBLE_VAULT;1.1;AES256
             33613639326461363765303437323832643230343735393438313531336631393062623962623737
@@ -100,8 +54,6 @@
             38396363373538303066333534353561663161643136323764383339653563346333656636346539
             3430666366383661310a343062653765326632656262313661313139643632366533363939316265
             39666461626163346464633937313064363565643364653935333364663266393366
-
-          REDIS_SERVERS: "tcp://{{ _redis_hostname }}:6379?password={{ _redis_password }}"
 
           ANONYMIZE_REMOTE_ADDR: "false"
 
