@@ -63,6 +63,8 @@
         traefik:
           - port: 8080
             rule: "Host(`{{ common_short_tld }}`)"
+        blackbox:
+          auth: page
         labels:
           traefik.http.routers.shlink-secure.middlewares: shlink-cors
           traefik.http.middlewares.shlink-cors.headers.accessControlAllowMethods: "GET,OPTIONS,POST,DELETE"
