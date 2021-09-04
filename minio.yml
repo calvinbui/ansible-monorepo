@@ -50,18 +50,21 @@
         command:
           - server
           - /data
+          - --anonymous
         env:
           MINIO_ROOT_USER: "{{ minio_user }}"
           MINIO_ROOT_PASSWORD: "{{ minio_password }}"
 
           MINIO_SERVER_URL: "http://{{ application }}-server.{{ docker_network.name }}:9000"
 
-          MINIO_BROWSER_REDIRECT_URL: "https://{{ application }}-console.{{ common_tld }}"
+          MINIO_BROWSER: "off"
         volumes:
           - "{{ _config_dir.path }}/data:/data"
         traefik:
           - port: 9000
             rule: Host(`{{ application }}.{{ common_tld }}`)
+        blackbox:
+          path: /minio/health/live
 
     - name: Create {{ application }} console container
       ansible.builtin.include_role:
