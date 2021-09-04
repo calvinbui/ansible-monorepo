@@ -5,14 +5,14 @@ groups:
     rules:
       -
         alert: HTTP Connection
-        expr: probe_success{instance!~".*ipmi.*"} == 0
+        expr: probe_success == 0
         for: 5m
         annotations:
           title: "HTTP Connection"
           description: "The URL {{ $labels.instance }} is not responding successfully"
       -
         alert: HTTP SSL
-        expr: probe_http_ssl{instance!~".*ipmi.*"} == 0 AND probe_success{instance!~".*ipmi.*"} == 1
+        expr: probe_http_ssl == 0 AND probe_success == 1
         for: 5m
         annotations:
           title: "SSL Connection"

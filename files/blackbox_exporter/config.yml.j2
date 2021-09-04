@@ -13,8 +13,10 @@ modules:
         - 401
         - 403
       fail_if_ssl: false
-      fail_if_not_ssl: true
+      fail_if_not_ssl: false
       preferred_ip_protocol: "ipv4"
+      tls_config:
+        insecure_skip_verify: true
   
   http_basic_auth: 
     <<: *module
