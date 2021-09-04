@@ -44,6 +44,8 @@
           - /dev/log:/dev/log:rw
         traefik:
           - port: 8990
+        blackbox:
+          auth: basic
         homer:
           name: zfswatcher
           service: Monitoring
@@ -68,6 +70,7 @@
         - section: www
           option: bind
           value: 0.0.0.0:8990
+        
         - section: email "main"
           option: enable
           value: "true"
@@ -86,13 +89,22 @@
         - section: email "main"
           option: to
           value: "{{ application }}{{ common_email_to }}"
+
+        # there has to be some auth, even if there's already auth from traefik
         - section: wwwuser "{{ htpasswd.username }}"
           option: password
           value: "{{ htpasswd.password_hashed }}"
-        # there has to be some auth, even if there's already auth from traefik
         - section: wwwuser "{{ htpasswd.username }}"
           option: enable
           value: "true"
+
+        - section: wwwuser "{{ blackbox_htpasswd.username }}"
+          option: password
+          value: "{{ blackbox_htpasswd.password_hashed }}"
+        - section: wwwuser "{{ blackbox_htpasswd.username }}"
+          option: enable
+          value: "true"
+
         - section: wwwuser "root"
           option: enable
           value: "false"
