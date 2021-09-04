@@ -135,7 +135,6 @@
         image: ghcr.io/linuxserver/nzbhydra2
         volumes:
           - "{{ _config_dir.path }}:/config"
-          - "{{ common_directory_download }}:/downloads"
         env:
           PUID: "{{ common_user_id }}"
           PGID: "{{ common_group_id }}"
@@ -144,7 +143,7 @@
           - port: 5076
             auth: basic
         homer:
-          name: NZBGet
+          name: NZBHydra 2
           service: Download
           priority: 890
           subtitle: "Usenet meta search"
