@@ -28,7 +28,8 @@
         image: ghcr.io/linuxserver/bazarr
         volumes:
           - "{{ _config_dir.path }}:/config"
-          - "{{ common_directory_storage }}:{{ common_mounted_directory }}"
+          - "{{ common_directory_tv }}:{{ common_mounted_directory_tv }}"
+          - "{{ common_directory_movies }}:{{ common_mounted_directory_movies }}"
         env:
           PUID: "{{ common_user_id }}"
           PGID: "{{ common_root_group }}"
