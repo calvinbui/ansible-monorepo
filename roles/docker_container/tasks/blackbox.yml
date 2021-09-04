@@ -10,7 +10,7 @@
       value: "true"
     - 
       key: "blackbox.auth"
-      value: "{{ route.auth | default('none') }}"
+      value: "{{ blackbox.auth | default(route.auth) | default('none') }}"
     -
       key: "blackbox.target"
       value: "https://{{ (route.rule | regex_replace('^Host\\(`(.*)`\\)$', '\\1')) if route.rule is defined else (route_name + '.' + common_tld) }}"
