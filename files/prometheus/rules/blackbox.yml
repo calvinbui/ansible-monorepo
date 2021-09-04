@@ -12,7 +12,7 @@ groups:
           description: "The URL {{ $labels.instance }} is not responding successfully"
       -
         alert: HTTP SSL
-        expr: probe_http_ssl == 0 AND probe_success == 1
+        expr: probe_http_ssl{instance!~"^http://.*"} == 0 AND probe_success == 1
         for: 5m
         annotations:
           title: "SSL Connection"
