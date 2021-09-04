@@ -55,6 +55,13 @@ services:
         priority: 990
         monitor: true
       -
+        name: TP-Link T1600G-28PS
+        logo: tplink.png
+        subtitle: Network switch
+        url: http://switch.{{ common_local_tld }}
+        priority: 980
+        monitor: true
+      -
         name: Unifi
         logo: unifi.png
         subtitle: Unifi controller
