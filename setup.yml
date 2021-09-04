@@ -82,6 +82,7 @@
           - zfsutils-linux
           - jq
           - ripgrep
+          - apache2-utils # htpasswd
           - sqlite3
           # https://cisofy.com/lynis/controls/AUTH-9262/
           - libpam-passwdqc
