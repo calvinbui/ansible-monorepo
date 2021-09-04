@@ -48,7 +48,9 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: silviof/docker-languagetool:latest
+        image: erikvl87/languagetool:latest
+        env:
+          langtool_languageModel: /ngrams
         volumes:
           - "{{ _config_dir.path }}/ngrams/:/ngrams"
         traefik:
