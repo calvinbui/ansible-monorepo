@@ -58,7 +58,7 @@ services:
         name: TP-Link T1600G-28PS
         logo: tplink.png
         subtitle: Network switch
-        url: http://switch.{{ common_local_tld }}
+        url: https://switch.{{ common_local_tld }}
         priority: 980
         monitor: true
       -
