@@ -39,6 +39,8 @@
           - "{{ common_directory_tv }}:/data/tv"
         traefik:
           - port: 32400
+        blackbox:
+          path: /identity
         homer:
           name: Plex
           service: Sharing
