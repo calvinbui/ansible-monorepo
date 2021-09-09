@@ -65,13 +65,6 @@
             rule: "Host(`{{ common_short_tld }}`)"
         blackbox:
           auth: page
-        labels:
-          traefik.http.routers.shlink-secure.middlewares: shlink-cors
-          traefik.http.middlewares.shlink-cors.headers.accessControlAllowMethods: "GET,OPTIONS,POST,DELETE"
-          traefik.http.middlewares.shlink-cors.headers.accessControlAllowHeaders: "*"
-          traefik.http.middlewares.shlink-cors.headers.accessControlAllowOrigin: "https://{{ application }}.{{ common_tld }}"
-          traefik.http.middlewares.shlink-cors.headers.accessControlMaxAge: "100"
-          traefik.http.middlewares.shlink-cors.headers.addVaryHeader: "true"
 
     - name: Create web-client folder
       ansible.builtin.file:
