@@ -111,6 +111,7 @@
     devices: "{{ devices | default(omit) }}"
 
     container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
+    command_handling: "{{ command_handling | default('correct') }}"
 
     labels: "{{ combined_labels }}"
 

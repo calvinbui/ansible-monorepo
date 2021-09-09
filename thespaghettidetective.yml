@@ -57,7 +57,10 @@
       vars:
         name: "{{ application }}-ml_api"
         image: "{{ application }}-ml_api"
-        command: bash -c "gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi"
+        command:
+          - bash
+          - -c
+          - "gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi"
         env:
           DEBUG: "False"
           FLASK_APP: "server.py"
@@ -82,7 +85,10 @@
       vars:
         name: "{{ application }}-web"
         image: "{{ application }}-web"
-        command: sh -c "python manage.py collectstatic --noinput && python manage.py migrate && python manage.py runserver --noreload 0.0.0.0:3334"
+        command:
+          - sh
+          - -c
+          - "python manage.py collectstatic --noinput && python manage.py migrate && python manage.py runserver --noreload 0.0.0.0:3334"
         traefik:
           - port: 3334
             rule: Host(`{{ application }}.{{ common_tld }}`)
@@ -126,7 +132,10 @@
       vars:
         name: "{{ application }}-tasks"
         image: "{{ application }}-web"
-        command: sh -c "celery -A config worker --beat -l info -c 2 -Q realtime,celery"
+        command:
+          - sh
+          - -c
+          - "celery -A config worker --beat -l info -c 2 -Q realtime,celery"
         volumes: *web_volumes
         env: *web_env
         labels:
