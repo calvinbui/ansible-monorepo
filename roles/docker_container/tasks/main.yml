@@ -43,7 +43,7 @@
 
 - name: Disable Traefik labels
   ansible.builtin.set_fact:
-    combined_labels: "{{ combined_labels | combine({ 'traefik.enable': 'false' }) }}"
+    combined_labels: "{{ { 'traefik.enable': 'false' } | combine(combined_labels) }}"
   when: traefik is undefined
 
 # homer-service-discovery labels and icon
@@ -65,7 +65,7 @@
   vars:
     route: "{{ traefik | first }}"  # only loop once on the main entrypoint
     route_name: "{{ route.name | default(name) | default(application) }}"
-    
+
 - name: Merge generated Blackbox and Docker labels
   ansible.builtin.set_fact:
     combined_labels: "{{ combined_labels | combine(blackbox_labels, recursive=True) }}"
@@ -88,8 +88,10 @@
 
     env: "{{ env | default(omit) }}"
 
+    read_only: "{{ read_only | default(omit) }}"
     volumes: "{{ volumes | default(omit) }}"
     keep_volumes: "{{ keep_volumes | default(false) }}"
+    tmpfs: "{{ tmpfs | default(omit) }}"
 
     hostname: "{{ name | default(omit) }}"
     networks:
