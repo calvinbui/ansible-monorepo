@@ -55,9 +55,9 @@
         name: "{{ application }}-service-discovery"
         image: ghcr.io/calvinbui/homer-service-discovery:latest
         volumes:
-          - /var/run/docker.sock:/var/run/docker.sock:ro # docker socket
-          - "{{ _config_dir.path }}/assets/config.yml:/config.yml" # homer final config
-          - "{{ _config_dir.path }}/hsd.yml:/base.yml" # base
+          - /var/run/docker.sock:/var/run/docker.sock:ro  # docker socket
+          - "{{ _config_dir.path }}/assets/config.yml:/config.yml"  # homer final config
+          - "{{ _config_dir.path }}/hsd.yml:/base.yml"  # base
         env:
           LOG_LEVEL: Debug
           HOMER_BASE_CONFIG: /base.yml

@@ -2,8 +2,7 @@
 
 # fails if more than 1 result
 - name: Find logo file extension
-  local_action:
-    module: ansible.builtin.find
+  ansible.builtin.find:
     path: "{{ homer_logos_local_dir }}"
     patterns: "^{{ application }}.(png|svg|jpg|jpeg)"
     file_type: file
@@ -13,6 +12,7 @@
     - homer['icon'] is not defined
   failed_when: _homer_logo_local.files|length != 1
   become: false
+  delegate_to: localhost
 
 - name: Upload logo to Homer
   ansible.builtin.copy:

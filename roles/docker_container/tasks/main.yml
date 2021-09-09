@@ -63,7 +63,7 @@
   ansible.builtin.include_tasks: blackbox.yml
   when: (traefik is defined) or (blackbox is defined)
   vars:
-    route: "{{ traefik | first }}" # only loop once on the main entrypoint
+    route: "{{ traefik | first }}"  # only loop once on the main entrypoint
     route_name: "{{ route.name | default(name) | default(application) }}"
     
 - name: Merge generated Blackbox and Docker labels

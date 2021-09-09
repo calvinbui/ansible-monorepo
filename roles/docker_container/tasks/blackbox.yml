@@ -8,7 +8,7 @@
     -
       key: "blackbox.enable"
       value: "true"
-    - 
+    -
       key: "blackbox.auth"
       value: "{{ blackbox.auth | default(route.auth) | default('none') }}"
     -

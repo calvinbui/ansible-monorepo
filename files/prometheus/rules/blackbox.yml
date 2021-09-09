@@ -24,7 +24,7 @@ groups:
         annotations:
           title: "Certificate is expiring soon"
           description: "The certificate for {{ $labels.instance }} is expiring soon"
-      - 
+      -
         alert: HTTP Endpoint Missing
         expr: max_over_time(probe_success[15m]) == 1 unless probe_success
         for: 10m
