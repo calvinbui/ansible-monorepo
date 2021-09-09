@@ -52,7 +52,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: traefik:v2.4
+        image: traefik:v2.5
         ipv4_address: "{{ docker_network.prefix }}.193"
         env:
           CF_API_EMAIL: "{{ cloudflare_email }}"
