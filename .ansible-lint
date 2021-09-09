@@ -7,3 +7,9 @@ skip_list:
 
 exclude_paths:
   - inventory.yml
+
+enable_list:
+  - fqcn-builtins
+  - no-log-password
+  - no-same-owner
+  - yaml

@@ -35,6 +35,9 @@
       ansible.builtin.copy:
         content: 'Acquire::Languages "none";'
         dest: /etc/apt/apt.conf.d/99disable-translations
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
 
     - name: Add repository
       ansible.builtin.apt_repository:

@@ -90,7 +90,7 @@
         append: true
 
     - name: Install docker pip package
-      pip:
+      ansible.builtin.pip:
         name: docker
         executable: pip3
 

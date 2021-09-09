@@ -92,6 +92,9 @@
       notify: Restart minio-mc
       ansible.builtin.copy:
         dest: "{{ _config_dir.path }}/config.json"
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
         content: |
           {
             "version": "10",

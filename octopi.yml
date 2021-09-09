@@ -87,18 +87,16 @@
     - name: Clone hyperpixel drivers repo
       ansible.builtin.git:
         repo: https://github.com/pimoroni/hyperpixel4.git
-        # update if changing devices
-        version: pi3
+        version: pi3  # update if changing devices
         dest: /root/hyperpixel4
         single_branch: true
         update: true
       register: _hyperpixel_driver_clone
 
     - name: Install hyperpixel drivers
-      ansible.builtin.shell: sudo ./install.sh
+      ansible.builtin.command: sudo ./install.sh
       args:
         chdir: /root/hyperpixel4
-        executable: "/bin/bash"
       when: _hyperpixel_driver_clone.changed
       register: _hyperpixel_driver_install
 
@@ -158,9 +156,8 @@
       register: _octodash_install
 
     - name: Enable Console Autologin
-      ansible.builtin.shell: sudo raspi-config nonint do_boot_behaviour B2
-      args:
-        executable: "/bin/bash"
+      ansible.builtin.command: sudo raspi-config nonint do_boot_behaviour B2
+      become: true
       become_user: "{{ common_user }}"
       changed_when: false
 

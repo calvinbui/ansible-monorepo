@@ -49,6 +49,9 @@
       ansible.builtin.file:
         path: "{{ acme_scripts_dir }}"
         state: directory
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0775"
 
     - name: Copy scripts
       ansible.builtin.copy:

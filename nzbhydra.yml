@@ -233,7 +233,7 @@
         index_var: nzbhydra_indexer_index
 
     - name: Find indexers to delete
-      debug:
+      ansible.builtin.debug:
         msg: |
           "Downloader indexes in vars: {{ nzbhydra_var_indexers_index }}"
           "Downloader indexes in nzbhydra2.yml: {{ nzbhydra_configured_indexers_index }}"
