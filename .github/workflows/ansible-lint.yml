@@ -12,3 +12,6 @@ jobs:
       - uses: iranzo/ansible-lint-action@v4.1.1
         with:
           targets: "*.y*l"
+          override-deps: |
+            ansible==latest
+            ansible-lint[community,yamllint]==latest
