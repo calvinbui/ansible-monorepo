@@ -24,31 +24,26 @@
         source: "{{ common_directory_backup }}"
         crontab: "30 1 * * *"
         repository: azy1uocs@azy1uocs.repo.borgbase.com:repo
-        compression: none
 
       - name: misc
         source: "{{ common_directory_misc }}"
         crontab: "0 2 * * *"
         repository: q09177h4@q09177h4.repo.borgbase.com:repo
-        compression: lz4
 
       - name: work
         source: "{{ common_directory_storage }}/Work"
         crontab: "30 2 * * *"
         repository: lh782u97@lh782u97.repo.borgbase.com:repo
-        compression: none
 
       - name: photos
         source: "{{ common_directory_photos }}"
         crontab: "30 3 * * *"
         repository: g0h7y7az@g0h7y7az.repo.borgbase.com:repo
-        compression: none
 
       - name: apps
         source: "{{ common_directory }}"
         crontab: "0 3 * * *"
         repository: y8p6ha46@y8p6ha46.repo.borgbase.com:repo
-        compression: lz4
         exclude_patterns:
           - '/mnt/source/languagetool'
 
