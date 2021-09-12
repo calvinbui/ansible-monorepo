@@ -81,6 +81,8 @@
         traefik:
           - port: 9090
             rule: Host(`{{ application }}-console.{{ common_tld }}`)
+        blackbox:
+          path: /login
         homer:
           name: MinIO
           service: Sharing
