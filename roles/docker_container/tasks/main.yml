@@ -113,6 +113,11 @@
     container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
     command_handling: "{{ command_handling | default('correct') }}"
 
+    log_driver: json-file
+    log_options:
+      max-size: 1MB
+      max-file: "1"
+
     labels: "{{ combined_labels }}"
 
     comparisons: "{{ comparisons | default(omit) }}"
