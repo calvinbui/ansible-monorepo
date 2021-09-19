@@ -52,7 +52,7 @@
       json_patch:
         src: "{{ _config_dir.path }}/Jackett/ServerConfig.json"
         operations:
-          - op: replace
+          - op: add
             path: "{{ item.key }}"
             value: "{{ item.value }}"
         pretty: true

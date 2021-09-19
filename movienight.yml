@@ -49,7 +49,7 @@
       json_patch:
         src: "{{ config_directory }}/settings.json"
         operations:
-          - op: replace
+          - op: add
             path: "{{ item.key }}"
             value: "{{ item.value }}"
         pretty: true
