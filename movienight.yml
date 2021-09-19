@@ -45,7 +45,7 @@
         mode: "0640"
       when: not __movienight_config.stat.exists
 
-    - name: Update settings.json
+    - name: Configure
       json_patch:
         src: "{{ config_directory }}/settings.json"
         operations:

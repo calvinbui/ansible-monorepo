@@ -48,7 +48,7 @@
         path: "{{ _config_dir.path }}/Jackett/ServerConfig.json"
         state: present
 
-    - name: Update settings.json
+    - name: Configure
       json_patch:
         src: "{{ _config_dir.path }}/Jackett/ServerConfig.json"
         operations:
