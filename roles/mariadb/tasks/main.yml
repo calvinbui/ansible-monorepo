@@ -30,6 +30,7 @@
     env:
       MYSQL_ROOT_PASSWORD: "{{ mariadb_password }}"
       MYSQL_DATABASE: "{{ mariadb_database }}"
+      TZ: "{{ common_timezone }}"
 
     labels:
       traefik.enable: "false"

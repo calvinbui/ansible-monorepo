@@ -29,6 +29,7 @@
       MONGO_INITDB_ROOT_USERNAME: "{{ mongo_username }}"
       MONGO_INITDB_ROOT_PASSWORD: "{{ mongo_password }}"
       MONGO_INITDB_DATABASE: "{{ mongo_database }}"
+      TZ: "{{ common_timezone }}"
 
     volumes:
       - "{{ mongo_directory }}:/data/db"

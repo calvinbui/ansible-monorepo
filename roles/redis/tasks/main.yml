@@ -25,6 +25,9 @@
 
     command: "{{ redis_command | default('redis-server --requirepass ' + redis_password) }}"
 
+    env:
+      TZ: "{{ common_timezone }}"
+
     volumes: "{{ redis_directory }}:/data"
 
     labels:
