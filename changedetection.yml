@@ -8,7 +8,16 @@
     docker_network: "{{ networks.pub }}"
 
   tasks:
-    - name: Create container
+    - name: Create webdriver container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-webdriver"
+        image: selenium/standalone-chrome-debug:3.141.59
+        volumes:
+          - /dev/shm:/dev/shm
+
+    - name: Create "{{ application }}" container
       ansible.builtin.include_role:
         name: docker_container
       vars:
@@ -17,6 +26,11 @@
           - "{{ config_directory }}:/datastore"
         env:
           BASE_URL: "https://{{ application }}.{{ common_tld }}"
+
+          WEBDRIVER_URL: "http://{{ application }}-webdriver:4444/wd/hub"
+
+          PUID: "{{ common_user }}"
+          PGID: "{{ common_group }}"
         traefik:
           - port: 5000
         homer:
