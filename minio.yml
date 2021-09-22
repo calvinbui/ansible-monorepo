@@ -28,7 +28,7 @@
     docker_network: "{{ networks.pub }}"
 
   handlers:
-    - name: Restart mc
+    - name: Restart minio-mc
       ansible.builtin.command: docker restart "{{ application }}-mc"
 
   tasks:
@@ -102,7 +102,7 @@
             "version": "10",
             "aliases": {
               "minio": {
-                "url": "http://{{ application }}.{{ docker_network.name }}:9000",
+                "url": "http://{{ application }}-server.{{ docker_network.name }}:9000",
                 "accessKey": "{{ minio_user }}",
                 "secretKey": "{{ minio_password }}",
                 "api": "S3v4",
