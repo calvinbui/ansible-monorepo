@@ -28,8 +28,8 @@
         image: plexinc/pms-docker:latest
         ipv4_address: "{{ docker_network.prefix }}.3"
         env:
-          PLEX_UID: "{{ common_user_id }}"
-          PLEX_GID: "{{ common_root_group }}"
+          PLEX_UID: "{{ common_user_id | string }}"
+          PLEX_GID: "{{ common_root_group | string }}"
           TZ: "{{ common_timezone }}"
           # PLEX_CLAIM: ""
         volumes:

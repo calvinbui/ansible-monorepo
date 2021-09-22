@@ -24,8 +24,8 @@
         image: jlesage/jdownloader-2
         env:
           TZ: "{{ common_timezone }}"
-          USER_ID: "{{ common_user_id }}"
-          GROUP_ID: "{{ common_root_group }}"
+          USER_ID: "{{ common_user_id | string }}"
+          GROUP_ID: "{{ common_root_group | string }}"
           DISPLAY_WIDTH: "1920"
           DISPLAY_HEIGHT: "1080"
           KEEP_APP_RUNNING: "1"

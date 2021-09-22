@@ -30,8 +30,8 @@
           - "{{ _config_dir.path }}:/config"
           - "{{ common_directory_download }}:{{ common_mounted_directory_download }}"
         env:
-          PUID: "{{ common_user_id }}"
-          PGID: "{{ common_root_group }}"
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_root_group | string }}"
           TZ: "{{ common_timezone }}"
           AUTO_UPDATE: "false"
         traefik:

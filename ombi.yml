@@ -17,7 +17,7 @@
         path: "{{ config_directory }}"
         state: directory
         owner: "{{ common_user }}"
-        group: "{{ common_group }}"
+        group: "{{ common_root_group }}"
         mode: "0771"
       register: _config_dir
 
@@ -27,8 +27,8 @@
       vars:
         image: ghcr.io/linuxserver/ombi
         env:
-          PUID: "{{ common_user_id }}"
-          PGID: "{{ common_root_group }}"
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_root_group | string }}"
           TZ: "{{ common_timezone }}"
         volumes:
           - "{{ _config_dir.path }}:/config"

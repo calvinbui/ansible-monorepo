@@ -136,8 +136,8 @@
         volumes:
           - "{{ _config_dir.path }}:/config"
         env:
-          PUID: "{{ common_user_id }}"
-          PGID: "{{ common_group_id }}"
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_group_id | string }}"
           TZ: "{{ common_timezone }}"
         traefik:
           - port: 5076

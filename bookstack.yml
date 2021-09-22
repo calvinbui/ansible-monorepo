@@ -44,8 +44,8 @@
         volumes:
           - "{{ _config_dir.path }}/bookstack:/config"
         env:
-          PUID: "{{ common_user_id }}"
-          PGID: "{{ common_group_id }}"
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_group_id | string }}"
           DB_HOST: "{{ _mariadb_hostname }}"
           DB_USER: root
           DB_PASS: "{{ _mariadb_password }}"

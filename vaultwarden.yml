@@ -62,7 +62,7 @@
           INVITATIONS_ALLOWED: "true"
 
           SMTP_HOST: "{{ common_email_server }}"
-          SMTP_PORT: "{{ common_email_smtp_port }}"
+          SMTP_PORT: "{{ common_email_smtp_port | string }}"
           SMTP_SSL: "true"
           SMTP_USERNAME: "{{ common_email_username }}"
           SMTP_PASSWORD: "{{ common_email_password }}"

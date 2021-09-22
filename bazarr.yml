@@ -31,8 +31,8 @@
           - "{{ common_directory_tv }}:{{ common_mounted_directory_tv }}"
           - "{{ common_directory_movies }}:{{ common_mounted_directory_movies }}"
         env:
-          PUID: "{{ common_user_id }}"
-          PGID: "{{ common_root_group }}"
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_root_group | string }}"
           TZ: "{{ common_timezone }}"
         traefik:
           - port: 6767

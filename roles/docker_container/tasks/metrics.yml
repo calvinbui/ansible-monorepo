@@ -13,7 +13,7 @@
       value: "{{ metric.job | default(name) | default(application) }}"
     -
       key: "prometheus.port"
-      value: "{{ metric.port | default('9090') }}"
+      value: "{{ metric.port | default('9090') | string }}"
     -
       key: "prometheus.scheme"
       value: "{{ metric.scheme | default('http') }}"

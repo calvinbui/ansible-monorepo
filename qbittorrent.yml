@@ -27,8 +27,8 @@
       vars:
         image: ghcr.io/linuxserver/qbittorrent
         env:
-          PUID: "{{ common_user_id }}"
-          PGID: "{{ common_root_group }}"
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_root_group | string }}"
           TZ: "{{ common_timezone }}"
           UMASK: "022"
           WEBUI_PORT: "8090"

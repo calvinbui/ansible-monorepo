@@ -52,8 +52,8 @@
           - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/data"
           - "{{ _dir.results | selectattr('item', 'match', 'import') | flatten | map(attribute='path') | first }}:/import"
         env:
-          PUID: "{{ papermerge_user.uid }}"
-          PGID: "{{ common_group_id }}"
+          PUID: "{{ papermerge_user.uid | string }}"
+          PGID: "{{ common_group_id | string }}"
           TZ: "{{ common_timezone }}"
         traefik:
           - port: 8000

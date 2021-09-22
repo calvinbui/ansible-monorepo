@@ -29,8 +29,8 @@
 
           WEBDRIVER_URL: "http://{{ application }}-webdriver:4444/wd/hub"
 
-          PUID: "{{ common_user_id }}"
-          PGID: "{{ common_group_id }}"
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_group_id | string }}"
         traefik:
           - port: 5000
         homer:

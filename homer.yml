@@ -34,8 +34,8 @@
           - "{{ _config_dir.path }}/assets/:/www/assets/"
           - "{{ homer_logos_remote_dir }}/:/www/logos/"
         env:
-          UID: "{{ common_user_id }}"
-          GID: "{{ common_group_id }}"
+          UID: "{{ common_user_id | string }}"
+          GID: "{{ common_group_id | string }}"
         traefik:
           - port: 8080
             rule: "Host(`{{ common_tld }}`)"
