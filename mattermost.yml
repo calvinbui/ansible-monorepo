@@ -111,22 +111,3 @@
           # https://docs.mattermost.com/configure/configuration-settings.html#database
           SqlSettings/DriverName: postgres
           SqlSettings/DataSource: "{{ _postgres_url }}?sslmode=disable&connect_timeout=10"
-
-          # https://docs.mattermost.com/configure/configuration-settings.html#file-storage
-          FileSettings/DriverName: amazons3
-          FileSettings/MaxFileSize: 52428800  # 1048576 bytes per megabyte
-          FileSettings/AmazonS3Endpoint: minio-server.pub:9000
-          FileSettings/AmazonS3SSL: false
-          FileSettings/AmazonS3Region: ""
-          FileSettings/AmazonS3Bucket: "{{ application }}"
-          FileSettings/AmazonS3PathPrefix: ""
-          FileSettings/AmazonS3AccessKeyId: "{{ application }}"
-          FileSettings/AmazonS3SecretAccessKey: !vault |
-            $ANSIBLE_VAULT;1.1;AES256
-            32636232633534313635346238353262343936363261623765356565343637376436386538346365
-            6535613934666634303333373535316533383439643835340a316666383061653762363437316365
-            32313837346464313032316237383035326165383331656639633666363136626161663430393161
-            6565386331343938350a626361613736333238613832393936346234666566386131323062666139
-            39343362653334396530653930303966623837653334323962373662356663316564353236373766
-            35316630393836303738356162623336633463646432646336393835383639663339636438363832
-            616430383833366238663236636163393735
