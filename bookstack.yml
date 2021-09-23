@@ -5,7 +5,7 @@
   vars:
     application: bookstack
 
-    docker_network: "{{ networks.user }}"
+    docker_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart
@@ -79,6 +79,7 @@
           MAIL_USERNAME: "{{ common_email_username }}"
           MAIL_PASSWORD: "{{ common_email_password }}"
           MAIL_ENCRYPTION: "{{ common_email_protocol }}"
+          STORAGE_TYPE: local_secure
       notify: Restart
 
     - name: Configure PHP options
