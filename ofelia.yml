@@ -1,0 +1,21 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: ofelia
+
+    docker_network: "{{ networks.mgmt }}"
+
+  tasks:
+    - name: Create  container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        # pending https://github.com/mcuadros/ofelia/pull/137
+        # image: mcuadros/ofelia:latest
+        image: rdelcorro/ofelia:handleChangesOnDocker
+        command:
+          - daemon
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock:ro

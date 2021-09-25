@@ -96,11 +96,12 @@
           traefik.http.middlewares.nextcloud-hsts.headers.STSIncludeSubdomains: "true"
           traefik.http.middlewares.nextcloud-hsts.headers.STSPreload: "true"
 
-    - name: Run Nextcloud cron periodically
-      ansible.builtin.cron:
-        name: "Nextcloud Cron"
-        minute: "*/5"
-        job: "docker exec -u 33 {{ application }} /usr/local/bin/php -f cron.php"
+          ofelia.enabled: "true"
+          ofelia.job-exec.nextcloud-cron.user: "33"  # www-data
+          ofelia.job-exec.nextcloud-cron.schedule: "@every 5m"
+          ofelia.job-exec.nextcloud-cron.command: "/usr/local/bin/php -f cron.php"
+          ofelia.job-exec.nextcloud-cron.tty: "false"
+          ofelia.job-exec.nextcloud-cron.no-overlap: "true"
 
     - name: Wait for Nextcloud to be ready
       ansible.builtin.wait_for:
