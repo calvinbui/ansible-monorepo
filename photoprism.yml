@@ -79,3 +79,18 @@
           ofelia.job-exec.photoprism-chown.command: " /usr/bin/chmod -R 775 /photoprism/originals"
           ofelia.job-exec.photoprism-chown.tty: "false"
           ofelia.job-exec.photoprism-chown.no-overlap: "true"
+
+          # https://dl.photoprism.org/docker/scheduler/jobs.ini
+          ## https://docs.photoprism.org/user-guide/library/originals
+          ofelia.job-exec.photoprism-auto-index.user: "0"
+          ofelia.job-exec.photoprism-auto-index.schedule: "@hourly"
+          ofelia.job-exec.photoprism-auto-index.command: "/photoprism/bin/photoprism index --cleanup"
+          ofelia.job-exec.photoprism-auto-index.tty: "false"
+          ofelia.job-exec.photoprism-auto-index.no-overlap: "true"
+
+          ## https://docs.photoprism.org/user-guide/organize/video/
+          ofelia.job-exec.photoprism-convert.user: "0"
+          ofelia.job-exec.photoprism-convert.schedule: "@daily"
+          ofelia.job-exec.photoprism-convert.command: "/photoprism/bin/photoprism convert"
+          ofelia.job-exec.photoprism-convert.tty: "false"
+          ofelia.job-exec.photoprism-convert.no-overlap: "true"
