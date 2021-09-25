@@ -5,7 +5,7 @@
   vars:
     application: photoprism
 
-    docker_network: "{{ networks.user }}"
+    docker_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create config folder

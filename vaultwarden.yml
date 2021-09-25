@@ -7,7 +7,7 @@
   vars:
     application: vaultwarden
 
-    docker_network: "{{ networks.user }}"
+    docker_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart
@@ -88,3 +88,4 @@
           service: Tools
           priority: 590
           subtitle: "Password manager"
+          url: "https://bitwarden.{{ common_tld }}"
