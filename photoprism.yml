@@ -46,15 +46,20 @@
             63656639313735346534366364636332653132623639663739386636633461333633346531386165
             6437303836633733620a343136303966643339396562373732623037613463346531383436653733
             39353033323936663964366261646436653339376632306133303131343234303938
+
           PHOTOPRISM_PUBLIC: "false"
           PHOTOPRISM_READONLY: "true"
+
           PHOTOPRISM_ORIGINALS_LIMIT: "5000"
+
           PHOTOPRISM_UPLOAD_NSFW: "true"
           PHOTOPRISM_DETECT_NSFW: "false"
           PHOTOPRISM_EXPERIMENTAL: "false"
+
           PHOTOPRISM_SITE_URL: "https://{{ application }}.{{ common_tld }}/"
+
           PHOTOPRISM_DATABASE_DRIVER: "mysql"
-          PHOTOPRISM_DATABASE_DSN: "root:{{ _mariadb_password }}@tcp({{ _mariadb_hostname }}:3306)/photoprism?charset=utf8mb4,utf8&parseTime=true"
+          PHOTOPRISM_DATABASE_DSN: "root:{{ _mariadb_password }}@tcp({{ _mariadb_hostname }}:3306)/{{ application }}?charset=utf8mb4,utf8&parseTime=true"
         volumes:
           - "{{ _config_dir.path }}/photoprism:/photoprism/storage"
           - "{{ common_directory_photos }}:/photoprism/originals"
@@ -65,7 +70,6 @@
           service: Tools
           priority: 790
           subtitle: "Photo management"
-
         labels:
           ofelia.enabled: "true"
 
