@@ -21,7 +21,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: portainer/portainer-ce
+        image: portainer/portainer-ce:alpine
         ipv4_address: "{{ docker_network.prefix }}.192"
         published_ports:
           - 9000:9000
