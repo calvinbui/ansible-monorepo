@@ -134,13 +134,16 @@
           WriteLog: 'rotate'
 
           # CHECK AND REPAIR
-          ParBuffer: '128'
+          CrcCheck: 'yes'
+          ParCheck: 'auto'
+          ParQuick: 'yes'
+          ParBuffer: '8192'
           DirectRename: 'yes'
-          ParPauseQueue: 'yes'
+          ParPauseQueue: 'no'
 
           # UNPACK
           DirectUnpack: 'yes'
-          UnpackPauseQueue: 'yes'
+          UnpackPauseQueue: 'no'
           UnrarCmd: '${AppDir}/unrar'
           SevenZipCmd: '${AppDir}/7za'
 
