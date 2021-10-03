@@ -75,68 +75,13 @@
         network_mode: "host"
         privileged: true
 
-    - name: Create config files
-      ansible.builtin.copy:
-        content: "{{ item.content }}"
-        dest: "{{ _config_dir.path }}/{{ item.type }}.d/{{ item.name }}.conf"
-        owner: root
-        group: root
-        mode: "0644"
+    - name: Sync config files
+      ansible.posix.synchronize:
+        src: "{{ files_directory }}/{{ item }}/"
+        dest: "{{ _config_dir.path }}/{{ item }}"
+        delete: true
       notify: Restart
-      loop: "{{ _fail2ban_nftables }}"
-      vars:
-        _fail2ban_nftables:
-          # https://github.com/crazy-max/docker-fail2ban/issues/29#issuecomment-668967326
-          - name: nftables-input
-            type: action
-            content: |
-              [INCLUDES]
-              before = nftables.conf
-
-              [Init]
-              chain = f2b-chain-input
-              chain_hook = input
-          # https://github.com/crazy-max/docker-fail2ban/issues/29#issuecomment-668967326
-          - name: nftables-forward
-            type: action
-            content: |
-              [INCLUDES]
-              before = nftables.conf
-
-              [Init]
-              chain = f2b-chain-forward
-              chain_hook = forward
-          # https://github.com/crazy-max/docker-fail2ban/blob/master/examples/jails/traefik/filter.d/traefik-auth.conf
-          - name: traefik-auth
-            type: filter
-            content: |
-              [Definition]
-              failregex = ^<HOST> \- \S+ \[\] \"(GET|POST|HEAD) .+\" 401 .+$
-              ignoreregex =
-          # https://github.com/crazy-max/docker-fail2ban/blob/master/examples/jails/traefik/filter.d/traefik-botsearch.conf
-          - name: traefik-botsearch
-            type: filter
-            content: |
-              [INCLUDES]
-              before = botsearch-common.conf
-
-              [Definition]
-              failregex = ^<HOST> \- \S+ \[\] \"(GET|POST|HEAD) \/<block> \S+\" 404 .+$
-          # https://github.com/crazy-max/docker-fail2ban/blob/master/examples/jails/traefik/jail.d/traefik.conf
-          # https://github.com/crazy-max/docker-fail2ban/issues/29#issuecomment-668967326
-          - name: traefik
-            type: jail
-            content: |
-              [traefik-auth]
-              enabled = true
-              banaction = nftables-forward
-              port = http,https
-              filter = traefik-auth
-              logpath = /var/log/traefik/access.log
-
-              [traefik-botsearch]
-              enabled = true
-              banaction = nftables-forward
-              port = http,https
-              filter = traefik-botsearch
-              logpath = /var/log/traefik/access.log
+      loop:
+        - action.d
+        - filter.d
+        - jail.d
