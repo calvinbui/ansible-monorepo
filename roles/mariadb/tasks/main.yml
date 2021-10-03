@@ -28,8 +28,10 @@
     volumes: "{{ mariadb_directories }}"
 
     env:
-      MYSQL_ROOT_PASSWORD: "{{ mariadb_password }}"
-      MYSQL_DATABASE: "{{ mariadb_database }}"
+      MARIADB_USER: "{{ mariadb_user }}"
+      MARIADB_PASSWORD: "{{ mariadb_password }}"
+      MARIADB_DATABASE: "{{ mariadb_database }}"
+      MARIADB_RANDOM_ROOT_PASSWORD: "true"
       TZ: "{{ common_timezone }}"
 
     labels:
