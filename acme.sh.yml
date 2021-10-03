@@ -31,7 +31,7 @@
       ansible.builtin.git:
         repo: https://github.com/acmesh-official/acme.sh.git
         dest: "{{ acme_repo_dir }}"
-        version: 3.0.0
+        version: 3.0.1
 
     - name: Setup acme.sh
       ansible.builtin.shell: |

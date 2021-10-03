@@ -35,8 +35,20 @@
           65303066316663663561653438336334626263613730636334313535383264313734
 
     - name: Template config
-      ansible.builtin.template:
-        src: "{{ files_directory }}/settings.json.j2"
+      ansible.builtin.copy:
+        content: |
+          {
+            "db": {
+              "host": "{{ _mongo_hostname }}",
+              "username": "{{ _mongo_username }}",
+              "password": "{{ _mongo_password }}",
+              "name": "{{ _mongo_database }}"
+            },
+            "status": {
+              "message": "Hey {{ common_user }}",
+              "allowNewSyncs": "false"
+            }
+          }
         dest: "{{ _config_dir.path }}/settings.json"
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
