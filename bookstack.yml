@@ -47,7 +47,7 @@
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_group_id | string }}"
           DB_HOST: "{{ _mariadb_hostname }}"
-          DB_USER: root
+          DB_USER: "{{ _mariadb_username }}"
           DB_PASS: "{{ _mariadb_password }}"
           DB_DATABASE: "{{ _mariadb_database }}"
           APP_URL: "https://{{ application }}.{{ common_tld }}"
