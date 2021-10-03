@@ -1,0 +1,142 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: "fail2ban"
+
+    docker_network:
+      name: "host"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
+      changed_when: false
+
+    - name: Install nftables
+      ansible.builtin.apt:
+        name: nftables
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+      register: result
+      until: result is success
+      retries: 5
+      delay: 5
+
+    - name: Use iptables tooling without nftables backend
+      community.general.alternatives:
+        name: "{{ item.name }}"
+        path: "{{ item.path }}"
+      loop:
+        -
+          name: iptables
+          path: /usr/sbin/iptables-legacy
+        -
+          name: ip6tables
+          path: /usr/sbin/ip6tables-legacy
+
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: crazymax/fail2ban
+        env:
+          TZ: "{{ common_timezone }}"
+
+          SSMTP_HOST: "{{ common_email_server }}"
+          SSMTP_PORT: "{{ common_email_smtp_port | string }}"
+          SSMTP_USER: "{{ common_email_username }}"
+          SSMTP_PASSWORD: "{{ common_email_password }}"
+          SSMTP_SECURE: "YES"
+          SSMTP_TLS: "YES"
+          SSMTP_STARTTLS: "YES"
+        volumes:
+          - "{{ _config_dir.path }}:/data"
+          - /var/log:/var/log:ro
+        capabilities:
+          - NET_ADMIN
+          - NET_RAW
+        network_mode: "host"
+        privileged: true
+
+    - name: Create config files
+      ansible.builtin.copy:
+        content: "{{ item.content }}"
+        dest: "{{ _config_dir.path }}/{{ item.type }}.d/{{ item.name }}.conf"
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart
+      loop: "{{ _fail2ban_nftables }}"
+      vars:
+        _fail2ban_nftables:
+          # https://github.com/crazy-max/docker-fail2ban/issues/29#issuecomment-668967326
+          - name: nftables-input
+            type: action
+            content: |
+              [INCLUDES]
+              before = nftables.conf
+
+              [Init]
+              chain = f2b-chain-input
+              chain_hook = input
+          # https://github.com/crazy-max/docker-fail2ban/issues/29#issuecomment-668967326
+          - name: nftables-forward
+            type: action
+            content: |
+              [INCLUDES]
+              before = nftables.conf
+
+              [Init]
+              chain = f2b-chain-forward
+              chain_hook = forward
+          # https://github.com/crazy-max/docker-fail2ban/blob/master/examples/jails/traefik/filter.d/traefik-auth.conf
+          - name: traefik-auth
+            type: filter
+            content: |
+              [Definition]
+              failregex = ^<HOST> \- \S+ \[\] \"(GET|POST|HEAD) .+\" 401 .+$
+              ignoreregex =
+          # https://github.com/crazy-max/docker-fail2ban/blob/master/examples/jails/traefik/filter.d/traefik-botsearch.conf
+          - name: traefik-botsearch
+            type: filter
+            content: |
+              [INCLUDES]
+              before = botsearch-common.conf
+
+              [Definition]
+              failregex = ^<HOST> \- \S+ \[\] \"(GET|POST|HEAD) \/<block> \S+\" 404 .+$
+          # https://github.com/crazy-max/docker-fail2ban/blob/master/examples/jails/traefik/jail.d/traefik.conf
+          # https://github.com/crazy-max/docker-fail2ban/issues/29#issuecomment-668967326
+          - name: traefik
+            type: jail
+            content: |
+              [traefik-auth]
+              enabled = true
+              banaction = nftables-forward
+              port = http,https
+              filter = traefik-auth
+              logpath = /var/log/traefik/access.log
+
+              [traefik-botsearch]
+              enabled = true
+              banaction = nftables-forward
+              port = http,https
+              filter = traefik-botsearch
+              logpath = /var/log/traefik/access.log

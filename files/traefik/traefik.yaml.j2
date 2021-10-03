@@ -44,3 +44,12 @@ metrics:
 pilot:
   token: '{{ traefik_pilot_token }}'
   dashboard: false
+
+log:
+  level: "INFO"
+
+accessLog:
+  filePath: "/var/log/access.log"
+  filters:
+    statusCodes:
+      - "401-499"
