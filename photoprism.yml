@@ -73,17 +73,11 @@
         labels:
           ofelia.enabled: "true"
 
-          ofelia.job-exec.photoprism-chmod.user: "0"
-          ofelia.job-exec.photoprism-chmod.schedule: "@every 1m"
-          ofelia.job-exec.photoprism-chmod.command: "/usr/bin/chown {{ common_user_id }}:33 -R /photoprism/originals"
-          ofelia.job-exec.photoprism-chmod.tty: "false"
-          ofelia.job-exec.photoprism-chmod.no-overlap: "true"
-
-          ofelia.job-exec.photoprism-chown.user: "0"
-          ofelia.job-exec.photoprism-chown.schedule: "@every 1m"
-          ofelia.job-exec.photoprism-chown.command: " /usr/bin/chmod -R 775 /photoprism/originals"
-          ofelia.job-exec.photoprism-chown.tty: "false"
-          ofelia.job-exec.photoprism-chown.no-overlap: "true"
+          ofelia.job-exec.photoprism-photo-permissions.user: "0"
+          ofelia.job-exec.photoprism-photo-permissions.schedule: "@every 1m"
+          ofelia.job-exec.photoprism-photo-permissions.command: "sh -c \"chown {{ common_user_id }}:33 -R /photoprism/originals && chmod -R 775 /photoprism/originals\""
+          ofelia.job-exec.photoprism-photo-permissions.tty: "false"
+          ofelia.job-exec.photoprism-photo-permissions.no-overlap: "true"
 
           # https://dl.photoprism.org/docker/scheduler/jobs.ini
           ## https://docs.photoprism.org/user-guide/library/originals
