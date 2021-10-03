@@ -154,7 +154,7 @@
           ofelia.enabled: "true"
 
           ofelia.job-exec.etesync-web-update.user: "0"
-          ofelia.job-exec.etesync-web-update.schedule: "@every 1m"
+          ofelia.job-exec.etesync-web-update.schedule: "@every 1d"
           ofelia.job-exec.etesync-web-update.command: "sh -c \"cd /usr/share/nginx/html; curl -s https://pim.etesync.com/etesync-web.tgz | tar zx --strip-components 1\""
           ofelia.job-exec.etesync-web-update.tty: "false"
           ofelia.job-exec.etesync-web-update.no-overlap: "true"
