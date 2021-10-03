@@ -27,8 +27,14 @@
       register: _config_dir
 
     - name: Template configuration
-      ansible.builtin.template:
-        src: "{{ files_directory }}/config.yml.j2"
+      ansible.builtin.copy:
+        content: |
+          ---
+          process_names:
+            - comm:
+          {% for process in process_exporter_processes %}
+              - {{ process }}
+          {% endfor %}
         dest: "{{ _config_dir.path }}/config.yml"
         mode: "0440"
       notify: Restart

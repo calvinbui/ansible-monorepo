@@ -88,8 +88,15 @@
       when: not shlink_web_config.stat.exists
 
     - name: Template shlink-web-client config
-      ansible.builtin.template:
-        src: "{{ files_directory }}/servers.json.j2"
+      ansible.builtin.copy:
+        content: |
+          [
+            {
+              "name": "https://{{ common_short_tld }}",
+              "url": "https://{{ common_short_tld }}",
+              "apiKey": "{{ shlink_api.stdout | regex_search('key: \\"(.*)"', '\\1') | first }}"
+            }
+          ]
         dest: "{{ _web_dir.path }}/servers.json"
         mode: "0770"
         owner: "{{ common_user_id }}"

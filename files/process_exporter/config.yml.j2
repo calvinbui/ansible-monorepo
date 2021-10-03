@@ -1,7 +1,0 @@
-#jinja2: lstrip_blocks: "true", trim_blocks: "false"
----
-process_names:
-  - comm:
-{% for process in process_exporter_processes %}
-    - {{ process }}
-{% endfor %}
