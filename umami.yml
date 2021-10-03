@@ -44,7 +44,7 @@
       vars:
         image: ghcr.io/mikecao/umami:postgresql-latest
         env:
-          DATABASE_URL: postgresql://{{ _postgres_username }}:{{ _postgres_password }}@{{ _postgres_hostname }}:5432/{{ application }}
+          DATABASE_URL: "{{ _postgres_url }}"
           DATABASE_TYPE: postgresql
           HASH_SALT: !vault |
             $ANSIBLE_VAULT;1.1;AES256

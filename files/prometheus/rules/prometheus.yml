@@ -54,7 +54,7 @@ groups:
         for: 0m
         annotations:
           title: Prometheus too many restarts
-          description: "Prometheus has restarted more than twice in the last 15 minutes. It might be crashlooping."
+          description: "{{ $label.job }} has restarted more than twice in the last 15 minutes. It might be crashlooping."
       -
         alert: Rule Evaluation Failures
         expr: increase(prometheus_rule_evaluation_failures_total[3m]) > 0

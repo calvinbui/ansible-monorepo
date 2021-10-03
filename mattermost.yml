@@ -101,9 +101,10 @@
             31633136353764366266
 
           # https://docs.mattermost.com/configure/configuration-settings.html#smtp
+          # https://docs.mattermost.com/configure/smtp-email.html#gmail
           EmailSettings/SMTPServer: "{{ common_email_server }}"
           EmailSettings/SMTPPort: "{{ common_email_smtp_port | string }}"
-          EmailSettings/ConnectionSecurity: "{{ common_email_protocol | upper }}"
+          EmailSettings/ConnectionSecurity: "STARTTLS"
           EmailSettings/EnableSMTPAuth: true
           EmailSettings/SMTPUsername: "{{ common_email_username }}"
           EmailSettings/SMTPPassword: "{{ common_email_password }}"

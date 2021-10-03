@@ -42,7 +42,7 @@
           DB_USER: "{{ _postgres_username }}"
           DB_PASSWORD: "{{ _postgres_password }}"
           DB_HOST: "{{ _postgres_hostname }}"
-          DB_PORT: "5432"
+          DB_PORT: "{{ _postgres_port | string }}"
 
           SHORT_DOMAIN_HOST: "{{ common_short_tld }}"
           SHORT_DOMAIN_SCHEMA: "https"

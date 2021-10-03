@@ -34,7 +34,6 @@
           3035663661396338360a326262373836636433626536383966653037356630393763363337663365
           34303963653163323530303766303737633333616162326337643639316237333733353730386432
           3535636531613238363937636364656433393532393138333861
-        mariadb_database: bookstackapp
 
     - name: Create container
       ansible.builtin.include_role:
@@ -47,7 +46,7 @@
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_group_id | string }}"
           DB_HOST: "{{ _mariadb_hostname }}"
-          DB_USER: root
+          DB_USER: "{{ _mariadb_username }}"
           DB_PASS: "{{ _mariadb_password }}"
           DB_DATABASE: "{{ _mariadb_database }}"
           APP_URL: "https://{{ application }}.{{ common_tld }}"

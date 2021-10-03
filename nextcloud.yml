@@ -71,12 +71,12 @@
           NEXTCLOUD_UPDATE: "1"
 
           REDIS_HOST: "{{ _redis_hostname }}"
-          REDIS_HOST_PORT: "6379"
+          REDIS_HOST_PORT: "{{ _redis_port | string }}"
           REDIS_HOST_PASSWORD: "{{ _redis_password }}"
 
           SMTP_NAME: "{{ common_email_username }}"
           SMTP_PASSWORD: "{{ common_email_password }}"
-          SMTP_PORT: "587"
+          SMTP_PORT: "{{ common_email_smtp_port | string }}"
           SMTP_HOST: "{{ common_email_server }}"
           SMTP_SECURE: "tls"
         traefik:
