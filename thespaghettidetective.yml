@@ -114,7 +114,7 @@
           SITE_IS_PUBLIC: "False"
           SOCIAL_LOGIN: "False"
 
-          REDIS_URL: "redis://:{{ _redis_password }}@{{ _redis_hostname }}:6379"
+          REDIS_URL: "{{ _redis_url }}"
           DATABASE_URL: "sqlite:////app/db.sqlite3"
 
           INTERNAL_MEDIA_HOST: "http://{{ application }}-web.{{ docker_network.name }}:3334"

@@ -57,6 +57,8 @@
         env:
           CF_API_EMAIL: "{{ cloudflare_email }}"
           CF_API_KEY: "{{ cloudflare_api }}"
+
+          TZ: "{{ common_timezone }}"
         homer:
           name: Traefik
           service: Infrastructure
@@ -67,5 +69,6 @@
           - "{{ _config_dir.path }}/traefik.yaml:/etc/traefik/traefik.yaml"
           - "{{ _config_dir.path }}/acme.json:/acme.json"
           - "{{ _config_dir.path }}/dynamic_conf.yaml:/dynamic_conf.yaml"
+          - /var/log/traefik:/var/log
         metrics:
           - port: 8082

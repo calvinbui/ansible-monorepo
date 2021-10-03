@@ -28,8 +28,10 @@
     volumes: "{{ mariadb_directories }}"
 
     env:
-      MYSQL_ROOT_PASSWORD: "{{ mariadb_password }}"
-      MYSQL_DATABASE: "{{ mariadb_database }}"
+      MARIADB_USER: "{{ mariadb_user }}"
+      MARIADB_PASSWORD: "{{ mariadb_password }}"
+      MARIADB_DATABASE: "{{ mariadb_database }}"
+      MARIADB_RANDOM_ROOT_PASSWORD: "true"
       TZ: "{{ common_timezone }}"
 
     labels:
@@ -44,5 +46,7 @@
 - name: Set variables
   ansible.builtin.set_fact:
     _mariadb_hostname: "{{ mariadb_name }}.{{ docker_network.name }}"
+    _mariadb_port: "3306"
+    _mariadb_username: "{{ mariadb_user }}"
     _mariadb_password: "{{ mariadb_password }}"
     _mariadb_database: "{{ mariadb_database }}"

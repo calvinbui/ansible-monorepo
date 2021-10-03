@@ -49,7 +49,11 @@
 - name: Set variables
   ansible.builtin.set_fact:
     _postgres_hostname: "{{ postgres_name }}.{{ docker_network.name }}"
+    _postgres_port: "5432"
     _postgres_username: "{{ postgres_user }}"
     _postgres_password: "{{ postgres_password }}"
     _postgres_database: "{{ postgres_database }}"
-    _postgres_url: "postgres://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_name }}.{{ docker_network.name }}:5432/{{ postgres_database }}"
+
+- name: Set connection URL variable
+  ansible.builtin.set_fact:
+    _postgres_url: "postgres://{{ _postgres_username }}:{{ _postgres_password }}@{{ _postgres_hostname }}:{{ _postgres_port }}/{{ _postgres_database }}"

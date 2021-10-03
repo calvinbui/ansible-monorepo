@@ -47,7 +47,7 @@ session:
   domain: {{ common_tld }}
   redis:
     host: {{ _redis_hostname }}
-    port: 6379
+    port: {{ _redis_port }}
     password: {{ _redis_password }}
 
 regulation:
@@ -58,7 +58,7 @@ regulation:
 storage:
   postgres:
     host: {{ _postgres_hostname }}
-    port: 5432
+    port: {{ _postgres_port }}
     database: {{ _postgres_database }}
     username: "{{ _postgres_username }}"
     password: "{{ _postgres_password }}"
