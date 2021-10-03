@@ -1,0 +1,107 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: etesync
+
+    etesync_django_super_pass: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      33363262313266393161633532316531376536623561366230623266353735373966613738386434
+      3338336662353536386132356238323835356664393230660a333561353962343662396536356265
+      31313065353832373137333635356639623663613936666535376335373131303461393563303231
+      6437396534623466320a366633643434363234333234373531373763623064383637373437633766
+      65633062613633626161636237323935303034623865663836376261383536653563666264303636
+      39326163333033396239623166386135613235306235623135613134316532333161656661343034
+      37646539333730316166613865313866626637326337626435306333383432383533396533373935
+      37333362656663303761
+
+    etesync_secret_key: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      33363737373962316139636130396533333236343031363038333536323434333835393263393663
+      3932363231343635343866376235333132353064623830380a626136323734636361373563363838
+      35393565653732663661383337323562383264636237323965316439633562306435313963326233
+      6139353632623865380a383466633936613164353761613934356132333132663863623366353664
+      38373732333732383535373963383335383366353361643965666263343237663263383233343830
+      34643361623634616634343963613937353739326361656336396438373334396637343238663563
+      31656435353263663237616133393332653762356136623333653265643335663930373165613832
+      62663865303361306261
+
+    docker_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_group_id }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create postgres container
+      ansible.builtin.include_role:
+        name: postgres
+      vars:
+        postgres_version: 13
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          39363333323331656232363834356535646337303264376430313062663139316439633736306134
+          3535356636393039656537313532316331333830646232390a643364323734373865353832383337
+          61366562663934336139613531393366643237623066616436353836643834626566313737663261
+          3562613633383134630a323437373931376131313764616662323965366663646562633464643530
+          36313739376533326131343365376432393936613365613833663631313663643966363138343663
+          38323830613066346466373662666661353132383863366135636434333439666264353965373133
+          36336563393634363332366337343034323236643033323066663534343438663238326261643664
+          62633133313039393537
+
+    - name: Create data directory
+      ansible.builtin.file:
+        path: "{{ _config_dir.path }}/etesync"
+        state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_group_id }}"
+        mode: "0771"
+      register: _data_dir
+
+    - name: "Create {{ application }} container"
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: victorrds/etebase:alpine
+        user: "{{ common_user_id }}:{{ common_group_id }}"
+        env:
+          SERVER: "http-socket"
+
+          # Trigger database update/migration every time the container starts
+          AUTO_UPDATE: "false"
+
+          DEBUG: "false"
+
+          SUPER_USER: "admin"
+          SUPER_PASS: "{{ etesync_django_super_pass }}"
+          SUPER_EMAIL: "{{ application }}-admin{{ common_email_to }}"
+
+          DB_ENGINE: "postgres"
+          DATABASE_NAME: "{{ _postgres_database }}"
+          DATABASE_USER: "{{ _postgres_username }}"
+          DATABASE_PASSWORD: "{{ _postgres_password }}"
+          DATABASE_HOST: "{{ _postgres_hostname }}"
+          DATABASE_PORT: "{{ _postgres_port | string }}"
+
+          LANGUAGE_CODE: "en-au"
+          TIME_ZONE: "{{ common_timezone }}"
+        volumes:
+          - "{{ _data_dir.path }}:/data"
+        traefik:
+          - port: 3735
+        homer:
+          name: Etesync Admin
+          service: Tools
+          priority: 190
+          subtitle: "Sync contacts, calendars, tasks & notes"
+          url: "https://{{ application }}.{{ common_tld }}/admin"
