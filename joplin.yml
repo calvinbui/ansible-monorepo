@@ -34,7 +34,7 @@
           POSTGRES_PASSWORD: "{{ _postgres_password }}"
           POSTGRES_DATABASE: "{{ _postgres_database }}"
           POSTGRES_USER: "{{ _postgres_username }}"
-          POSTGRES_PORT: "5432"
+          POSTGRES_PORT: "{{ _postgres_port | string }}"
           POSTGRES_HOST: "{{ _postgres_hostname }}"
         traefik:
           - port: 22300

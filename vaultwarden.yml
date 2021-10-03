@@ -68,7 +68,7 @@
           SMTP_PASSWORD: "{{ common_email_password }}"
           SMTP_FROM: "{{ application }}{{ common_email_to }}"
 
-          DATABASE_URL: "postgresql://{{ _postgres_username }}:{{ _postgres_password }}@{{ _postgres_hostname }}:5432/{{ _postgres_database }}"
+          DATABASE_URL: "{{ _postgres_url }}"
 
           ROCKET_PORT: "8080"
         volumes:

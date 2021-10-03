@@ -58,7 +58,7 @@ regulation:
 storage:
   postgres:
     host: {{ _postgres_hostname }}
-    port: 5432
+    port: {{ _postgres_port }}
     database: {{ _postgres_database }}
     username: "{{ _postgres_username }}"
     password: "{{ _postgres_password }}"
