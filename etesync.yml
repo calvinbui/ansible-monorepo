@@ -102,9 +102,36 @@
         homer:
           name: EteSync Admin
           service: Tools
-          priority: 190
-          subtitle: "Sync contacts, calendars, tasks & notes"
+          priority: 170
+          subtitle: "Contacts, calendars, tasks & notes"
           url: "https://{{ application }}.{{ common_tld }}/admin"
+
+    - name: Create dav directory
+      ansible.builtin.file:
+        path: "{{ _config_dir.path }}/dav"
+        state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_group_id }}"
+        mode: "0771"
+      register: _dav_dir
+
+    - name: "Create {{ application }}-dav container"
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-dav"
+        image: etesync/etesync-dav
+        volumes:
+          - "{{ _dav_dir.path }}:/data"
+        traefik:
+          - port: 37358
+            volumes: Host(`{{ application }}-dav.{{ common_tld }}`)
+        homer:
+          name: EteSync DAV
+          service: Tools
+          priority: 180
+          subtitle: "CalDAV & CardDAV adapter"
+          url: "https://{{ application }}-dav.{{ common_tld }}"
 
     - name: Create web directory
       ansible.builtin.file:
@@ -137,6 +164,6 @@
         homer:
           name: EteSync Web
           service: Tools
-          priority: 180
+          priority: 190
           subtitle: "The EteSync Web App Client"
           url: "https://{{ application }}-web.{{ common_tld }}"
