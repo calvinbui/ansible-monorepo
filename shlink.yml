@@ -98,7 +98,7 @@
             }
           ]
         dest: "{{ _web_dir.path }}/servers.json"
-        mode: "0770"
+        mode: "0775"
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
       when: shlink_api.stdout is defined
