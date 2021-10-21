@@ -175,3 +175,4 @@
         chdir: "{{ _config_dir.path }}/nova3/engines/"
       when: item.stat.exists
       loop: "{{ _qbittorrent_search_engines.results }}"
+      notify: Restart
