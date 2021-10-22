@@ -154,3 +154,25 @@
       loop: "{{ _qbittorrent_config.results | selectattr('changed', 'equalto', true) | map(attribute='item') }}"
       when: _qbittorrent_config.changed
       notify: Restart
+
+    - name: Find search engines to disable
+      ansible.builtin.stat:
+        path: "{{ _config_dir.path }}/nova3/engines/{{ item }}.py"
+      loop:
+        - eztv
+        - legittorrents
+        - limetorrents
+        - piratebay
+        - rarbg
+        - torlock
+        - torrentscsv
+        - zooqle
+      register: _qbittorrent_search_engines
+
+    - name: Disable search engines
+      ansible.builtin.command: "mv {{ item }}.py {{ item }}.py.bak"
+      args:
+        chdir: "{{ _config_dir.path }}/nova3/engines/"
+      when: item.stat.exists
+      loop: "{{ _qbittorrent_search_engines.results }}"
+      notify: Restart
