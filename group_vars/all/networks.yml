@@ -36,7 +36,7 @@ networks:
     subnet: /24
     gateway: 192.168.4.1
     dns: 192.168.4.1
-    iprange: 192.168.4.128/26
+    iprange: 192.168.4.128/25
     prefix: 192.168.4
     parent: eno1
     driver: macvlan
