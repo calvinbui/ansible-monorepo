@@ -27,7 +27,7 @@
       39366232376564356432353165303631303161646235353636343433396138643539306431376630
       61386161323538383264
 
-    docker_network: "{{ networks.mgmt }}"
+    docker_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart
@@ -97,6 +97,7 @@
         name: docker_container
       vars:
         image: authelia/authelia
+        ipv4_address: "{{ docker_network.prefix }}.4"
         env:
           TZ: "{{ common_timezone }}"
         traefik:
@@ -110,11 +111,11 @@
           - "{{ _config_dir.path }}/authelia:/config"
         labels:
           # login page
-          traefik.http.middlewares.authelia.forwardauth.address: "http://{{ application }}:9091/api/verify?rd=https://{{ application }}.{{ common_tld }}"
+          traefik.http.middlewares.authelia.forwardauth.address: "http://{{ application }}.{{ common_local_tld }}:9091/api/verify?rd=https://{{ application }}.{{ common_tld }}"
           traefik.http.middlewares.authelia.forwardauth.trustForwardHeader: "true"
           traefik.http.middlewares.authelia.forwardauth.authResponseHeaders: "Remote-User,Remote-Groups,Remote-Name,Remote-Email"
 
           # basic auth
-          traefik.http.middlewares.authelia-basic.forwardauth.address: "http://{{ application }}:9091/api/verify?auth=basic"
+          traefik.http.middlewares.authelia-basic.forwardauth.address: "http://{{ application }}.{{ common_local_tld }}:9091/api/verify?auth=basic"
           traefik.http.middlewares.authelia-basic.forwardauth.trustForwardHeader: "true"
           traefik.http.middlewares.authelia-basic.forwardauth.authResponseHeaders: "Remote-User, Remote-Groups, Remote-Name, Remote-Email"
