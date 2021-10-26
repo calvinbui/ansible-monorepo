@@ -113,3 +113,16 @@
         regex: '^GRUB_CMDLINE_LINUX='
         line: 'GRUB_CMDLINE_LINUX="cgroup_enable=memory swapaccount=1"'
       notify: Update grub
+
+    # https://docs.docker.com/engine/reference/commandline/dockerd/#daemon-configuration-file
+    - name: Configure daemon
+      ansible.builtin.copy:
+        content: |
+          {
+            "dns": ["192.168.1.1"]
+          }
+        dest: "/etc/docker/daemon.json"
+        owner: "root"
+        group: "root"
+        mode: "0755"
+      notify: Restart
