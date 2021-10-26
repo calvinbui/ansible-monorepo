@@ -5,7 +5,7 @@
   vars:
     application: portainer
 
-    docker_network: "{{ networks.mgmt }}"
+    docker_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create config folder

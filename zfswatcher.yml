@@ -5,7 +5,7 @@
   vars:
     application: zfswatcher
 
-    docker_network: "{{ networks.mgmt }}"
+    docker_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart

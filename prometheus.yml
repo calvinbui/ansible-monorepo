@@ -5,7 +5,7 @@
   vars:
     application: prometheus
 
-    docker_network: "{{ networks.mgmt }}"
+    docker_network: "{{ networks.user }}"
 
   handlers:
     - name: Restart

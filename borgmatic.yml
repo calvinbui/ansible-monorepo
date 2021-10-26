@@ -91,7 +91,7 @@
       38386630306635626434366464386234343265333230303965303239323366386565336130306639
       65633139313433323530
 
-    docker_network: "{{ networks.mgmt }}"
+    docker_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create Borgmatic directories
@@ -117,7 +117,7 @@
         mode: "0744"
       with_nested:
         - "{{ borgmatic_backups }}"
-        - ['config', 'borgmatic.d', 'ssh', 'cache']
+        - ["config", "borgmatic.d", "ssh", "cache"]
 
     - name: "Template configuration"
       ansible.builtin.template:
