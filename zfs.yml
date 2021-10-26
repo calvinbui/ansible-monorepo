@@ -1,5 +1,0 @@
----
-
-- ansible.builtin.import_playbook: zfswatcher.yml
-- ansible.builtin.import_playbook: zfs-zed.yml
-- ansible.builtin.import_playbook: scrutiny.yml
