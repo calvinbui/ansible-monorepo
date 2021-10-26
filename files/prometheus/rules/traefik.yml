@@ -4,7 +4,7 @@ groups:
   - name: traefik
     rules:
       -
-        alert: traefik exporter is down
+        alert: Traefik exporter is down
         expr: up{job="traefik"} != 1
         for: 5m
         annotations:
