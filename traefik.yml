@@ -5,7 +5,7 @@
   vars:
     application: traefik
 
-    docker_network: "{{ networks.mgmt }}"
+    docker_network: bridge
 
   handlers:
     - name: Restart
@@ -44,7 +44,6 @@
         name: docker_container
       vars:
         image: traefik:v2.5
-        ipv4_address: "{{ docker_network.prefix }}.193"
         env:
           CF_API_EMAIL: "{{ cloudflare_email }}"
           CF_API_KEY: "{{ cloudflare_api }}"
@@ -61,5 +60,6 @@
           - "{{ _config_dir.path }}/acme.json:/acme.json"
           - "{{ _config_dir.path }}/dynamic_conf.yaml:/dynamic_conf.yaml"
           - /var/log/traefik:/var/log
-        metrics:
-          - port: 8082
+        published_ports:
+          - 80:80
+          - 443:443
