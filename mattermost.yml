@@ -88,8 +88,8 @@
           ServiceSettings/ListenAddress: ":8065"
 
           # https://docs.mattermost.com/configure/configuration-settings.html#gif-beta
-          ServiceSettings/GfycatApiKey: 2_KtH_W5
-          ServiceSettings/GfycatApiSecret: !vault |
+          ServiceSettings/GfycatAPIKey: 2_KtH_W5
+          ServiceSettings/GfycatAPISecret: !vault |
             $ANSIBLE_VAULT;1.1;AES256
             65643537393431656563343363343934636365373239653739323839343239353865343361653336
             6634393162613934303232646133626132633538356638360a656465626565316665623335323436
@@ -100,6 +100,12 @@
             30656230613466323433333433363132363637653364663738336438666432343430363133633635
             31633136353764366266
 
+          # https://docs.mattermost.com/configure/configuration-settings.html#database
+          SqlSettings/DriverName: postgres
+          SqlSettings/DataSource: "{{ _postgres_url }}?sslmode=disable&connect_timeout=10"
+
+          LogSettings/ConsoleLevel: "INFO"
+
           # https://docs.mattermost.com/configure/configuration-settings.html#smtp
           # https://docs.mattermost.com/configure/smtp-email.html#gmail
           EmailSettings/SMTPServer: "{{ common_email_server }}"
@@ -108,7 +114,3 @@
           EmailSettings/EnableSMTPAuth: true
           EmailSettings/SMTPUsername: "{{ common_email_username }}"
           EmailSettings/SMTPPassword: "{{ common_email_password }}"
-
-          # https://docs.mattermost.com/configure/configuration-settings.html#database
-          SqlSettings/DriverName: postgres
-          SqlSettings/DataSource: "{{ _postgres_url }}?sslmode=disable&connect_timeout=10"
