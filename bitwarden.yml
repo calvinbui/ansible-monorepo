@@ -1,11 +1,11 @@
 ---
 
-# previously known as bitwarden_rs/bitwarden
+# using vaultwarden
 
 - hosts: homelab
 
   vars:
-    application: vaultwarden
+    application: bitwarden
 
     docker_network: "{{ networks.pub }}"
 
@@ -72,20 +72,20 @@
 
           ROCKET_PORT: "8080"
         volumes:
-          - "{{ _config_dir.path }}/vaultwarden:/data"
+          - "{{ _config_dir.path }}/{{ application }}:/data"
         traefik:
           # https://github.com/dani-garcia/vaultwarden/wiki/Proxy-examples#traefik-v2-docker-compose-example-by-hwwilliams
           # ui routing
           - name: "{{ application }}-ui"
             port: 8080
-            rule: Host(`bitwarden.{{ common_tld }}`)
+            rule: Host(`{{ application }}.{{ common_tld }}`)
           # websocket for syncing
           - name: "{{ application }}-websocket"
             port: 3012
-            rule: Host(`bitwarden.{{ common_tld }}`) && Path(`/notifications/hub`)
+            rule: Host(`{{ application }}.{{ common_tld }}`) && Path(`/notifications/hub`)
         homer:
           name: Bitwarden
           service: Tools
           priority: 590
-          subtitle: "Password manager"
-          url: "https://bitwarden.{{ common_tld }}"
+          subtitle: "Password manager (Vaultwarden)"
+          url: "https://{{ application }}.{{ common_tld }}"
