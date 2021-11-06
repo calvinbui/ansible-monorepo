@@ -85,6 +85,7 @@
           - zfsutils-linux
           - jq
           - ripgrep
+          - update-notifier-common
           - apache2-utils  # htpasswd
           - sqlite3
           # https://cisofy.com/lynis/controls/AUTH-9262/
