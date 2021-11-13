@@ -43,7 +43,15 @@
 
     - name: Set URL shortener value
       ansible.builtin.set_fact:
-        _url_shortener_value: "https://{{ common_short_tld }}/rest/v1/short-urls/shorten?apiKey={{ _url_shortener_config['content'] | b64decode | from_json | first | json_query('apiKey') }}&format=txt&longUrl="
+        _url_shortener_value: "https://{{ common_short_tld }}/api/v2/action/shorten?key={{ _url_shortener_api_key }}&response_type=json&url="
+      vars:
+        _url_shortener_api_key: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          38656636313235376564646266386163626439346430333036656439643463613037626132646161
+          6233306532656665393765303531363137636136383064390a303237386363623264306135326435
+          64623330656534353037613862386530323336323236356539353935313063346338626132363164
+          3230396331646637360a646536313332353638663766633866376633396465356533636632333231
+          62353464613531643431333665323631386530376365393332663131663032343735
 
     - name: Template config
       ansible.builtin.template:
