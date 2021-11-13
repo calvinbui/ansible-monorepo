@@ -41,11 +41,6 @@
       become: false
       become_user: "{{ common_user }}"
 
-    - name: Get URL shortener key
-      ansible.builtin.slurp:
-        src: "{{ common_directory }}/shlink/web-client/servers.json"
-      register: _url_shortener_config
-
     - name: Set URL shortener value
       ansible.builtin.set_fact:
         _url_shortener_value: "https://{{ common_short_tld }}/rest/v1/short-urls/shorten?apiKey={{ _url_shortener_config['content'] | b64decode | from_json | first | json_query('apiKey') }}&format=txt&longUrl="

@@ -9,7 +9,7 @@ fi
 
 read -rp "Stop any and all databases and applications before continue. Press <ENTER> to continue"
 
-read -rp "Path to postgres (e.g. /apps/shlink/postgres): " PG_PATH
+read -rp "Path to postgres (e.g. /apps/joplin/postgres): " PG_PATH
 if [[ -z $PG_PATH ]]; then
   echo "Nothing entered"
   exit 1
