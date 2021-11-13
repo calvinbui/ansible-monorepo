@@ -78,6 +78,13 @@
         traefik:
           - port: 8080
             rule: "Host(`{{ common_short_tld }}`)"
+        # block ability to guess shortened urls
+        labels:
+          '{
+            "traefik.http.routers.{{ application }}-secure.middlewares": "{{ application }}-lookup-block",
+            "traefik.http.middlewares.{{ application }}-lookup-block.replacepathregex.regex": "^/api/v2/action/lookup(.*)",
+            "traefik.http.middlewares.{{ application }}-lookup-block.replacepathregex.replacement": "/"
+          }'
         blackbox:
           path: /about-polr
         homer:
