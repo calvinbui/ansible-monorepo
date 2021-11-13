@@ -110,12 +110,12 @@
         volumes:
           - "{{ _config_dir.path }}/authelia:/config"
         labels:
-          # login page
-          traefik.http.middlewares.authelia.forwardauth.address: "http://{{ application }}.{{ common_local_tld }}:9091/api/verify?rd=https://{{ application }}.{{ common_tld }}"
-          traefik.http.middlewares.authelia.forwardauth.trustForwardHeader: "true"
-          traefik.http.middlewares.authelia.forwardauth.authResponseHeaders: "Remote-User,Remote-Groups,Remote-Name,Remote-Email"
+          '{
+            "traefik.http.middlewares.{{ traefik_middleware_authelia.split("@")[0] }}.forwardauth.address": "http://{{ application }}.{{ common_local_tld }}:9091/api/verify?rd=https://{{ application }}.{{ common_tld }}",
+            "traefik.http.middlewares.{{ traefik_middleware_authelia.split("@")[0] }}.forwardauth.trustForwardHeader": "true",
+            "traefik.http.middlewares.{{ traefik_middleware_authelia.split("@")[0] }}.forwardauth.authResponseHeaders": "Remote-User,Remote-Groups,Remote-Name,Remote-Email",
 
-          # basic auth
-          traefik.http.middlewares.authelia-basic.forwardauth.address: "http://{{ application }}.{{ common_local_tld }}:9091/api/verify?auth=basic"
-          traefik.http.middlewares.authelia-basic.forwardauth.trustForwardHeader: "true"
-          traefik.http.middlewares.authelia-basic.forwardauth.authResponseHeaders: "Remote-User, Remote-Groups, Remote-Name, Remote-Email"
+            "traefik.http.middlewares.{{ traefik_middleware_authelia_basic.split("@")[0] }}.forwardauth.address": "http://{{ application }}.{{ common_local_tld }}:9091/api/verify?auth=basic",
+            "traefik.http.middlewares.{{ traefik_middleware_authelia_basic.split("@")[0] }}.forwardauth.trustForwardHeader": "true",
+            "traefik.http.middlewares.{{ traefik_middleware_authelia_basic.split("@")[0] }}.forwardauth.authResponseHeaders": "Remote-User, Remote-Groups, Remote-Name, Remote-Email"
+          }'

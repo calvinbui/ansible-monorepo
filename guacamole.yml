@@ -77,5 +77,7 @@
           priority: 890
           subtitle: "Remote access"
         labels:
-          traefik.http.routers.guacamole-secure.middlewares: "guacamole-addprefix"
-          traefik.http.middlewares.guacamole-addprefix.addprefix.prefix: "/guacamole"
+          '{
+            "traefik.http.routers.{{ application }}-secure.middlewares": "{{ application }}-addprefix",
+            "traefik.http.middlewares.{{ application }}-addprefix.addprefix.prefix": "/guacamole"
+          }'

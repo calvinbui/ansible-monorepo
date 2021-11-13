@@ -1,5 +1,9 @@
 ---
 
 traefik_certresolver: letsencrypt
+
+# login page
 traefik_middleware_authelia: authelia@docker
+
+# basic auth
 traefik_middleware_authelia_basic: authelia-basic@docker

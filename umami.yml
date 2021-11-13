@@ -69,6 +69,8 @@
           priority: 790
           subtitle: "Web analytics"
         labels:
-          traefik.http.routers.umami-scripts-secure.middlewares: "umami-script-path"
-          traefik.http.middlewares.umami-script-path.replacepathregex.regex: "^/script.js"
-          traefik.http.middlewares.umami-script-path.replacepathregex.replacement: "/umami.js"
+          '{
+            "traefik.http.routers.{{ application }}-scripts-secure.middlewares": "{{ application }}-script-path",
+            "traefik.http.middlewares.{{ application }}-script-path.replacepathregex.regex": "^/script.js",
+            "traefik.http.middlewares.{{ application }}-script-path.replacepathregex.replacement": "/umami.js"
+          }'

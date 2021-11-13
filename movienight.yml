@@ -90,11 +90,12 @@
           subtitle: "Video streaming server"
         labels:
           # rtmps/tls is not currently working on Traefik with OBS for me
-          traefik.tcp.routers.movienight-rtmp.entrypoints: "rtmp"
-          traefik.tcp.routers.movienight-rtmp.rule: "HostSNI(`*`)"
-          traefik.tcp.routers.movienight-rtmp.service: "{{ application }}-rtmp"
-          traefik.tcp.services.movienight-rtmp.loadbalancer.server.port: "1935"
-
-          com.centurylinklabs.watchtower.enable: "false"
+          '{
+            "traefik.tcp.routers.{{ application }}-rtmp.entrypoints": "rtmp",
+            "traefik.tcp.routers.{{ application }}-rtmp.rule": "HostSNI(`*`)",
+            "traefik.tcp.routers.{{ application }}-rtmp.service": "{{ application }}-rtmp",
+            "traefik.tcp.services.{{ application }}-rtmp.loadbalancer.server.port": "1935",
+            "com.centurylinklabs.watchtower.enable": "false"
+          }'
         comparisons:
           labels: strict

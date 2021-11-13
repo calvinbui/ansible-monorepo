@@ -87,21 +87,24 @@
           priority: 990
           subtitle: "Productivity platform"
         labels:
-          traefik.http.routers.nextcloud-secure.middlewares: "nextcloud-dav,nextcloud-hsts"
-          traefik.http.middlewares.nextcloud-dav.redirectregex.permanent: "true"
-          traefik.http.middlewares.nextcloud-dav.redirectregex.regex: https://(.*)/.well-known/(card|cal)dav
-          traefik.http.middlewares.nextcloud-dav.redirectregex.replacement: https://${1}/remote.php/dav/
+          # 33 is www-data
+          '{
+            "traefik.http.routers.{{ application }}-secure.middlewares": "{{ application }}-dav,{{ application }}-hsts",
+            "traefik.http.middlewares.{{ application }}-dav.redirectregex.permanent": "true",
+            "traefik.http.middlewares.{{ application }}-dav.redirectregex.regex": "https://(.*)/.well-known/(card|cal)dav",
+            "traefik.http.middlewares.{{ application }}-dav.redirectregex.replacement": "https://${1}/remote.php/dav/",
 
-          traefik.http.middlewares.nextcloud-hsts.headers.STSSeconds: "31536000"
-          traefik.http.middlewares.nextcloud-hsts.headers.STSIncludeSubdomains: "true"
-          traefik.http.middlewares.nextcloud-hsts.headers.STSPreload: "true"
+            "traefik.http.middlewares.{{ application }}-hsts.headers.STSSeconds": "31536000",
+            "traefik.http.middlewares.{{ application }}-hsts.headers.STSIncludeSubdomains": "true",
+            "traefik.http.middlewares.{{ application }}-hsts.headers.STSPreload": "true",
 
-          ofelia.enabled: "true"
-          ofelia.job-exec.nextcloud-cron.user: "33"  # www-data
-          ofelia.job-exec.nextcloud-cron.schedule: "@every 5m"
-          ofelia.job-exec.nextcloud-cron.command: "/usr/local/bin/php -f cron.php"
-          ofelia.job-exec.nextcloud-cron.tty: "false"
-          ofelia.job-exec.nextcloud-cron.no-overlap: "true"
+            "ofelia.enabled": "true",
+            "ofelia.job-exec.{{ application }}-cron.user": "33",
+            "ofelia.job-exec.{{ application }}-cron.schedule": "@every 5m",
+            "ofelia.job-exec.{{ application }}-cron.command": "/usr/local/bin/php -f cron.php",
+            "ofelia.job-exec.{{ application }}-cron.tty": "false",
+            "ofelia.job-exec.{{ application }}-cron.no-overlap": "true"
+          }'
 
     - name: Overwrite Nextcloud protocol to HTTPS within config
       ansible.builtin.command: "docker exec --user www-data {{ application }} php occ config:system:set overwriteprotocol --value='https'"
@@ -122,6 +125,7 @@
           - port: 80
             rule: "Host(`onlyoffice.{{ common_tld }}`)"
         labels:
-          traefik.http.routers.nextcloud-onlyoffice-secure.middlewares: "onlyoffice-sslheaders"
-
-          traefik.http.middlewares.onlyoffice-sslheaders.headers.customrequestheaders.X-Forwarded-Proto: "https"
+          '{
+            "traefik.http.routers.{{ application }}-onlyoffice-secure.middlewares": "nextcloud-onlyoffice-sslheaders",
+            "traefik.http.middlewares.{{ application}}-onlyoffice-sslheaders.headers.customrequestheaders.X-Forwarded-Proto": "https"
+          }'
