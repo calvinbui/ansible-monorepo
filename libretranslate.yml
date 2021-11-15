@@ -1,0 +1,56 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: libretranslate
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: "Touch {{ item }}"
+      ansible.builtin.file:
+        path: "{{ _config_dir.path }}/{{ item }}"
+        state: touch
+        modification_time: preserve
+        access_time: preserve
+        mode: "0770"
+      loop:
+        - api_keys.db
+        - suggestions.db
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: libretranslate/libretranslate:latest
+        env:
+          LT_FRONTEND_LANGUAGE_SOURCE: "en"
+          LT_FRONTEND_LANGUAGE_TARGET: "vi"
+          # enable when the mobile app works
+          # LT_API_KEYS: "true"
+          # LT_REQUIRE_API_KEY_ORIGIN: "true"
+        volumes:
+          - "{{ _config_dir.path }}/api_keys.db:/app/api_keys.db"
+          - "{{ _config_dir.path }}/suggestions.db:/app/suggestions.db"
+          - "{{ _config_dir.path }}/LibreTranslate:/root/.local/share/LibreTranslate"
+          - "{{ _config_dir.path }}/argos-translate:/root/.local/share/argos-translate"
+          - "{{ _config_dir.path }}/cache:/root/.local/cache"
+        traefik:
+          - port: 5000
+        homer:
+          name: LibreTranslate
+          service: Tools
+          priority: 500
+          subtitle: "Translations"
+        comparisons:
+          env: strict

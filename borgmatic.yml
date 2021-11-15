@@ -61,6 +61,10 @@
 
           - "/mnt/source/nzbhydra/backup"
 
+          - "/mnt/source/libretranslate/LibreTranslate"
+          - "/mnt/source/libretranslate/argos-translate"
+          - "/mnt/source/libretranslate/cache"
+
           - "/mnt/source/*/*/log"
           - "/mnt/source/*/*/log.*"
           - "/mnt/source/*/*/logs"
