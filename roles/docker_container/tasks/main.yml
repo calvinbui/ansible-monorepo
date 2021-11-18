@@ -83,6 +83,7 @@
     state: "{{ state | default('started') }}"
     recreate: "{{ recreate | default(false) }}"
     restart_policy: "{{ restart_policy | default('unless-stopped') }}"
+    auto_remove: "{{ auto_remove | default(omit) }}"
 
     user: "{{ user | default(omit) }}"
 

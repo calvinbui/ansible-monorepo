@@ -32,6 +32,7 @@
       POSTGRES_PASSWORD: "{{ postgres_password }}"
       POSTGRES_DB: "{{ postgres_database }}"
       TZ: "{{ common_timezone }}"
+      POSTGRES_INITDB_ARGS: "{{ postgres_initdb_args | default(omit) }}"
 
     labels:
       traefik.enable: "false"
