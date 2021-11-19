@@ -34,11 +34,13 @@
       vars:
         image: libretranslate/libretranslate:latest
         env:
+          LT_CHAR_LIMIT: "150"
+          LT_REQ_LIMIT: "150"
+          LT_BATCH_LIMIT: "150"
           LT_FRONTEND_LANGUAGE_SOURCE: "en"
           LT_FRONTEND_LANGUAGE_TARGET: "vi"
-          # enable when the mobile app works
-          # LT_API_KEYS: "true"
-          # LT_REQUIRE_API_KEY_ORIGIN: "true"
+          LT_API_KEYS: "true"
+          LT_REQUIRE_API_KEY_ORIGIN: "true"
         volumes:
           - "{{ _config_dir.path }}/api_keys.db:/app/api_keys.db"
           - "{{ _config_dir.path }}/suggestions.db:/app/suggestions.db"
