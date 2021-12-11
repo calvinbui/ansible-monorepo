@@ -46,7 +46,6 @@
           path: "{{ _config_dir.path }}/repo/ml_api"
           dockerfile: Dockerfile
           pull: true
-          network: "{{ docker_network.name }}"
         source: build
         state: present
         force_source: "{{ true if _tsd_repo_updated.changed else false }}"
@@ -74,7 +73,6 @@
           path: "{{ _config_dir.path }}/repo/web"
           dockerfile: Dockerfile
           pull: true
-          network: "{{ docker_network.name }}"
         source: build
         state: present
         force_source: "{{ true if _tsd_repo_updated.changed else false }}"
