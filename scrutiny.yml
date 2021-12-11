@@ -7,6 +7,10 @@
 
     docker_network: "{{ networks.pub }}"
 
+  handlers:
+    - name: Restart
+      ansible.builtin.command: "docker restart {{ application }}"
+
   tasks:
     - name: Create config folder
       ansible.builtin.file:
@@ -22,6 +26,7 @@
         src: "{{ files_directory }}/scrutiny.yaml.j2"
         dest: "{{ _config_dir.path }}/scrutiny.yaml"
         mode: "0440"
+      notify: Restart
 
     - name: Get disks
       ansible.builtin.shell: for line in $(lsblk --noheadings --list --scsi --output name); do echo "/dev/${line}"; done
