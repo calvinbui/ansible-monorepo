@@ -34,7 +34,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/linuxserver/jackett
+        image: lscr.io/linuxserver/jackett
         volumes:
           - "{{ _config_dir.path }}:/config"
           - "{{ common_directory_download }}:{{ common_mounted_directory_download }}"

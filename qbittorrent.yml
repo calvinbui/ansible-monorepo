@@ -25,7 +25,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/linuxserver/qbittorrent
+        image: lscr.io/linuxserver/qbittorrent
         env:
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_root_group | string }}"

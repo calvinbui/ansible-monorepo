@@ -21,7 +21,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/linuxserver/unifi-controller:LTS
+        image: lscr.io/linuxserver/unifi-controller:LTS
         env:
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_root_group | string }}"
