@@ -13,9 +13,11 @@
         name: docker_container
       vars:
         name: "{{ application }}-webdriver"
-        image: selenium/standalone-chrome-debug:3.141.59
+        image: selenium/standalone-chrome-debug
         volumes:
           - /dev/shm:/dev/shm
+        comparisons:
+          env: strict
 
     - name: Create "{{ application }}" container
       ansible.builtin.include_role:
@@ -29,13 +31,21 @@
 
           WEBDRIVER_URL: "http://{{ application }}-webdriver:4444/wd/hub"
 
+          webdriver_httpProxy: "10.8.0.1:1080"
+          webdriver_ftpProxy: "10.8.0.1:1080"
+          webdriver_sslProxy: "10.8.0.1:1080"
+          webdriver_proxyType: "MANUAL"
+          webdriver_socksProxy: "10.8.0.1:1080"
+          webdriver_socksVersion: "5"
+
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_group_id | string }}"
         traefik:
           - port: 5000
         homer:
           name: Change Detection
-          icon: fas fa-columns
           service: Tools
           priority: 690
           subtitle: "Website change detection"
+        comparisons:
+          env: strict
