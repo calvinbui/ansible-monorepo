@@ -1,0 +1,40 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: omada
+
+    docker_network: "{{ networks.user }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: mbentley/omada-controller:5.0
+        env:
+          TZ: "{{ common_timezone }}"
+        volumes:
+          - "{{ _config_dir.path }}/cert:/cert"
+          - "{{ _config_dir.path }}/data:/opt/tplink/EAPController/data"
+          - "{{ _config_dir.path }}/work:/opt/tplink/EAPController/work"
+          - "{{ _config_dir.path }}/logs:/opt/tplink/EAPController/logs"
+        ipv4_address: "{{ docker_network.prefix }}.3"
+        traefik:
+
+        homer:
+          name: TP-Link Omada Controller
+          service: Infrastructure
+          priority: 590
+          subtitle: "Manage TP-Link EAPs"
+          url: https://omada.{{ common_local_tld }}:8043
