@@ -7,6 +7,10 @@
 
     docker_network: "{{ networks.pub }}"
 
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}" "{{ application }}-service-discovery"
+
   tasks:
     - name: Create config folder
       ansible.builtin.file:
@@ -24,6 +28,7 @@
         owner: "{{ common_user_id }}"
         group: "{{ common_group_id }}"
         mode: "0775"
+      notify: Restart
 
     - name: "Create {{ application }} container"
       ansible.builtin.include_role:
@@ -47,6 +52,7 @@
         owner: "{{ common_user_id }}"
         group: "{{ common_group_id }}"
         mode: "0775"
+      notify: Restart
 
     - name: "Create {{ application }}-service-discovery container"
       ansible.builtin.include_role:
