@@ -31,7 +31,7 @@ services:
         subtitle: 3D printing controller
         url: https://octopi.{{ common_local_tld }}
         priority: 890
-        monitor: true
+        monitor: false
       -
         name: OctoPrint Webcam
         icon: fas fa-camera-retro
@@ -55,10 +55,10 @@ services:
         priority: 990
         monitor: true
       -
-        name: TP-Link T1600G-28PS
-        logo: tplink.png
+        name: Juniper EX3300-48P
+        logo: juniper.png
         subtitle: Network switch
-        url: https://switch.{{ common_local_tld }}
+        url: http://switch.{{ common_local_tld }}
         priority: 980
         monitor: true
       -
