@@ -7,6 +7,10 @@
 
     docker_network: "{{ networks.pub }}"
 
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
   tasks:
     - name: Create config folder
       ansible.builtin.file:
@@ -22,7 +26,7 @@
         path: "{{ _config_dir.path }}/ngrams"
         state: directory
         owner: "{{ common_user_id }}"
-        group: "{{ common_root_group }}"
+        group: 101
         mode: "0771"
 
     - name: Download ngrams
@@ -44,15 +48,118 @@
         remote_src: true
       loop: "{{ _ngrams.results }}"
 
+    - name: Download ngram-lang-detect
+      ansible.builtin.get_url:
+        url: "https://languagetool.org/download/ngram-lang-detect/model_ml50_new.zip"
+        dest: "{{ _config_dir.path }}/ngram-lang-detect.zip"
+
+    - name: Create word2vec folder
+      ansible.builtin.file:
+        path: "{{ _config_dir.path }}/word2vec"
+        state: directory
+        owner: "{{ common_user_id }}"
+        group: 101
+        mode: "0771"
+
+    - name: Download word2vec model
+      ansible.builtin.get_url:
+        url: https://languagetool.org/download/word2vec/en.zip
+        dest: "{{ _config_dir.path }}/word2vec.tar.gz"
+
+    - name: Unarchive word2vec
+      ansible.builtin.unarchive:
+        src: "{{ _config_dir.path }}/word2vec.tar.gz"
+        dest: "{{ _config_dir.path }}/word2vec/"
+        creates: "{{ _config_dir.path }}/word2vec/en"
+        remote_src: true
+
+    - name: Create FastText folder
+      ansible.builtin.file:
+        path: "{{ _config_dir.path }}/fasttext"
+        state: directory
+        owner: "{{ common_user_id }}"
+        group: 101
+        mode: "0771"
+
+    - name: Download FastText model
+      ansible.builtin.get_url:
+        url: https://dl.fbaipublicfiles.com/fasttext/supervised-models/lid.176.bin
+        dest: "{{ _config_dir.path }}/fasttext/lid.176.bin"
+        checksum: md5:01810bc59c6a3d2b79c79e6336612f65
+        mode: "0775"
+        owner: "{{ common_user_id }}"
+        group: 101
+
+    - name: Clone FastText binary repo
+      ansible.builtin.git:
+        repo: https://github.com/facebookresearch/fastText.git
+        dest: "{{ _config_dir.path }}/fasttext/fasttext.git"
+        version: v0.9.2
+
+    - name: Set FastText binary repo permissions
+      ansible.builtin.file:
+        path: "{{ _config_dir.path }}/fasttext/fasttext.git/"
+        mode: "0775"
+        owner: "{{ common_user_id }}"
+        group: 101
+
+    - name: Create script to compile FastText
+      ansible.builtin.copy:
+        dest: "{{ _config_dir.path }}/fasttext/build.sh"
+        mode: "755"
+        content: |
+          #!/bin/sh
+
+          apk add \
+            build-base \
+            wget \
+            git \
+            unzip \
+
+          cd /fasttext/fasttext.git
+
+          make
+
+    - name: Compile FastText in alpine
+      ansible.builtin.shell:
+        cmd: "docker run --rm -v {{ _config_dir.path }}/fasttext:/fasttext alpine:3.15.0 /fasttext/build.sh"
+
+    - name: Set FastText permissions
+      ansible.builtin.file:
+        path: "{{ _config_dir.path }}/fasttext/fasttext.git/fasttext"
+        mode: "0775"
+        owner: "{{ common_user_id }}"
+        group: 101
+
+    - name: Generate config file
+      ansible.builtin.copy:
+        dest: "{{ _config_dir.path }}/config.properties"
+        mode: "775"
+        owner: "{{ common_user_id }}"
+        group: 101
+        content: |
+          languageModel=/ngrams
+          ngramLangIdentData=/ngram-lang-detect.zip
+          word2vecModel=/word2vec
+          fasttextModel=/fasttext/lid.176.bin
+          fasttextBinary=/fasttext/fasttext.git/fasttext
+          premiumAlways=true
+      notify: Restart
+
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
       vars:
         image: erikvl87/languagetool:latest
         env:
-          langtool_languageModel: /ngrams
+          Java_Xms: 1g
+          Java_Xmx: 2g
         volumes:
           - "{{ _config_dir.path }}/ngrams/:/ngrams"
+          - "{{ _config_dir.path }}/config.properties:/LanguageTool/config.properties"
+          - "{{ _config_dir.path }}/fasttext:/fasttext"
+          - "{{ _config_dir.path }}/word2vec:/word2vec"
+          - "{{ _config_dir.path }}/ngram-lang-detect.zip:/ngram-lang-detect.zip"
         traefik:
           - port: 8010
         blackbox:

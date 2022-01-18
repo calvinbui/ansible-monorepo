@@ -3,13 +3,9 @@
 - hosts: homelab
 
   vars:
-    application: ombi
+    application: snapdrop
 
     docker_network: "{{ networks.pub }}"
-
-  handlers:
-    - name: Restart
-      ansible.builtin.command: docker restart "{{ application }}"
 
   tasks:
     - name: Create config folder
@@ -25,7 +21,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: lscr.io/linuxserver/ombi
+        image: lscr.io/linuxserver/snapdrop:latest
         env:
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_root_group | string }}"
@@ -33,9 +29,9 @@
         volumes:
           - "{{ _config_dir.path }}:/config"
         traefik:
-          - port: 3579
+          - port: 80
         homer:
-          name: Ombi
-          service: Collaboration
-          priority: 690
-          subtitle: "Media request tool"
+          name: SnapDrop
+          service: Tools
+          priority: 550
+          subtitle: "Local file sharing"
