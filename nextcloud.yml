@@ -127,5 +127,5 @@
         labels:
           '{
             "traefik.http.routers.{{ application }}-onlyoffice-secure.middlewares": "nextcloud-onlyoffice-sslheaders",
-            "traefik.http.middlewares.{{ application}}-onlyoffice-sslheaders.headers.customrequestheaders.X-Forwarded-Proto": "https"
+            "traefik.http.middlewares.{{ application }}-onlyoffice-sslheaders.headers.customrequestheaders.X-Forwarded-Proto": "https"
           }'

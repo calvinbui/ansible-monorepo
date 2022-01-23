@@ -32,7 +32,7 @@
         _lazydocker_checksums: "{{ lookup('url', 'https://github.com/jesseduffield/lazydocker/releases/download/' + _lazydocker_latest_version.tag + '/checksums.txt', wantlist=True) | list }}"
       run_once: true
 
-    - name: "Filter checksum for {{ansible_system }} {{ ansible_architecture }}"
+    - name: "Filter checksum for {{ ansible_system }} {{ ansible_architecture }}"
       ansible.builtin.set_fact:
         _lazydocker_checksum: "{{ item.split(' ')[0] }}"
       loop: "{{ _lazydocker_checksums }}"
