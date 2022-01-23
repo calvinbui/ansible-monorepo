@@ -1,0 +1,87 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: jackett
+
+    jackett_api_key: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      38333663336232343231343139366362393366373439636233663534363235626365643163386531
+      3364653434386163393361323634393838653230643739370a343731373236626137346435373066
+      36313934666137616561363832343565376137363039643839653461353130616339643238653465
+      6663643537326561310a353036343864316234366135613237393531323361373834613136373265
+      62336265393134613638323663616234663332653833313137656562656630343639366531393730
+      3139616537616266636133636437373662346266653835646266
+
+    docker_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: lscr.io/linuxserver/jackett
+        volumes:
+          - "{{ _config_dir.path }}:/config"
+          - "{{ common_directory_download }}:{{ common_mounted_directory_download }}"
+        env:
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_root_group | string }}"
+          TZ: "{{ common_timezone }}"
+          AUTO_UPDATE: "false"
+        traefik:
+          - port: 9117
+            auth: basic
+        homer:
+          name: Jackett
+          service: Download
+          priority: 880
+          subtitle: "Torrent meta search"
+
+    - name: Wait for config
+      ansible.builtin.wait_for:
+        path: "{{ _config_dir.path }}/Jackett/ServerConfig.json"
+        state: present
+
+    - name: Configure
+      json_patch:
+        src: "{{ _config_dir.path }}/Jackett/ServerConfig.json"
+        operations:
+          - op: add
+            path: "{{ item.key }}"
+            value: "{{ item.value }}"
+        pretty: true
+      loop: "{{ _jackett_config | dict2items }}"
+      notify: Restart
+      vars:
+        _jackett_config:
+          APIKey: "{{ jackett_api_key }}"
+          BlackholeDir: "{{ common_mounted_directory_download }}"
+          UpdateDisabled: true
+
+    - name: "Configure qBittorrent search plugin"
+      ansible.builtin.copy:
+        content: |
+          {
+            "api_key": "{{ jackett_api_key }}",
+            "tracker_first": false,
+            "url": "http://{{ application }}.{{ docker_network.name }}:9117"
+          }
+        dest: "{{ common_directory }}/qbittorrent/nova3/engines/jackett.json"
+        mode: "0775"
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"

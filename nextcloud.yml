@@ -5,7 +5,7 @@
   vars:
     application: nextcloud
 
-    docker_network: "{{ networks.user }}"
+    docker_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create config folder
@@ -18,10 +18,10 @@
       register: _config_dir
 
     - name: Create postgres container
-      ansible.builtin.include_role:
+      ansible.builtin.import_role:
         name: postgres
       vars:
-        postgres_version: '13'
+        postgres_version: 13
         postgres_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           34393861343432623031643033656336643264646638626632633335393862643965303332643463
@@ -52,10 +52,10 @@
           - "{{ _config_dir.path }}/nextcloud:/var/www/html"
           - "{{ common_directory_storage }}:/mnt/zfs_files"
         env:
-          POSTGRES_DB: "{{ postgres_database }}"
-          POSTGRES_USER: "{{ postgres_username }}"
-          POSTGRES_PASSWORD: "{{ postgres_password }}"
-          POSTGRES_HOST: "{{ postgres_hostname }}"
+          POSTGRES_DB: "{{ _postgres_database }}"
+          POSTGRES_USER: "{{ _postgres_username }}"
+          POSTGRES_PASSWORD: "{{ _postgres_password }}"
+          POSTGRES_HOST: "{{ _postgres_hostname }}"
 
           NEXTCLOUD_ADMIN_USER: "{{ common_user }}"
           NEXTCLOUD_ADMIN_PASSWORD: !vault |
@@ -70,54 +70,62 @@
 
           NEXTCLOUD_UPDATE: "1"
 
-          REDIS_HOST: "{{ redis_hostname }}"
-          REDIS_HOST_PORT: "6379"
-          REDIS_HOST_PASSWORD: "{{ redis_password }}"
+          REDIS_HOST: "{{ _redis_hostname }}"
+          REDIS_HOST_PORT: "{{ _redis_port | string }}"
+          REDIS_HOST_PASSWORD: "{{ _redis_password }}"
 
           SMTP_NAME: "{{ common_email_username }}"
           SMTP_PASSWORD: "{{ common_email_password }}"
-          SMTP_PORT: "587"
+          SMTP_PORT: "{{ common_email_smtp_port | string }}"
           SMTP_HOST: "{{ common_email_server }}"
           SMTP_SECURE: "tls"
         traefik:
           - port: 80
+        homer:
+          name: Nextcloud
+          service: Collaboration
+          priority: 990
+          subtitle: "Productivity platform"
         labels:
-          traefik.http.routers.nextcloud-secure.middlewares: "nextcloud-dav,nextcloud-hsts"
-          traefik.http.middlewares.nextcloud-dav.redirectregex.permanent: 'true'
-          traefik.http.middlewares.nextcloud-dav.redirectregex.regex: https://(.*)/.well-known/(card|cal)dav
-          traefik.http.middlewares.nextcloud-dav.redirectregex.replacement: https://${1}/remote.php/dav/
+          # 33 is www-data
+          '{
+            "traefik.http.routers.{{ application }}-secure.middlewares": "{{ application }}-dav,{{ application }}-hsts",
+            "traefik.http.middlewares.{{ application }}-dav.redirectregex.permanent": "true",
+            "traefik.http.middlewares.{{ application }}-dav.redirectregex.regex": "https://(.*)/.well-known/(card|cal)dav",
+            "traefik.http.middlewares.{{ application }}-dav.redirectregex.replacement": "https://${1}/remote.php/dav/",
 
-          traefik.http.middlewares.nextcloud-hsts.headers.STSSeconds: "31536000"
-          traefik.http.middlewares.nextcloud-hsts.headers.STSIncludeSubdomains: "true"
-          traefik.http.middlewares.nextcloud-hsts.headers.STSPreload: "true"
+            "traefik.http.middlewares.{{ application }}-hsts.headers.STSSeconds": "31536000",
+            "traefik.http.middlewares.{{ application }}-hsts.headers.STSIncludeSubdomains": "true",
+            "traefik.http.middlewares.{{ application }}-hsts.headers.STSPreload": "true",
 
-    - name: Run Nextcloud cron periodically
-      ansible.builtin.cron:
-        name: "Nextcloud Cron"
-        minute: "*/5"
-        job: "docker exec -u 33 {{ application }} /usr/local/bin/php -f cron.php"
-
-    - name: Wait for Nextcloud to be ready
-      ansible.builtin.wait_for:
-        host: "{{ application }}.{{ common_tld | string }}"
-        port: 443
+            "ofelia.enabled": "true",
+            "ofelia.job-exec.{{ application }}-cron.user": "33",
+            "ofelia.job-exec.{{ application }}-cron.schedule": "@every 5m",
+            "ofelia.job-exec.{{ application }}-cron.command": "/usr/local/bin/php -f cron.php",
+            "ofelia.job-exec.{{ application }}-cron.tty": "false",
+            "ofelia.job-exec.{{ application }}-cron.no-overlap": "true"
+          }'
 
     - name: Overwrite Nextcloud protocol to HTTPS within config
       ansible.builtin.command: "docker exec --user www-data {{ application }} php occ config:system:set overwriteprotocol --value='https'"
       register: command_result
       failed_when: "'System config value overwriteprotocol set to string https' not in command_result.stdout"
       changed_when: false
+      until: command_result is success
+      retries: 5
+      delay: 5
 
     - name: Create OnlyOffice container
       ansible.builtin.include_role:
         name: docker_container
       vars:
         name: "{{ application }}-onlyoffice"
-        image: alehoho/oo-ce-docker-license
+        image: onlyoffice/documentserver:latest
         traefik:
           - port: 80
             rule: "Host(`onlyoffice.{{ common_tld }}`)"
         labels:
-          traefik.http.routers.nextcloud-onlyoffice-secure.middlewares: "onlyoffice-sslheaders"
-
-          traefik.http.middlewares.onlyoffice-sslheaders.headers.customrequestheaders.X-Forwarded-Proto: "https"
+          '{
+            "traefik.http.routers.{{ application }}-onlyoffice-secure.middlewares": "nextcloud-onlyoffice-sslheaders",
+            "traefik.http.middlewares.{{ application}}-onlyoffice-sslheaders.headers.customrequestheaders.X-Forwarded-Proto": "https"
+          }'

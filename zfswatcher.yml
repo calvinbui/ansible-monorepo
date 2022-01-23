@@ -5,7 +5,7 @@
   vars:
     application: zfswatcher
 
-    docker_network: "{{ networks.mgmt }}"
+    docker_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart
@@ -17,7 +17,7 @@
         update_cache: true
         cache_valid_time: 600
       changed_when: false
-      when: ansible_distribution == 'Ubuntu'
+      when: ansible_distribution == "Ubuntu"
 
     - name: Create folders
       ansible.builtin.file:
@@ -44,7 +44,13 @@
           - /dev/log:/dev/log:rw
         traefik:
           - port: 8990
-            auth: true
+        blackbox:
+          auth: basic
+        homer:
+          name: zfswatcher
+          service: Monitoring
+          priority: 890
+          subtitle: "ZFS pool monitoring"
 
     - name: Wait for config file
       ansible.builtin.wait_for:
@@ -64,6 +70,7 @@
         - section: www
           option: bind
           value: 0.0.0.0:8990
+
         - section: email "main"
           option: enable
           value: "true"
@@ -81,11 +88,24 @@
           value: "{{ common_email_username }}"
         - section: email "main"
           option: to
-          value: "zfswatcher{{ common_email_to }}"
+          value: "{{ application }}{{ common_email_to }}"
+
+        # there has to be some auth, even if there's already auth from traefik
         - section: wwwuser "{{ htpasswd.username }}"
           option: password
           value: "{{ htpasswd.password_hashed }}"
         - section: wwwuser "{{ htpasswd.username }}"
           option: enable
           value: "true"
+
+        - section: wwwuser "{{ blackbox_htpasswd.username }}"
+          option: password
+          value: "{{ blackbox_htpasswd.password_hashed }}"
+        - section: wwwuser "{{ blackbox_htpasswd.username }}"
+          option: enable
+          value: "true"
+
+        - section: wwwuser "root"
+          option: enable
+          value: "false"
       notify: Restart

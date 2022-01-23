@@ -5,7 +5,11 @@
   vars:
     application: scrutiny
 
-    docker_network: "{{ networks.mgmt }}"
+    docker_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: "docker restart {{ application }}"
 
   tasks:
     - name: Create config folder
@@ -22,9 +26,10 @@
         src: "{{ files_directory }}/scrutiny.yaml.j2"
         dest: "{{ _config_dir.path }}/scrutiny.yaml"
         mode: "0440"
+      notify: Restart
 
     - name: Get disks
-      shell: for line in $(lsblk --noheadings --list --scsi --output name); do echo "/dev/${line}"; done
+      ansible.builtin.shell: for line in $(lsblk --noheadings --list --scsi --output name); do echo "/dev/${line}"; done
       register: lsblk_disks
       changed_when: false
 
@@ -41,4 +46,9 @@
         devices: "{{ lsblk_disks.stdout_lines }}"
         traefik:
           - port: 8080
-            auth: true
+            auth: page
+        homer:
+          name: scrutiny
+          service: Monitoring
+          priority: 780
+          subtitle: "S.M.A.R.T. monitoring"

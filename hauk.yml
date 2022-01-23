@@ -41,3 +41,8 @@
           - "{{ _config_dir.path }}:/etc/hauk"
         traefik:
           - port: 80
+        homer:
+          name: Hauk
+          service: Sharing
+          priority: 490
+          subtitle: "Location sharing"

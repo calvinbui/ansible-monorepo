@@ -20,7 +20,7 @@
       - tcp
       - udp
 
-    docker_network: "{{ networks.mgmt }}"
+    docker_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create container

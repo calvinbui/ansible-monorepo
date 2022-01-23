@@ -12,11 +12,19 @@
       ansible.builtin.command: docker restart "{{ application }}"
 
   tasks:
+    - name: Add user
+      ansible.builtin.user:
+        name: papermerge
+        create_home: false
+        home: "{{ config_directory }}/import"
+        password: "$6$vgLah.l13sGfNWEP$/vrPocaGTCDC601velsai68JfVzIzaQ18OrO0Y8Q2FPpey7kmXfx/fwZcJQkLPkbnJ2SIS.S.CLBbP8iB4MfS0"
+      register: papermerge_user
+
     - name: Create config directory
       ansible.builtin.file:
         path: "{{ config_directory }}"
         state: directory
-        owner: "papermerge"
+        owner: "{{ papermerge_user.uid }}"
         group: "{{ common_group_id }}"
         mode: "0775"
       register: _config_dir
@@ -25,7 +33,7 @@
       ansible.builtin.file:
         path: "{{ _config_dir.path }}/{{ item }}"
         state: directory
-        owner: "papermerge"
+        owner: "{{ papermerge_user.uid }}"
         group: "{{ common_group_id }}"
         mode: "0775"
       loop:
@@ -34,29 +42,26 @@
         - import
       register: _dir
 
-    - name: Add user
-      ansible.builtin.user:
-        name: papermerge
-        create_home: false
-        home: "{{ _dir.results | selectattr('item', 'match', 'import') | flatten | map(attribute='path') | first }}"
-        password: "$6$vgLah.l13sGfNWEP$/vrPocaGTCDC601velsai68JfVzIzaQ18OrO0Y8Q2FPpey7kmXfx/fwZcJQkLPkbnJ2SIS.S.CLBbP8iB4MfS0"
-      register: papermerge_user
-
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/linuxserver/papermerge:latest
+        image: lscr.io/linuxserver/papermerge:latest
         volumes:
           - "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}:/config"
           - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/data"
           - "{{ _dir.results | selectattr('item', 'match', 'import') | flatten | map(attribute='path') | first }}:/import"
         env:
-          PUID: "{{ papermerge_user.uid }}"
-          PGID: "{{ common_group_id }}"
+          PUID: "{{ papermerge_user.uid | string }}"
+          PGID: "{{ common_group_id | string }}"
           TZ: "{{ common_timezone }}"
         traefik:
-          - port: "8000"
+          - port: 8000
+        homer:
+          name: Papermerge
+          service: Tools
+          priority: 490
+          subtitle: "Document scanner"
 
     - name: Edit config
       ansible.builtin.lineinfile:

@@ -1,0 +1,140 @@
+---
+- hosts: homelab
+
+  vars:
+    application: thespaghettidetective
+
+    docker_network: "{{ networks.iot }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create redis container
+      ansible.builtin.include_role:
+        name: redis
+      vars:
+        redis_version: 5
+        redis_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          31653462326237343161383364613539386639343032383536386436303862323132343638393562
+          3662643233323937343736633533356237663863346637320a653831636537616665653332376665
+          36326538663830336566626262653437633339393561613931613361656361396562623265363866
+          6366643962303166320a646332666637306561343137363938343963303733633266333637383066
+          61326561363763646335643337623336366634643964666335616563636333353230383238383362
+          38373962613862616134613266656165636238343532653733643738313536336636383130666139
+          37343261393636636431316631656537306539373264316134643564333662623038353834343966
+          35633733653134653063
+
+    - name: Clone
+      ansible.builtin.git:
+        repo: "https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git"
+        dest: "{{ _config_dir.path }}/repo"
+        update: true
+      register: _tsd_repo_updated
+
+    - name: Build ml_api image
+      community.docker.docker_image:
+        name: "{{ application }}-ml_api"
+        build:
+          path: "{{ _config_dir.path }}/repo/ml_api"
+          dockerfile: Dockerfile
+          pull: true
+        source: build
+        state: present
+        force_source: "{{ true if _tsd_repo_updated.changed else false }}"
+
+    - name: Create ml_api container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-ml_api"
+        image: "{{ application }}-ml_api"
+        command:
+          - bash
+          - -c
+          - "gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi"
+        env:
+          DEBUG: "False"
+          FLASK_APP: "server.py"
+        labels:
+          com.centurylinklabs.watchtower.enable: "false"
+
+    - name: Build web image
+      community.docker.docker_image:
+        name: "{{ application }}-web"
+        build:
+          path: "{{ _config_dir.path }}/repo/web"
+          dockerfile: Dockerfile
+          pull: true
+        source: build
+        state: present
+        force_source: "{{ true if _tsd_repo_updated.changed else false }}"
+
+    - name: Create web container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-web"
+        image: "{{ application }}-web"
+        command:
+          - sh
+          - -c
+          - "python manage.py collectstatic --noinput && python manage.py migrate && python manage.py runserver --noreload 0.0.0.0:3334"
+        traefik:
+          - port: 3334
+            rule: Host(`{{ application }}.{{ common_tld }}`)
+        homer:
+          name: The Spaghetti Detective
+          service: Tools
+          priority: 390
+          subtitle: "3D printing failure detection"
+          url: "https://{{ application }}.{{ common_tld }}"
+        volumes: &web_volumes
+          - "{{ config_directory }}/repo/web:/app"
+        env: &web_env
+          EMAIL_HOST: "{{ common_email_server }}"
+          EMAIL_HOST_USER: "{{ common_email_username }}"
+          EMAIL_HOST_PASSWORD: "{{ common_email_password }}"
+          EMAIL_PORT: "{{ common_email_smtp_port | string }}"
+          EMAIL_USE_TLS: "True"
+          DEFAULT_FROM_EMAIL: "{{ application }}{{ common_email_to }}"
+
+          DEBUG: "False"
+
+          SITE_USES_HTTPS: "False"
+          SITE_IS_PUBLIC: "False"
+          SOCIAL_LOGIN: "False"
+
+          REDIS_URL: "{{ _redis_url }}"
+          DATABASE_URL: "sqlite:////app/db.sqlite3"
+
+          INTERNAL_MEDIA_HOST: "http://{{ application }}-web.{{ docker_network.name }}:3334"
+          ML_API_HOST: "http://{{ application }}-ml_api.{{ docker_network.name }}:3333"
+
+          ACCOUNT_ALLOW_SIGN_UP: "False"
+
+          WEBPACK_LOADER_ENABLED: ""
+        labels:
+          com.centurylinklabs.watchtower.enable: "false"
+
+    - name: Create tasks container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-tasks"
+        image: "{{ application }}-web"
+        command:
+          - sh
+          - -c
+          - "celery -A config worker --beat -l info -c 2 -Q realtime,celery"
+        volumes: *web_volumes
+        env: *web_env
+        labels:
+          com.centurylinklabs.watchtower.enable: "false"

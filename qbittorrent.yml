@@ -25,20 +25,25 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/linuxserver/qbittorrent
+        image: lscr.io/linuxserver/qbittorrent
         env:
-          PUID: "{{ common_user_id }}"
-          PGID: "{{ common_root_group }}"
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_root_group | string }}"
           TZ: "{{ common_timezone }}"
           UMASK: "022"
           WEBUI_PORT: "8090"
         volumes:
           - "{{ _config_dir.path }}:/config/qBittorrent"
-          - "{{ common_directory_download }}:/downloads"
+          - "{{ common_directory_download }}:{{ common_mounted_directory_download }}"
         ipv4_address: "{{ docker_network.prefix }}.2"
         traefik:
           - port: 8090
-            auth: true
+            auth: basic
+        homer:
+          name: qBittorrent
+          service: Download
+          priority: 980
+          subtitle: "Download torrents"
 
     - name: Wait for config
       ansible.builtin.wait_for:
@@ -65,10 +70,11 @@
 
           ## Gap inbetween
           Preferences.Downloads\PreAllocation: "false"
-          Preferences.Downloads\UseIncompleteExtension: "true"
+          Preferences.Downloads\UseIncompleteExtension: "false"
 
           # Saving Management
-          Preferences.Downloads\TempPath: /downloads/Intermediate/
+          Preferences.Downloads\SavePath: "{{ common_mounted_directory_download }}"
+          Preferences.Downloads\TempPath: "{{ common_mounted_directory_download }}/Intermediate/"
 
           # Run external program on torrent completion
           AutoRun.enabled: "true"
@@ -91,16 +97,16 @@
 
           # Speed
           ## Global Rate Limits
-          Preferences.Connection\GlobalUPLimit: 0
+          Preferences.Connection\GlobalUPLimit: 200
           Preferences.Connection\GlobalDLLimit: 0
           Preferences.Connection\GlobalDLLimitAlt: 0
           Preferences.Connection\GlobalUPLimitAlt: 0
           Preferences.Connection\alt_speeds_on: "false"
 
           ## Rate Limit Settings
-          Preferences.Bittorrent\uTP_rate_limited: "false"
-          Preferences.Advanced\IncludeOverhead: "false"
-          Preferences.Advanced\IgnoreLimitsLAN: "true"
+          Preferences.Bittorrent\uTP_rate_limited: "true"
+          Preferences.Advanced\IncludeOverhead: "true"
+          Preferences.Advanced\IgnoreLimitsLAN: "false"
 
           # BitTorrent
           ## Privacy
@@ -147,4 +153,26 @@
         mode: "0770"
       loop: "{{ _qbittorrent_config.results | selectattr('changed', 'equalto', true) | map(attribute='item') }}"
       when: _qbittorrent_config.changed
+      notify: Restart
+
+    - name: Find search engines to disable
+      ansible.builtin.stat:
+        path: "{{ _config_dir.path }}/nova3/engines/{{ item }}.py"
+      loop:
+        - eztv
+        - legittorrents
+        - limetorrents
+        - piratebay
+        - rarbg
+        - torlock
+        - torrentscsv
+        - zooqle
+      register: _qbittorrent_search_engines
+
+    - name: Disable search engines
+      ansible.builtin.command: "mv {{ item }}.py {{ item }}.py.bak"
+      args:
+        chdir: "{{ _config_dir.path }}/nova3/engines/"
+      when: item.stat.exists
+      loop: "{{ _qbittorrent_search_engines.results }}"
       notify: Restart

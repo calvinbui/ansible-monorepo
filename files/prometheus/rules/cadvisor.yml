@@ -1,27 +1,47 @@
 ---
 
 groups:
-  - name: containers
+  - name: cadvisor
     rules:
-      - alert: Container Down
-        expr: time() - container_last_seen{name=~".+"} > 60
+      -
+        alert: cadvisor is down
+        expr: up{job="cadvisor"} != 1
+        for: 5m
+        annotations:
+          title: cadvisor is down
+          description: "The exporter could not be reached"
+
+  - name: container_down
+    rules:
+      -
+        alert: Container Down
+        expr: time() - (sum without (id) (container_last_seen{name=~".+"})) > 60
         for: 4m
         annotations:
           title: "Container missing"
           description: "The container {{ $labels.name }} was last seen a while ago"
-      - alert: Container CPU
-        expr: sum(rate(container_cpu_usage_seconds_total{name=~".+"}[5m])) by (name,host) * 100 > 90
+
+  - name: container_cpu
+    rules:
+      -
+        alert: Container CPU
+        expr: sum(rate(container_cpu_usage_seconds_total{name=~".+", name!="thespaghettidetective-ml_api"}[5m])) by (name,host) * 100 > 90
         for: 10m
         annotations:
           title: "Container CPU Usage"
           description: "The container {{ $labels.name }} CPU usage is high"
-      - alert: File System Writes
+
+  - name: container_fs
+    rules:
+      -
+        alert: File System Writes
         expr: sum(rate(container_fs_writes_bytes_total{pod_name!=""}[5m])) by (pod_name, device) > 100000
         for: 10m
         annotations:
           title: Pod Disk Write Usage High
           description: Pod {{ $labels.pod_name }} is writing to the filesystem on {{ $labels.pod_name }} at a high rate
-      - alert: File System Reads
+      -
+        alert: File System Reads
         expr: sum(rate(container_fs_reads_bytes_total{pod_name!=""}[5m])) by (pod_name, device) > 100000
         for: 10m
         annotations:

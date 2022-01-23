@@ -3,13 +3,25 @@
 groups:
   - name: traefik
     rules:
-      - alert: 4xx
+      -
+        alert: Traefik exporter is down
+        expr: up{job="traefik"} != 1
+        for: 5m
+        annotations:
+          title: traefik exporter is down
+          description: "The exporter could not be reached"
+
+  - name: traefik_codes
+    rules:
+      -
+        alert: 4xx
         expr: sum(rate(traefik_service_requests_total{code=~"4.*"}[3m])) by (service) / sum(rate(traefik_service_requests_total[3m])) by (service) * 100 > 100
         for: 1m
         annotations:
           title: Traefik high HTTP 4xx error rate service
           description: "Traefik service 4xx error rate is above "
-      - alert: 5xx
+      -
+        alert: 5xx
         expr: sum(rate(traefik_service_requests_total{code=~"5.*"}[3m])) by (service) / sum(rate(traefik_service_requests_total[3m])) by (service) * 100 > 100
         for: 1m
         annotations:

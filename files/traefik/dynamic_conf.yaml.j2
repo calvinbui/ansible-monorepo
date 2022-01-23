@@ -8,17 +8,9 @@ http:
       middlewares:
         - myAuth
       tls:
-        certResolver: letsencrypt
+        certResolver: '{{ traefik_certresolver }}'
         domains:
           - main: 'traefik.{{ common_tld }}'
-
-    local-api:
-      rule: 'Host(`traefik.{{ docker_network.name }}`)'
-      entryPoints:
-        - web
-      service: api@internal
-      middlewares:
-        - myAuth
 
   middlewares:
     redirect:

@@ -1,5 +1,16 @@
 ---
+
 groups:
+  - name: process_exporter
+    rules:
+      -
+        alert: process_exporter is down
+        expr: up{job="process_exporter"} != 1
+        for: 5m
+        annotations:
+          title: process_exporter is down
+          description: "The exporter could not be reached"
+
   - name: NUT
     rules:
       - alert: NUT Driver
@@ -26,4 +37,3 @@ groups:
         annotations:
           title: "NUT Server Service"
           description: "The nut-server service is abnormal"
-

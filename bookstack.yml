@@ -5,7 +5,7 @@
   vars:
     application: bookstack
 
-    docker_network: "{{ networks.user }}"
+    docker_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart
@@ -25,7 +25,7 @@
       ansible.builtin.include_role:
         name: mariadb
       vars:
-        mariadb_version: '10'
+        mariadb_version: 10
         mariadb_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           38656365626264363335636631333233666139353539343830613135616439313063383334326438
@@ -34,25 +34,29 @@
           3035663661396338360a326262373836636433626536383966653037356630393763363337663365
           34303963653163323530303766303737633333616162326337643639316237333733353730386432
           3535636531613238363937636364656433393532393138333861
-        mariadb_database: bookstackapp
 
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/linuxserver/bookstack
+        image: lscr.io/linuxserver/bookstack
         volumes:
           - "{{ _config_dir.path }}/bookstack:/config"
         env:
-          PUID: "{{ common_user_id }}"
-          PGID: "{{ common_group_id }}"
-          DB_HOST: "{{ mariadb_hostname }}"
-          DB_USER: root
-          DB_PASS: "{{ mariadb_password }}"
-          DB_DATABASE: "{{ mariadb_database }}"
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_group_id | string }}"
+          DB_HOST: "{{ _mariadb_hostname }}"
+          DB_USER: "{{ _mariadb_username }}"
+          DB_PASS: "{{ _mariadb_password }}"
+          DB_DATABASE: "{{ _mariadb_database }}"
           APP_URL: "https://{{ application }}.{{ common_tld }}"
         traefik:
           - port: 80
+        homer:
+          name: Bookstack
+          service: Collaboration
+          priority: 690
+          subtitle: "Documentation"
 
     - name: Wait for .env file
       ansible.builtin.wait_for:
@@ -74,6 +78,7 @@
           MAIL_USERNAME: "{{ common_email_username }}"
           MAIL_PASSWORD: "{{ common_email_password }}"
           MAIL_ENCRYPTION: "{{ common_email_protocol }}"
+          STORAGE_TYPE: local_secure
       notify: Restart
 
     - name: Configure PHP options

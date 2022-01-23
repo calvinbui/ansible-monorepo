@@ -5,16 +5,7 @@
   vars:
     application: traefik
 
-    traefik_pilot_token: !vault |
-      $ANSIBLE_VAULT;1.1;AES256
-      37303732623030623636316538303132303834353134336430343862333937613562643237353531
-      6535633332363562356334313961643466366632636264390a303631343233646437346336643531
-      37313038663036636462626233633231643964356232643663386431383835363765356432393462
-      3635633066323362350a613035626333353464386432613339363132663838666462343530346137
-      38383565373166636235313731653738333734646561623663326434616534346639366433353636
-      6136306465353334346239643761356130363065303039646530
-
-    docker_network: "{{ networks.mgmt }}"
+    docker_network: bridge
 
   handlers:
     - name: Restart
@@ -34,7 +25,7 @@
       ansible.builtin.file:
         path: "{{ _config_dir.path }}/acme.json"
         state: touch
-        mode: '0600'
+        mode: "0600"
         modification_time: "preserve"
         access_time: "preserve"
 
@@ -52,15 +43,24 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: traefik:v2.4
-        ipv4_address: "{{ docker_network.prefix }}.193"
+        image: traefik:v2.5
         env:
           CF_API_EMAIL: "{{ cloudflare_email }}"
           CF_API_KEY: "{{ cloudflare_api }}"
+
+          TZ: "{{ common_timezone }}"
+        homer:
+          name: Traefik
+          service: Infrastructure
+          priority: 690
+          subtitle: "Reverse proxy"
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock
           - "{{ _config_dir.path }}/traefik.yaml:/etc/traefik/traefik.yaml"
           - "{{ _config_dir.path }}/acme.json:/acme.json"
           - "{{ _config_dir.path }}/dynamic_conf.yaml:/dynamic_conf.yaml"
-        metrics:
-          - port: 8082
+          - /var/log/traefik:/var/log
+        published_ports:
+          - 80:80
+          - 443:443
+          - 123:123/udp

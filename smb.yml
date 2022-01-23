@@ -14,7 +14,7 @@
         update_cache: true
         cache_valid_time: 600
       changed_when: false
-      when: ansible_distribution == 'Ubuntu'
+      when: ansible_distribution == "Ubuntu"
 
     - name: Install
       ansible.builtin.apt:
@@ -41,10 +41,10 @@
       notify: Restart
 
     - name: Allow in firewall
-      ufw:
+      community.general.ufw:
         name: samba
         rule: allow
 
     - name: Reminder
-      debug:
+      ansible.builtin.debug:
         msg: Create an smb password using `sudo smbpasswd calvin`

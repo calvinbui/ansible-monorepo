@@ -1,0 +1,87 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: "fail2ban"
+
+    docker_network:
+      name: "host"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
+      changed_when: false
+
+    - name: Install nftables
+      ansible.builtin.apt:
+        name: nftables
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+      register: result
+      until: result is success
+      retries: 5
+      delay: 5
+
+    - name: Use iptables tooling without nftables backend
+      community.general.alternatives:
+        name: "{{ item.name }}"
+        path: "{{ item.path }}"
+      loop:
+        -
+          name: iptables
+          path: /usr/sbin/iptables-legacy
+        -
+          name: ip6tables
+          path: /usr/sbin/ip6tables-legacy
+
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: crazymax/fail2ban
+        env:
+          TZ: "{{ common_timezone }}"
+
+          SSMTP_HOST: "{{ common_email_server }}"
+          SSMTP_PORT: "{{ common_email_smtp_port | string }}"
+          SSMTP_USER: "{{ common_email_username }}"
+          SSMTP_PASSWORD: "{{ common_email_password }}"
+          SSMTP_SECURE: "YES"
+          SSMTP_TLS: "YES"
+          SSMTP_STARTTLS: "YES"
+        volumes:
+          - "{{ _config_dir.path }}:/data"
+          - /var/log:/var/log:ro
+        capabilities:
+          - NET_ADMIN
+          - NET_RAW
+        network_mode: "host"
+        privileged: true
+
+    - name: Sync config files
+      ansible.posix.synchronize:
+        src: "{{ files_directory }}/{{ item }}/"
+        dest: "{{ _config_dir.path }}/{{ item }}"
+        delete: true
+      notify: Restart
+      loop:
+        - action.d
+        - filter.d
+        - jail.d

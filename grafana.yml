@@ -5,7 +5,7 @@
   vars:
     application: grafana
 
-    docker_network: "{{ networks.mgmt }}"
+    docker_network: "{{ networks.user }}"
 
   handlers:
     - name: Restart
@@ -16,7 +16,7 @@
       ansible.builtin.file:
         path: "{{ config_directory }}"
         state: directory
-        owner: "472" # grafana user
+        owner: "472"  # grafana user
         group: "{{ common_group }}"
         mode: "0771"
       register: _config_dir
@@ -25,7 +25,7 @@
       ansible.builtin.file:
         path: "{{ _config_dir.path }}/{{ item }}"
         state: directory
-        owner: "472" # grafana user
+        owner: "472"  # grafana user
         group: "{{ common_group }}"
         mode: "0771"
       loop:
@@ -51,7 +51,7 @@
               isDefault: true
               editable: false
         dest: "{{ _dir.results | selectattr('item', 'match', 'provisioning/datasources') | flatten | map(attribute='path') | first }}/prometheus.yml"
-        owner: "472" # grafana user
+        owner: "472"  # grafana user
         group: "{{ common_group }}"
         mode: "0444"
       notify: Restart
@@ -63,7 +63,7 @@
         remote_src: true
       loop:
         - name: grafana-piechart-panel
-          version: 1.6.1
+          version: 1.6.2
       notify: Restart
 
     - name: Create container
@@ -75,4 +75,9 @@
           - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/var/lib/grafana"
           - "{{ _dir.results | selectattr('item', 'match', 'provisioning') | flatten | map(attribute='path') | first }}:/etc/grafana/provisioning"
         traefik:
-          - port: "3000"
+          - port: 3000
+        homer:
+          name: Grafana
+          service: Monitoring
+          priority: 970
+          subtitle: "Dashboards"

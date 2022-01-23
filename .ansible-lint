@@ -4,3 +4,12 @@ skip_list:
   - line-length
   - no-handler
   - no-tabs
+
+exclude_paths:
+  - inventory.yml
+
+enable_list:
+  - fqcn-builtins
+  - no-log-password
+  - no-same-owner
+  - yaml

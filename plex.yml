@@ -21,15 +21,15 @@
         mode: "0771"
       register: _config_dir
 
-    - name: Create container
+    - name: "Create {{ application }} container"
       ansible.builtin.include_role:
         name: docker_container
       vars:
         image: plexinc/pms-docker:latest
         ipv4_address: "{{ docker_network.prefix }}.3"
         env:
-          PLEX_UID: "{{ common_user_id }}"
-          PLEX_GID: "{{ common_root_group }}"
+          PLEX_UID: "{{ common_user_id | string }}"
+          PLEX_GID: "{{ common_root_group | string }}"
           TZ: "{{ common_timezone }}"
           # PLEX_CLAIM: ""
         volumes:
@@ -39,3 +39,10 @@
           - "{{ common_directory_tv }}:/data/tv"
         traefik:
           - port: 32400
+        blackbox:
+          path: /identity
+        homer:
+          name: Plex
+          service: Sharing
+          priority: 990
+          subtitle: "Media server"

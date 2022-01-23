@@ -7,7 +7,7 @@
 
     zsh_theme: powerlevel10k/powerlevel10k
     zsh_theme_repo: https://github.com/romkatv/powerlevel10k
-    zsh_theme_version: v1.14.6
+    zsh_theme_version: v1.15.0
 
     zsh_plugins:
       - name: autojump
@@ -29,7 +29,7 @@
         update_cache: true
         cache_valid_time: 600
       changed_when: false
-      when: ansible_distribution == 'Ubuntu'
+      when: ansible_distribution == "Ubuntu"
 
     - name: Install zsh
       ansible.builtin.apt:
@@ -50,6 +50,7 @@
       ansible.builtin.git:
         repo: "https://github.com/robbyrussell/oh-my-zsh"
         dest: "~/.oh-my-zsh"
+      become: false
       become_user: "{{ common_user }}"
 
     - name: Clone custom plugins
@@ -60,6 +61,7 @@
         update: "{{ item.update | bool | default(false) }}"
       when: item.repo is defined
       loop: "{{ zsh_plugins }}"
+      become: false
       become_user: "{{ common_user }}"
 
     - name: Clone theme
@@ -67,6 +69,7 @@
         repo: "{{ zsh_theme_repo }}"
         dest: "~/.oh-my-zsh/custom/themes/{{ zsh_theme_repo.split('/')[-1] | regex_replace('.git$', '') }}"
         version: "{{ zsh_theme_version | default(omit) }}"
+      become: false
       become_user: "{{ common_user }}"
 
     - name: Template zshrc

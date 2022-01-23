@@ -16,7 +16,7 @@
       61383438643866393130393035633732373037656564313966323930386666326233346139323939
       32383233643934386565
 
-    docker_network: "{{ networks.mgmt }}"
+    docker_network: "{{ networks.user }}"
 
   handlers:
     - name: Restart
@@ -27,7 +27,7 @@
       ansible.builtin.file:
         path: "{{ config_directory }}"
         state: directory
-        owner: "65534" # nobody user
+        owner: "65534"  # nobody user
         group: "{{ common_group }}"
         mode: "0771"
       register: _config_dir
@@ -36,7 +36,7 @@
       ansible.builtin.file:
         path: "{{ _config_dir.path }}/{{ item }}"
         state: directory
-        owner: "65534" # nobody user
+        owner: "65534"  # nobody user
         group: "{{ common_group }}"
         mode: "0771"
       loop:
@@ -48,9 +48,10 @@
       ansible.builtin.template:
         src: "{{ files_directory }}/alertmanager.yml.j2"
         dest: "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}/alertmanager.yml"
-        owner: "65534" # nobody user
+        owner: "65534"  # nobody user
         group: "{{ common_group }}"
         mode: "0444"
+        validate: "docker run --rm --name {{ application }}_config_check -v %s:/tmp/config.yml --entrypoint /bin/amtool prom/alertmanager:latest check-config /tmp/config.yml"
       notify: Restart
 
     - name: Create container
@@ -68,6 +69,13 @@
           - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/alertmanager"
         traefik:
           - port: 9093
-            auth: true
+            auth: page
+        homer:
+          name: Alertmanager
+          service: Monitoring
+          priority: 980
+          subtitle: "Alerting"
+        metrics:
+          - port: 9093
         comparisons:
           labels: allow_more_present

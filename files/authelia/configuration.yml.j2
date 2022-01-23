@@ -1,0 +1,74 @@
+---
+
+server:
+  host: 0.0.0.0
+  port: 9091
+
+theme: dark
+
+jwt_secret: "{{ jwt_secret }}"
+
+default_redirection_url: https://{{ application }}.{{ common_tld }}
+
+authentication_backend:
+  disable_reset_password: false
+  refresh_interval: 5m
+  ldap:
+    implementation: custom
+    url: ldap://openldap
+
+    username_attribute: uid
+    base_dn: {{ ldap_base_dn }}
+
+    additional_users_dn: ou={{ ldap_user_ou }}
+    additional_groups_dn: ou={{ ldap_group_ou }}
+
+    users_filter: (&({username_attribute}={input})(objectClass=person))
+    groups_filter: (&(uniquemember={dn})(objectclass=groupOfUniqueNames))
+
+    user: {{ ldap_admin_dn }}
+    password: {{ ldap_admin_password }}
+
+access_control:
+  default_policy: deny
+
+  rules:
+    - domain:
+        - "*.{{ common_tld }}"
+        - "*.{{ common_local_tld }}"
+      subject:
+        - "group:humans"
+        - "user:blackbox_exporter"
+      policy: one_factor
+
+session:
+  name: authelia_session
+  secret: "{{ session_secret }}"
+  domain: {{ common_tld }}
+  redis:
+    host: {{ _redis_hostname }}
+    port: {{ _redis_port }}
+    password: {{ _redis_password }}
+
+regulation:
+  max_retries: 3
+  find_time: 120
+  ban_time: 300
+
+storage:
+  encryption_key: "{{ storage_encryption_key }}"
+  postgres:
+    host: {{ _postgres_hostname }}
+    port: {{ _postgres_port }}
+    database: {{ _postgres_database }}
+    username: "{{ _postgres_username }}"
+    password: "{{ _postgres_password }}"
+
+notifier:
+  smtp:
+    username: "{{ common_email_username }}"
+    password: "{{ common_email_password }}"
+    host: "{{ common_email_server }}"
+    port: "{{ common_email_smtp_port }}"
+    sender: "{{ application }}{{ common_email_to }}"
+    disable_require_tls: "{{ 'false' if common_email_protocol=='tls' else 'true' }}"

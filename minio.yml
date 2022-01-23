@@ -1,0 +1,125 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: minio
+
+    minio_user: 3fiCArUB7qYUPiqBcJGS
+    minio_password: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      39343030393438393162313362353633646239356433366430643961633132343337373131666138
+      6331663530373364613431396638643932383438333330310a306336633837666463363161373662
+      35386639666164346439663532373732373037643165393464663662326564323562356461613262
+      6331323639396236390a383332643161353961313237346334613832633766636164376363653664
+      63663633646633353164373666303635363762653862626530623838326162393061393661656234
+      31346136646538333834626564646139613061666466343161303735636633373537656130323635
+      32653732663738323665666563653437376235326534303733633662333233616463646566323737
+      35376237343864333036
+
+    minio_console_jwt: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      37653037623630303130396236363362316564653164356437366563333563306131383239636632
+      3030343562653665613035316238343835356162326361370a666631376565336436363134393765
+      63386466323466363034313936656666323533363833643731303366363632303261346438323564
+      6438633339393036360a393431386363363764333238373566643839363864376335346461633331
+      30653137633963396530663364396235363266643232616430303937373731386231
+
+    docker_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart minio-mc
+      ansible.builtin.command: docker restart "{{ application }}-mc"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create {{ application }} server container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-server"
+        image: minio/minio
+        command:
+          - server
+          - /data
+          - --anonymous
+        env:
+          MINIO_ROOT_USER: "{{ minio_user }}"
+          MINIO_ROOT_PASSWORD: "{{ minio_password }}"
+
+          MINIO_SERVER_URL: "http://{{ application }}-server.{{ docker_network.name }}:9000"
+
+          MINIO_BROWSER: "off"
+        volumes:
+          - "{{ _config_dir.path }}/data:/data"
+        traefik:
+          - port: 9000
+            rule: Host(`{{ application }}.{{ common_tld }}`)
+        blackbox:
+          path: /minio/health/live
+
+    - name: Create {{ application }} console container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-console"
+        image: minio/console
+        command:
+          - server
+        env:
+          CONSOLE_PBKDF_PASSPHRASE: "{{ minio_console_jwt }}"
+          CONSOLE_PBKDF_SALT: "{{ minio_console_jwt }}"
+          CONSOLE_MINIO_SERVER: "http://{{ application }}-server.{{ docker_network.name }}:9000"
+        traefik:
+          - port: 9090
+            rule: Host(`{{ application }}-console.{{ common_tld }}`)
+        blackbox:
+          path: /login
+        homer:
+          name: MinIO
+          service: Sharing
+          priority: 590
+          subtitle: "Object storage"
+          url: "https://{{ application }}-console.{{ common_tld }}"
+
+    - name: Create {{ application }}-mc config
+      notify: Restart minio-mc
+      ansible.builtin.copy:
+        dest: "{{ _config_dir.path }}/config.json"
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
+        content: |
+          {
+            "version": "10",
+            "aliases": {
+              "minio": {
+                "url": "http://{{ application }}-server.{{ docker_network.name }}:9000",
+                "accessKey": "{{ minio_user }}",
+                "secretKey": "{{ minio_password }}",
+                "api": "S3v4",
+                "path": "auto"
+              }
+            }
+          }
+
+    - name: Create {{ application }}-mc container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-mc"
+        entrypoint:
+          - tail
+          - -f
+          - /dev/null
+        image: minio/mc
+        volumes:
+          - "{{ _config_dir.path }}/config.json:/root/.mc/config.json"

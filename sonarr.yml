@@ -25,18 +25,22 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/linuxserver/sonarr
+        image: lscr.io/linuxserver/sonarr
         volumes:
           - "{{ _config_dir.path }}:/config"
-          - "{{ common_directory_tv }}:/tv"
-          - "{{ common_directory_download }}:/downloads"
+          - "{{ common_directory_storage }}:{{ common_mounted_directory }}"
         env:
-          PUID: "{{ common_user_id }}"
-          PGID: "{{ common_root_group }}"
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_root_group | string }}"
           TZ: "{{ common_timezone }}"
         traefik:
           - port: 8989
-            auth: true
+            auth: basic
+        homer:
+          name: Sonarr
+          service: Download
+          priority: 790
+          subtitle: "Manage and download TV shows"
 
     - name: Wait for config
       ansible.builtin.wait_for:

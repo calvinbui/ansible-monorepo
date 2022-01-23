@@ -12,7 +12,7 @@
       ansible.builtin.include_role:
         name: postgres
       vars:
-        postgres_version: '13.1'
+        postgres_version: 13.1
         postgres_directory: "{{ config_directory }}"
         postgres_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
@@ -26,15 +26,20 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: joplin/server:1.7.2
+        image: joplin/server:latest
         env:
           APP_BASE_URL: "https://{{ application }}.{{ common_tld }}"
           APP_PORT: "22300"
           DB_CLIENT: pg
-          POSTGRES_PASSWORD: "{{ postgres_password }}"
-          POSTGRES_DATABASE: "{{ postgres_database }}"
-          POSTGRES_USER: "{{ postgres_username }}"
-          POSTGRES_PORT: "5432"
-          POSTGRES_HOST: "{{ postgres_hostname }}"
+          POSTGRES_PASSWORD: "{{ _postgres_password }}"
+          POSTGRES_DATABASE: "{{ _postgres_database }}"
+          POSTGRES_USER: "{{ _postgres_username }}"
+          POSTGRES_PORT: "{{ _postgres_port | string }}"
+          POSTGRES_HOST: "{{ _postgres_hostname }}"
         traefik:
           - port: 22300
+        homer:
+          name: Joplin
+          service: Tools
+          priority: 290
+          subtitle: "Note taking"

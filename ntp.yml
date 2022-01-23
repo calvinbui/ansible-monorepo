@@ -1,0 +1,38 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: ntp
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: cturra/ntp:latest
+        read_only: true
+        tmpfs:
+          - /etc/chrony:rw,mode=1750
+          - /run/chrony:rw,mode=1750
+          - /var/lib/chrony:rw,mode=1750
+        env:
+          NTP_SERVERS: |-
+            {{
+              [
+                "ntp0.cs.mu.OZ.AU",
+                "ntp1.cs.mu.OZ.AU",
+                "0.oceania.pool.ntp.org",
+                "1.oceania.pool.ntp.org",
+                "2.oceania.pool.ntp.org",
+                "3.oceania.pool.ntp.org",
+              ] | join(',')
+            }}
+          LOG_LEVEL: "0"
+        labels:
+          traefik.enable: "true"
+          traefik.udp.routers.ntp.entrypoints: ntp
+          traefik.udp.routers.ntp.service: ntp
+          traefik.udp.services.ntp.loadbalancer.server.port: "123"

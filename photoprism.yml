@@ -5,7 +5,7 @@
   vars:
     application: photoprism
 
-    docker_network: "{{ networks.user }}"
+    docker_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create config folder
@@ -21,7 +21,7 @@
       ansible.builtin.include_role:
         name: mariadb
       vars:
-        mariadb_version: '10'
+        mariadb_version: 10
         mariadb_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           64333365313038396266666464356437313234303330333165386431663537323163383232303532
@@ -46,23 +46,50 @@
             63656639313735346534366364636332653132623639663739386636633461333633346531386165
             6437303836633733620a343136303966643339396562373732623037613463346531383436653733
             39353033323936663964366261646436653339376632306133303131343234303938
+
           PHOTOPRISM_PUBLIC: "false"
           PHOTOPRISM_READONLY: "true"
+
+          PHOTOPRISM_ORIGINALS_LIMIT: "5000"
+
           PHOTOPRISM_UPLOAD_NSFW: "true"
           PHOTOPRISM_DETECT_NSFW: "false"
           PHOTOPRISM_EXPERIMENTAL: "false"
+
           PHOTOPRISM_SITE_URL: "https://{{ application }}.{{ common_tld }}/"
+
           PHOTOPRISM_DATABASE_DRIVER: "mysql"
-          PHOTOPRISM_DATABASE_DSN: "root:{{ mariadb_password }}@tcp({{ mariadb_hostname }}:3306)/photoprism?charset=utf8mb4,utf8&parseTime=true"
+          PHOTOPRISM_DATABASE_DSN: "{{ _mariadb_username }}:{{ _mariadb_password }}@tcp({{ _mariadb_hostname }}:{{ _mariadb_port }})/{{ application }}?charset=utf8mb4,utf8&parseTime=true"
         volumes:
           - "{{ _config_dir.path }}/photoprism:/photoprism/storage"
-          - "{{ common_directory_photos }}:/photoprism/originals:ro"
+          - "{{ common_directory_photos }}:/photoprism/originals"
         traefik:
-          - port: "2342"
+          - port: 2342
+        homer:
+          name: PhotoPrism
+          service: Tools
+          priority: 790
+          subtitle: "Photo management"
+        labels:
+          ofelia.enabled: "true"
 
-    # Nextcloud uses 33:33 (www-data) as the owner of all its files
-    - name: Update photos permissions cronjob
-      ansible.builtin.cron:
-        name: "chown+chmod photos periodically"
-        minute: "*"
-        job: "chown {{ common_user_id }}:33 -R {{ common_directory_photos }} && chmod -R 775 {{ common_directory_photos }}"
+          ofelia.job-exec.photoprism-photo-permissions.user: "0"
+          ofelia.job-exec.photoprism-photo-permissions.schedule: "@every 1m"
+          ofelia.job-exec.photoprism-photo-permissions.command: "sh -c \"chown {{ common_user_id }}:33 -R /photoprism/originals && chmod -R 775 /photoprism/originals\""
+          ofelia.job-exec.photoprism-photo-permissions.tty: "false"
+          ofelia.job-exec.photoprism-photo-permissions.no-overlap: "true"
+
+          # https://dl.photoprism.org/docker/scheduler/jobs.ini
+          ## https://docs.photoprism.org/user-guide/library/originals
+          ofelia.job-exec.photoprism-auto-index.user: "0"
+          ofelia.job-exec.photoprism-auto-index.schedule: "@hourly"
+          ofelia.job-exec.photoprism-auto-index.command: "/photoprism/bin/photoprism index --cleanup"
+          ofelia.job-exec.photoprism-auto-index.tty: "false"
+          ofelia.job-exec.photoprism-auto-index.no-overlap: "true"
+
+          ## https://docs.photoprism.org/user-guide/organize/video/
+          ofelia.job-exec.photoprism-convert.user: "0"
+          ofelia.job-exec.photoprism-convert.schedule: "@daily"
+          ofelia.job-exec.photoprism-convert.command: "/photoprism/bin/photoprism convert"
+          ofelia.job-exec.photoprism-convert.tty: "false"
+          ofelia.job-exec.photoprism-convert.no-overlap: "true"

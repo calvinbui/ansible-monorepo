@@ -25,18 +25,22 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/linuxserver/radarr
+        image: lscr.io/linuxserver/radarr
         volumes:
           - "{{ _config_dir.path }}:/config"
-          - "{{ common_directory_movies }}:/movies"
-          - "{{ common_directory_download }}:/downloads"
+          - "{{ common_directory_storage }}:{{ common_mounted_directory }}"
         env:
-          PUID: "{{ common_user_id }}"
-          PGID: "{{ common_root_group }}"
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_root_group | string }}"
           TZ: "{{ common_timezone }}"
         traefik:
           - port: 7878
-            auth: true
+            auth: basic
+        homer:
+          name: Radarr
+          service: Download
+          priority: 780
+          subtitle: "Manage and download movies"
 
     - name: Wait for config
       ansible.builtin.wait_for:

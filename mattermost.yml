@@ -7,6 +7,10 @@
 
     docker_network: "{{ networks.pub }}"
 
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
   tasks:
     - name: Create config directory
       ansible.builtin.file:
@@ -21,7 +25,7 @@
       ansible.builtin.include_role:
         name: postgres
       vars:
-        postgres_version: '12'
+        postgres_version: 13
         postgres_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           66636138626433383439313439353435373036616161646536333333363464383163336361613931
@@ -49,7 +53,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: mattermost/mattermost-team-edition:5
+        image: mattermost/mattermost-team-edition:master
         volumes:
           - "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}:/mattermost/config"
           - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/mattermost/data"
@@ -58,13 +62,55 @@
           - "{{ _dir.results | selectattr('item', 'match', 'client-plugins') | flatten | map(attribute='path') | first }}:/mattermost/client/plugins"
           - /etc/localtime:/etc/localtime:ro
         env:
-          # set same as db credentials and dbname
-          MM_USERNAME: "{{ postgres_username }}"
-          MM_PASSWORD: "{{ postgres_password }}"
-          MM_DBNAME: "{{ postgres_database }}"
-          DB_HOST: "{{ postgres_hostname }}"
-          DB_PORT_NUMBER: "5432"
-          MM_SQLSETTINGS_DRIVERNAME: postgres
-          MM_SQLSETTINGS_DATASOURCE: "postgres://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}?sslmode=disable&connect_timeout=10"
+          TZ: "{{ common_timezone }}"
         traefik:
-          - port: "8065"
+          - port: 8065
+        homer:
+          name: Mattermost
+          service: Collaboration
+          priority: 890
+          subtitle: "Online chat"
+
+    - name: Configure
+      json_patch:
+        src: "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}/config.json"
+        pretty: true
+        operations:
+          - op: add
+            path: "{{ item.key }}"
+            value: "{{ item.value }}"
+      loop: "{{ _mattermost_configuration | dict2items }}"
+      notify: Restart
+      vars:
+        _mattermost_configuration:
+          # https://docs.mattermost.com/configure/configuration-settings.html#site-url
+          ServiceSettings/SiteURL: "https://{{ application }}.{{ common_tld }}"
+          ServiceSettings/ListenAddress: ":8065"
+
+          # https://docs.mattermost.com/configure/configuration-settings.html#gif-beta
+          ServiceSettings/GfycatAPIKey: 2_KtH_W5
+          ServiceSettings/GfycatAPISecret: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            65643537393431656563343363343934636365373239653739323839343239353865343361653336
+            6634393162613934303232646133626132633538356638360a656465626565316665623335323436
+            31626162333462653364316335633561373562386131646431616430333236393732353935363337
+            3163336539393837620a356161633432343339616436666439616235333538613739313666373531
+            62383533636265313131613264323863373461353363346230353864643866323932336666633362
+            32353139333561643134663739326434303237363833393165373436386533656365343133663536
+            30656230613466323433333433363132363637653364663738336438666432343430363133633635
+            31633136353764366266
+
+          # https://docs.mattermost.com/configure/configuration-settings.html#database
+          SqlSettings/DriverName: postgres
+          SqlSettings/DataSource: "{{ _postgres_url }}?sslmode=disable&connect_timeout=10"
+
+          LogSettings/ConsoleLevel: "INFO"
+
+          # https://docs.mattermost.com/configure/configuration-settings.html#smtp
+          # https://docs.mattermost.com/configure/smtp-email.html#gmail
+          EmailSettings/SMTPServer: "{{ common_email_server }}"
+          EmailSettings/SMTPPort: "{{ common_email_smtp_port | string }}"
+          EmailSettings/ConnectionSecurity: "STARTTLS"
+          EmailSettings/EnableSMTPAuth: true
+          EmailSettings/SMTPUsername: "{{ common_email_username }}"
+          EmailSettings/SMTPPassword: "{{ common_email_password }}"

@@ -1,232 +1,77 @@
 ---
 
-http_services:
-  ####################################################
-  #
-  #                    DOWNLOADS
-  #
-  ####################################################
-  - name: NZBGet
-    logo: nzbget.png
-    subtitle: Downloads Files From Usenet
-    url: https://nzbget.{{ common_tld }}
-    group: "Download"
-  - name: qBittorrent
-    logo: qbittorrent.svg
-    subtitle: Download Torrents
-    url: https://qbittorrent.{{ common_tld }}
-    group: "Download"
-  - name: JDownloader
-    logo: jdownloader.png
-    subtitle: Download Management Tool
-    url: https://jdownloader.{{ common_tld }}
-    group: "Download"
-  - name: NZBHydra
-    logo: nzbhydra.png
-    subtitle: Meta Search For Nzb Indexers
-    url: https://nzbhydra.{{ common_tld }}
-    group: "Download"
-  - name: Sonarr
-    logo: sonarr.png
-    subtitle: Manages and Downloads TV Shows
-    url: https://sonarr.{{ common_tld }}
-    group: "Download"
-  - name: Radarr
-    logo: radarr.png
-    subtitle: Manages and Downloads Movies
-    url: https://radarr.{{ common_tld }}
-    group: "Download"
-  - name: Bazarr
-    logo: bazarr.png
-    subtitle: Manages and Downloads Subtitles
-    url: https://bazarr.{{ common_tld }}
-    group: "Download"
+# for Homer/Prometheus to add non-dockerised/discovered services
 
-  ####################################################
-  #
-  #                    TOOLS
-  #
-  ####################################################
-  - name: Blue Iris
-    logo: blueiris.png
-    subtitle: Surveillance Cameras
-    url: https://blueiris.{{ common_tld }}
-    group: "Tools"
-  - name: Bookstack
-    logo: bookstack.png
-    subtitle: Documentation and Wiki
-    url: https://bookstack.{{ common_tld }}
-    group: "Tools"
-  - name: Hauk
-    logo: hauk.png
-    subtitle: Location Sharing
-    url: https://hauk.{{ common_tld }}
-    group: "Tools"
-  - name: Bitwarden
-    logo: bitwarden.png
-    subtitle: Password Management
-    url: https://bitwarden.{{ common_tld }}
-    group: "Tools"
-  - name: OctoPrint
-    logo: octoprint.png
-    subtitle: 3D Print Controller
-    url: https://octopi.{{ common_local_tld }}
-    group: "Tools"
-  - name: Huginn
-    logo: huginn.png
-    subtitle: Web-based Scheduler
-    url: https://huginn.{{ common_tld }}
-    group: "Tools"
-  - name: Joplin
-    logo: joplin.svg
-    subtitle: Note taking
-    url: https://joplin.{{ common_tld }}/login
-    group: "Tools"
-  - name: Papermerge
-    logo: papermerge.svg
-    subtitle: Document Management System
-    url: https://papermerge.{{ common_tld }}
-    group: "Tools"
-  - name: PhotoPrism
-    logo: photoprism.png
-    subtitle: Personal Photo Management
-    url: https://photoprism.{{ common_tld }}
-    group: "Tools"
+services:
+  - group: Download
+    homer_icon: fas fa-cloud-download-alt
+    items: []
 
-  ####################################################
-  #
-  #                    SHARING
-  #
-  ####################################################
-  - name: Plex
-    logo: plex.png
-    subtitle: Media Server
-    url: https://plex.{{ common_tld }}
-    group: "Sharing"
-  - name: PsiTransfer
-    icon: fas fa-cloud-upload-alt
-    subtitle: File Sharing
-    url: https://share.{{ common_tld }}
-    group: "Sharing"
-  - name: File Browser
-    logo: filebrowser.svg
-    subtitle: Web File Browser
-    url: https://filebrowser.{{ common_tld }}
-    group: "Sharing"
-  - name: PrivateBin
-    logo: privatebin.png
-    subtitle: Zero Knowledge Pastebin
-    url: https://privatebin.{{ common_tld }}
-    group: "Sharing"
-  - name: MovieNight
-    logo: movienight.png
-    subtitle: Video streaming server
-    url: https://movienight.{{ common_tld }}
-    group: "Sharing"
-  - name: Shlink
-    logo: shlink.png
-    subtitle: Url Shortener
-    url: https://shlink.{{ common_tld }}
-    group: "Sharing"
+  - group: Collaboration
+    homer_icon: fas fa-people-carry
+    items:
+      -
+        name: JIRA
+        logo: jira.svg
+        subtitle: Project management
+        url: https://thingstodo.atlassian.net
+        priority: 790
+        monitor: false
 
-  ####################################################
-  #
-  #                    COLLABORATION
-  #
-  ####################################################
-  - name: Nextcloud
-    logo: nextcloud.png
-    subtitle: File Sharing and Communication Platform
-    url: https://nextcloud.{{ common_tld }}
-    group: "Collaboration"
-  - name: Mattermost
-    logo: mattermost.png
-    subtitle: Online Chat
-    url: https://mattermost.{{ common_tld }}
-    group: "Collaboration"
-  - name: JIRA
-    logo: jira.svg
-    subtitle: Issue Tracking
-    url: https://thingstodo.atlassian.net
-    group: "Collaboration"
-    excludeMonitoring: ~
+  - group: Sharing
+    homer_icon: fas fa-people-arrows
+    items: []
 
+  - group: Tools
+    homer_icon: fas fa-tools
+    items:
+      -
+        name: OctoPrint
+        logo: octoprint.png
+        subtitle: 3D printing controller
+        url: https://octopi.{{ common_local_tld }}
+        priority: 890
+        monitor: false
+      -
+        name: OctoPrint Webcam
+        icon: fas fa-camera-retro
+        subtitle: Direct link to OctoPrint webcam
+        url: https://octopi.{{ common_local_tld }}/webcam/?action=stream
+        priority: 880
+        monitor: false
 
-  ####################################################
-  #
-  #                    MONITORING
-  #
-  ####################################################
-  - name: Prometheus
-    logo: prometheus.png
-    subtitle: Monitoring system
-    url: https://prometheus.{{ common_tld }}
-    group: "Monitoring"
-  - name: Alertmanager
-    logo: alertmanager.png
-    subtitle: Alerting
-    url: https://alertmanager.{{ common_tld }}
-    group: "Monitoring"
-  - name: Grafana
-    logo: grafana.png
-    subtitle: Dashboards
-    url: https://grafana.{{ common_tld }}
-    group: "Monitoring"
-  - name: zfswatcher
-    logo: zfswatcher.png
-    subtitle: ZFS pool monitoring and notification daemon
-    url: https://zfswatcher.{{ common_tld }}
-    group: "Monitoring"
-  - name: scrutiny
-    logo: scrutiny.png
-    subtitle: WebUI for smartd S.M.A.R.T monitoring
-    url: https://scrutiny.{{ common_tld }}
-    group: "Monitoring"
-  - name: umami
-    logo: umami.svg
-    subtitle: Web Analytics
-    url: https://umami.{{ common_tld }}
-    group: "Monitoring"
+  - group: Monitoring
+    homer_icon: fas fa-chart-area
+    items: []
 
-  ####################################################
-  #
-  #                    INFRASTRUCTURE
-  #
-  ####################################################
-  - name: OPNsense
-    logo: opnsense.png
-    subtitle: Firewall and Routing
-    url: https://opnsense.{{ common_local_tld }}
-    group: "Infrastructure"
-    excludeMonitoring: ~
-  - name: Guacamole
-    logo: guacamole.png
-    subtitle: Clientless Remote Desktop Gateway
-    url: https://guacamole.{{ common_tld }}
-    group: "Infrastructure"
-  - name: Portainer
-    logo: portainer.png
-    subtitle: Docker Management
-    url: https://portainer.{{ common_tld }}
-    group: "Infrastructure"
-  - name: Traefik
-    logo: traefik.png
-    subtitle: Cloud Native Edge Router
-    url: https://traefik.{{ common_tld }}
-    group: "Infrastructure"
-  - name: Unifi
-    logo: unifi.png
-    subtitle: Unifi Controller
-    url: https://unifi.{{ common_local_tld }}:8443
-    group: "Infrastructure"
-  - name: Homelab IPMI
-    url: https://homelab-ipmi.{{ common_local_tld }}
-    logo: ipmi.png
-    subtitle: Supermicro IPMI
-    group: "Infrastructure"
-  - name: BorgBase
-    logo: borgmatic.png
-    subtitle: Hosting For Borg Backup Repos
-    url: https://www.borgbase.com
-    group: "Infrastructure"
-    excludeMonitoring: ~
+  - group: Infrastructure
+    homer_icon: fas fa-server
+    items:
+      -
+        name: OPNsense
+        logo: opnsense.png
+        subtitle: Firewall and router
+        url: https://opnsense-web.{{ common_local_tld }}
+        priority: 990
+        monitor: true
+      -
+        name: Juniper EX3300-48P
+        logo: juniper.png
+        subtitle: Network switch
+        url: http://switch.{{ common_local_tld }}
+        priority: 980
+        monitor: true
+      -
+        name: Homelab IPMI
+        url: https://homelab-ipmi.{{ common_local_tld }}
+        logo: ipmi.png
+        subtitle: Supermicro IPMI
+        priority: 490
+        monitor: true
+      -
+        name: BorgBase
+        logo: borgmatic.svg
+        subtitle: Hosting For BorgBackup
+        url: https://www.borgbase.com
+        priority: 290
+        monitor: false

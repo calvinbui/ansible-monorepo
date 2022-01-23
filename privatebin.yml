@@ -12,18 +12,11 @@
       ansible.builtin.command: docker restart "{{ application }}"
 
   tasks:
-    - name: Install jmespath locally
-      ansible.builtin.pip:
-        name: jmespath
-        executable: pip3
-      delegate_to: localhost
-      become_user: "{{ common_user }}"
-
     - name: Create config folders
       ansible.builtin.file:
         path: "{{ config_directory }}"
         state: directory
-        mode: '0700'
+        mode: "0700"
         owner: nobody
         group: "82"  # nobody in alpine
       register: _config_dir
@@ -32,7 +25,7 @@
       ansible.builtin.file:
         path: "{{ _config_dir.path }}/{{ item }}"
         state: directory
-        mode: '0700'
+        mode: "0700"
         owner: nobody
         group: "82"  # nobody in alpine
       loop:
@@ -40,20 +33,31 @@
         - data
       register: _dir
 
-    - name: Get URL shortener key
-      ansible.builtin.slurp:
-        src: "{{ common_directory }}/shlink/web-client/servers.json"
-      register: _url_shortener_config
+    - name: Install jmespath locally
+      ansible.builtin.pip:
+        name: jmespath
+        executable: pip3
+      delegate_to: localhost
+      become: false
+      become_user: "{{ common_user }}"
 
     - name: Set URL shortener value
       ansible.builtin.set_fact:
-        _url_shortener_value: "https://{{ common_short_tld }}/rest/v1/short-urls/shorten?apiKey={{ _url_shortener_config['content'] | b64decode | from_json | first | json_query('apiKey') }}&format=txt&longUrl="
+        _url_shortener_value: "https://{{ common_short_tld }}/api/v2/action/shorten?key={{ _url_shortener_api_key }}&response_type=json&url="
+      vars:
+        _url_shortener_api_key: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          38656636313235376564646266386163626439346430333036656439643463613037626132646161
+          6233306532656665393765303531363137636136383064390a303237386363623264306135326435
+          64623330656534353037613862386530323336323236356539353935313063346338626132363164
+          3230396331646637360a646536313332353638663766633866376633396465356533636632333231
+          62353464613531643431333665323631386530376365393332663131663032343735
 
     - name: Template config
       ansible.builtin.template:
         src: "{{ files_directory }}/conf.php.j2"
         dest: "{{ _dir.results | selectattr('item', 'match', 'cfg') | flatten | map(attribute='path') | first }}/conf.php"
-        mode: '0644'
+        mode: "0644"
         owner: nobody
         group: "82"
       notify: Restart
@@ -67,4 +71,9 @@
           - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/srv/data"
           - "{{ _dir.results | selectattr('item', 'match', 'cfg') | flatten | map(attribute='path') | first }}:/srv/cfg"
         traefik:
-          - port: "8080"
+          - port: 8080
+        homer:
+          name: PrivateBin
+          service: Sharing
+          priority: 790
+          subtitle: "Zero knowledge pastebin"

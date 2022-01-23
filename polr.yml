@@ -1,0 +1,94 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: polr
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config directory
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_group_id }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create mariadb container
+      ansible.builtin.include_role:
+        name: mariadb
+      vars:
+        mariadb_version: 10
+        mariadb_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          38656365626264363335636631333233666139353539343830613135616439313063383334326438
+          3362326165313130663265336166646162303132363961300a353365623239353430326635666131
+          36323938336637346237623330633937343134343730353035303735663731306539643465386364
+          3035663661396338360a326262373836636433626536383966653037356630393763363337663365
+          34303963653163323530303766303737633333616162326337643639316237333733353730386432
+          3535636531613238363937636364656433393532393138333861
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: ajanvier/polr:latest
+        # https://github.com/ajanvier/docker-polr#environment-variables
+        env:
+          DB_CONNECTION: "mysql"
+          DB_HOST: "{{ _mariadb_hostname }}"
+          DB_PORT: "{{ _mariadb_port | string }}"
+          DB_DATABASE: "{{ _mariadb_database }}"
+          DB_USERNAME: "{{ _mariadb_username }}"
+          DB_PASSWORD: "{{ _mariadb_password }}"
+
+          APP_NAME: "{{ application | capitalize }}"
+          APP_PROTOCOL: "https://"
+          APP_ADDRESS: "{{ common_short_tld }}"
+
+          ADMIN_USERNAME: "admin"
+          ADMIN_PASSWORD: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            32313066616634653738653266616366353230656365383962383539363335346662316561663561
+            3961653230616431643565636135663965633430303434330a396162316362613234343930336539
+            39633963336566323830333065373038363333373038613662386465643437376231623963396532
+            6339646431656538300a373566663834323562353166373330626661663131663538316463613264
+            37636131383235343337323262333639656137613335393161633532336665666438616533343035
+            65663535646635373331353134383535306434323961373763623063326461326565306665343266
+            62366164346135663532323838373134636130623435373332303133623432636236616165363337
+            32353965373135393231
+          ADMIN_EMAIL: "{{ application }}{{ common_email_to }}"
+
+          MAIL_HOST: "{{ common_email_server }}"
+          MAIL_PORT: "{{ common_email_smtp_port | string }}"
+          MAIL_USERNAME: "{{ common_email_username }}"
+          MAIL_PASSWORD: "{{ common_email_password }}"
+          MAIL_FROM_ADDRESS: "{{ common_email_username }}"
+          MAIL_FROM_NAME: "{{ application }}"
+
+          SETTING_PSEUDORANDOM_ENDING: "true"
+          SETTING_ADV_ANALYTICS: "true"
+          SETTING_SHORTEN_PERMISSION: "true"
+          SETTING_ANON_API: "false"
+
+          POLR_ALLOW_ACCT_CREATION: "false"
+        traefik:
+          - port: 8080
+            rule: "Host(`{{ common_short_tld }}`)"
+        # block ability to guess shortened urls
+        labels:
+          '{
+            "traefik.http.routers.{{ application }}-secure.middlewares": "{{ application }}-lookup-block",
+            "traefik.http.middlewares.{{ application }}-lookup-block.replacepathregex.regex": "^/api/v2/action/lookup(.*)",
+            "traefik.http.middlewares.{{ application }}-lookup-block.replacepathregex.replacement": "/"
+          }'
+        blackbox:
+          path: /about-polr
+        homer:
+          name: Polr
+          service: Sharing
+          priority: 690
+          subtitle: "URL shortener"

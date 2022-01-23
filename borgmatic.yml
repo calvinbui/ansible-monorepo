@@ -5,11 +5,11 @@
 # Init the backup with:
 # $ docker exec borgmatic sh -c "borgmatic --init --encryption repokey-blake2"
 #
-# Extract the encryption key with:
+# (if required) Extract the encryption key with:
 # $ borg key export /mnt/destination
 #
 # Start a backup with:
-# $ borgmatic --stats
+# $ borgmatic --stats --files --progress
 #
 # Restore a backup with:
 # $ borgmatic extract
@@ -20,56 +20,61 @@
     application: borgmatic
 
     borgmatic_backups:
+      - name: backups
+        source: "{{ common_directory_backup }}"
+        crontab: "30 1 * * *"
+        repository: azy1uocs@azy1uocs.repo.borgbase.com:repo
+
       - name: misc
         source: "{{ common_directory_misc }}"
         crontab: "0 2 * * *"
         repository: q09177h4@q09177h4.repo.borgbase.com:repo
-        compression: lz4
 
       - name: work
         source: "{{ common_directory_storage }}/Work"
         crontab: "30 2 * * *"
         repository: lh782u97@lh782u97.repo.borgbase.com:repo
-        compression: none
 
       - name: photos
         source: "{{ common_directory_photos }}"
         crontab: "30 3 * * *"
         repository: g0h7y7az@g0h7y7az.repo.borgbase.com:repo
-        compression: none
 
       - name: apps
         source: "{{ common_directory }}"
         crontab: "0 3 * * *"
         repository: y8p6ha46@y8p6ha46.repo.borgbase.com:repo
-        compression: lz4
         exclude_patterns:
-          - '/mnt/source/languagetool'
+          - "/mnt/source/languagetool"
 
-          - '/mnt/source/nextcloud/nextcloud/app/data/*/cache'
-          - '/mnt/source/nextcloud/nextcloud/build'
+          - "/mnt/source/nextcloud/nextcloud/app/data/*/cache"
+          - "/mnt/source/nextcloud/nextcloud/build"
 
-          - '/mnt/source/jellyfin'
+          - "/mnt/source/jellyfin"
 
-          - '/mnt/source/unifi/data/backup'
-          - '/mnt/source/unifi/data/db/diagnostic.data'
+          - "/mnt/source/unifi/data/backup"
+          - "/mnt/source/unifi/data/db/diagnostic.data"
 
-          - '/mnt/source/photoprism/photoprism/cache'
+          - "/mnt/source/photoprism/photoprism/cache"
 
-          - '/mnt/source/monitoring/prometheus/data'
+          - "/mnt/source/monitoring/prometheus/data"
 
-          - '/mnt/source/nzbhydra/backup'
+          - "/mnt/source/nzbhydra/backup"
 
-          - '/mnt/source/*/*/log'
-          - '/mnt/source/*/*/log.*'
-          - '/mnt/source/*/*/logs'
-          - '/mnt/source/*/*/logs.*'
-          - '/mnt/source/*/logs'
-          - '/mnt/source/*/logs.*'
-          - '/mnt/source/*/log'
-          - '/mnt/source/*/log.*'
-          - '/mnt/source/*/*.log'
-          - '/mnt/source/*/*.log.*'
+          - "/mnt/source/libretranslate/LibreTranslate"
+          - "/mnt/source/libretranslate/argos-translate"
+          - "/mnt/source/libretranslate/cache"
+
+          - "/mnt/source/*/*/log"
+          - "/mnt/source/*/*/log.*"
+          - "/mnt/source/*/*/logs"
+          - "/mnt/source/*/*/logs.*"
+          - "/mnt/source/*/logs"
+          - "/mnt/source/*/logs.*"
+          - "/mnt/source/*/log"
+          - "/mnt/source/*/log.*"
+          - "/mnt/source/*/*.log"
+          - "/mnt/source/*/*.log.*"
 
     borgmatic_pass: !vault |
       $ANSIBLE_VAULT;1.1;AES256
@@ -90,7 +95,7 @@
       38386630306635626434366464386234343265333230303965303239323366386565336130306639
       65633139313433323530
 
-    docker_network: "{{ networks.mgmt }}"
+    docker_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create Borgmatic directories
@@ -107,7 +112,7 @@
         repo: https://github.com/borgbackup/borg
         clone: true
         dest: "{{ _config_dir.path }}/borgbackup"
-        version: "1.1.16"
+        version: "1.1.17"
 
     - name: "Create directories"
       ansible.builtin.file:
@@ -116,7 +121,7 @@
         mode: "0744"
       with_nested:
         - "{{ borgmatic_backups }}"
-        - ['config', 'borgmatic.d', 'ssh', 'cache']
+        - ["config", "borgmatic.d", "ssh", "cache"]
 
     - name: "Template configuration"
       ansible.builtin.template:
@@ -142,14 +147,14 @@
         dest: "{{ _config_dir.path }}/{{ item.name }}/ssh/"
         owner: root
         group: root
-        mode: '0600'
+        mode: "0600"
       loop: "{{ borgmatic_backups }}"
 
     - name: Template notification script
       ansible.builtin.template:
         src: "{{ files_directory }}/notifications.sh.j2"
         dest: "{{ _config_dir.path }}/{{ item.name }}/borgmatic.d/notifications.sh"
-        mode: '0500'
+        mode: "0500"
       loop: "{{ borgmatic_backups }}"
 
     - name: Create container
@@ -157,7 +162,7 @@
         name: docker_container
       vars:
         name: "borgmatic-{{ item.name }}"
-        image: b3vis/borgmatic
+        image: b3vis/borgmatic@sha256:21ce074d6a42c092ba6359ba58cab0db516eb862d7e937bdd3c518a7aee5d919
         volumes:
           # data to backup. dont mount as ro when a restore is needed
           - "{{ item.source }}:/mnt/source:ro"

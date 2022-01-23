@@ -13,7 +13,7 @@
         update_cache: true
         cache_valid_time: 600
       changed_when: false
-      when: ansible_distribution == 'Ubuntu'
+      when: ansible_distribution == "Ubuntu"
 
     - name: Create config folder
       ansible.builtin.file:
@@ -34,7 +34,7 @@
       ansible.builtin.include_role:
         name: postgres
       vars:
-        postgres_version: '12'
+        postgres_version: 13
         postgres_directory_extra:
           - "{{ _config_dir.path }}/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql:ro"
         postgres_password: !vault |
@@ -65,12 +65,19 @@
         env:
           GUACD_HOSTNAME: "{{ application }}-guacd.{{ docker_network.name }}"
           GUACD_LOG_LEVEL: debug
-          POSTGRES_HOSTNAME: "{{ postgres_hostname }}"
-          POSTGRES_DATABASE: "{{ postgres_database }}"
-          POSTGRES_USER: "{{ postgres_username }}"
-          POSTGRES_PASSWORD: "{{ postgres_password }}"
+          POSTGRES_HOSTNAME: "{{ _postgres_hostname }}"
+          POSTGRES_DATABASE: "{{ _postgres_database }}"
+          POSTGRES_USER: "{{ _postgres_username }}"
+          POSTGRES_PASSWORD: "{{ _postgres_password }}"
         traefik:
           - port: 8080
+        homer:
+          name: Guacamole
+          service: Infrastructure
+          priority: 890
+          subtitle: "Remote access"
         labels:
-          traefik.http.routers.guacamole-secure.middlewares: "guacamole-addprefix"
-          traefik.http.middlewares.guacamole-addprefix.addprefix.prefix: "/guacamole"
+          '{
+            "traefik.http.routers.{{ application }}-secure.middlewares": "{{ application }}-addprefix",
+            "traefik.http.middlewares.{{ application }}-addprefix.addprefix.prefix": "/guacamole"
+          }'

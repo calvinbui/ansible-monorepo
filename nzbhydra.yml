@@ -132,17 +132,21 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/linuxserver/nzbhydra2
+        image: lscr.io/linuxserver/nzbhydra2
         volumes:
           - "{{ _config_dir.path }}:/config"
-          - "{{ common_directory_download }}:/downloads"
         env:
-          PUID: "{{ common_user_id }}"
-          PGID: "{{ common_group_id }}"
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_group_id | string }}"
           TZ: "{{ common_timezone }}"
         traefik:
           - port: 5076
-            auth: true
+            auth: basic
+        homer:
+          name: NZBHydra 2
+          service: Download
+          priority: 890
+          subtitle: "Usenet meta search"
       register: _docker_container
 
     # General config
@@ -159,6 +163,7 @@
         value: "{{ item.value }}"
         state: present
       loop: "{{ _nzbhydra_config | dict2items }}"
+      become: false
       become_user: "{{ common_user }}"
       notify: Restart
       vars:
@@ -185,6 +190,7 @@
         key: "downloading.downloaders"
         value: "{{ _nzbhydra_downloaders | to_yaml }}"
         state: present
+      become: false
       become_user: "{{ common_user }}"
       vars:
         _nzbhydra_downloaders:
@@ -204,6 +210,7 @@
         key: "indexers"
         state: list
       register: nzbhydra_configured_indexers
+      become: false
       become_user: "{{ common_user }}"
 
     - name: Init indexers configuration list vars for internal use
@@ -226,7 +233,7 @@
         index_var: nzbhydra_indexer_index
 
     - name: Find indexers to delete
-      debug:
+      ansible.builtin.debug:
         msg: |
           "Downloader indexes in vars: {{ nzbhydra_var_indexers_index }}"
           "Downloader indexes in nzbhydra2.yml: {{ nzbhydra_configured_indexers_index }}"
@@ -237,6 +244,7 @@
         src: "{{ _config_dir.path }}/nzbhydra.yml"
         key: "indexers[{{ item }}]"
         state: absent
+      become: false
       become_user: "{{ common_user }}"
       loop: "{{ nzbhydra_configured_indexers_index | difference(nzbhydra_var_indexers_index) | sort(reverse=true) }}"
       when: nzbhydra_configured_indexers_index | difference(nzbhydra_var_indexers_index) | length > 0

@@ -5,7 +5,7 @@
   vars:
     application: prometheus
 
-    docker_network: "{{ networks.mgmt }}"
+    docker_network: "{{ networks.user }}"
 
   handlers:
     - name: Restart
@@ -16,7 +16,7 @@
       ansible.builtin.file:
         path: "{{ config_directory }}"
         state: directory
-        owner: "65534" # nobody user
+        owner: "65534"  # nobody user
         group: "{{ common_group }}"
         mode: "0771"
       register: _config_dir
@@ -25,7 +25,7 @@
       ansible.builtin.file:
         path: "{{ _config_dir.path }}/{{ item }}"
         state: directory
-        owner: "65534" # nobody user
+        owner: "65534"  # nobody user
         group: "{{ common_group }}"
         mode: "0771"
       loop:
@@ -38,18 +38,20 @@
       ansible.builtin.copy:
         src: "{{ files_directory }}/rules/"
         dest: "{{ _dir.results | selectattr('item', 'match', 'rules') | flatten | map(attribute='path') | first }}/"
-        owner: "65534" # nobody user
+        owner: "65534"  # nobody user
         group: "{{ common_group }}"
         mode: "0444"
+        validate: "docker run --rm --name {{ application }}_config_check -v %s:/tmp/rule.yml --entrypoint /bin/promtool prom/prometheus:latest check rules /tmp/rule.yml"
       notify: Restart
 
     - name: Template configs
       ansible.builtin.template:
         src: "{{ files_directory }}/prometheus.yml.j2"
         dest: "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}/prometheus.yml"
-        owner: "65534" # nobody user
+        owner: "65534"  # nobody user
         group: "{{ common_group }}"
         mode: "0444"
+        validate: "docker run --rm --name {{ application }}_config_check -v %s:/tmp/config.yml --entrypoint /bin/promtool prom/prometheus:latest check config /tmp/config.yml"
       notify: Restart
 
     - name: Create container
@@ -75,9 +77,18 @@
           - "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}:/etc/prometheus"
           - "{{ _dir.results | selectattr('item', 'match', 'rules') | flatten | map(attribute='path') | first }}:/rules"
           - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/prometheus"
-          - "{{ _config_dir.path }}/prometheus-docker-sd:/prometheus-docker-sd:ro"
+          - "{{ _config_dir.path }}/prometheus-traefik-sd:/prometheus-traefik-sd:ro"
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+        user: root:root
         traefik:
           - port: 9090
-            auth: true
+            auth: page
+        homer:
+          name: Prometheus
+          service: Monitoring
+          priority: 990
+          subtitle: "Monitoring system"
+        metrics:
+          - port: 9090
         comparisons:
           labels: allow_more_present

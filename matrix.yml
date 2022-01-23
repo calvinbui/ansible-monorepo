@@ -1,0 +1,218 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: matrix
+
+    docker_network: "{{ networks.pub }}"
+
+    synapse_config:
+      # general
+      public_baseurl: "https://{{ application }}.{{ common_tld }}"
+
+      # privacy
+      require_auth_for_profile_requests: "true"
+      limit_profile_requests_to_users_who_share_rooms: "true"
+      include_profile_data_on_invite: "false"
+      allow_public_rooms_without_auth: "false"
+      allow_public_rooms_over_federation: "false"
+
+      # security
+      block_non_admin_invites: "true"
+      turn_allow_guests: "false"
+      enable_registration: "false"
+      allow_guest_access: "false"
+
+      # caching
+      event_cache_size: "100K"
+
+      # database
+      database.name: "psycopg2"
+      database.args.host: "{{ _postgres_hostname }}"
+      database.args.port: "{{ _postgres_port | string }}"
+      database.args.database: "{{ _postgres_database }}"
+      database.args.user: "{{ _postgres_username }}"
+      database.args.password: "{{ _postgres_password }}"
+
+      # email
+      email.smtp_host: "{{ common_email_server }}"
+      email.smtp_port: "{{ common_email_smtp_port | string }}"
+      email.enable_tls: "true"
+      email.smtp_user: "{{ common_email_username }}"
+      email.smtp_pass: "{{ common_email_password }}"
+      email.notif_from: "{{ application | capitalize }} <{{ application }}{{ common_email_to }}>"
+      email.app_name: "{{ application | capitalize }}"
+      email.enable_notifs: "true"
+      email.client_base_url: "https://{{ application }}.{{ common_tld }}"
+
+      # media store
+      url_preview_enabled: "true"
+
+      # rooms
+      enable_group_creation: "false"
+      enable_room_list_search: "true"
+
+      # workers
+      redis.enabled: "true"
+      redis.host: "{{ _redis_hostname }}"
+      redis.port: "{{ _redis_port | string }}"
+      redis.password: "{{ _redis_password }}"
+
+      url_preview_ip_range_blacklist:
+        - '127.0.0.0/8'
+        - '10.0.0.0/8'
+        - '172.16.0.0/12'
+        - '192.168.0.0/16'
+        - '100.64.0.0/10'
+        - '192.0.0.0/24'
+        - '169.254.0.0/16'
+        - '192.88.99.0/24'
+        - '198.18.0.0/15'
+        - '192.0.2.0/24'
+        - '198.51.100.0/24'
+        - '203.0.113.0/24'
+        - '224.0.0.0/4'
+        - '::1/128'
+        - 'fe80::/10'
+        - 'fc00::/7'
+        - '2001:db8::/32'
+        - 'ff00::/8'
+        - 'fec0::/10'
+
+  handlers:
+    - name: Restart Synapse
+      ansible.builtin.command: docker restart "{{ application }}-synapse"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create synapse postgres container
+      ansible.builtin.include_role:
+        name: postgres
+      vars:
+        postgres_name: "{{ application }}-synapse-postgres"
+        postgres_directory: "{{ config_directory }}/synapse-postgres"
+        postgres_version: 14
+        postgres_initdb_args: "--lc-collate C --lc-ctype C --encoding UTF8"
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          62376335386261663130663731336339323037306231363532616363326164366263376135343663
+          3664373164333932303861666566663066626566333262320a376437393437353562663438353637
+          34383738396363333136636164613934373565303938336461613761666630383863353936343164
+          6363663835363262300a313861313662616136393330313164356534396236653465613630396263
+          32376262363839303133346230306166396237646133346464623165626539353964353361623461
+          32616133633961376666336132333333326461383530653730646535336537653738353838656533
+          35346130613335616465326164373665393439336236356138316361353731653539373264326632
+          65653764386639383363
+
+    - name: Create synapse redis container
+      ansible.builtin.include_role:
+        name: redis
+      vars:
+        redis_name: "{{ application }}-synapse-redis"
+        redis_directory: "{{ config_directory }}/synapse-redis"
+        redis_version: 6
+        redis_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          32643134393765663065666337346561336231316238333235336335346432393637333136393034
+          3935316634393366306538663134663534393033333839650a316436323030323736393131653235
+          63643836636230303038343435353931663561306532323136306666623232306565316137393134
+          3638643933663634620a326235326139323463343961626338613066356134343339623265343765
+          34343339326537643064663464323465623266323832376238336438356431383766366339373162
+          30613534373837303037356464656330316637336331326138623038333632613664353636623531
+          36303834323764326339626162346639666562396663626530333035363361373536313165306434
+          31623762363435356463
+
+    - name: Check for config
+      ansible.builtin.stat:
+        path: "{{ config_directory }}/synapse-data/homeserver.yaml"
+      register: __synapse_config
+
+    - name: Generate synapse config
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-synapse-generate-config"
+        image: matrixdotorg/synapse:v1.46.0
+        command:
+          - generate
+        env:
+          SYNAPSE_SERVER_NAME: "{{ application }}.{{ common_tld }}"
+          SYNAPSE_REPORT_STATS: "no"
+          TZ: "{{ common_timezone }}"
+        volumes:
+          - "{{ config_directory }}/synapse-data:/data"
+        auto_remove: true
+        restart_policy: "no"
+      when: not __synapse_config.stat.exists
+
+    - name: Wait for config
+      ansible.builtin.wait_for:
+        path: "{{ config_directory }}/synapse-data/homeserver.yaml"
+        state: present
+
+    - name: Update config
+      yedit:
+        src: "{{ config_directory }}/synapse-data/homeserver.yaml"
+        key: "{{ item.key }}"
+        value: "{{ item.value }}"
+        state: present
+      loop: "{{ synapse_config | dict2items }}"
+      notify: Restart Synapse
+
+    - name: Set permissions on homeserver.yaml
+      ansible.builtin.file:
+        path: "{{ config_directory }}/synapse-data/homeserver.yaml"
+        owner: "991"
+        group: "991"
+      notify: Restart Synapse
+
+    - name: Create Synapse container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-synapse"
+        image: matrixdotorg/synapse:v1.46.0
+        env:
+          TZ: "{{ common_timezone }}"
+        volumes:
+          - "{{ config_directory }}/synapse-data:/data"
+        traefik:
+          - port: 8008
+            rule: Host(`{{ application }}.{{ common_tld }}`)
+        homer:
+          name: Synapse
+          service: Collaboration
+          priority: 880
+          subtitle: "Matrix chat"
+
+    - name: Check if admin user has been created
+      ansible.builtin.lineinfile:
+        dest: "{{ config_directory }}/synapse-data/homeserver.yaml"
+        regex: "^registration_shared_secret:"
+        state: absent
+      check_mode: true
+      register: _admin_user_created
+
+    - name: Wait for user to create admin user
+      ansible.builtin.pause:
+        prompt: "Run docker exec -it {{ application }}-synapse register_new_matrix_user http://localhost:8008 -c /data/homeserver.yaml --user {{ common_user }} --password <password> --admin"
+      when: (_admin_user_created is changed) or (_admin_user_created is failed)
+
+    - name: Wait for user to remove registration_shared_secret from config
+      ansible.builtin.pause:
+        prompt: "Delete registration_shared_secret from {{ config_directory }}/synapse-data/homeserver.yaml"
+      when: (_admin_user_created is changed) or (_admin_user_created is failed)
+
+    - name: Wait for user to restart the container
+      ansible.builtin.pause:
+        prompt: "Restart the container {{ application }}-synapse"
+      when: (_admin_user_created is changed) or (_admin_user_created is failed)

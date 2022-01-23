@@ -25,18 +25,23 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/linuxserver/nzbget
+        image: lscr.io/linuxserver/nzbget
         volumes:
           - "{{ _config_dir.path }}:/config"
-          - "{{ common_directory_download }}:/downloads"
+          - "{{ common_directory_download }}:{{ common_mounted_directory_download }}"
         env:
-          PUID: "{{ common_user_id }}"
-          PGID: "{{ common_root_group }}"
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_root_group | string }}"
           TZ: "{{ common_timezone }}"
           UMASK: "022"
         traefik:
           - port: 6789
-            auth: true
+            auth: basic
+        homer:
+          name: NZBGet
+          service: Download
+          priority: 990
+          subtitle: "Download files from Usenet"
 
     - name: Wait for config
       ansible.builtin.wait_for:
@@ -52,7 +57,7 @@
       vars:
         nzbget_config:
           # PATHS
-          MainDir: '/downloads'
+          MainDir: "{{ common_mounted_directory_download }}"
           DestDir: '${MainDir}'
           InterDir: '${MainDir}/Intermediate/Incomplete'
           NzbDir: '${MainDir}/Intermediate/Watch'
@@ -65,26 +70,26 @@
           ConfigTemplate: '${AppDir}/webui/nzbget.conf.template'
 
           # NEWS-SERVERS
-          Server1.Name: 'news.newsdemon.com'
+          Server1.Name: 'secure.news.thecubenet.com'
           Server1.Level: '0'
           Server1.Optional: 'no'
           Server1.Group: '0'
-          Server1.Host: 'news.newsdemon.com'
+          Server1.Host: 'secure.news.thecubenet.com'
           Server1.Port: '563'
           Server1.Username: !vault |
             $ANSIBLE_VAULT;1.1;AES256
-            35306662613632343031383634366561656532323335353531373063656337366430353464373936
-            3239336161363237643338386461636365393433616139660a623966653565623132346437666132
-            39626232613437326661383838353934383631623931363032626130316163313631323362306664
-            3666343230306262380a656365393139626161663862653062346333663034363664313161323836
-            3934
+            64366463653637653066646261623065393463336139666464396263633566653864613161623939
+            3133623430306462333334373532386366636438353861650a346632373637313833356563623334
+            31333839343331396231643862643439636630326465363261316235393733633164656237393663
+            3431633662643761370a313738633965326162643132623231313730313431663434303264656633
+            61613036366533333730333435386265313437353764303462633465636262663664
           Server1.Password: !vault |
             $ANSIBLE_VAULT;1.1;AES256
-            37633239306639313966306438373763393638383137633039396663666534366464366261633161
-            3134323063613738646666633031383538353538383831320a343566663163653664653034653536
-            37326365306231316163333262623832383361303264313061303062353766306231313038353938
-            3761643965323363640a353135333966613432373338393464303363663535373433656363353962
-            3030
+            30396565356235636465666365646332326638633336393362356439333265616363643137656132
+            3135323132663332653431326163656137633333613936390a623330613139366536666336623736
+            37376131376532633737393532646435363935393930663765373065353330366534643536356463
+            3432313035656230340a353363356538333935383637613633376663666430326363633464383064
+            3533
           Server1.JoinGroup: 'no'
           Server1.Encryption: 'yes'
           Server1.Cipher: 'AES128-SHA'
@@ -94,8 +99,8 @@
           Server1.Notes: ''
 
           # SECURITY
-          ControlUsername:
-          ControlPassword:
+          ControlUsername: ''
+          ControlPassword: ''
 
           # CATEGORIES
           Category1.Name: 'Movies'
@@ -129,13 +134,16 @@
           WriteLog: 'rotate'
 
           # CHECK AND REPAIR
-          ParBuffer: '128'
+          CrcCheck: 'yes'
+          ParCheck: 'auto'
+          ParQuick: 'yes'
+          ParBuffer: '8192'
           DirectRename: 'yes'
-          ParPauseQueue: 'yes'
+          ParPauseQueue: 'no'
 
           # UNPACK
           DirectUnpack: 'yes'
-          UnpackPauseQueue: 'yes'
+          UnpackPauseQueue: 'no'
           UnrarCmd: '${AppDir}/unrar'
           SevenZipCmd: '${AppDir}/7za'
 

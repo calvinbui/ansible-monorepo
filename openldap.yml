@@ -1,0 +1,78 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: openldap
+
+    docker_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create {{ application }} container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: osixia/openldap
+        env:
+          LDAP_ORGANISATION: "homelab"
+          LDAP_DOMAIN: "{{ common_local_tld }}"
+          LDAP_ADMIN_PASSWORD: "{{ ldap_admin_password }}"
+
+          LDAP_RFC2307BIS_SCHEMA: "true"
+        volumes:
+          - "{{ _config_dir.path }}/database:/var/lib/ldap"
+          - "{{ _config_dir.path }}/config:/etc/ldap/slapd.d"
+
+    - name: Create ldap-user-manager container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: lum
+        image: wheelybird/ldap-user-manager
+        env:
+          SERVER_HOSTNAME: "lum.{{ common_tld }}"
+
+          LDAP_URI: "ldap://{{ application }}.{{ docker_network.name }}"
+          LDAP_BASE_DN: "{{ ldap_base_dn }}"
+
+          LDAP_ADMIN_BIND_DN: "{{ ldap_admin_dn }}"
+          LDAP_ADMIN_BIND_PWD: "{{ ldap_admin_password }}"
+          LDAP_ADMINS_GROUP: "admins"
+
+          LDAP_USER_OU: "{{ ldap_user_ou }}"
+          LDAP_GROUP_OU: "{{ ldap_group_ou }}"
+          LDAP_ACCOUNT_ATTRIBUTE: "{{ ldap_account_attribute }}"
+
+          LDAP_IGNORE_CERT_ERRORS: "true"
+          LDAP_REQUIRE_STARTTLS: "false"
+          NO_HTTPS: "true"
+
+          SMTP_HOSTNAME: "{{ common_email_server }}"
+          SMTP_HOST_PORT: "{{ common_email_smtp_port | string }}"
+          SMTP_USERNAME: "{{ common_email_username }}"
+          SMTP_PASSWORD: "{{ common_email_password }}"
+          SMTP_USE_TLS: "{{ 'TRUE' if common_email_protocol=='tls' else 'FALSE' }}"
+          EMAIL_FROM_ADDRESS: "lum{{ common_email_to }}"
+          EMAIL_FROM_NAME: "ldap-user-manager"
+        traefik:
+          - port: 80
+        homer:
+          name: LDAP User Manager
+          icon: fas fa-address-book
+          service: Infrastructure
+          priority: 390
+          subtitle: "LDAP"
+          url: "https://lum.{{ common_tld }}/log_in/"

@@ -8,7 +8,7 @@
 
 - name: Init list index variable
   ansible.builtin.set_fact:
-    nzbhydra_configured_indexer_index: ''
+    nzbhydra_configured_indexer_index: ""
 
 - name: Find {{ nzbhydra_indexer_item['name'] }} in Indexers and store its index in the list
   ansible.builtin.set_fact:
@@ -23,16 +23,17 @@
 - name: Append to nzbhydra_var_indexers_index if exists
   ansible.builtin.set_fact:
     nzbhydra_var_indexers_index: "{{  nzbhydra_var_indexers_index + [ nzbhydra_configured_indexer_index ] }}"
-  when: nzbhydra_configured_indexer_index != ''
+  when: nzbhydra_configured_indexer_index != ""
 
 - name: Configure indexer if exists using its index in the list
   yedit:
     src: "{{ _config_dir.path }}/nzbhydra.yml"
     key: "indexers.[{{ nzbhydra_configured_indexer_index }}].{{ item.key }}"
     value: "{{ item.value }}"
+  become: false
   become_user: "{{ common_user }}"
   loop: "{{ nzbhydra_indexer_item | dict2items }}"
-  when: nzbhydra_configured_indexer_index != ''
+  when: nzbhydra_configured_indexer_index != ""
   notify: Restart
 
 - name: Append indexer to list if not found
@@ -41,6 +42,7 @@
     key: "indexers"
     value: "{{ nzbhydra_indexer_item }}"
     append: true
+  become: false
   become_user: "{{ common_user }}"
-  when: nzbhydra_configured_indexer_index == ''
+  when: nzbhydra_configured_indexer_index == ""
   notify: Restart

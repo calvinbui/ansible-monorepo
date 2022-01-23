@@ -29,6 +29,7 @@
       MONGO_INITDB_ROOT_USERNAME: "{{ mongo_username }}"
       MONGO_INITDB_ROOT_PASSWORD: "{{ mongo_password }}"
       MONGO_INITDB_DATABASE: "{{ mongo_database }}"
+      TZ: "{{ common_timezone }}"
 
     volumes:
       - "{{ mongo_directory }}:/data/db"
@@ -42,7 +43,7 @@
 
 - name: Set variables
   ansible.builtin.set_fact:
-    mongo_hostname: "{{ mongo_name }}.{{ docker_network.name }}"
-    mongo_username: "{{ mongo_username }}"
-    mongo_password: "{{ mongo_password }}"
-    mongo_database: "{{ mongo_database }}"
+    _mongo_hostname: "{{ mongo_name }}.{{ docker_network.name }}"
+    _mongo_username: "{{ mongo_username }}"
+    _mongo_password: "{{ mongo_password }}"
+    _mongo_database: "{{ mongo_database }}"

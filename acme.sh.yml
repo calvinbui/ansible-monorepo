@@ -1,6 +1,6 @@
 ---
 
-- hosts: homelab
+- hosts: homelab:octopi
 
   vars:
     acme_dir: "{{ common_directory }}/acme.sh"
@@ -11,26 +11,27 @@
     acme_scripts_dir: "{{ acme_dir }}/scripts"
     cert_cloudflare_email: "{{ cloudflare_email }}"
     cert_cloudflare_api_token: "{{ cloudflare_api }}"
-    cert_domains:
-      - domain: "homelab-ipmi.{{ common_local_tld }}"
-        method: --dns dns_cf
-        script: "{{ acme_scripts_dir }}/ipmi.py --ipmi-url=https://homelab-ipmi.{{ common_local_tld }} --username=ADMIN --password=ADMIN --cert-file={{ acme_cert_dir }}/homelab-ipmi.{{ common_local_tld }}/fullchain.cer --key-file={{ acme_cert_dir }}/homelab-ipmi.{{ common_local_tld }}/homelab-ipmi.{{ common_local_tld }}.key"
-      - domain: "unifi.{{ common_local_tld }}"
-        method: --dns dns_cf
-        script: "{{ acme_scripts_dir }}/unifi-docker.sh {{ acme_cert_dir }}/unifi.{{ common_local_tld }}/fullchain.cer {{ acme_cert_dir }}/unifi.{{ common_local_tld }}/unifi.{{ common_local_tld }}.key {{ common_directory }}/unifi/data"
+
   tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
+      changed_when: false
+      when: ansible_distribution == "Ubuntu"
+
     # https://github.com/Neilpang/acme.sh/wiki/How-to-install
     - name: Install socat
       ansible.builtin.apt:
         name: socat
         state: present
-      when: ansible_os_family == 'Debian'
+      when: ansible_os_family == "Ubuntu"
 
     - name: Download Neilpang's acme.sh
       ansible.builtin.git:
         repo: https://github.com/acmesh-official/acme.sh.git
         dest: "{{ acme_repo_dir }}"
-        version: 2.9.0
+        version: 3.0.1
 
     - name: Setup acme.sh
       ansible.builtin.shell: |
@@ -44,11 +45,20 @@
         executable: "/bin/bash"
       changed_when: false
 
+    - name: Create scripts directories
+      ansible.builtin.file:
+        path: "{{ acme_scripts_dir }}"
+        state: directory
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0775"
+
     - name: Copy scripts
       ansible.builtin.copy:
-        src: files/acme.sh/
-        dest: "{{ acme_scripts_dir }}"
+        src: "files/acme.sh/{{ item.script }}"
+        dest: "{{ acme_scripts_dir }}/{{ item.script }}"
         mode: 0755
+      loop: "{{ cert_domains }}"
 
     - name: Setup Cloudflare creds
       ansible.builtin.lineinfile:
@@ -56,13 +66,13 @@
         regex: "{{ item.regex }}"
         line: "{{ item.line }}"
       loop:
-        - regex: '^SAVED_CF_Key'
+        - regex: "^SAVED_CF_Key"
           line: "SAVED_CF_Key='{{ cert_cloudflare_api_token }}'"
-        - regex: '^SAVED_CF_Email'
+        - regex: "^SAVED_CF_Email"
           line: "SAVED_CF_Email='{{ cert_cloudflare_email }}'"
 
     - name: Generate certs for each domain
-      ansible.builtin.shell: /bin/bash -ic ". acme.sh.env && acme.sh --issue {{ item.method }} --domain {{ item.domain }} --post-hook '{{ item.script }}'"
+      ansible.builtin.shell: /bin/bash -ic ". acme.sh.env && acme.sh --issue {{ item.method }} --domain {{ item.domain }} --post-hook '{{ acme_scripts_dir }}/{{ item.script }} {{ item.script_args }}'"
       args:
         chdir: "{{ acme_install_dir }}"
         executable: /bin/bash

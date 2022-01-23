@@ -12,3 +12,9 @@ common_directory_backup: "{{ common_directory_storage }}/Backups"
 
 config_directory: "{{ common_directory }}/{{ application }}"
 files_directory: "files/{{ application }}"
+
+# for hardlinks/atomic moves
+common_mounted_directory: /data
+common_mounted_directory_download: "{{ common_mounted_directory }}/Downloads"
+common_mounted_directory_tv: "{{ common_mounted_directory }}/TV"
+common_mounted_directory_movies: "{{ common_mounted_directory }}/Movies"
