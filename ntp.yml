@@ -17,7 +17,7 @@
         tmpfs:
           - /etc/chrony:rw,mode=1750
           - /run/chrony:rw,mode=1750
-          - /run/chrony:rw,mode=1750
+          - /var/lib/chrony:rw,mode=1750
         env:
           NTP_SERVERS: |-
             {{
