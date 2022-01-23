@@ -1,6 +1,6 @@
 ---
 
-# https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html
+# The container mounts the NVIDIA drivers.
 
 - hosts: homelab
 
@@ -8,6 +8,9 @@
     docker_network: "{{ networks.mgmt }}"
 
   tasks:
+    # https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html
+    # https://github.com/NVIDIA/ansible-role-nvidia-driver
+
     - name: Set distribution variable
       ansible.builtin.set_fact:
         _distribution: "{{ ansible_distribution | lower }}{{ ansible_distribution_version | regex_replace('\\.', '') }}"
@@ -18,51 +21,48 @@
         cache_valid_time: 600
       changed_when: false
 
-    - name: Install kernel headers and development packages for the currently running kernel
+    - name: Install NVIDIA drivers
       ansible.builtin.apt:
-        name: "linux-headers-{{ ansible_kernel }}"
+        name:
+          - "nvidia-headless-470-server"
+          - "nvidia-utils-470-server"
+          - "nvidia-headless-no-dkms-470-server"
+          - "nvidia-kernel-source-470-server"
         state: present
-      register: result
-      until: result is success
+      register: __install_nvidia_drivers
+      until: __install_nvidia_drivers is success
       retries: 5
       delay: 5
 
-    - name: Ensure packages on the CUDA network repository have priority over the Canonical repository
-      ansible.builtin.get_url:
-        url: "https://developer.download.nvidia.com/compute/cuda/repos/{{ _distribution }}/x86_64/cuda-{{ _distribution }}.pin"
-        dest: /etc/apt/preferences.d/cuda-repository-pin-600
+    - name: Create persistenced override directory
+      ansible.builtin.file:
+        path: /etc/systemd/system/nvidia-persistenced.service.d/
+        state: directory
+        recurse: true
 
-    - name: Add CUDA GPG key
-      ansible.builtin.apt_key:
-        url: https://developer.download.nvidia.com/compute/cuda/repos/{{ _distribution }}/x86_64/7fa2af80.pub
-        state: present
-      register: result
-      until: result is success
-      retries: 5
-      delay: 5
+    - name: Configure persistenced service to turn on persistence mode
+      ansible.builtin.copy:
+        content: |
+          [Service]
+          ExecStart=
+          ExecStart=/usr/bin/nvidia-persistenced --user root --persistence-mode --verbose
+        dest: /etc/systemd/system/nvidia-persistenced.service.d/override.conf
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
 
-    - name: Add CUDA Repository
-      ansible.builtin.apt_repository:
-        repo: "deb http://developer.download.nvidia.com/compute/cuda/repos/{{ _distribution }}/x86_64 /"
-        filename: /etc/apt/sources.list.d/cuda.list
-        state: present
-        update_cache: true
+    - name: Enable persistenced
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
 
-    # - name: Install CUDA drivers
-    #   ansible.builtin.apt:
-    #     name: cuda-drivers
-    #     state: present
-    #   register: result
-    #   until: result is success
-    #   retries: 5
-    #   delay: 5
+    # https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker
 
     - name: Add NVIDIA's Docker GPG key
       ansible.builtin.apt_key:
         url: https://nvidia.github.io/nvidia-docker/gpgkey
         state: present
-      register: result
-      until: result is success
       retries: 5
       delay: 5
 
@@ -77,17 +77,23 @@
         update_cache: true
       when: __apt_repository.changed
 
-    # - name: Install NVIDIA Container Toolkit
-    #   ansible.builtin.apt:
-    #     name: nvidia-docker2
-    #     state: present
-    #   register: result
-    #   until: result is success
-    #   retries: 5
-    #   delay: 5
+    - name: Install NVIDIA Container Toolkit
+      ansible.builtin.apt:
+        name: nvidia-docker2
+        state: present
+      register: __install_nvidia_toolkit
+      until: __install_nvidia_toolkit is success
+      retries: 5
+      delay: 5
 
     - name: Restart Docker to complete installation
       ansible.builtin.service:
         name: docker
         state: restarted
-      when: result.changed
+      when:
+        - not __install_nvidia_drivers.changed
+        - __install_nvidia_toolkit.changed
+
+    - name: Reboot to load NVIDIA drivers
+      ansible.builtin.reboot:
+      when: __install_nvidia_drivers.changed
