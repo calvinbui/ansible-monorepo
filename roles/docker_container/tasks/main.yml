@@ -110,6 +110,7 @@
     pid_mode: "{{ pid_mode | default(omit) }}"
     privileged: "{{ privileged | default(omit) }}"
     devices: "{{ devices | default(omit) }}"
+    device_requests: "{{ device_requests | default(omit) }}"
 
     container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
     command_handling: "{{ command_handling | default('correct') }}"
