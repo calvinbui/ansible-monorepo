@@ -4,7 +4,7 @@
 
   handlers:
     - name: Update grub
-      command: update-grub
+      ansible.builtin.command: update-grub
 
   tasks:
     - name: Disable requiretty to enable Ansible pipelining

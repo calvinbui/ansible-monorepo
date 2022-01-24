@@ -89,12 +89,14 @@
         mode: "0775"
         owner: "{{ common_user_id }}"
         group: 101
+      register: __download_fasttext
 
     - name: Clone FastText binary repo
       ansible.builtin.git:
         repo: https://github.com/facebookresearch/fastText.git
         dest: "{{ _config_dir.path }}/fasttext/fasttext.git"
         version: v0.9.2
+      register: __clone_fasttext
 
     - name: Set FastText binary repo permissions
       ansible.builtin.file:
@@ -121,8 +123,10 @@
           make
 
     - name: Compile FastText in alpine
-      ansible.builtin.shell:
-        cmd: "docker run --rm -v {{ _config_dir.path }}/fasttext:/fasttext alpine:3.15.0 /fasttext/build.sh"
+      ansible.builtin.command: "docker run --rm -v {{ _config_dir.path }}/fasttext:/fasttext alpine:3.15.0 /fasttext/build.sh"
+      when:
+        - __clone_fasttext.changed
+        - __download_fasttext.changed
 
     - name: Set FastText permissions
       ansible.builtin.file:
