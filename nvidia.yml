@@ -155,3 +155,7 @@
     - name: Run transcoding limit patch
       ansible.builtin.command: "bash {{ _config_dir.path }}/nvidia-patch/patch.sh"
       when: __nvidia_patch_updated.changed
+
+# The NVIDIA driver install can mess with the Docker daemon settings.
+# Rerun docker again to be safe.
+- ansible.builtin.import_playbook: docker.yml
