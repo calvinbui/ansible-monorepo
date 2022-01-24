@@ -2,6 +2,10 @@
 
 - hosts: homelab
 
+  handlers:
+    - name: Update grub
+      command: update-grub
+
   tasks:
     - name: Disable requiretty to enable Ansible pipelining
       ansible.builtin.lineinfile:
@@ -218,3 +222,11 @@
           "Unattended-Upgrade::Remove-Unused-Kernel-Packages": "true"
           "Unattended-Upgrade::Remove-New-Unused-Dependencies": "true"
           "Unattended-Upgrade::Remove-Unused-Dependencies": "true"
+
+    - name: Set GRUB timeout
+      ansible.builtin.lineinfile:
+        dest: /etc/default/grub
+        state: present
+        regex: "^GRUB_RECORDFAIL_TIMEOUT="
+        line: "GRUB_RECORDFAIL_TIMEOUT=10"
+      notify: Update grub
