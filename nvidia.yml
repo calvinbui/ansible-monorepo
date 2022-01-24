@@ -1,0 +1,161 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: nvidia
+
+    nvidia_driver_version: "470.94"
+
+    # manually generated
+    nvidia_driver_checksum: "sha256:9585aa29330ebad9bdf22ce3ca2bac2026c85a9a32f03d7c59f714a7798500eb"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
+      changed_when: false
+
+    - name: Disable nouveau
+      ansible.builtin.copy:
+        content: |
+          blacklist nouveau
+          options nouveau modeset=0
+        dest: /etc/modprobe.d/blacklist-nouveau.conf
+        mode: '0644'
+      register: __disable_nouveau
+
+    - name: Regenerate the kernel initramfs
+      ansible.builtin.command: update-initramfs -u
+      when: __disable_nouveau.changed
+
+    - name: Reboot to disable nouveau
+      ansible.builtin.shell: "sleep 5 && reboot"
+      async: 1
+      poll: 0
+      when: __disable_nouveau.changed
+
+    - name: Wait for reboot to complete
+      ansible.builtin.wait_for_connection:
+        connect_timeout: 20
+        sleep: 5
+        delay: 180
+        timeout: 30
+      when: __disable_nouveau.changed
+
+    - name: Install prerequisites
+      ansible.builtin.apt:
+        name:
+          - pkg-config
+          - xorg-dev
+          - libglvnd-dev
+        state: present
+      register: __install_nvidia_prerequisites
+      until: __install_nvidia_prerequisites is success
+      retries: 5
+      delay: 5
+
+    - name: Create xorg modules folder
+      ansible.builtin.file:
+        path: /usr/lib/xorg/modules
+        state: directory
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0755"
+      register: _config_dir
+
+    # https://www.nvidia.com/en-us/drivers/unix/
+    # check compatibility with
+    - name: Download NVIDIA driver
+      ansible.builtin.get_url:
+        url: "https://international.download.nvidia.com/XFree86/Linux-x86_64/{{ nvidia_driver_version }}/NVIDIA-Linux-x86_64-{{ nvidia_driver_version }}.run"
+        dest: "{{ _config_dir.path }}/{{ nvidia_driver_version }}.run"
+        mode: '0755'
+        checksum: "{{ nvidia_driver_checksum }}"
+
+    - name: Install NVIDIA driver
+      ansible.builtin.command: "./{{ _config_dir.path }}/{{ nvidia_driver_version }}.run --silent --no-questions"
+      args:
+        creates: "/usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.{{ nvidia_driver_version }}"
+      register: __install_nvidia_drivers
+
+    - name: Create persistenced override directory
+      ansible.builtin.file:
+        path: /etc/systemd/system/nvidia-persistenced.service.d/
+        state: directory
+        recurse: true
+
+    # https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker
+    - name: Add NVIDIA's Docker GPG key
+      ansible.builtin.apt_key:
+        url: https://nvidia.github.io/nvidia-docker/gpgkey
+        state: present
+      retries: 5
+      delay: 5
+
+    - name: Download NVIDIA's Docker Repository
+      ansible.builtin.get_url:
+        url: "https://nvidia.github.io/nvidia-docker/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/nvidia-docker.list"
+        dest: /etc/apt/sources.list.d/nvidia-docker.list
+      register: __apt_repository
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+      when: __apt_repository.changed
+
+    - name: Install NVIDIA Container Toolkit
+      ansible.builtin.apt:
+        name: nvidia-container-toolkit
+        state: present
+      register: __install_nvidia_toolkit
+      until: __install_nvidia_toolkit is success
+      retries: 5
+      delay: 5
+
+    - name: Restart Docker to complete installation
+      ansible.builtin.service:
+        name: docker
+        state: restarted
+      when:
+        - not __install_nvidia_drivers.changed
+        - __install_nvidia_toolkit.changed
+
+    - name: Reboot to load NVIDIA drivers
+      ansible.builtin.shell: "sleep 5 && reboot"
+      async: 1
+      poll: 0
+      when: __install_nvidia_drivers.changed
+
+    - name: Wait for reboot to complete
+      ansible.builtin.wait_for_connection:
+        connect_timeout: 20
+        sleep: 5
+        delay: 300
+        timeout: 10
+      when: __install_nvidia_drivers.changed
+
+    - name: Clone transcoding limit patch
+      ansible.builtin.git:
+        repo: "https://github.com/keylase/nvidia-patch"
+        dest: "{{ _config_dir.path }}/nvidia-patch"
+        update: true
+      register: __nvidia_patch_updated
+
+    - name: Run transcoding limit patch
+      ansible.builtin.command: "bash {{ _config_dir.path }}/nvidia-patch/patch.sh"
+      when: __nvidia_patch_updated.changed
+
+# The NVIDIA driver install can mess with the Docker daemon settings.
+# Rerun docker again to be safe.
+- ansible.builtin.import_playbook: docker.yml

@@ -75,6 +75,7 @@
     - name: Install apt packages
       ansible.builtin.apt:
         name:
+          - build-essential
           - neovim
           - htop
           - iftop

@@ -31,12 +31,24 @@
           PLEX_UID: "{{ common_user_id | string }}"
           PLEX_GID: "{{ common_root_group | string }}"
           TZ: "{{ common_timezone }}"
+          NVIDIA_VISIBLE_DEVICES: "all"
+          NVIDIA_DRIVER_CAPABILITIES: "all"
           # PLEX_CLAIM: ""
         volumes:
           - "{{ _config_dir.path }}:/config"
-          - /tmp/plex:/transcode
           - "{{ common_directory_movies }}:/data/movies"
           - "{{ common_directory_tv }}:/data/tv"
+          - /tmp/plex:/transcode
+        device_requests:
+          - driver: nvidia
+            count: -1
+            device_ids: []
+            options: {}
+            capabilities:
+              - - gpu
+                - video
+                - compute
+                - utility
         traefik:
           - port: 32400
         blackbox:
