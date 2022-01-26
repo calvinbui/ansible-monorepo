@@ -1,3 +1,7 @@
 ---
 
 labels: {}
+
+network:
+  - name: "{{ docker_network.name | default('bridge') }}"
+    ipv4_address: "{{ ipv4_address | default(omit) }}"

@@ -11,3 +11,8 @@ cert_domains:
     method: --dns dns_cf
     script: "omada.sh"
     script_args: "{{ acme_cert_dir }}/omada.{{ common_local_tld }}/fullchain.cer {{ acme_cert_dir }}/omada.{{ common_local_tld }}/omada.{{ common_local_tld }}.key"
+  -
+    domain: "nvr.{{ common_local_tld }}"
+    method: --dns dns_cf
+    script: "unifi-protect.sh"
+    script_args: "{{ acme_cert_dir }}/nvr.{{ common_local_tld }}/fullchain.cer {{ acme_cert_dir }}/nvr.{{ common_local_tld }}/nvr.{{ common_local_tld }}.key"

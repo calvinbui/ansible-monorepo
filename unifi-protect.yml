@@ -1,0 +1,74 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: unifi-protect
+
+    docker_network: "{{ networks.iot }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Clone kk7ds/ubnt-proxy
+      ansible.builtin.git:
+        repo: "https://github.com/kk7ds/ubnt-proxy"
+        dest: "{{ _config_dir.path }}/ubnt-proxy"
+        update: true
+      notify: Restart
+
+    - name: Create startup script
+      ansible.builtin.copy:
+        content: |
+          #!/usr/bin/env sh
+          set -euo pipefail
+          pip3 install --no-cache-dir --upgrade pip
+          pip3 install --no-cache-dir scapy
+          ip="$(hostname -i | awk 'BEGIN{RS=" "} 1' | grep {{ docker_network.prefix }})"
+          python3 /app/ubnt-proxy/ubnt-proxy.py "$ip"
+        dest: "{{ _config_dir.path }}/entrypoint.sh"
+        mode: "0755"
+      notify: Restart
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-proxy"
+        image: python:3-alpine
+        entrypoint:
+          - /bin/sh
+          - /app/entrypoint.sh
+        volumes:
+          - "{{ _config_dir.path }}:/app"
+        network:
+          - name: "{{ docker_network.name }}"
+          - name: "{{ networks.user.name }}"
+
+    - name: Grab public SSH key to add to NVR host
+      ansible.builtin.slurp:
+        src: /root/.ssh/id_ed25519.pub
+      register: __homelab_public_key
+
+- hosts: nvr
+
+  tasks:
+    - name: Set authorized keys
+      ansible.posix.authorized_key:
+        user: root
+        state: present
+        key: "{{ item }}"
+      loop:
+        - https://github.com/calvinbui.keys
+        - "{{ hostvars['homelab.' + common_local_tld ]['__homelab_public_key']['content'] | b64decode }}"

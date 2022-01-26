@@ -56,6 +56,11 @@
         - root
         - "{{ common_user }}"
 
+    - name: Generate an OpenSSH keypair
+      community.crypto.openssh_keypair:
+        path: /root/.ssh/id_ed25519
+        type: ed25519
+
     - name: Disable motd files
       ansible.builtin.file:
         path: "{{ item }}"

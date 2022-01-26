@@ -54,7 +54,7 @@
         mode: "0775"
 
     - name: Copy scripts
-      ansible.builtin.copy:
+      ansible.builtin.template:
         src: "files/acme.sh/{{ item.script }}"
         dest: "{{ acme_scripts_dir }}/{{ item.script }}"
         mode: 0755
