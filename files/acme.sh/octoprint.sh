@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 FULLCHAIN=$1
 KEYFILE=$2
 
