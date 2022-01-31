@@ -22,7 +22,7 @@
 
 - name: Append to nzbhydra_var_indexers_index if exists
   ansible.builtin.set_fact:
-    nzbhydra_var_indexers_index: "{{  nzbhydra_var_indexers_index + [ nzbhydra_configured_indexer_index ] }}"
+    nzbhydra_var_indexers_index: "{{ nzbhydra_var_indexers_index + [ nzbhydra_configured_indexer_index ] }}"
   when: nzbhydra_configured_indexer_index != ""
 
 - name: Configure indexer if exists using its index in the list

@@ -226,7 +226,7 @@
         extended: true
 
     - name: Configure NZBHydra indexers
-      include_tasks: tasks/nzbhydra-indexers.yml
+      ansible.builtin.include_tasks: tasks/nzbhydra-indexers.yml
       loop: "{{ nzbhydra_indexers }}"
       loop_control:
         loop_var: nzbhydra_indexer_item
