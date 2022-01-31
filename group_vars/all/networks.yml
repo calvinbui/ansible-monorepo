@@ -41,3 +41,13 @@ networks:
     parent: eno1
     driver: macvlan
     vlan: 40
+  granny:
+    name: granny
+    subnet: /24
+    gateway: 192.168.5.1
+    dns: 192.168.5.1
+    iprange: 192.168.5.128/25
+    prefix: 192.168.5
+    parent: eno1
+    driver: macvlan
+    vlan: 50

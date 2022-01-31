@@ -1,0 +1,99 @@
+---
+
+# requires xmltodict: pip3 install xmltodict
+# check inventory for endpoint, especially on first run
+
+- hosts: switch
+
+  gather_facts: false
+  connection: ansible.netcommon.netconf
+
+  vars:
+    juniper_l3_interfaces:
+      - unit: 0
+        name: vlan
+        ipv4:
+          - address: 192.168.0.2/24
+      - unit: 1
+        name: vlan
+        ipv4:
+          - address: 192.168.1.2/24
+
+    juniper_l2_interfaces:
+      -
+        port: 0
+        description: "opnsense lan"
+      -
+        port: 1
+        description: "opnsense vlans"
+        trunk:
+          - "{{ networks.granny.vlan }}"
+          - "{{ networks.iot.vlan }}"
+          - "{{ networks.pub.vlan }}"
+          - "{{ networks.user.vlan }}"
+          - "{{ networks.mgmt.vlan }}"
+      -
+        port: 2
+        description: "homelab"
+        trunk:
+          - "{{ networks.granny.vlan }}"
+          - "{{ networks.iot.vlan }}"
+          - "{{ networks.pub.vlan }}"
+          - "{{ networks.user.vlan }}"
+          - "{{ networks.mgmt.vlan }}"
+      -
+        port: 3
+        description: "homelab ipmi"
+        access: "{{ networks.mgmt.vlan }}"
+      -
+        port: 4
+        description: "wifi"
+        access: "{{ networks.user.vlan }}"
+        trunk:
+          - "{{ networks.granny.vlan }}"
+          - "{{ networks.iot.vlan }}"
+      -
+        port: 5
+        description: "wifi"
+        access: "{{ networks.user.vlan }}"
+        trunk:
+          - "{{ networks.granny.vlan }}"
+          - "{{ networks.iot.vlan }}"
+      -
+        port: 12
+        description: "study"
+        access: "{{ networks.user.vlan }}"
+      -
+        port: 24
+        description: "printer"
+        access: "{{ networks.user.vlan }}"
+      -
+        port: 36
+        description: "nvr"
+        access: "{{ networks.iot.vlan }}"
+
+  tasks:
+    - name: Enable netconf service
+      junipernetworks.junos.junos_netconf:
+        state: present
+      connection: ansible.netcommon.network_cli
+
+    - name: Configure Layer 3 interfaces
+      junipernetworks.junos.junos_l3_interfaces:
+        config: "{{ juniper_l3_interfaces }}"
+        state: merged
+
+    - name: Configure VLANs
+      junipernetworks.junos.junos_vlans:
+        config: "{{ networks | to_juniper_vlan_config }}"
+        state: merged
+
+    - name: Configure Layer 2 interfaces
+      junipernetworks.junos.junos_l2_interfaces:
+        config: "{{ juniper_l2_interfaces | to_juniper_l2_config }}"
+        state: merged
+
+    - name: Configure ports
+      junipernetworks.junos.junos_interfaces:
+        config: "{{ juniper_l2_interfaces | to_juniper_interface_config }}"
+        state: merged
