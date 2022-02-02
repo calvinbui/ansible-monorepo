@@ -112,7 +112,7 @@
           - "{{ _dav_dir.path }}:/data"
         traefik:
           - port: 37358
-            volumes: Host(`{{ application }}-dav.{{ common_tld }}`)
+            rule: Host(`{{ application }}-dav.{{ common_tld }}`)
         homer:
           name: EteSync DAV
           service: Tools
