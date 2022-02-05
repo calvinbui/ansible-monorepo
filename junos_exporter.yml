@@ -1,0 +1,56 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: junos_exporter
+
+    docker_network: "{{ networks.user }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create config file
+      ansible.builtin.copy:
+        dest: "{{ _config_dir.path }}/config.yaml"
+        mode: "755"
+        content: |
+          ---
+          configs:
+            default:
+              username: root
+              password: {{ _junos_password }}
+              enabled_collectors:
+                - interface
+                - environment
+                - route_engine
+          global:
+            timeout: 30
+      vars:
+        _junos_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          38363231613461666435356230623234663332616635393931663234333832356437353662376663
+          6238356637633766653733386331326537306530303666660a646631373137666432333265386637
+          63636165653834653535333334633665393862656635366632343966323461646230363631336463
+          3362633061663032620a316134633637616466363065323635636133393432653730393064323962
+          6134
+      notify: Restart
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: tynany/junos_exporter:latest
+        volumes:
+          - "{{ _config_dir.path }}/config.yaml:/config.yaml"

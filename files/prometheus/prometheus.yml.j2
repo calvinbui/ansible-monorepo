@@ -153,6 +153,22 @@ scrape_configs:
         target_label: __address__
         replacement: blackbox_exporter.{{ docker_network.name }}:9115
 
+  - job_name: junos
+    scrape_interval: 120s
+    scrape_timeout: 30s
+    static_configs:
+      - targets:
+        - switch.{{ common_local_tld }}
+    params:
+      config: ['default']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: junos_exporter.{{ docker_network.name }}:9347
+
 alerting:
   alertmanagers:
     - scheme: http
