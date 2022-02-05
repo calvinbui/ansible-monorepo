@@ -36,6 +36,21 @@
           POSTGRES_USER: "{{ _postgres_username }}"
           POSTGRES_PORT: "{{ _postgres_port | string }}"
           POSTGRES_HOST: "{{ _postgres_hostname }}"
+
+          MAILER_ENABLED: "true"
+          MAILER_HOST: "{{ common_email_server }}"
+          MAILER_PORT: "{{ common_email_smtp_port | string }}"
+          MAILER_SECURITY: "{{ common_email_protocol }}"
+          MAILER_AUTH_USER: "{{ common_email_username }}"
+          MAILER_AUTH_PASSWORD: "{{ common_email_password }}"
+          MAILER_NOREPLY_NAME: "{{ application }}"
+          MAILER_NOREPLY_EMAIL: "{{ application }}{{ common_email_to }}"
+
+          SIGNUP_ENABLED: "false"
+          TERMS_ENABLED: "false"
+          ACCOUNT_TYPES_ENABLED: "false"
+
+          RUNNING_IN_DOCKER: "true"
         traefik:
           - port: 22300
         homer:
