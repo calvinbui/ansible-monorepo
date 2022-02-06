@@ -19,7 +19,7 @@ groups:
           description: "Prometheus has no target in service discovery"
       -
         alert: Target ScrapingSlow
-        expr: prometheus_target_interval_length_seconds{quantile="0.9"} > 60
+        expr: prometheus_target_interval_length_seconds{quantile="0.9"} > 121
         for: 5m
         annotations:
           title: Prometheus target scraping slow
