@@ -16,7 +16,6 @@
         update_cache: true
         cache_valid_time: 600
       changed_when: false
-      when: ansible_distribution == "Ubuntu"
 
     # Based on https://docs.docker.com/engine/installation/linux/ubuntu/
     - name: Uninstall old versions

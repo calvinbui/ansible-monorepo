@@ -18,14 +18,12 @@
         update_cache: true
         cache_valid_time: 600
       changed_when: false
-      when: ansible_distribution == "Ubuntu"
 
     # https://github.com/Neilpang/acme.sh/wiki/How-to-install
     - name: Install socat
       ansible.builtin.apt:
         name: socat
         state: present
-      when: ansible_os_family == "Ubuntu"
 
     - name: Download Neilpang's acme.sh
       ansible.builtin.git:
