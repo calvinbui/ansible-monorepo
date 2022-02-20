@@ -1,0 +1,57 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: openbudgeteer
+
+    docker_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create config directory
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_group_id }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create mariadb container
+      ansible.builtin.include_role:
+        name: mariadb
+      vars:
+        mariadb_version: 10
+        mariadb_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          33376166336136313431633662646464336662623061396261373365343032366138663338353865
+          3432373934366330343639636130323733383461653830330a323763353661666630633134343934
+          36616362346436313630396139656462303032643663363463376438613663626238633364666261
+          6464303933363238660a396130343464343837316162623465346166333234636234656539653236
+          31633363663865363866316665646562613139356535306433646265333662353765
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: axelander/openbudgeteer
+        env:
+          Connection:Provider: "mysql"
+          Connection:Server: "{{ _mariadb_hostname }}"
+          Connection:Port: "{{ _mariadb_port | string }}"
+          Connection:Database: "{{ _mariadb_database }}"
+          Connection:User: "{{ _mariadb_username }}"
+          Connection:Password: "{{ _mariadb_password }}"
+          AppSettings:Culture: "{{ common_locale }}"
+        traefik:
+          - port: 80
+            auth: page
+        homer:
+          name: OpenBudgeteer
+          service: Collaboration
+          priority: 900
+          subtitle: "Bucket Budgeting"
