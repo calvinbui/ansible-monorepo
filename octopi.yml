@@ -152,7 +152,7 @@
       ansible.builtin.apt:
         deb: "https://github.com/UnchartedBull/OctoDash/releases/download/v{{ octodash_version }}/octodash_{{ octodash_version }}_armv7l.deb"
       vars:
-        octodash_version: 2.2.0
+        octodash_version: 2.3.1
       register: _octodash_install
 
     - name: Enable Console Autologin
