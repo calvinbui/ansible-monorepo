@@ -80,7 +80,7 @@
           DATABASE_HOST: "{{ _postgres_hostname }}"
           DATABASE_PORT: "{{ _postgres_port | string }}"
 
-          LANGUAGE_CODE: "en-au"
+          LANGUAGE_CODE: "{{ common_locale | lower }}"
           TIME_ZONE: "{{ common_timezone }}"
         volumes:
           - "{{ _data_dir.path }}:/data"

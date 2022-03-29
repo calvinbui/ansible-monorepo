@@ -24,7 +24,6 @@
         update_cache: true
         cache_valid_time: 600
       changed_when: false
-      when: ansible_distribution == "Ubuntu"
 
     - name: Set authorized keys
       ansible.posix.authorized_key:

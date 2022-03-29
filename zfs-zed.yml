@@ -19,7 +19,6 @@
         update_cache: true
         cache_valid_time: 600
       changed_when: false
-      when: ansible_distribution == "Ubuntu"
 
     - name: Install zfs-zed and msmtp
       ansible.builtin.apt:

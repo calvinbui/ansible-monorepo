@@ -8,6 +8,73 @@
     docker_network: "{{ networks.pub }}"
 
   tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create scripts folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}/textfile-collector-scripts"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _scripts_dir
+
+    - name: Clone node-exporter-textfile-collector-scripts repo
+      ansible.builtin.git:
+        repo: https://github.com/prometheus-community/node-exporter-textfile-collector-scripts.git
+        dest: "{{ _scripts_dir.path }}"
+        update: true
+        single_branch: true
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
+      changed_when: false
+
+    - name: Install collector packages
+      ansible.builtin.apt:
+        name:
+          - moreutils
+          - ipmitool
+          - smartmontools
+        state: present
+
+    - name: Create textfile folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}/textfiles"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0775"
+      register: _textfiles_folder
+
+    - name: Create textfile collector cronjobs
+      ansible.builtin.cron:
+        name: "{{ item.name }}"
+        minute: "*/1"
+        job: "({{ item.job }} | sponge {{ _textfiles_folder.path }}/{{ item.name }}.prom) && chmod 644 {{ _textfiles_folder.path }}/{{ item.name }}.prom"
+      loop:
+        -
+          name: smartmon
+          job: "PATH=$PATH:/usr/sbin/ {{ _scripts_dir.path }}/smartmon.py"
+        -
+          name: apt
+          job: "{{ _scripts_dir.path }}/apt.sh"
+        -
+          name: directory-size
+          job: "{{ _scripts_dir.path }}/directory-size.sh /apps"
+        -
+          name: ipmitool
+          job: "ipmitool -I lan -U ADMIN -P ADMIN -H homelab-ipmi.{{ common_local_tld }} sensor | {{ _scripts_dir.path }}/ipmitool"
+
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
@@ -17,6 +84,7 @@
           - "--path.rootfs=/host"
           - "--collector.mountstats"
           - "--collector.filesystem.ignored-fs-types=^(tmpfs|vfat|rpc_pipefs|fuse.lxcfs|rootfs|squashfs|nsfs)$"
+          - "--collector.textfile.directory=/textfiles"
           - "--no-collector.arp"
           - "--no-collector.bcache"
           - "--no-collector.bonding"
@@ -34,7 +102,6 @@
           - "--no-collector.pressure"
           - "--no-collector.sockstat"
           - "--no-collector.stat"
-          - "--no-collector.textfile"
           - "--no-collector.vmstat"
           - "--no-collector.xfs"
         pid_mode: host
@@ -42,6 +109,7 @@
           - sys_time
         volumes:
           - "/:/host:ro,rslave"
+          - "{{ _textfiles_folder.path }}:/textfiles"
         comparisons:
           labels: allow_more_present
         metrics:

@@ -1,0 +1,20 @@
+groups:
+  - name: apt_reboot_required
+    rules:
+      -
+        alert: Reboot Required
+        expr: node_reboot_required != 0
+        for: 10m
+        annotations:
+          title: Reboot Required
+          description: "A reboot is required to install updates"
+
+  - name: apt_pending_updates
+    rules:
+      -
+        alert: Pending Upgrades
+        expr: apt_upgrades_pending != 0
+        for: 48h
+        annotations:
+          title: Pending Upgrades
+          description: "There are updates to install. To see these updates, run: apt list --upgradable"
