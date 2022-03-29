@@ -5,7 +5,7 @@ cert_domains:
     domain: "homelab-ipmi.{{ common_local_tld }}"
     method: --dns dns_cf
     script: "ipmi.py"
-    script_args: "--ipmi-url=https://homelab-ipmi.{{ common_local_tld }} --username=ADMIN --password=ADMIN --cert-file={{ acme_cert_dir }}/homelab-ipmi.{{ common_local_tld }}/fullchain.cer --key-file={{ acme_cert_dir }}/homelab-ipmi.{{ common_local_tld }}/homelab-ipmi.{{ common_local_tld }}.key"
+    script_args: "--ipmi-url=https://homelab-ipmi.{{ common_local_tld }} --username=ADMIN --password=ADMIN --cert-file={{ acme_cert_dir }}/homelab-ipmi.{{ common_local_tld }}/fullchain.cer --key-file={{ acme_cert_dir }}/homelab-ipmi.{{ common_local_tld }}/homelab-ipmi.{{ common_local_tld }}.key --model=X10"
   -
     domain: "omada.{{ common_local_tld }}"
     method: --dns dns_cf
