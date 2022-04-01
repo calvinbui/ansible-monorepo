@@ -63,6 +63,16 @@
         env:
           DEBUG: "False"
           FLASK_APP: "server.py"
+        device_requests:
+          - driver: nvidia
+            count: -1
+            device_ids: []
+            options: {}
+            capabilities:
+              - - gpu
+                - video
+                - compute
+                - utility
         labels:
           com.centurylinklabs.watchtower.enable: "false"
 
