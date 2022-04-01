@@ -35,6 +35,7 @@
     - name: Clone
       ansible.builtin.git:
         repo: "https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git"
+        version: release
         dest: "{{ _config_dir.path }}/repo"
         update: true
       register: _tsd_repo_updated
