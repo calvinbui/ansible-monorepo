@@ -63,6 +63,13 @@
 
 - hosts: nvr
 
+  handlers:
+    - name: Restart nut
+      ansible.builtin.service:
+        name: nut-monitor
+        state: restarted
+        enabled: true
+
   tasks:
     - name: Set authorized keys
       ansible.posix.authorized_key:
@@ -72,3 +79,39 @@
       loop:
         - https://github.com/calvinbui.keys
         - "{{ hostvars['homelab.' + common_local_tld ]['__homelab_public_key']['content'] | b64decode }}"
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
+      changed_when: false
+
+    - name: Install nut
+      ansible.builtin.apt:
+        name: nut-client
+        state: present
+      register: result
+      until: result is success
+      retries: 5
+      delay: 5
+
+    - name: Configure nut
+      block:
+        - ansible.builtin.lineinfile:
+            path: "/etc/nut/{{ item.file }}.conf"
+            regex: "{{ item.regex }}"
+            line: "{{ item.line }}"
+          loop:
+            - file: nut
+              regex: "^MODE="
+              line: "MODE={{ nut_mode }}"
+
+        - ansible.builtin.blockinfile:
+            path: "/etc/nut/{{ item.file }}.conf"
+            marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.name }}"
+            block: "{{ item.block }}"
+          loop:
+            - file: upsmon
+              name: monitors
+              block: "{{ nut_ups_monitors | string }}"
+      notify: Restart nut
