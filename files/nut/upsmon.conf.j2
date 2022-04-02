@@ -82,9 +82,9 @@
 # MONITOR myups@bigserver 1 monmaster blah master
 # MONITOR su700@server.example.com 1 upsmon secretpass slave
 # MONITOR myups@localhost 1 upsmon pass master  (or slave)
-{% for monitors in nut_ups_monitors %}
-{{ monitors }}
-{% endfor %}
+
+{{ nut_ups_monitors }}
+
 # --------------------------------------------------------------------------
 # MINSUPPLIES <num>
 #

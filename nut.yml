@@ -5,25 +5,15 @@
   vars:
     application: nut
 
+    # variables are in group_vars. override as needed
     nut_host: localhost
-    nut_max_retry: 3
+
     nut_mode: netserver
-    nut_user_master_name: monuser
-    nut_user_master_password: !vault |
-      $ANSIBLE_VAULT;1.1;AES256
-      32313336633066613536613832363038366266303231373736623939333961646562366263313531
-      3934343164393463643136653866313365306266373037380a363136383730626366396432626565
-      38396366383734656336633038613666653633656463346237336464626430643265623636656466
-      3239643137303732330a333863646132383633643362366162353537643932656435373639396461
-      3264
-    nut_user_slave_name: monuserslave
-    nut_user_slave_password: !vault |
-      $ANSIBLE_VAULT;1.1;AES256
-      33653432376263353637643034306338383335386236616431633531616639373739386633613535
-      3363363864356235363932613831663934613432333137340a363862353137626262393061346664
-      32616132353861623338656334393630383933626130353532366363623034386534316137646430
-      6465666230333263370a366431626665326431316435326231326537386466313035633930383332
-      6135
+
+    nut_user_mode: "master"
+
+    nut_max_retry: 3
+
     nut_ups_devices:
       - |
         [cyberpower]
@@ -36,8 +26,7 @@
           override.battery.runtime.low = 300
           override.ups.delay.start = 120
           override.ups.delay.shutdown = 120
-    nut_ups_monitors:
-      - "MONITOR cyberpower@{{ nut_host }} 1 {{ nut_user_master_name }} {{ nut_user_master_password }} master"
+
     nut_ups_listen: |
       LISTEN 127.0.0.1 3493
       LISTEN {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }} 3493

@@ -71,12 +71,12 @@
 #
 # MONITOR myups@localhost 1 upsmon pass master  (or slave)
 
-[{{ nut_user_master_name }}]
-  password = {{ nut_user_master_password }}
+[{{ nut_user['master'].name }}]
+  password = {{ nut_user['master'].password }}
   actions = SET FSD
   instcmds = ALL
   upsmon master
 
-[{{ nut_user_slave_name }}]
-  password = {{ nut_user_slave_password }}
+[{{ nut_user['slave'].name }}]
+  password = {{ nut_user['slave'].password }}
   upsmon slave
