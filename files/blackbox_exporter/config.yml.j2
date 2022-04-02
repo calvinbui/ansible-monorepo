@@ -14,18 +14,18 @@ modules:
       preferred_ip_protocol: "ipv4"
       tls_config:
         insecure_skip_verify: true
-  
-  http_basic_auth: 
+
+  http_basic_auth:
     <<: *module
-    http: 
+    http:
       <<: *probe
       basic_auth:
         username: {{ blackbox_auth_username }}
         password: {{ blackbox_auth_password }}
-  
-  http_page_auth: 
+
+  http_page_auth:
     <<: *module
-    http: 
+    http:
       <<: *probe
       headers:
         Proxy-Authorization: Basic {{ (blackbox_auth_username + ":" + blackbox_auth_password) | b64encode }}
