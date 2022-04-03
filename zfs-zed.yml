@@ -30,9 +30,9 @@
           - s-nail
         state: present
 
-    - name: Create msmtp files
+    - name: Create msmtp log file
       ansible.builtin.file:
-        path: /var/log/msmtp.log
+        path: /var/log/msmtp
         state: touch
         mode: "0777"
         modification_time: preserve
@@ -41,13 +41,15 @@
     - name: Configure msmtp
       ansible.builtin.copy:
         dest: /etc/msmtprc
-        mode: "440"
+        owner: root
+        group: msmtp
+        mode: "640"
         content: |
           defaults
           auth           on
           tls            on
           tls_trust_file /etc/ssl/certs/ca-certificates.crt
-          logfile        /var/log/msmtp.log
+          logfile        /var/log/msmtp
 
           account alerts
           host           {{ common_email_server }}

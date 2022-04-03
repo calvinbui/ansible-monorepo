@@ -130,6 +130,8 @@ SHUTDOWNCMD "/sbin/shutdown -h +0"
 # Example:
 # NOTIFYCMD /usr/bin/notifyme
 
+NOTIFYCMD /etc/nut/email-notification.sh
+
 # --------------------------------------------------------------------------
 # POLLFREQ <n>
 #
@@ -188,7 +190,6 @@ HOSTSYNC 180
 # POLLFREQ values, and multiply by 3.
 
 DEADTIME 25
-MAXAGE 25
 
 # --------------------------------------------------------------------------
 # POWERDOWNFLAG - Flag file for forcing UPS shutdown on the master system
@@ -266,6 +267,17 @@ POWERDOWNFLAG /etc/nut/killpower
 # IGNORE - Don't do anything
 #
 # If you use IGNORE, don't use any other flags on the same line.
+
+NOTIFYFLAG ONLINE     SYSLOG+WALL+EXEC
+NOTIFYFLAG ONBATT     SYSLOG+WALL+EXEC
+NOTIFYFLAG LOWBATT    SYSLOG+WALL+EXEC
+NOTIFYFLAG FSD        SYSLOG+WALL+EXEC
+NOTIFYFLAG COMMOK     SYSLOG+WALL+EXEC
+NOTIFYFLAG COMMBAD    SYSLOG+WALL+EXEC
+NOTIFYFLAG SHUTDOWN   SYSLOG+WALL+EXEC
+NOTIFYFLAG REPLBATT   SYSLOG+WALL+EXEC
+NOTIFYFLAG NOCOMM     SYSLOG+WALL+EXEC
+NOTIFYFLAG NOPARENT   SYSLOG+WALL+EXEC
 
 # --------------------------------------------------------------------------
 # RBWARNTIME - replace battery warning time in seconds

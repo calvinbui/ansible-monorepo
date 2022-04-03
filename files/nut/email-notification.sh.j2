@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+EMAIL_BODY="Subject: nut: $NOTIFYTYPE"
+EMAIL_BODY+="\r\n\r\n"
+EMAIL_BODY+="UPS: $UPSNAME"
+EMAIL_BODY+="\r\n"
+EMAIL_BODY+="Alert type: $NOTIFYTYPE"
+EMAIL_BODY+="\r\n\r\n"
+EMAIL_BODY+="$(upsc "$UPSNAME")"
+
+# shellcheck disable=SC1083
+echo -e "$EMAIL_BODY" | msmtp -a default nut{{ common_email_to }}

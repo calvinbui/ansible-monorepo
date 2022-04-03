@@ -71,8 +71,9 @@
         dest: "/etc/nut/{{ item }}"
         owner: root
         group: nut
-        mode: "0640"
-      with_items:
+        mode: "0655"
+      loop:
+        - email-notification.sh
         - ups.conf
         - upsd.conf
         - upsd.users
