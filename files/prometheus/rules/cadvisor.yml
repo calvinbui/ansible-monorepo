@@ -25,7 +25,7 @@ groups:
     rules:
       -
         alert: Container CPU
-        expr: sum(rate(container_cpu_usage_seconds_total{name=~".+", name!="thespaghettidetective-ml_api"}[5m])) by (name,host) * 100 > 90
+        expr: sum(rate(container_cpu_usage_seconds_total{name=~".+"}[5m])) by (name,host) * 100 > 90
         for: 10m
         annotations:
           title: "Container CPU Usage"

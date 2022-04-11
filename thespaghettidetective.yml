@@ -64,6 +64,7 @@
         env:
           DEBUG: "False"
           FLASK_APP: "server.py"
+          HAS_GPU: "True"
         device_requests:
           - driver: nvidia
             count: -1
