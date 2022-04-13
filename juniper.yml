@@ -71,6 +71,50 @@
         port: 36
         description: "nvr"
         access: "{{ networks.iot.vlan }}"
+      -
+        port: 37
+        description: "cam-01"
+        access: "{{ networks.iot.vlan }}"
+      -
+        port: 38
+        description: "cam-02"
+        access: "{{ networks.iot.vlan }}"
+      -
+        port: 39
+        description: "cam-03"
+        access: "{{ networks.iot.vlan }}"
+      -
+        port: 40
+        description: "cam-04"
+        access: "{{ networks.iot.vlan }}"
+      -
+        port: 41
+        description: "cam-05"
+        access: "{{ networks.iot.vlan }}"
+      -
+        port: 42
+        description: "cam-06"
+        access: "{{ networks.iot.vlan }}"
+      -
+        port: 43
+        description: "cam-07"
+        access: "{{ networks.iot.vlan }}"
+      -
+        port: 44
+        description: "cam-08"
+        access: "{{ networks.iot.vlan }}"
+      -
+        port: 45
+        description: "cam-09"
+        access: "{{ networks.iot.vlan }}"
+      -
+        port: 46
+        description: "cam-10"
+        access: "{{ networks.iot.vlan }}"
+      -
+        port: 47
+        description: "cam-11"
+        access: "{{ networks.iot.vlan }}"
 
   tasks:
     - name: Enable netconf service

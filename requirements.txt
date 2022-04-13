@@ -1,2 +1,5 @@
 ansible
 ansible-lint[community,yamllint]
+paramiko
+ncclient
+xmltodict

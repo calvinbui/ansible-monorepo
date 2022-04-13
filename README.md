@@ -1,5 +1,10 @@
 # Ansible
 
+## Requirements
+
+```
+$ pip3 install -r requirements.txt
+```
 
 ## Inventory
 
