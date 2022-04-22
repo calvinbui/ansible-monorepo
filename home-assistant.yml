@@ -1,0 +1,74 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: home-assistant
+
+    docker_network: "{{ networks.iot }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: ghcr.io/home-assistant/home-assistant:stable
+        env:
+          TZ: "{{ common_timezone }}"
+        volumes:
+          - "{{ _config_dir.path }}:/config"
+          - /etc/localtime:/etc/localtime:ro
+        traefik:
+          - port: 8123
+            rule: Host(`home.{{ common_tld }}`)
+        homer:
+          name: Home Assistant
+          service: Tools
+          priority: 795
+          subtitle: "Home automation"
+          url: "https://home.{{ common_tld }}"
+        network_mode: "host"
+        privileged: true
+
+    - name: Wait for config file
+      wait_for:
+        path: "{{ _config_dir.path }}/configuration.yaml"
+
+    - name: Configure
+      yedit:
+        src: "{{ _config_dir.path }}/configuration.yaml"
+        key: "{{ item.key }}"
+        value: "{{ item.value }}"
+      loop: "{{ _ha_config | dict2items }}"
+      vars:
+        _ha_config:
+          http.use_x_forwarded_for: true
+          http.trusted_proxies:
+            - "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] | string }}"
+
+          home_connect.client_id: A30F3A70602165DB8E8C00874C9009C0C0B6DBC365F724C4176DDAE2023D32C3
+          home_connect.client_secret: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            31666132393736343639626338396430313139303834656562343039616230373164336336383863
+            6231633530396437323938343132636634343965643936620a366431363630393038626632663065
+            32386664333065386533323666666430366136373261393536333238326562643835663664613332
+            6664336431376632370a366336303862346431643531313662363266363332373836333031313732
+            37383162313531636362383938343735613431636431323136396565313665396661653436386435
+            63366162653361326531336131653635343461656239313265383434666266646633363630616632
+            30353966646137306431643739633436623364356137616261393134363031316530333430643634
+            35373332653130633762
+
+      notify: Restart
