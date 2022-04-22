@@ -120,7 +120,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-onlyoffice"
-        image: alehoho/oo-ce-docker-license
+        image: onlyoffice/documentserver:latest
         traefik:
           - port: 80
             rule: "Host(`onlyoffice.{{ common_tld }}`)"
