@@ -2,8 +2,11 @@
 """
 Converts my vars to the format that the Juniper modules expects
 """
+
+
 class FilterModule(object):
     """Ansible filter class"""
+
     def filters(self):
         """All the filters"""
         return {
@@ -11,7 +14,6 @@ class FilterModule(object):
             'to_juniper_l2_config': self.l2_config,
             'to_juniper_interface_config': self.interfaces_config,
         }
-
 
     def vlan_config(self, networks):
         """For junipernetworks.junos.junos_vlans"""
@@ -29,14 +31,21 @@ class FilterModule(object):
 
         return vlan_config
 
-
     def l2_config(self, port_config):
         """junipernetworks.junos.junos_l2_interfaces"""
         ports = []
 
         for k in port_config:
             port = {}
-            port["name"] = f"ge-0/0/{k['port']}"
+
+            interface = k.get('interface', 'ge')
+            fpc = '0'
+            if interface == 'ge':
+                pic = 0
+            elif interface == 'xe':
+                pic = 1
+
+            port["name"] = f"{interface}-{fpc}/{pic}/{k['port']}"
 
             if 'trunk' in k:
                 port["trunk"] = {}
@@ -53,14 +62,21 @@ class FilterModule(object):
 
         return ports
 
-
     def interfaces_config(self, port_config):
         """For junipernetworks.junos.junos_interfaces"""
         ports = []
 
         for k in port_config:
             port = {}
-            port["name"] = f"ge-0/0/{k['port']}"
+
+            interface = k.get('interface', 'ge')
+            fpc = '0'
+            if interface == 'ge':
+                pic = 0
+            elif interface == 'xe':
+                pic = 1
+
+            port["name"] = f"{interface}-{fpc}/{pic}/{k['port']}"
             port["description"] = k["description"]
             ports.append(port)
 

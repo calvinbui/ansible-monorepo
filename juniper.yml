@@ -115,6 +115,11 @@
         port: 47
         description: "cam-11"
         access: "{{ networks.iot.vlan }}"
+      -
+        interface: xe
+        port: 1
+        description: "nvr"
+        access: "{{ networks.iot.vlan }}"
 
   tasks:
     - name: Enable netconf service
