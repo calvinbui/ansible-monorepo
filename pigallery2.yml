@@ -1,0 +1,32 @@
+---
+- hosts: homelab
+
+  vars:
+    application: pigallery2
+
+    docker_network: "{{ networks.iot }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: bpatrik/pigallery2:latest
+        env:
+          NODE_ENV: production
+        volumes:
+          - "{{ _config_dir.path }}/config:/app/data/config"
+          - "{{ _config_dir.path }}/db:/app/data/db"
+          - "/mnt/files/Photos/WeddingGrouped:/app/data/images:ro"
+          - "{{ _config_dir.path }}/temp:/app/data/tmp"
+        traefik:
+          - port: 80
