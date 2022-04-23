@@ -52,6 +52,7 @@
         src: "{{ _config_dir.path }}/configuration.yaml"
         key: "{{ item.key }}"
         value: "{{ item.value }}"
+      notify: Restart
       loop: "{{ _ha_config | dict2items }}"
       vars:
         _ha_config:
@@ -71,4 +72,11 @@
             30353966646137306431643739633436623364356137616261393134363031316530333430643634
             35373332653130633762
 
+    - name: Install HACS
+      community.docker.docker_container_exec:
+        container: "{{ application }}"
+        command: bash -c "wget -O - https://get.hacs.xyz | bash -"
+        chdir: /config
       notify: Restart
+      register: _command_result
+      changed_when: "'HACS directory already exist' not in _command_result.stdout"
