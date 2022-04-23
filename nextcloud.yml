@@ -107,13 +107,16 @@
           }'
 
     - name: Overwrite Nextcloud protocol to HTTPS within config
-      ansible.builtin.command: "docker exec --user www-data {{ application }} php occ config:system:set overwriteprotocol --value='https'"
-      register: command_result
-      failed_when: "'System config value overwriteprotocol set to string https' not in command_result.stdout"
+      community.docker.docker_container_exec:
+        container: "{{ application }}"
+        user: www-data
+        command: /usr/local/bin/php occ config:system:set overwriteprotocol --value='https'
+      register: _command_result
+      failed_when: "'System config value overwriteprotocol set to string https' not in _command_result.stdout"
       changed_when: false
-      until: command_result is success
-      retries: 5
-      delay: 5
+      until: _command_result is success
+      retries: 3
+      delay: 2
 
     - name: Create OnlyOffice container
       ansible.builtin.include_role:
