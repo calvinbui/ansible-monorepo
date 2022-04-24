@@ -2,8 +2,8 @@
 ---
 
 global:
-  scrape_interval: 30s
-  evaluation_interval: 30s
+  scrape_interval: 60s
+  evaluation_interval: 60s
 
 rule_files:
   - '/rules/*.yml'
@@ -64,6 +64,7 @@ scrape_configs:
         replacement: blackbox_exporter.{{ docker_network.name }}:9115
 
   - job_name: blackbox_docker_http
+    scrape_interval: 120s
     scrape_timeout: 30s
     metrics_path: /probe
     params:
@@ -94,6 +95,7 @@ scrape_configs:
         replacement: blackbox_exporter.{{ docker_network.name }}:9115
 
   - job_name: blackbox_docker_http_basic_auth
+    scrape_interval: 120s
     scrape_timeout: 30s
     metrics_path: /probe
     params:
@@ -124,6 +126,7 @@ scrape_configs:
         replacement: blackbox_exporter.{{ docker_network.name }}:9115
 
   - job_name: blackbox_docker_http_page_auth
+    scrape_interval: 120s
     scrape_timeout: 30s
     metrics_path: /probe
     params:
