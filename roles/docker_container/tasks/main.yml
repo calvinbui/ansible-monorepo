@@ -105,6 +105,7 @@
 
     security_opts: "{{ security_opts | default(omit) }}"
     capabilities: "{{ capabilities | default(omit) }}"
+    cap_drop: "{{ cap_drop  | default(omit) }}"
     pid_mode: "{{ pid_mode | default(omit) }}"
     privileged: "{{ privileged | default(omit) }}"
     devices: "{{ devices | default(omit) }}"
