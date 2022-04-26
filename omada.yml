@@ -30,8 +30,6 @@
           - "{{ _config_dir.path }}/work:/opt/tplink/EAPController/work"
           - "{{ _config_dir.path }}/logs:/opt/tplink/EAPController/logs"
         ipv4_address: "{{ docker_network.prefix }}.3"
-        traefik:
-
         homer:
           name: TP-Link Omada Controller
           service: Infrastructure

@@ -104,6 +104,7 @@
         driver_options:
           parent: "{{ item.value.parent }}.{{ item.value.vlan }}"
       loop: "{{ networks | dict2items }}"
+      notify: Restart
 
     - name: Enable swap limit support
       ansible.builtin.lineinfile:
