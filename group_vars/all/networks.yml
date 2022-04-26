@@ -8,7 +8,7 @@ networks:
     dns: 192.168.1.1
     iprange: 192.168.1.128/26
     prefix: 192.168.1
-    parent: eno1
+    parent: ens3f0
     driver: macvlan
     vlan: 10
   user:
@@ -18,7 +18,7 @@ networks:
     dns: 192.168.2.1
     iprange: 192.168.2.128/26
     prefix: 192.168.2
-    parent: eno1
+    parent: ens3f0
     driver: macvlan
     vlan: 20
   iot:
@@ -28,7 +28,7 @@ networks:
     dns: 192.168.3.1
     iprange: 192.168.3.128/26
     prefix: 192.168.3
-    parent: eno1
+    parent: ens3f0
     driver: macvlan
     vlan: 30
   pub:
@@ -38,7 +38,7 @@ networks:
     dns: 192.168.4.1
     iprange: 192.168.4.128/25
     prefix: 192.168.4
-    parent: eno1
+    parent: ens3f0
     driver: macvlan
     vlan: 40
   granny:
@@ -48,6 +48,6 @@ networks:
     dns: 192.168.5.1
     iprange: 192.168.5.128/25
     prefix: 192.168.5
-    parent: eno1
+    parent: ens3f0
     driver: macvlan
     vlan: 50

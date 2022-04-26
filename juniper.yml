@@ -117,8 +117,18 @@
         access: "{{ networks.iot.vlan }}"
       -
         interface: xe
+        port: 0
+        description: "homelab-xe"
+        trunk:
+          - "{{ networks.granny.vlan }}"
+          - "{{ networks.iot.vlan }}"
+          - "{{ networks.pub.vlan }}"
+          - "{{ networks.user.vlan }}"
+          - "{{ networks.mgmt.vlan }}"
+      -
+        interface: xe
         port: 1
-        description: "nvr"
+        description: "nvr-xe"
         access: "{{ networks.iot.vlan }}"
 
   tasks:
