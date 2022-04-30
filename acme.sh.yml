@@ -3,6 +3,8 @@
 - hosts: homelab:octopi
 
   vars:
+    application: acme.sh
+
     acme_dir: "{{ common_directory }}/acme.sh"
     acme_repo_dir: "{{ acme_dir }}/repo"
     acme_install_dir: "{{ acme_dir }}/install"
@@ -29,7 +31,7 @@
       ansible.builtin.git:
         repo: https://github.com/acmesh-official/acme.sh.git
         dest: "{{ acme_repo_dir }}"
-        version: 3.0.1
+        version: 3.0.2
 
     - name: Setup acme.sh
       ansible.builtin.shell: |
@@ -53,7 +55,7 @@
 
     - name: Copy scripts
       ansible.builtin.template:
-        src: "files/acme.sh/{{ item.script }}"
+        src: "{{ files_directory }}/{{ item.script }}"
         dest: "{{ acme_scripts_dir }}/{{ item.script }}"
         mode: 0755
       loop: "{{ cert_domains }}"
