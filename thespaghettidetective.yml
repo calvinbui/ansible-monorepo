@@ -78,11 +78,11 @@
         labels:
           com.centurylinklabs.watchtower.enable: "false"
 
-    - name: Build web image
+    - name: Build backend image
       community.docker.docker_image:
-        name: "{{ application }}-web"
+        name: "{{ application }}-backend"
         build:
-          path: "{{ _config_dir.path }}/repo/web"
+          path: "{{ _config_dir.path }}/repo/backend"
           dockerfile: Dockerfile
           pull: true
         source: build
@@ -94,11 +94,11 @@
         name: docker_container
       vars:
         name: "{{ application }}-web"
-        image: "{{ application }}-web"
+        image: "{{ application }}-backend"
         command:
           - sh
           - -c
-          - "python manage.py collectstatic --noinput && python manage.py migrate && python manage.py runserver --noreload 0.0.0.0:3334"
+          - "python manage.py migrate && python manage.py collectstatic -v 2 --noinput && python manage.py runserver --nostatic --noreload 0.0.0.0:3334"
         traefik:
           - port: 3334
             rule: Host(`{{ application }}.{{ common_tld }}`)
@@ -109,7 +109,8 @@
           subtitle: "3D printing failure detection"
           url: "https://{{ application }}.{{ common_tld }}"
         volumes: &web_volumes
-          - "{{ config_directory }}/repo/web:/app"
+          - "{{ config_directory }}/repo/backend:/app"
+          - "{{ config_directory }}/repo/frontend:/frontend"
         env: &web_env
           EMAIL_HOST: "{{ common_email_server }}"
           EMAIL_HOST_USER: "{{ common_email_username }}"
@@ -131,8 +132,8 @@
           ML_API_HOST: "http://{{ application }}-ml_api.{{ docker_network.name }}:3333"
 
           ACCOUNT_ALLOW_SIGN_UP: "False"
+          WEBPACK_LOADER_ENABLED: "False"
 
-          WEBPACK_LOADER_ENABLED: ""
         labels:
           com.centurylinklabs.watchtower.enable: "false"
 
@@ -141,7 +142,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-tasks"
-        image: "{{ application }}-web"
+        image: "{{ application }}-backend"
         command:
           - sh
           - -c
