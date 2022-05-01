@@ -4,6 +4,22 @@
 
 - hosts: homelab
 
+  handlers:
+    - name: Restart SSH
+      ansible.builtin.service:
+        name: ssh
+        state: restarted
+
+    - name: Restart sysstat
+      ansible.builtin.service:
+        name: sysstat
+        state: restarted
+
+    - name: Restart auditd
+      ansible.builtin.service:
+        name: auditd
+        state: restarted
+
   tasks:
     - name: Update apt cache
       ansible.builtin.apt:
@@ -52,3 +68,177 @@
       until: result is success
       retries: 5
       delay: 5
+
+    - name: Disable core dumps
+      community.general.pam_limits:
+        domain: '*'
+        limit_type: hard
+        limit_item: core
+        value: 0
+
+    - name: Configure logins.def
+      ansible.builtin.lineinfile:
+        path: /etc/login.defs
+        state: present
+        regexp: "^{{ item.key | upper }}"
+        line: "{{ item.key | upper }} {{ item.value }}"
+      loop: "{{ items | dict2items }}"
+      vars:
+        items:
+          # https://cisofy.com/lynis/controls/AUTH-9328/
+          umask: "027"
+          # https://cisofy.com/lynis/controls/AUTH-9286/
+          pass_min_days: "1"
+          pass_max_days: "90"
+          # https://cisofy.com/lynis/controls/AUTH-9230/
+          sha_crypt_min_rounds: "5000"
+          sha_crypt_max_rounds: "5000"
+
+    # https://cisofy.com/lynis/controls/NETW-3200/
+    - name: Disable unused protocols
+      block:
+        - name: Prevent module from being loaded
+          ansible.builtin.copy:
+            dest: "/etc/modprobe.d/{{ item }}.conf"
+            content: "install {{ item }} /bin/true"
+            owner: "{{ common_root_id }}"
+            group: "{{ common_root_group }}"
+            mode: "0644"
+          loop:
+            - dccp
+            - sctp
+            - rds
+            - tipc
+
+        - name: Blacklist modules
+          ansible.builtin.lineinfile:
+            dest: /etc/modprobe.d/blacklist.conf
+            state: present
+            regex: "^blacklist {{ item }}$"
+            line: "blacklist {{ item }}"
+          loop:
+            - dccp
+            - sctp
+            - rds
+            - tipc
+
+    # https://cisofy.com/lynis/controls/SSH-7408/
+    - name: Harden SSH configuration
+      ansible.builtin.lineinfile:
+        dest: /etc/ssh/sshd_config
+        state: present
+        regex: "^{{ item.key }}"
+        line: "{{ item.key }} {{ item.value }}"
+      loop: "{{ items | dict2items }}"
+      vars:
+        items:
+          AllowTcpForwarding: "no"
+          ClientAliveCountMax: "2"
+          Compression: "no"
+          LogLevel: "VERBOSE"
+          MaxAuthTries: "3"
+          MaxSessions: "2"
+          TCPKeepAlive: "no"
+          AllowAgentForwarding: "no"
+          X11Forwarding: "no"
+
+    - name: Fix file permissions
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        mode: "{{ item.permissions }}"
+      loop: "{{ _lynis_file_permissions }}"
+      vars:
+        _lynis_file_permissions:
+          # https://cisofy.com/lynis/controls/FILE-7524/
+          - path: /etc/at.deny
+            permissions: 0600
+          - path: /etc/crontab
+            permissions: 0600
+          - path: /etc/ssh/sshd_config
+            permissions: 0600
+          - path: /etc/cron.d
+            permissions: 0700
+          - path: /etc/cron.daily
+            permissions: 0700
+          - path: /etc/cron.hourly
+            permissions: 0700
+          - path: /etc/cron.monthly
+            permissions: 0700
+          - path: /etc/cron.weekly
+            permissions: 0700
+          # https://cisofy.com/lynis/controls/HRDN-7222/
+          - path: /usr/bin/as
+            permissions: 0750
+          - path: /usr/bin/gcc
+            permissions: 0750
+          - path: /usr/bin/cc
+            permissions: 0750
+
+    # https://cisofy.com/lynis/controls/BANN-7126/
+    # https://cisofy.com/lynis/controls/BANN-7130/
+    - name: Create legal banners
+      ansible.builtin.lineinfile:
+        path: "{{ item }}"
+        regex: "^Unauthorised access"
+        line: "Unauthorised access to, or modification of, restricted data held in a computer is a criminal offence under section 308H of the Crimes Act 1900, which carries a maximum penalty of 2 years in prison."
+      loop:
+        - /etc/issue
+        - /etc/issue.net
+
+    - name: Accounting tools
+      block:
+        # https://cisofy.com/lynis/controls/ACCT-9622/
+        # https://cisofy.com/lynis/controls/ACCT-9626/
+        # https://cisofy.com/lynis/controls/ACCT-9628/
+        - name: Install accounting tools
+          ansible.builtin.apt:
+            name:
+              - acct
+              - sysstat
+              - auditd
+            state: present
+
+        # https://cisofy.com/lynis/controls/ACCT-9626/
+        - name: Enable sysstat config
+          ansible.builtin.lineinfile:
+            path: /etc/default/sysstat
+            regex: "^ENABLED="
+            line: 'ENABLED="true"'
+          notify: Restart sysstat
+
+        # https://cisofy.com/lynis/controls/ACCT-9626/
+        - name: Enable sysstat service
+          ansible.builtin.service:
+            name: sysstat
+            enabled: true
+            state: started
+
+        # https://cisofy.com/lynis/controls/ACCT-9630
+        - name: Setup auditd rules
+          ansible.builtin.get_url:
+            url: https://raw.githubusercontent.com/Neo23x0/auditd/master/audit.rules
+            dest: /etc/audit/rules.d/audit.rules
+            mode: "0640"
+          notify: Restart auditd
+
+    # https://cisofy.com/lynis/controls/HRDN-7230/
+    - name: Install malware scanners
+      ansible.builtin.apt:
+        name:
+          - rkhunter
+          - chkrootkit
+        state: present
+
+    # https://cisofy.com/lynis/controls/FINT-4350/
+    # https://help.ubuntu.com/community/FileIntegrityAIDE#Resources
+    - name: Install file integrity tool
+      ansible.builtin.apt:
+        name: aide
+        state: present
+
+    # https://cisofy.com/lynis/controls/AUTH-9282/
+    - name: Set password expirations
+      ansible.builtin.user:
+        name: "{{ common_user }}"
+        password_expire_min: 1
+        password_expire_max: 90
