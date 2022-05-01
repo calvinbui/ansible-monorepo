@@ -97,7 +97,7 @@
           # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
           [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
         dest: "/home/{{ common_user }}/.zshrc"
-        mode: 0770
+        mode: "0770"
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
 
@@ -105,7 +105,7 @@
       ansible.builtin.copy:
         src: "{{ files_directory }}/p10k.zsh"
         dest: "/home/{{ common_user }}/.p10k.zsh"
-        mode: 0770
+        mode: "0770"
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
 
@@ -115,6 +115,7 @@
           #!/usr/bin/env zsh
           {{ item.value }}
         dest: "~/.oh-my-zsh/custom/{{ item.key }}.zsh"
+        mode: "0700"
       become: false
       become_user: "{{ common_user }}"
       loop: "{{ _zsh_scripts | dict2items }}"

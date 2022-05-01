@@ -97,7 +97,8 @@
 
     - name: Configure nut
       block:
-        - ansible.builtin.lineinfile:
+        - name: Set nut mode
+          ansible.builtin.lineinfile:
             path: "/etc/nut/{{ item.file }}.conf"
             regex: "{{ item.regex }}"
             line: "{{ item.line }}"
@@ -106,7 +107,8 @@
               regex: "^MODE="
               line: "MODE={{ nut_mode }}"
 
-        - ansible.builtin.blockinfile:
+        - name: Configure nut
+          ansible.builtin.blockinfile:
             path: "/etc/nut/{{ item.file }}.conf"
             marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.name }}"
             block: "{{ item.block }}"
