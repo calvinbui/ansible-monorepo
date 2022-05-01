@@ -104,6 +104,8 @@
           - debsums
           # https://cisofy.com/lynis/controls/PKGS-7394/
           - apt-show-versions
+          - iotop
+          - powertop
         state: present
 
     - name: Install snap packages
