@@ -5,9 +5,10 @@
   vars:
     application: zsh
 
-    zsh_theme: powerlevel10k/powerlevel10k
-    zsh_theme_repo: https://github.com/romkatv/powerlevel10k
-    zsh_theme_version: v1.15.0
+    zsh_theme:
+      name: powerlevel10k/powerlevel10k
+      repo: https://github.com/romkatv/powerlevel10k
+      version: v1.16.1
 
     zsh_plugins:
       - name: autojump
@@ -65,9 +66,9 @@
 
     - name: Clone theme
       ansible.builtin.git:
-        repo: "{{ zsh_theme_repo }}"
-        dest: "~/.oh-my-zsh/custom/themes/{{ zsh_theme_repo.split('/')[-1] | regex_replace('.git$', '') }}"
-        version: "{{ zsh_theme_version | default(omit) }}"
+        repo: "{{ zsh_theme.repo }}"
+        dest: "~/.oh-my-zsh/custom/themes/{{ zsh_theme.repo.split('/')[-1] | regex_replace('.git$', '') }}"
+        version: "{{ zsh_theme.version | default(omit) }}"
       become: false
       become_user: "{{ common_user }}"
 
@@ -83,7 +84,7 @@
 
           export ZSH=$HOME/.oh-my-zsh
 
-          ZSH_THEME={{ zsh_theme }}
+          ZSH_THEME={{ zsh_theme.name }}
 
           plugins=(
           {% for plugin in zsh_plugins %}
@@ -100,10 +101,26 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
 
-    - name: Copy p10k.zsh
+    - name: Copy p10k config
       ansible.builtin.copy:
         src: "{{ files_directory }}/p10k.zsh"
         dest: "/home/{{ common_user }}/.p10k.zsh"
         mode: 0770
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
+
+    - name: Create custom scripts
+      ansible.builtin.copy:
+        content: |
+          #!/usr/bin/env zsh
+          {{ item.value }}
+        dest: "~/.oh-my-zsh/custom/{{ item.key }}.zsh"
+      become: false
+      become_user: "{{ common_user }}"
+      loop: "{{ _zsh_scripts | dict2items }}"
+      vars:
+        _zsh_scripts:
+          show-updates: |
+            if ! sudo grep -Eq "^0 updates can be applied immediately" /var/lib/update-notifier/updates-available; then
+              sudo apt list --upgradable -a 2>/dev/null
+            fi
