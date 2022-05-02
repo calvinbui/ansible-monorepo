@@ -31,7 +31,7 @@ services:
         subtitle: 3D printing controller
         url: https://octopi.{{ common_local_tld }}
         priority: 890
-        monitor: false
+        monitor: true
       -
         name: OctoPrint Webcam
         icon: fas fa-camera-retro
@@ -49,7 +49,7 @@ services:
       -
         name: Blue Iris
         logo: blueiris.png
-        subtitle: Grandma Security Cameras
+        subtitle: Grandma's Security Cameras
         url: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           65306366313434376463353439646663623532393635303337623936646334373163643030366533
