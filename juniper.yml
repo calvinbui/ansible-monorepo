@@ -47,14 +47,28 @@
         access: "{{ networks.mgmt.vlan }}"
       -
         port: 4
-        description: "wifi"
+        description: "wifi-01"
         access: "{{ networks.user.vlan }}"
         trunk:
           - "{{ networks.granny.vlan }}"
           - "{{ networks.iot.vlan }}"
       -
         port: 5
-        description: "wifi"
+        description: "wifi-02"
+        access: "{{ networks.user.vlan }}"
+        trunk:
+          - "{{ networks.granny.vlan }}"
+          - "{{ networks.iot.vlan }}"
+      -
+        port: 6
+        description: "wifi-03"
+        access: "{{ networks.user.vlan }}"
+        trunk:
+          - "{{ networks.granny.vlan }}"
+          - "{{ networks.iot.vlan }}"
+      -
+        port: 7
+        description: "wifi-04"
         access: "{{ networks.user.vlan }}"
         trunk:
           - "{{ networks.granny.vlan }}"
