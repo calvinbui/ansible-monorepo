@@ -10,7 +10,8 @@ templates:
 receivers:
   - name: mattermost-home-lab-alerts
     slack_configs:
-      - channel: '#home-lab-alerts'
+      - &commonMattermostConfig
+        channel: '#home-lab-alerts'
         send_resolved: true
       {%- raw %}
         title: |-
@@ -21,9 +22,23 @@ receivers:
           {{ end }}
       {% endraw %}
 
+  - name: mattermost-home-lab-alerts-no-resolve
+    slack_configs:
+      - <<: *commonMattermostConfig
+        send_resolved: false
+
 route:
   receiver: mattermost-home-lab-alerts
   group_by: ['alertname','name']
   group_wait: 10s
   group_interval: 30s
   repeat_interval: 24h
+
+  routes:
+    - receiver: "mattermost-home-lab-alerts-no-resolve"
+      group_by: ['alertname','name']
+      group_wait: 10s
+      group_interval: 30s
+      repeat_interval: 24h
+      matchers:
+        - send_resolved = "false"
