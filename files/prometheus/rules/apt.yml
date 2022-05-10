@@ -5,6 +5,8 @@ groups:
         alert: Reboot Required
         expr: node_reboot_required != 0
         for: 10m
+        labels:
+          send_resolved: "false"
         annotations:
           title: Reboot Required
           description: "A reboot is required to install updates"
