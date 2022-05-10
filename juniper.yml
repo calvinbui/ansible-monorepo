@@ -127,7 +127,7 @@
         access: "{{ networks.iot.vlan }}"
       -
         port: 47
-        description: "cam-11"
+        description: "alarm"
         access: "{{ networks.iot.vlan }}"
       -
         interface: xe
