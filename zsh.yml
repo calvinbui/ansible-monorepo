@@ -123,5 +123,5 @@
         _zsh_scripts:
           show-updates: |
             if ! sudo grep -Eq "^0 updates can be applied immediately" /var/lib/update-notifier/updates-available; then
-              sudo apt list --upgradable -a 2>/dev/null
+              sudo apt list --upgradable 2>/dev/null
             fi
