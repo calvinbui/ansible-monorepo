@@ -7,10 +7,10 @@
 
     # https://www.nvidia.com/en-us/drivers/unix/
     # check compatibility table https://github.com/keylase/nvidia-patch
-    nvidia_driver_version: "510.60.02"
+    nvidia_driver_version: "510.68.02"
 
     # manually generated
-    nvidia_driver_checksum: "sha256:a800dfc0549078fd8c6e8e6780efb8eee87872e6055c7f5f386a4768ce07e003"
+    nvidia_driver_checksum: "sha256:bd2c344ac92b2fc12b06043590a4fe8d4eb0ccb74d0c49352f004cf2d299f4c5"
 
   tasks:
     - name: Create config folder
