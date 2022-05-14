@@ -111,17 +111,8 @@
         line: "display_rotate=3"
 
     - name: Reboot to load hyperpixel drivers
-      ansible.builtin.shell: "sleep 5 && reboot"
-      async: 1
-      poll: 0
-      when: _hyperpixel_driver_clone.changed
-
-    - name: Wait for reboot to complete
-      ansible.builtin.wait_for_connection:
-        connect_timeout: 20
-        sleep: 5
-        delay: 5
-        timeout: 300
+      ansible.builtin.reboot:
+        reboot_timeout: 360
       when: _hyperpixel_driver_clone.changed
 
     # octodash installation
@@ -185,7 +176,6 @@
         path: "/home/{{ common_user }}/.bashrc"
 
     - name: Reboot to start octodash
-      ansible.builtin.shell: "sleep 5 && reboot"
-      async: 1
-      poll: 0
+      ansible.builtin.reboot:
+        reboot_timeout: 360
       when: _octodash_install.changed

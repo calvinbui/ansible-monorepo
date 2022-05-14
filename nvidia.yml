@@ -42,17 +42,8 @@
       when: __disable_nouveau.changed
 
     - name: Reboot to disable nouveau
-      ansible.builtin.shell: "sleep 5 && reboot"
-      async: 1
-      poll: 0
-      when: __disable_nouveau.changed
-
-    - name: Wait for reboot to complete
-      ansible.builtin.wait_for_connection:
-        connect_timeout: 20
-        sleep: 5
-        delay: 180
-        timeout: 30
+      ansible.builtin.reboot:
+        reboot_timeout: 360
       when: __disable_nouveau.changed
 
     - name: Install prerequisites
@@ -132,17 +123,8 @@
         - __install_nvidia_toolkit.changed
 
     - name: Reboot to load NVIDIA drivers
-      ansible.builtin.shell: "sleep 5 && reboot"
-      async: 1
-      poll: 0
-      when: __install_nvidia_drivers.changed
-
-    - name: Wait for reboot to complete
-      ansible.builtin.wait_for_connection:
-        connect_timeout: 20
-        sleep: 5
-        delay: 300
-        timeout: 10
+      ansible.builtin.reboot:
+        reboot_timeout: 360
       when: __install_nvidia_drivers.changed
 
     - name: Clone NVIDIA patch repo
