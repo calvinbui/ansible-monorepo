@@ -60,6 +60,43 @@
           http.trusted_proxies:
             - "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] | string }}"
 
+    - name: Install Addons
+      block:
+        - name: Create addons folder
+          ansible.builtin.file:
+            path: "{{ _config_dir.path }}/addons"
+            state: directory
+            owner: "{{ common_root_id }}"
+            group: "{{ common_root_group }}"
+            mode: "0771"
+          register: _addons_dir
+
+        - name: Create Eufy Security WS container
+          ansible.builtin.include_role:
+            name: docker_container
+          vars:
+            name: "eufy-security-ws"
+            image: bropat/eufy-security-ws:0.8.4
+            env:
+              USERNAME: !vault |
+                $ANSIBLE_VAULT;1.1;AES256
+                65333435353932346564656234626632643261396239663732336531633564613662626635623135
+                3361663932376664386438303532346634663138303764300a313363623663656638623763376332
+                34336239666239333432383533353435656334356263383764613166326363386439396539373166
+                6133396266633663630a363064633339356262363138363034623563613861346330313862333231
+                6534
+              PASSWORD: !vault |
+                $ANSIBLE_VAULT;1.1;AES256
+                66333734646634616635306165633766386266336632633139633934323537653061643935323230
+                3066313664366663626334316631383031333835623437380a336163316330636136373965616430
+                63333036393739333465373863383862623632626130393138633633393065643661663061643537
+                6336656161643963340a623566663033303765386366303764313366353931326331353337363365
+                38616532323133313261363537386438623266316361303432303834303535376463
+              LANGUAGE: "{{ common_language_iso_639 }}"
+              COUNTRY: "{{ common_country_iso_3166 }}"
+            volumes:
+              - "{{ _addons_dir.path }}/eufy-security-ws:/data"
+
     - name: Configure integrations
       block:
         - name: Create integration configurations
