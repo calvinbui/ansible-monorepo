@@ -2,7 +2,7 @@
 - hosts: homelab
 
   vars:
-    application: thespaghettidetective
+    application: obico
 
     docker_network: "{{ networks.iot }}"
 
@@ -34,11 +34,11 @@
 
     - name: Clone
       ansible.builtin.git:
-        repo: "https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git"
+        repo: "https://github.com/TheSpaghettiDetective/obico-server.git"
         version: release
         dest: "{{ _config_dir.path }}/repo"
         update: true
-      register: _tsd_repo_updated
+      register: _obico_repo_updated
 
     - name: Build ml_api image
       community.docker.docker_image:
@@ -49,7 +49,7 @@
           pull: true
         source: build
         state: present
-        force_source: "{{ true if _tsd_repo_updated.changed else false }}"
+        force_source: "{{ true if _obico_repo_updated.changed else false }}"
 
     - name: Create ml_api container
       ansible.builtin.include_role:
@@ -87,7 +87,7 @@
           pull: true
         source: build
         state: present
-        force_source: "{{ true if _tsd_repo_updated.changed else false }}"
+        force_source: "{{ true if _obico_repo_updated.changed else false }}"
 
     - name: Create web container
       ansible.builtin.include_role:
@@ -103,7 +103,7 @@
           - port: 3334
             rule: Host(`{{ application }}.{{ common_tld }}`)
         homer:
-          name: The Spaghetti Detective
+          name: Obico
           service: Tools
           priority: 390
           subtitle: "3D printing failure detection"
