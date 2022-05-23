@@ -21,7 +21,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: mbentley/omada-controller:5.0
+        image: mbentley/omada-controller:5.3
         env:
           TZ: "{{ common_timezone }}"
         volumes:
