@@ -76,7 +76,7 @@
             name: docker_container
           vars:
             name: "eufy-security-ws"
-            image: bropat/eufy-security-ws:0.8.4
+            image: bropat/eufy-security-ws
             env:
               USERNAME: !vault |
                 $ANSIBLE_VAULT;1.1;AES256
