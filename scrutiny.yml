@@ -37,7 +37,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: analogj/scrutiny
+        image: ghcr.io/analogj/scrutiny:master-omnibus
         capabilities:
           - SYS_RAWIO
         volumes:
