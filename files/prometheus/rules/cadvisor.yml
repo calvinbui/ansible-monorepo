@@ -15,7 +15,7 @@ groups:
     rules:
       -
         alert: Container Down
-        expr: time() - (sum without (id) (container_last_seen{name=~".+"})) > 60
+        expr: time() - (sum without (id) (container_last_seen{name=~".+"})) > 75
         for: 4m
         annotations:
           title: "Container missing"
