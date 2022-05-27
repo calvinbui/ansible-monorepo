@@ -117,6 +117,13 @@
           loop: "{{ _home_assistant_config_integrations | dict2items }}"
       vars:
         _home_assistant_config_integrations:
+          notify:
+            - name: MOBILE_PHONES
+              platform: group
+              services:
+                - service: mobile_app_calvin_s_galaxy_s21
+                - service: mobile_app_tammy_s_galaxy_s21
+
           home_connect:
             client_id: A30F3A70602165DB8E8C00874C9009C0C0B6DBC365F724C4176DDAE2023D32C3
             client_secret: !vault |

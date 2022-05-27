@@ -1,5 +1,9 @@
 #jinja2: lstrip_blocks: "true", trim_blocks: "false"
 ---
+{% if item.value is iterable and (item.value is not string and item.value is not mapping) %}
+{{ item.value | to_nice_yaml(indent=2) }}
+{% else %}
 {% for key, value in item.value.items() %}
 {{ key }}: {{ value }}
 {% endfor %}
+{% endif %}
