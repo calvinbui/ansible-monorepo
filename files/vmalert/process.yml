@@ -1,0 +1,39 @@
+---
+
+groups:
+  - name: process_exporter
+    rules:
+      -
+        alert: process_exporter is down
+        expr: up{job="process_exporter"} != 1
+        for: 5m
+        annotations:
+          title: process_exporter is down
+          description: "The exporter could not be reached"
+
+  - name: NUT
+    rules:
+      - alert: NUT Driver
+        expr: namedprocess_namegroup_num_procs{groupname="usbhid-ups"} != 1
+        for: 1m
+        labels:
+          severity: error
+        annotations:
+          title: "NUT Driver Service"
+          description: "The nut-driver service is abnormal"
+      - alert: NUT Client
+        expr: namedprocess_namegroup_num_procs{groupname="upsmon"} != 2
+        for: 1m
+        labels:
+          severity: error
+        annotations:
+          title: "NUT Client Service"
+          description: "The nut-client service is abnormal"
+      - alert: NUT Server
+        expr: namedprocess_namegroup_num_procs{groupname="upsd"} != 1
+        for: 1m
+        labels:
+          severity: error
+        annotations:
+          title: "NUT Server Service"
+          description: "The nut-server service is abnormal"

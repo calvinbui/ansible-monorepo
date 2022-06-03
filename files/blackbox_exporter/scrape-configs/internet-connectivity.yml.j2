@@ -1,0 +1,19 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
+---
+- job_name: blackbox_internet_connectivity
+  metrics_path: /probe
+  params:
+    module: [icmp]
+  static_configs:
+    - targets:
+      - 1.1.1.1
+      - 1.0.0.1
+      - 8.8.8.8
+      - 8.8.4.4
+  relabel_configs:
+    - source_labels: [__address__]
+      target_label: __param_target
+    - source_labels: [__param_target]
+      target_label: instance
+    - target_label: __address__
+      replacement: {{ application }}.{{ docker_network.name }}:9115

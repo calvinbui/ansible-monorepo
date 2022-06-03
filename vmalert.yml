@@ -1,0 +1,56 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: vmalert
+
+    docker_network: "{{ vm_network }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: "docker restart {{ application }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "1000"
+        group: "50"
+        mode: "0755"
+      register: _config_dir
+
+    - name: Copy rules
+      ansible.posix.synchronize:
+        src: "{{ files_directory }}/"
+        dest: "{{ _config_dir.path }}/"
+        delete: true
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: victoriametrics/vmalert:latest
+        command:
+          - -rule=/rules/*
+          - -configCheckInterval=60s
+          - -evaluationInterval=60s
+
+          - "-notifier.url=http://alertmanager.{{ vm_network.name }}:9093"
+
+          - "-datasource.url=http://victoriametrics.{{ vm_network.name }}:8428"
+          - "-remoteWrite.url=http://victoriametrics.{{ vm_network.name }}:8428"
+          - "-remoteRead.url=http://victoriametrics.{{ vm_network.name }}:8428"
+        volumes:
+          - "{{ _config_dir.path }}:/rules"
+        traefik:
+          - port: 8880
+            auth: page
+        homer:
+          name: vmalert
+          service: Monitoring
+          priority: 990
+          subtitle: "VictoriaMetrics alerting"
+        metrics:
+          - port: 8880

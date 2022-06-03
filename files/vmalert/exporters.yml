@@ -1,0 +1,40 @@
+---
+
+groups:
+  - name: exporters
+    rules:
+      -
+        alert: Target Missing
+        expr: up == 0
+        for: 5m
+        annotations:
+          title: Exporter target missing
+          description: "The exporter {{ $labels.job }} for instance {{ $labels.instance }} is not responding"
+      -
+        alert: Target Empty
+        expr: prometheus_sd_discovered_targets == 0
+        for: 0m
+        annotations:
+          title: Exporter target empty
+          description: "Exporter has no target in service discovery"
+      -
+        alert: Target ScrapingSlow
+        expr: prometheus_target_interval_length_seconds{quantile="0.9"} > 121
+        for: 5m
+        annotations:
+          title: Exporter target scraping slow
+          description: "Exporter is scraping exporters slowly"
+      -
+        alert: Large Scrape
+        expr: increase(prometheus_target_scrapes_exceeded_sample_limit_total[10m]) > 10
+        for: 5m
+        annotations:
+          title: Exporter large scrape
+          description: "Exporter has many scrapes that exceed the sample limit"
+      -
+        alert: Target Scrape Duplicate
+        expr: increase(prometheus_target_scrapes_sample_duplicate_timestamp_total[5m]) > 0
+        for: 0m
+        annotations:
+          title: Exporter target scrape duplicate
+          description: "Exporter has many samples rejected due to duplicate timestamps but different values"

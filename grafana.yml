@@ -36,26 +36,6 @@
         - "data/plugins"
       register: _dir
 
-    - name: Template datasource
-      ansible.builtin.copy:
-        content: |
-          apiVersion: 1
-
-          datasources:
-            - name: Prometheus
-              type: prometheus
-              access: proxy
-              orgId: 1
-              url: http://prometheus.{{ docker_network.name }}:9090
-              basicAuth: false
-              isDefault: true
-              editable: false
-        dest: "{{ _dir.results | selectattr('item', 'match', 'provisioning/datasources') | flatten | map(attribute='path') | first }}/prometheus.yml"
-        owner: "472"  # grafana user
-        group: "{{ common_group }}"
-        mode: "0444"
-      notify: Restart
-
     - name: Download plugins
       ansible.builtin.unarchive:
         src: "https://grafana.com/api/plugins/{{ item.name }}/versions/{{ item.version }}/download"

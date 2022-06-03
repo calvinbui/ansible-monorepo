@@ -1,0 +1,32 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
+---
+- job_name: blackbox_docker_http_basic_auth
+  scrape_interval: 120s
+  scrape_timeout: 30s
+  metrics_path: /probe
+  params:
+    module: [http_basic_auth]
+  docker_sd_configs:
+    - host: unix:///var/run/docker.sock
+  relabel_configs:
+    - # Only keep containers that have a `blackbox.enable = true` label.
+      action: keep
+      source_labels: [__meta_docker_container_label_blackbox_enable]
+      regex: true
+    - # Only keep containers that have a `blackbox.auth = none` label.
+      action: keep
+      source_labels: [__meta_docker_container_label_blackbox_auth]
+      regex: 'basic'
+    - # Only keep containers that have a `blackbox.target` label.
+      action: keep
+      source_labels: [__meta_docker_container_label_blackbox_target]
+      regex: ".+"
+    - # Get target from `blackbox.target` label
+      source_labels: [__meta_docker_container_label_blackbox_target]
+      target_label: __param_target
+    -
+      source_labels: [__param_target]
+      target_label: instance
+    -
+      target_label: __address__
+      replacement: {{ application }}.{{ docker_network.name }}:9115

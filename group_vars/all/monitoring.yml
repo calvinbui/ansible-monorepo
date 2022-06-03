@@ -1,0 +1,5 @@
+---
+
+vm_scrape_directory: "{{ common_directory }}/victoriametrics/scrape_config_files"
+
+vm_network: "{{ networks.user }}"

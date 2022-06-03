@@ -16,7 +16,7 @@
       61383438643866393130393035633732373037656564313966323930386666326233346139323939
       32383233643934386565
 
-    docker_network: "{{ networks.user }}"
+    docker_network: "{{ vm_network }}"
 
   handlers:
     - name: Restart

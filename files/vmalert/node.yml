@@ -1,0 +1,127 @@
+---
+
+groups:
+  - name: node_exporter
+    rules:
+      -
+        alert: node_exporter is down
+        expr: up{job="node"} != 1
+        for: 5m
+        annotations:
+          title: node_exporter is down
+          description: "The exporter could not be reached"
+
+  - name: node_disk
+    rules:
+      -
+        alert: Disk Read-Only
+        expr: node_filesystem_readonly == 1
+        for: 5m
+        annotations:
+          title: "Disk Read-Only"
+          description: "The device {{ $labels.device }} mounted at {{ $labels.mountpoint }} is read-only"
+      -
+        alert: Disk Space
+        expr: (node_filesystem_size_bytes - node_filesystem_free_bytes)/node_filesystem_size_bytes > 0.95
+        for: 5m
+        annotations:
+          title: "Disk Space"
+          description: "The device {{ $labels.device }} mounted at {{ $labels.mountpoint }} is almost full"
+      -
+        alert: Inodes
+        expr: node_filesystem_files_free / node_filesystem_files * 100 < 10 and ON (instance, device, mountpoint) node_filesystem_readonly == 0
+        for: 2m
+        annotations:
+          title: Host out of inodes
+          description: "Disk is almost running out of available inodes (< 10% left)"
+      -
+        alert: RAID Inactive
+        expr: node_md_state{state="inactive"} > 0
+        for: 0m
+        annotations:
+          title: Host RAID array got inactive
+          description: "RAID array {{ $labels.device }} is in degraded state due to one or more disks failures. Number of spare drives is insufficient to fix issue automatically."
+      -
+        alert: RAID Disk Failure
+        expr: node_md_disks{state="failed"} > 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          title: Host RAID disk failure
+          description: "At least one device in RAID array on {{ $labels.instance }} failed. Array {{ $labels.md_device }} needs attention and possibly a disk swap"
+
+  - name: node_memory
+    rules:
+      -
+        alert: Memory Usage
+        expr: (node_memory_MemTotal_bytes-node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.90
+        for: 5m
+        annotations:
+          title: "Memory Usage"
+          description: "Memory usage for {{ $labels.instance }} is high"
+      -
+        alert: Swap Usage
+        expr: (1 - (node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes)) * 100 > 80
+        for: 2m
+        annotations:
+          title: Host swap is filling up
+          description: "Swap is filling up (>80%)"
+
+  - name: node_cpu
+    rules:
+      -
+        alert: CPU Load
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 80
+        for: 0m
+        annotations:
+          title: Host high CPU load
+          description: "CPU load is > 80%"
+      -
+        alert: CPU Steal
+        expr: avg by(instance) (rate(node_cpu_seconds_total{mode="steal"}[5m])) * 100 > 10
+        for: 0m
+        annotations:
+          title: Host CPU steal noisy neighbor
+          description: "CPU steal is > 10%. A noisy neighbor is killing performance"
+      -
+        alert: CPU Temps
+        expr: node_hwmon_temp_celsius > 75
+        for: 5m
+        annotations:
+          title: Host physical component too hot
+          description: "Physical hardware component too hot"
+      -
+        alert: CPU Temp Critical
+        expr: node_hwmon_temp_crit_alarm_celsius == 1
+        for: 0m
+        annotations:
+          title: Host node overtemperature alarm
+          description: "Physical node temperature alarm triggered"
+
+  - name: node_clock
+    rules:
+      -
+        alert: Clock Skew
+        expr: (node_timex_offset_seconds > 0.05 and deriv(node_timex_offset_seconds[5m]) >= 0) or (node_timex_offset_seconds < -0.05 and deriv(node_timex_offset_seconds[5m]) <= 0)
+        for: 5m
+        annotations:
+          title: Host clock skew
+          description: "Clock skew detected. Clock is out of sync."
+      -
+        alert: Clock Sync
+        expr: min_over_time(node_timex_sync_status[1m]) == 0 and node_timex_maxerror_seconds >= 16
+        for: 5m
+        annotations:
+          title: Host clock not synchronising
+          description: "Clock not synchronising."
+
+  - name: node_kernel
+    rules:
+      -
+        alert: Version Deviations
+        expr: count(sum(label_replace(node_uname_info, "kernel", "$1", "release", "([0-9]+.[0-9]+.[0-9]+).*")) by (kernel)) > 1
+        for: 6h
+        annotations:
+          title: Host kernel version deviations
+          description: "Different kernel versions are running"

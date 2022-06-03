@@ -29,3 +29,9 @@ modules:
       <<: *probe
       headers:
         Proxy-Authorization: Basic {{ (blackbox_auth_username + ":" + blackbox_auth_password) | b64encode }}
+
+  icmp:
+    prober: icmp
+    timeout: 5s
+    icmp:
+      preferred_ip_protocol: "ip4"

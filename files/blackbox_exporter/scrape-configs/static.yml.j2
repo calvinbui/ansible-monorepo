@@ -1,0 +1,26 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
+---
+- job_name: blackbox_static
+  scrape_timeout: 30s
+  metrics_path: /probe
+  params:
+    module: [http]
+  static_configs:
+    - targets:
+      {% for service in services %}
+      {% for item in service['items'] %}
+      {% if item.monitor %}
+      - {{ item.url }}
+      {% endif %}
+      {% endfor %}
+      {% endfor %}
+  relabel_configs:
+    -
+      source_labels: [__address__]
+      target_label: __param_target
+    -
+      source_labels: [__param_target]
+      target_label: instance
+    -
+      target_label: __address__
+      replacement: {{ application }}.{{ docker_network.name }}:9115
