@@ -19,130 +19,161 @@
         ipv4:
           - address: 192.168.1.2/24
 
+    # access = .vlan
+    # trunk = .name
     juniper_l2_interfaces:
+      #
+      # ROUTER
+      #
       -
-        port: 0
-        description: "opnsense lan"
+        port: "0"
+        description: "opnsense-lan"
       -
-        port: 1
-        description: "opnsense vlans"
+        port: "1"
+        description: "opnsense-vlans"
         trunk:
-          - "{{ networks.granny.vlan }}"
-          - "{{ networks.iot.vlan }}"
-          - "{{ networks.pub.vlan }}"
-          - "{{ networks.user.vlan }}"
-          - "{{ networks.mgmt.vlan }}"
+          - "{{ networks.mgmt.name }}"
+          - "{{ networks.user.name }}"
+          - "{{ networks.iot.name }}"
+          - "{{ networks.pub.name }}"
+          - "{{ networks.granny.name }}"
+      #
+      # CAMERAS
+      #
       -
-        port: 2
-        description: "homelab"
-        trunk:
-          - "{{ networks.granny.vlan }}"
-          - "{{ networks.iot.vlan }}"
-          - "{{ networks.pub.vlan }}"
-          - "{{ networks.user.vlan }}"
-          - "{{ networks.mgmt.vlan }}"
-      -
-        port: 3
-        description: "homelab ipmi"
-        access: "{{ networks.mgmt.vlan }}"
-      -
-        port: 4
-        description: "wifi-01"
-        access: "{{ networks.user.vlan }}"
-        trunk:
-          - "{{ networks.granny.vlan }}"
-          - "{{ networks.iot.vlan }}"
-      -
-        port: 5
-        description: "wifi-02"
-        access: "{{ networks.user.vlan }}"
-        trunk:
-          - "{{ networks.granny.vlan }}"
-          - "{{ networks.iot.vlan }}"
-      -
-        port: 6
-        description: "wifi-03"
-        access: "{{ networks.user.vlan }}"
-        trunk:
-          - "{{ networks.granny.vlan }}"
-          - "{{ networks.iot.vlan }}"
-      -
-        port: 7
-        description: "wifi-04"
-        access: "{{ networks.user.vlan }}"
-        trunk:
-          - "{{ networks.granny.vlan }}"
-          - "{{ networks.iot.vlan }}"
-      -
-        port: 12
-        description: "study"
-        access: "{{ networks.user.vlan }}"
-      -
-        port: 24
-        description: "printer"
-        access: "{{ networks.user.vlan }}"
-      -
-        port: 36
-        description: "nvr"
+        port: "2"
+        description: "nvr-ethernet"
         access: "{{ networks.iot.vlan }}"
       -
-        port: 37
+        port: "3"
         description: "cam-01"
         access: "{{ networks.iot.vlan }}"
       -
-        port: 38
+        port: "4"
         description: "cam-02"
         access: "{{ networks.iot.vlan }}"
       -
-        port: 39
+        port: "5"
         description: "cam-03"
         access: "{{ networks.iot.vlan }}"
       -
-        port: 40
+        port: "6"
         description: "cam-04"
         access: "{{ networks.iot.vlan }}"
       -
-        port: 41
+        port: "7"
         description: "cam-05"
         access: "{{ networks.iot.vlan }}"
       -
-        port: 42
+        port: "8"
         description: "cam-06"
         access: "{{ networks.iot.vlan }}"
       -
-        port: 43
+        port: "9"
         description: "cam-07"
         access: "{{ networks.iot.vlan }}"
       -
-        port: 44
+        port: "10"
         description: "cam-08"
         access: "{{ networks.iot.vlan }}"
       -
-        port: 45
+        port: "11"
         description: "cam-09"
         access: "{{ networks.iot.vlan }}"
+      #
+      # GENERAL
+      #
       -
-        port: 46
-        description: "cam-10"
+        port: "24"
+        description: "master"
         access: "{{ networks.iot.vlan }}"
       -
-        port: 47
+        port: "25"
+        description: "study"
+        access: "{{ networks.user.vlan }}"
+      -
+        port: "26"
+        description: "living"
+        access: "{{ networks.iot.vlan }}"
+      #
+      # STATIC DEVICES
+      #
+      -
+        port: "36"
+        description: "3d-printer"
+        access: "{{ networks.iot.vlan }}"
+      -
+        port: "37"
+        description: "printer"
+        access: "{{ networks.user.vlan }}"
+      #
+      # WIFI
+      #
+      -
+        port: "40"
+        description: "wifi-01"
+        access: "{{ networks.user.vlan }}"
+        trunk:
+          - "{{ networks.iot.name }}"
+          - "{{ networks.granny.name }}"
+      -
+        port: "41"
+        description: "wifi-02"
+        access: "{{ networks.user.vlan }}"
+        trunk:
+          - "{{ networks.iot.name }}"
+          - "{{ networks.granny.name }}"
+      -
+        port: "42"
+        description: "wifi-03"
+        access: "{{ networks.user.vlan }}"
+        trunk:
+          - "{{ networks.iot.name }}"
+          - "{{ networks.granny.name }}"
+      -
+        port: "43"
+        description: "wifi-04"
+        access: "{{ networks.user.vlan }}"
+        trunk:
+          - "{{ networks.iot.name }}"
+          - "{{ networks.granny.name }}"
+      #
+      # OTHER
+      #
+      -
+        port: "45"
+        description: "homelab-ethernet"
+        trunk:
+          - "{{ networks.mgmt.name }}"
+          - "{{ networks.user.name }}"
+          - "{{ networks.iot.name }}"
+          - "{{ networks.pub.name }}"
+          - "{{ networks.granny.name }}"
+      -
+        port: "46"
+        description: "homelab-ipmi"
+        access: "{{ networks.mgmt.vlan }}"
+      -
+        port: "47"
         description: "alarm"
         access: "{{ networks.iot.vlan }}"
+      #
+      # XE/SFP
+      #
       -
         interface: xe
-        port: 0
-        description: "homelab-xe"
+        port: "0"
+        description: "homelab-sfp"
         trunk:
-          - "{{ networks.granny.vlan }}"
-          - "{{ networks.iot.vlan }}"
-          - "{{ networks.pub.vlan }}"
-          - "{{ networks.user.vlan }}"
-          - "{{ networks.mgmt.vlan }}"
+          - "{{ networks.mgmt.name }}"
+          - "{{ networks.user.name }}"
+          - "{{ networks.iot.name }}"
+          - "{{ networks.pub.name }}"
+          - "{{ networks.granny.name }}"
       -
         interface: xe
-        port: 1
-        description: "nvr-xe"
+        port: "1"
+        description: "nvr-sfp"
         access: "{{ networks.iot.vlan }}"
 
   tasks:
@@ -161,10 +192,14 @@
         config: "{{ networks | to_juniper_vlan_config }}"
         state: merged
 
+    # - name: Gather junos layer 2 interfaces as in given arguments
+    #   junipernetworks.junos.junos_l2_interfaces:
+    #     state: gathered
+
     - name: Configure Layer 2 interfaces
       junipernetworks.junos.junos_l2_interfaces:
         config: "{{ juniper_l2_interfaces | to_juniper_l2_config }}"
-        state: merged
+        state: replaced
 
     - name: Configure ports
       junipernetworks.junos.junos_interfaces:

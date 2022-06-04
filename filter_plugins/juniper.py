@@ -37,29 +37,32 @@ class FilterModule(object):
 
         for k in port_config:
             port = {}
+            port["enhanced_layer"] = False
+            port["unit"] = 0
 
             interface = k.get('interface', 'ge')
             fpc = '0'
             if interface == 'ge':
-                pic = 0
+                pic = '0'
             elif interface == 'xe':
-                pic = 1
+                pic = '1'
 
             port["name"] = f"{interface}-{fpc}/{pic}/{k['port']}"
 
             if 'trunk' in k:
                 port["trunk"] = {}
                 port["trunk"]["allowed_vlans"] = k["trunk"]
+                port["trunk"]["allowed_vlans"].sort()
 
                 if 'access' in k:
-                    port["trunk"]["native_vlan"] = k["access"]
+                    port["trunk"]["native_vlan"] = str(k["access"])
             else:
                 if 'access' in k:
                     port["access"] = {}
-                    port["access"]["vlan"] = k["access"]
+                    port["access"]["vlan"] = str(k["access"])
 
             ports.append(port)
-
+        print(ports)
         return ports
 
     def interfaces_config(self, port_config):
@@ -72,9 +75,9 @@ class FilterModule(object):
             interface = k.get('interface', 'ge')
             fpc = '0'
             if interface == 'ge':
-                pic = 0
+                pic = '0'
             elif interface == 'xe':
-                pic = 1
+                pic = '1'
 
             port["name"] = f"{interface}-{fpc}/{pic}/{k['port']}"
             port["description"] = k["description"]
