@@ -1,0 +1,33 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: actualbudget
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: jlongster/actual-server
+        volumes:
+          - "{{ _config_dir.path }}:/data"
+        traefik:
+          - port: 5006
+        homer:
+          name: Actual Budget
+          service: Tools
+          priority: 700
+          subtitle: "Budgeting"
