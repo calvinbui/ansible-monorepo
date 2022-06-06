@@ -1,0 +1,37 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: budge
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_group_id }}"
+        mode: "0771"
+      register: _config_dir
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: lscr.io/linuxserver/budge:latest
+        env:
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_group_id | string }}"
+          TZ: "{{ common_timezone }}"
+        volumes:
+          - "{{ _config_dir.path }}:/config"
+        traefik:
+          - port: 80
+        homer:
+          name: BudgE
+          service: Tools
+          priority: 699
+          subtitle: "Budgeting"
