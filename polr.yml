@@ -92,3 +92,4 @@
           service: Sharing
           priority: 690
           subtitle: "URL shortener"
+          url: "https://{{ common_short_tld }}"
