@@ -23,10 +23,15 @@
         image: bpatrik/pigallery2:latest
         env:
           NODE_ENV: production
+
+          Client-Sharing-passwordProtected: "false"
+          Client-Faces-enabled: "false"
+          Client-Map-enabled: "false"
         volumes:
           - "{{ _config_dir.path }}/config:/app/data/config"
           - "{{ _config_dir.path }}/db:/app/data/db"
-          - "/mnt/files/Photos/WeddingGrouped:/app/data/images:ro"
           - "{{ _config_dir.path }}/temp:/app/data/tmp"
+
+          - "/mnt/files/Photos/WeddingGrouped:/app/data/images:ro"
         traefik:
           - port: 80
