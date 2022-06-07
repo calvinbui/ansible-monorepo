@@ -28,6 +28,6 @@
           - port: 5006
         homer:
           name: Actual Budget
-          service: Tools
-          priority: 700
+          service: Collaboration
+          priority: 950
           subtitle: "Budgeting"

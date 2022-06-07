@@ -68,7 +68,7 @@
         homer:
           name: Mattermost
           service: Collaboration
-          priority: 890
+          priority: 500
           subtitle: "Online chat"
 
     - name: Configure

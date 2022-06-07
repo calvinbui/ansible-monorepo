@@ -55,7 +55,7 @@
         homer:
           name: Bookstack
           service: Collaboration
-          priority: 690
+          priority: 850
           subtitle: "Documentation"
 
     - name: Wait for .env file
