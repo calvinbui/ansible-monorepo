@@ -91,6 +91,27 @@
         path: /root/bin/git
         state: absent
 
+    - name: Disable Wi-Fi and Bluetooth
+      ansible.builtin.lineinfile:
+        dest: /etc/modprobe.d/blacklist-wifi-bt.conf
+        state: present
+        regex: "^blacklist {{ item }}$"
+        line: "blacklist {{ item }}"
+        create: true
+      loop:
+        # wifi
+        - brcmfmac
+        - brcmutil
+        # bluetooth
+        - hci_uart
+        - btbcm
+        - btintel
+        - rfcom
+        - btqca
+        - btsdio
+        - bluetooth
+      notify: Reboot
+
     # hyperpixel installation
     - name: HyperPixel 4 driver installation and configuration
       block:
