@@ -1,0 +1,26 @@
+---
+- hosts: homelab
+
+  vars:
+    application: dozzle
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: amir20/dozzle:latest
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+        env:
+          DOZZLE_NO_ANALYTICS: "true"
+        traefik:
+          - port: 8080
+            auth: page
+        homer:
+          name: Dozzle
+          service: Monitoring
+          priority: 960
+          subtitle: "Logs for docker containers"
