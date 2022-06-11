@@ -1,0 +1,121 @@
+---
+- hosts: homelab
+
+  vars:
+    application: mosquitto
+
+    docker_network: "{{ networks.iot }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: "Create {{ application }} directories"
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "1883"
+        group: "1883"
+        mode: "0771"
+      register: _config_dir
+      loop:
+        - "{{ config_directory }}/config"
+        - "{{ config_directory }}/data"
+        - "{{ config_directory }}/log"
+
+    - name: "Touch password file"
+      ansible.builtin.file:
+        path: "{{ config_directory }}/config/password"
+        state: touch
+        modification_time: preserve
+        access_time: preserve
+        owner: "1883"
+        group: "1883"
+        mode: "0644"
+
+    - name: "Generate {{ application }} usernames and passwords"
+      community.docker.docker_container:
+        name: "{{ application }}-password-generator"
+        image: eclipse-mosquitto:2
+        command: "mosquitto_passwd -b /mosquitto/config/password {{ item.username }} {{ item.password }}"
+        volumes:
+          - "{{ config_directory }}/config:/mosquitto/config"
+        auto_remove: true
+        cleanup: true
+        keep_volumes: false
+        restart_policy: false
+      notify: Restart
+      loop:
+        -
+          username: home-assistant
+          password: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            30336430393431643766663263363730346163613063333839323431656361323432623936323330
+            6538636666306532646335396133323664383461613263370a643234623332326534616238343963
+            66326234323739353539343763393230646333356162373236323038353133343036383764633636
+            6338653538393436320a656364653061323931366262366638363864346564646235383063633435
+            32386566653435313963653665393866663366366435316135663935313539383963
+        -
+          username: octoprint
+          password: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            35363265616362313664633437313461353066376462636333343933326465343662333035383239
+            3166336666643930626261663033656133303133383930620a313038636237623431653562366631
+            30633263343161626262346464323462366538323738323063336634383334323037353338306438
+            6461343865363339390a383463653830666163343462656665363533623063393137336135393565
+            34623138336532343532323536333763663834303239363830363563663233643264
+        -
+          username: shelly
+          password: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            64333035316162353831316434623739346363396636663437636166323030326634346265626339
+            3935323332643763306232346330333936336433636231350a316330653762623339306330386238
+            62343930633435386163353737613332626165656238363762396638383738663164303865633937
+            3334353364353063660a656436636163313035386633326666373436626139626163386436383236
+            34346339323339616131666138316563336531616666303065393135343538616666
+
+    # https://github.com/home-assistant/addons/blob/master/mosquitto/rootfs/usr/share/tempio/mosquitto.gtpl
+    - name: "Configure {{ application }}"
+      ansible.builtin.copy:
+        content: |
+          # Config
+          protocol mqtt
+
+          listener 1883
+          protocol mqtt
+
+          listener 9001
+          protocol websockets
+
+          # Data
+          persistence true
+          persistence_location /mosquitto/data
+          persistence_file mosquitto.db
+
+          # Logging
+          log_dest file /mosquitto/log/mosquitto.log
+          log_dest stdout
+          log_timestamp_format %Y-%m-%dT%H:%M:%S
+          connection_messages true
+
+          # Authentication
+          allow_anonymous false
+          password_file /mosquitto/config/password
+
+        dest: "{{ config_directory }}/config/mosquitto.conf"
+        mode: "0775"
+        owner: "1883"
+        group: "1883"
+      notify: Restart
+
+    - name: "Create {{ application }} container"
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: eclipse-mosquitto:2
+        volumes:
+          - "{{ config_directory }}/config:/mosquitto/config"
+          - "{{ config_directory }}/data:/mosquitto/data"
+          - "{{ config_directory }}/log:/mosquitto/log"
+        ipv4_address: "{{ docker_network.prefix }}.190"

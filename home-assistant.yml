@@ -71,6 +71,16 @@
             mode: "0771"
           register: _addons_dir
 
+        - name: Create python_scripts folder
+          ansible.builtin.file:
+            path: "{{ _config_dir.path }}/python_scripts"
+            state: directory
+            owner: "{{ common_root_id }}"
+            group: "{{ common_root_group }}"
+            mode: "0771"
+          register: _python_scripts
+          notify: Restart
+
         - name: Create Eufy Security WS container
           ansible.builtin.include_role:
             name: docker_container
@@ -118,18 +128,12 @@
                 - service: mobile_app_calvin_s_galaxy_s21
                 - service: mobile_app_tammy_s_galaxy_s21
 
-          home_connect:
-            client_id: A30F3A70602165DB8E8C00874C9009C0C0B6DBC365F724C4176DDAE2023D32C3
-            client_secret: !vault |
-              $ANSIBLE_VAULT;1.1;AES256
-              31666132393736343639626338396430313139303834656562343039616230373164336336383863
-              6231633530396437323938343132636634343965643936620a366431363630393038626632663065
-              32386664333065386533323666666430366136373261393536333238326562643835663664613332
-              6664336431376632370a366336303862346431643531313662363266363332373836333031313732
-              37383162313531636362383938343735613431636431323136396565313665396661653436386435
-              63366162653361326531336131653635343461656239313265383434666266646633363630616632
-              30353966646137306431643739633436623364356137616261393134363031316530333430643634
-              35373332653130633762
+          python_script: {}
+
+          logger:
+            default: warning
+            logs:
+              homeassistant.components.python_script: info
 
           google_assistant:
             project_id: home-assistant-14ee3
@@ -237,6 +241,43 @@
                 39313433666466616330663763386666386566366432313534313836613634643966363730636237
                 626163663538386637636430616161373633
               client_email: "home-assistant@home-assistant-14ee3.iam.gserviceaccount.com"
+
+    - name: Configure Automations
+      ansible.builtin.blockinfile:
+        path: "{{ config_directory }}/automations.yaml"
+        block: |
+          {% raw %}
+          - id: shellies_announce
+            alias: 'Shellies Announce'
+            trigger:
+              - platform: homeassistant
+                event: start
+              - platform: time_pattern
+                hours: "/1"  # Modifying this if you are using Shelly Motion can drain your device's battery quickly.
+            action:
+              service: mqtt.publish
+              data:
+                topic: shellies/command
+                payload: announce
+          - id: 'shellies_discovery'
+            alias: 'Shellies Discovery'
+            mode: queued
+            max: 999
+            trigger:
+              platform: mqtt
+              topic: shellies/announce
+            action:
+              service: python_script.shellies_discovery
+              data:
+                id: '{{ trigger.payload_json.id }}'
+                mac: '{{ trigger.payload_json.mac }}'
+                fw_ver: '{{ trigger.payload_json.fw_ver }}'
+                model: '{{ trigger.payload_json.model | default }}'
+                mode: '{{ trigger.payload_json.mode | default }}'
+                host: '{{ trigger.payload_json.ip }}'
+          {% endraw %}
+        marker: "# {mark} - ANSIBLE MANAGED BLOCK"
+      notify: Restart
 
     - name: Install HACS
       community.docker.docker_container_exec:
