@@ -97,6 +97,7 @@
         state: present
         regex: "^blacklist {{ item }}$"
         line: "blacklist {{ item }}"
+        mode: "0644"
         create: true
       loop:
         # wifi
@@ -152,6 +153,7 @@
             value: "{{ item.value | default(omit) }}"
             state: "{{ item.state | default('present') }}"
             no_extra_spaces: true
+            mode: "0755"
           loop:
             - section: pi4
               option: "dtoverlay"

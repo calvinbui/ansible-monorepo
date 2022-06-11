@@ -91,7 +91,7 @@
         - name: Copy Google Service Account file
           ansible.builtin.copy:
             src: "{{ files_directory }}/google-service-account.json"
-            dest: "{{ config_directory}}/google-service-account.json"
+            dest: "{{ config_directory }}/google-service-account.json"
             owner: "{{ common_root_id }}"
             group: "{{ common_root_group }}"
             mode: "0771"
