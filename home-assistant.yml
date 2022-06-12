@@ -40,9 +40,13 @@
         volumes:
           - "{{ config_directory }}:/config"
           - /etc/localtime:/etc/localtime:ro
+        ipv4_address: "{{ docker_network.prefix }}.20"
         traefik:
-          - port: 8123
+          - name: "{{ application }}-short"
+            port: 8123
             rule: Host(`home.{{ common_tld }}`)
+          - port: 8123
+            rule: Host(`{{ application }}.{{ common_tld }}`)
         homer:
           name: Home Assistant
           service: Tools
