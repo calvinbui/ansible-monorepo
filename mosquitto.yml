@@ -18,7 +18,6 @@
         owner: "1883"
         group: "1883"
         mode: "0771"
-      register: _config_dir
       loop:
         - "{{ config_directory }}/config"
         - "{{ config_directory }}/data"

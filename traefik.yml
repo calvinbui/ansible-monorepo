@@ -19,11 +19,10 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create acme.json
       ansible.builtin.file:
-        path: "{{ _config_dir.path }}/acme.json"
+        path: "{{ config_directory }}/acme.json"
         state: touch
         mode: "0600"
         modification_time: "preserve"
@@ -32,7 +31,7 @@
     - name: Template traefik configs
       ansible.builtin.template:
         src: "{{ files_directory }}/{{ item }}.j2"
-        dest: "{{ _config_dir.path }}/{{ item }}"
+        dest: "{{ config_directory }}/{{ item }}"
         mode: "0440"
       loop:
         - traefik.yaml
@@ -56,9 +55,9 @@
           subtitle: "Reverse proxy"
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock
-          - "{{ _config_dir.path }}/traefik.yaml:/etc/traefik/traefik.yaml"
-          - "{{ _config_dir.path }}/acme.json:/acme.json"
-          - "{{ _config_dir.path }}/dynamic_conf.yaml:/dynamic_conf.yaml"
+          - "{{ config_directory }}/traefik.yaml:/etc/traefik/traefik.yaml"
+          - "{{ config_directory }}/acme.json:/acme.json"
+          - "{{ config_directory }}/dynamic_conf.yaml:/dynamic_conf.yaml"
           - /var/log/traefik:/var/log
         published_ports:
           - 80:80

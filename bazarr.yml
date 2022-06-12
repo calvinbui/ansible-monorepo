@@ -19,7 +19,6 @@
         owner: "{{ common_user }}"
         group: "{{ common_root_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create container
       ansible.builtin.include_role:
@@ -27,7 +26,7 @@
       vars:
         image: lscr.io/linuxserver/bazarr
         volumes:
-          - "{{ _config_dir.path }}:/config"
+          - "{{ config_directory }}:/config"
           - "{{ common_directory_tv }}:{{ common_mounted_directory_tv }}"
           - "{{ common_directory_movies }}:{{ common_mounted_directory_movies }}"
         env:
@@ -45,12 +44,12 @@
 
     - name: If "{{ application }}" has not been configured, go through the initial setup to generate a configuration file.
       ansible.builtin.wait_for:
-        path: "{{ _config_dir.path }}/config/config.ini"
+        path: "{{ config_directory }}/config/config.ini"
         state: present
 
     - name: Configure
       community.general.ini_file:
-        path: "{{ _config_dir.path }}/config/config.ini"
+        path: "{{ config_directory }}/config/config.ini"
         section: "{{ item.key.split('.')[0] }}"
         option: "{{ item.key.split('.')[1] }}"
         value: "{{ item.value | string }}"

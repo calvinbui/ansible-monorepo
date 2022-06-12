@@ -19,7 +19,6 @@
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create mongodb container
       ansible.builtin.include_role:
@@ -49,7 +48,7 @@
               "allowNewSyncs": "false"
             }
           }
-        dest: "{{ _config_dir.path }}/settings.json"
+        dest: "{{ config_directory }}/settings.json"
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
         mode: "0444"
@@ -61,6 +60,6 @@
       vars:
         image: xbrowsersync/api
         volumes:
-          - "{{ _config_dir.path }}/settings.json:/usr/src/api/config/settings.json"
+          - "{{ config_directory }}/settings.json:/usr/src/api/config/settings.json"
         traefik:
           - port: 8080

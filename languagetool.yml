@@ -19,11 +19,10 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create ngrams folder
       ansible.builtin.file:
-        path: "{{ _config_dir.path }}/ngrams"
+        path: "{{ config_directory }}/ngrams"
         state: directory
         owner: "{{ common_user_id }}"
         group: 101
@@ -32,7 +31,7 @@
     - name: Download ngrams
       ansible.builtin.get_url:
         url: "https://languagetool.org/download/ngram-data/ngrams-{{ item.lang }}-{{ item.version }}.zip"
-        dest: "{{ _config_dir.path }}/ngrams-{{ item.lang }}-{{ item.version }}.zip"
+        dest: "{{ config_directory }}/ngrams-{{ item.lang }}-{{ item.version }}.zip"
         checksum: "{{ item.checksum }}"
       loop:
         - lang: en
@@ -43,19 +42,19 @@
     - name: Unarchive ngrams
       ansible.builtin.unarchive:
         src: "{{ item.dest }}.zip"
-        dest: "{{ _config_dir.path }}/ngrams/"
-        creates: "{{ _config_dir.path }}/ngrams/{{ item.item.lang }}"
+        dest: "{{ config_directory }}/ngrams/"
+        creates: "{{ config_directory }}/ngrams/{{ item.item.lang }}"
         remote_src: true
       loop: "{{ _ngrams.results }}"
 
     - name: Download ngram-lang-detect
       ansible.builtin.get_url:
         url: "https://languagetool.org/download/ngram-lang-detect/model_ml50_new.zip"
-        dest: "{{ _config_dir.path }}/ngram-lang-detect.zip"
+        dest: "{{ config_directory }}/ngram-lang-detect.zip"
 
     - name: Create word2vec folder
       ansible.builtin.file:
-        path: "{{ _config_dir.path }}/word2vec"
+        path: "{{ config_directory }}/word2vec"
         state: directory
         owner: "{{ common_user_id }}"
         group: 101
@@ -64,18 +63,18 @@
     - name: Download word2vec model
       ansible.builtin.get_url:
         url: https://languagetool.org/download/word2vec/en.zip
-        dest: "{{ _config_dir.path }}/word2vec.tar.gz"
+        dest: "{{ config_directory }}/word2vec.tar.gz"
 
     - name: Unarchive word2vec
       ansible.builtin.unarchive:
-        src: "{{ _config_dir.path }}/word2vec.tar.gz"
-        dest: "{{ _config_dir.path }}/word2vec/"
-        creates: "{{ _config_dir.path }}/word2vec/en"
+        src: "{{ config_directory }}/word2vec.tar.gz"
+        dest: "{{ config_directory }}/word2vec/"
+        creates: "{{ config_directory }}/word2vec/en"
         remote_src: true
 
     - name: Create FastText folder
       ansible.builtin.file:
-        path: "{{ _config_dir.path }}/fasttext"
+        path: "{{ config_directory }}/fasttext"
         state: directory
         owner: "{{ common_user_id }}"
         group: 101
@@ -84,7 +83,7 @@
     - name: Download FastText model
       ansible.builtin.get_url:
         url: https://dl.fbaipublicfiles.com/fasttext/supervised-models/lid.176.bin
-        dest: "{{ _config_dir.path }}/fasttext/lid.176.bin"
+        dest: "{{ config_directory }}/fasttext/lid.176.bin"
         checksum: md5:01810bc59c6a3d2b79c79e6336612f65
         mode: "0775"
         owner: "{{ common_user_id }}"
@@ -94,7 +93,7 @@
     - name: Clone FastText binary repo
       ansible.builtin.git:
         repo: https://github.com/facebookresearch/fastText.git
-        dest: "{{ _config_dir.path }}/fasttext/fasttext.git"
+        dest: "{{ config_directory }}/fasttext/fasttext.git"
         version: v0.9.2
         update: false
       become_user: "{{ common_user }}"
@@ -103,7 +102,7 @@
 
     - name: Set FastText binary repo permissions
       ansible.builtin.file:
-        path: "{{ _config_dir.path }}/fasttext/fasttext.git"
+        path: "{{ config_directory }}/fasttext/fasttext.git"
         state: directory
         recurse: true
         mode: "0775"
@@ -112,7 +111,7 @@
 
     - name: Create script to compile FastText
       ansible.builtin.copy:
-        dest: "{{ _config_dir.path }}/fasttext/build.sh"
+        dest: "{{ config_directory }}/fasttext/build.sh"
         mode: "755"
         content: |
           #!/bin/sh
@@ -128,19 +127,19 @@
           make
 
     - name: Compile FastText in alpine
-      ansible.builtin.command: "docker run --rm -v {{ _config_dir.path }}/fasttext:/fasttext alpine:3.15.0 /fasttext/build.sh"
+      ansible.builtin.command: "docker run --rm -v {{ config_directory }}/fasttext:/fasttext alpine:3.15.0 /fasttext/build.sh"
       when: __clone_fasttext.changed or __download_fasttext.changed
 
     - name: Set FastText permissions
       ansible.builtin.file:
-        path: "{{ _config_dir.path }}/fasttext/fasttext.git/fasttext"
+        path: "{{ config_directory }}/fasttext/fasttext.git/fasttext"
         mode: "0775"
         owner: "{{ common_user_id }}"
         group: 101
 
     - name: Generate config file
       ansible.builtin.copy:
-        dest: "{{ _config_dir.path }}/config.properties"
+        dest: "{{ config_directory }}/config.properties"
         mode: "775"
         owner: "{{ common_user_id }}"
         group: 101
@@ -163,11 +162,11 @@
         env:
           EXTRAOPTIONS: "-Xmx2g -Xms1g --premiumAlways"
         volumes:
-          - "{{ _config_dir.path }}/ngrams/:/ngrams"
-          - "{{ _config_dir.path }}/config.properties:/LanguageTool/config.properties"
-          - "{{ _config_dir.path }}/fasttext:/fasttext"
-          - "{{ _config_dir.path }}/word2vec:/word2vec"
-          - "{{ _config_dir.path }}/ngram-lang-detect.zip:/ngram-lang-detect.zip"
+          - "{{ config_directory }}/ngrams/:/ngrams"
+          - "{{ config_directory }}/config.properties:/LanguageTool/config.properties"
+          - "{{ config_directory }}/fasttext:/fasttext"
+          - "{{ config_directory }}/word2vec:/word2vec"
+          - "{{ config_directory }}/ngram-lang-detect.zip:/ngram-lang-detect.zip"
         traefik:
           - port: 8010
         blackbox:

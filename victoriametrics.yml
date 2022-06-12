@@ -19,7 +19,6 @@
         owner: "65534"  # nobody user
         group: "{{ common_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create scrape config files directory
       ansible.builtin.file:
@@ -37,7 +36,7 @@
 
           scrape_config_files:
             - /scrape_config_files/*
-        dest: "{{ _config_dir.path }}/promscrape-config.yml"
+        dest: "{{ config_directory }}/promscrape-config.yml"
         owner: "65534"  # nobody user
         group: "{{ common_group }}"
         mode: "0771"
@@ -56,9 +55,9 @@
           - -promscrape.configCheckInterval=60s
           - -promscrape.config.strictParse=true
         volumes:
-          - "{{ _config_dir.path }}:/victoria-metrics-data"
+          - "{{ config_directory }}:/victoria-metrics-data"
 
-          - "{{ _config_dir.path }}/promscrape-config.yml:/promscrape-config.yml"
+          - "{{ config_directory }}/promscrape-config.yml:/promscrape-config.yml"
           - "{{ vm_scrape_directory }}:/scrape_config_files"
 
           - /var/run/docker.sock:/var/run/docker.sock:ro

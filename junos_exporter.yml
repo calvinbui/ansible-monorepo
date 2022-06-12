@@ -19,11 +19,10 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create config file
       ansible.builtin.copy:
-        dest: "{{ _config_dir.path }}/config.yaml"
+        dest: "{{ config_directory }}/config.yaml"
         mode: "755"
         content: |
           ---
@@ -53,7 +52,7 @@
       vars:
         image: tynany/junos_exporter:latest
         volumes:
-          - "{{ _config_dir.path }}/config.yaml:/config.yaml"
+          - "{{ config_directory }}/config.yaml:/config.yaml"
 
     - name: Create scrape config for VictoriaMetrics
       ansible.builtin.copy:

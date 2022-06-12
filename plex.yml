@@ -19,7 +19,6 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: "Create {{ application }} container"
       ansible.builtin.include_role:
@@ -35,7 +34,7 @@
           NVIDIA_DRIVER_CAPABILITIES: "all"
           # PLEX_CLAIM: ""
         volumes:
-          - "{{ _config_dir.path }}:/config"
+          - "{{ config_directory }}:/config"
           - "{{ common_directory_movies }}:/data/movies"
           - "{{ common_directory_tv }}:/data/tv"
           - /tmp/plex:/transcode

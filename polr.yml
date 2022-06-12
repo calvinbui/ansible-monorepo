@@ -15,7 +15,6 @@
         owner: "{{ common_user_id }}"
         group: "{{ common_group_id }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create mariadb container
       ansible.builtin.include_role:

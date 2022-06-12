@@ -19,11 +19,10 @@
         owner: "472"  # grafana user
         group: "{{ common_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create directories
       ansible.builtin.file:
-        path: "{{ _config_dir.path }}/{{ item }}"
+        path: "{{ config_directory }}/{{ item }}"
         state: directory
         owner: "472"  # grafana user
         group: "{{ common_group }}"
@@ -34,12 +33,11 @@
         - "provisioning/dashboards"
         - "data"
         - "data/plugins"
-      register: _dir
 
     - name: Download plugins
       ansible.builtin.unarchive:
         src: "https://grafana.com/api/plugins/{{ item.name }}/versions/{{ item.version }}/download"
-        dest: "{{ _dir.results | selectattr('item', 'match', 'data/plugins') | flatten | map(attribute='path') | first }}"
+        dest: "{{ config_directory }}/data/plugins"
         remote_src: true
       loop:
         - name: grafana-piechart-panel
@@ -52,8 +50,8 @@
       vars:
         image: grafana/grafana:latest
         volumes:
-          - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/var/lib/grafana"
-          - "{{ _dir.results | selectattr('item', 'match', 'provisioning') | flatten | map(attribute='path') | first }}:/etc/grafana/provisioning"
+          - "{{ config_directory }}/data:/var/lib/grafana"
+          - "{{ config_directory }}/provisioning:/etc/grafana/provisioning"
         traefik:
           - port: 3000
         homer:

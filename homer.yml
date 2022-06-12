@@ -19,7 +19,6 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0775"
-      register: _config_dir
 
     - name: Copy logos
       ansible.builtin.copy:
@@ -36,7 +35,7 @@
       vars:
         image: b4bz/homer:latest
         volumes:
-          - "{{ _config_dir.path }}/assets/:/www/assets/"
+          - "{{ config_directory }}/assets/:/www/assets/"
           - "{{ homer_logos_remote_dir }}/:/www/logos/"
         env:
           UID: "{{ common_user_id | string }}"
@@ -48,7 +47,7 @@
     - name: Template base config file
       ansible.builtin.template:
         src: "{{ files_directory }}/config.yml.j2"
-        dest: "{{ _config_dir.path }}/hsd.yml"
+        dest: "{{ config_directory }}/hsd.yml"
         owner: "{{ common_user_id }}"
         group: "{{ common_group_id }}"
         mode: "0775"
@@ -62,8 +61,8 @@
         image: ghcr.io/calvinbui/homer-service-discovery:latest
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock:ro  # docker socket
-          - "{{ _config_dir.path }}/assets/config.yml:/config.yml"  # homer final config
-          - "{{ _config_dir.path }}/hsd.yml:/base.yml"  # base
+          - "{{ config_directory }}/assets/config.yml:/config.yml"  # homer final config
+          - "{{ config_directory }}/hsd.yml:/base.yml"  # base
         env:
           LOG_LEVEL: Debug
           HOMER_BASE_CONFIG: /base.yml

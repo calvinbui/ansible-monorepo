@@ -27,7 +27,7 @@
 
 - name: Configure indexer if exists using its index in the list
   yedit:
-    src: "{{ _config_dir.path }}/nzbhydra.yml"
+    src: "{{ config_directory }}/nzbhydra.yml"
     key: "indexers.[{{ nzbhydra_configured_indexer_index }}].{{ item.key }}"
     value: "{{ item.value }}"
   become: false
@@ -38,7 +38,7 @@
 
 - name: Append indexer to list if not found
   yedit:
-    src: "{{ _config_dir.path }}/nzbhydra.yml"
+    src: "{{ config_directory }}/nzbhydra.yml"
     key: "indexers"
     value: "{{ nzbhydra_indexer_item }}"
     append: true

@@ -28,7 +28,6 @@
         owner: "{{ common_user }}"
         group: "{{ common_root_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create container
       ansible.builtin.include_role:
@@ -36,7 +35,7 @@
       vars:
         image: lscr.io/linuxserver/jackett
         volumes:
-          - "{{ _config_dir.path }}:/config"
+          - "{{ config_directory }}:/config"
           - "{{ common_directory_download }}:{{ common_mounted_directory_download }}"
         env:
           PUID: "{{ common_user_id | string }}"
@@ -54,12 +53,12 @@
 
     - name: Wait for config
       ansible.builtin.wait_for:
-        path: "{{ _config_dir.path }}/Jackett/ServerConfig.json"
+        path: "{{ config_directory }}/Jackett/ServerConfig.json"
         state: present
 
     - name: Configure
       json_patch:
-        src: "{{ _config_dir.path }}/Jackett/ServerConfig.json"
+        src: "{{ config_directory }}/Jackett/ServerConfig.json"
         operations:
           - op: add
             path: "{{ item.key }}"

@@ -5,14 +5,14 @@ cert_domains:
     domain: "homelab-ipmi.{{ common_local_tld }}"
     method: --dns dns_cf
     script: "ipmi.py"
-    script_args: "--ipmi-url=https://homelab-ipmi.{{ common_local_tld }} --username=ADMIN --password=ADMIN --cert-file={{ _config_dir.path }}/certs/homelab-ipmi.{{ common_local_tld }}/fullchain.cer --key-file={{ _config_dir.path }}/certs/homelab-ipmi.{{ common_local_tld }}/homelab-ipmi.{{ common_local_tld }}.key --model=X10"
+    script_args: "--ipmi-url=https://homelab-ipmi.{{ common_local_tld }} --username=ADMIN --password=ADMIN --cert-file={{ config_directory }}/certs/homelab-ipmi.{{ common_local_tld }}/fullchain.cer --key-file={{ config_directory }}/certs/homelab-ipmi.{{ common_local_tld }}/homelab-ipmi.{{ common_local_tld }}.key --model=X10"
   -
     domain: "omada.{{ common_local_tld }}"
     method: --dns dns_cf
     script: "omada.sh"
-    script_args: "{{ _config_dir.path }}/certs/omada.{{ common_local_tld }}/fullchain.cer {{ _config_dir.path }}/certs/omada.{{ common_local_tld }}/omada.{{ common_local_tld }}.key"
+    script_args: "{{ config_directory }}/certs/omada.{{ common_local_tld }}/fullchain.cer {{ config_directory }}/certs/omada.{{ common_local_tld }}/omada.{{ common_local_tld }}.key"
   -
     domain: "nvr.{{ common_local_tld }}"
     method: --dns dns_cf
     script: "unifi-protect.sh"
-    script_args: "{{ _config_dir.path }}/certs/nvr.{{ common_local_tld }}/fullchain.cer {{ _config_dir.path }}/certs/nvr.{{ common_local_tld }}/nvr.{{ common_local_tld }}.key"
+    script_args: "{{ config_directory }}/certs/nvr.{{ common_local_tld }}/fullchain.cer {{ config_directory }}/certs/nvr.{{ common_local_tld }}/nvr.{{ common_local_tld }}.key"

@@ -19,7 +19,6 @@
         owner: "{{ common_user_id }}"
         group: "{{ common_group_id }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create postgres container
       ansible.builtin.include_role:
@@ -39,7 +38,7 @@
 
     - name: Create data directory
       ansible.builtin.file:
-        path: "{{ _config_dir.path }}/etesync"
+        path: "{{ config_directory }}/etesync"
         state: directory
         owner: "{{ common_user_id }}"
         group: "{{ common_group_id }}"
@@ -95,7 +94,7 @@
 
     - name: Create dav directory
       ansible.builtin.file:
-        path: "{{ _config_dir.path }}/dav"
+        path: "{{ config_directory }}/dav"
         state: directory
         owner: "{{ common_user_id }}"
         group: "{{ common_group_id }}"
@@ -122,7 +121,7 @@
 
     - name: Create web directory
       ansible.builtin.file:
-        path: "{{ _config_dir.path }}/web"
+        path: "{{ config_directory }}/web"
         state: directory
         owner: "{{ common_user_id }}"
         group: "{{ common_group_id }}"

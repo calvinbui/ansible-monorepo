@@ -33,11 +33,10 @@
         owner: "{{ _papermerge_user.uid }}"
         group: "{{ common_group_id }}"
         mode: "0750"
-      register: _config_dir
 
     - name: Create folders
       ansible.builtin.file:
-        path: "{{ _config_dir.path }}/{{ item }}"
+        path: "{{ config_directory }}/{{ item }}"
         state: directory
         owner: "{{ _papermerge_user.uid }}"
         group: "{{ common_group_id }}"
@@ -46,7 +45,6 @@
         - config
         - data
         - import
-      register: _dir
 
     - name: Create container
       ansible.builtin.include_role:
@@ -54,9 +52,9 @@
       vars:
         image: lscr.io/linuxserver/papermerge:latest
         volumes:
-          - "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}:/config"
-          - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/data"
-          - "{{ _dir.results | selectattr('item', 'match', 'import') | flatten | map(attribute='path') | first }}:/import"
+          - "{{ config_directory }}/config:/config"
+          - "{{ config_directory }}/data:/data"
+          - "{{ config_directory }}/import:/import"
         env:
           PUID: "{{ _papermerge_user.uid | string }}"
           PGID: "{{ common_group_id | string }}"
@@ -71,7 +69,7 @@
 
     - name: Edit config
       ansible.builtin.lineinfile:
-        path: "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}/papermerge.conf.py"
+        path: "{{ config_directory }}/config/papermerge.conf.py"
         regexp: "{{ item.regexp }}"
         line: "{{ item.line }}"
       loop:

@@ -15,7 +15,6 @@
         owner: "{{ common_user }}"
         group: "{{ common_root_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create container
       ansible.builtin.include_role:
@@ -31,7 +30,7 @@
           KEEP_APP_RUNNING: "1"
           UMASK: "022"
         volumes:
-          - "{{ _config_dir.path }}:/config"
+          - "{{ config_directory }}:/config"
           - "{{ common_directory_download }}:/output"
         traefik:
           - port: 5800

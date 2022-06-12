@@ -19,7 +19,6 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create {{ application }} container
       ansible.builtin.include_role:
@@ -33,8 +32,8 @@
 
           LDAP_RFC2307BIS_SCHEMA: "true"
         volumes:
-          - "{{ _config_dir.path }}/database:/var/lib/ldap"
-          - "{{ _config_dir.path }}/config:/etc/ldap/slapd.d"
+          - "{{ config_directory }}/database:/var/lib/ldap"
+          - "{{ config_directory }}/config:/etc/ldap/slapd.d"
 
     - name: Create ldap-user-manager container
       ansible.builtin.include_role:

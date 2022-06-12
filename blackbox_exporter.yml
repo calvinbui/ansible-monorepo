@@ -22,12 +22,11 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0711"
-      register: _config_dir
 
     - name: Template configuration
       ansible.builtin.template:
         src: "{{ files_directory }}/config.yml.j2"
-        dest: "{{ _config_dir.path }}/config.yml"
+        dest: "{{ config_directory }}/config.yml"
         mode: "0440"
         validate: "docker run --rm --name {{ application }}_config_check -v %s:/tmp/config.yml prom/blackbox-exporter:master --config.check --config.file=/tmp/config.yml"
       notify: Restart
@@ -38,7 +37,7 @@
       vars:
         image: prom/blackbox-exporter:master
         volumes:
-          - "{{ _config_dir.path }}:/etc/blackbox_exporter"
+          - "{{ config_directory }}:/etc/blackbox_exporter"
 
     - name: Create scrape config for VictoriaMetrics
       ansible.builtin.template:

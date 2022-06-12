@@ -24,7 +24,6 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0711"
-      register: _config_dir
 
     - name: Template configuration
       ansible.builtin.copy:
@@ -35,7 +34,7 @@
           {% for process in process_exporter_processes %}
               - {{ process }}
           {% endfor %}
-        dest: "{{ _config_dir.path }}/config.yml"
+        dest: "{{ config_directory }}/config.yml"
         mode: "0440"
       notify: Restart
 
@@ -49,7 +48,7 @@
           - --config.path=/config/config.yml
         volumes:
           - /proc:/host/proc:ro
-          - "{{ _config_dir.path }}:/config"
+          - "{{ config_directory }}:/config"
         privileged: true
         metrics:
           - port: 9256

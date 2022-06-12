@@ -15,7 +15,6 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create postgres container
       ansible.builtin.import_role:
@@ -49,7 +48,7 @@
       vars:
         image: nextcloud:apache
         volumes:
-          - "{{ _config_dir.path }}/nextcloud:/var/www/html"
+          - "{{ config_directory }}/nextcloud:/var/www/html"
           - "{{ common_directory_storage }}:/mnt/zfs_files"
         env:
           POSTGRES_DB: "{{ _postgres_database }}"

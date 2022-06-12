@@ -52,7 +52,6 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create redis container
       ansible.builtin.include_role:
@@ -88,7 +87,7 @@
 
     - name: Create authelia folder
       ansible.builtin.file:
-        path: "{{ _config_dir.path }}/authelia"
+        path: "{{ config_directory }}/authelia"
         state: directory
         owner: "root"
         group: "root"
@@ -97,7 +96,7 @@
     - name: Template config
       ansible.builtin.template:
         src: "{{ files_directory }}/configuration.yml.j2"
-        dest: "{{ _config_dir.path }}/authelia/configuration.yml"
+        dest: "{{ config_directory }}/authelia/configuration.yml"
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
         mode: "0444"
@@ -119,7 +118,7 @@
           priority: 380
           subtitle: "Authentication and authorization"
         volumes:
-          - "{{ _config_dir.path }}/authelia:/config"
+          - "{{ config_directory }}/authelia:/config"
         labels:
           '{
             "traefik.http.middlewares.{{ traefik_middleware_authelia.split("@")[0] }}.forwardauth.address": "http://{{ application }}.{{ common_local_tld }}:9091/api/verify?rd=https://{{ application }}.{{ common_tld }}",

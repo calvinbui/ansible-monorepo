@@ -15,7 +15,6 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create container
       ansible.builtin.include_role:
@@ -50,7 +49,7 @@
           PSITRANSFER_DEFAULT_RETENTION: "86400"
           PSITRANSFER_MAX_AGE: "604800"
         volumes:
-          - "{{ _config_dir.path }}:/data"
+          - "{{ config_directory }}:/data"
         traefik:
           - port: 3000
             rule: "Host(`share.{{ common_tld }}`)"

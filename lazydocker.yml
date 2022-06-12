@@ -13,7 +13,6 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Install github3.py
       ansible.builtin.pip:
@@ -42,19 +41,19 @@
     - name: Download
       ansible.builtin.get_url:
         url: "https://github.com/jesseduffield/lazydocker/releases/download/{{ _lazydocker_latest_version.tag }}/lazydocker_{{ _lazydocker_latest_version.tag.split('v')[1] }}_{{ ansible_system }}_{{ ansible_architecture }}.tar.gz"
-        dest: "{{ _config_dir.path }}/"
+        dest: "{{ config_directory }}/"
         checksum: "sha256:{{ _lazydocker_checksum }}"
       register: _lazydocker_download
 
     - name: Unarchive
       ansible.builtin.unarchive:
         src: "{{ _lazydocker_download.dest }}"
-        dest: "{{ _config_dir.path }}"
+        dest: "{{ config_directory }}"
         mode: "0755"
         remote_src: true
 
     - name: Symlink to PATH
       ansible.builtin.file:
-        src: "{{ _config_dir.path }}/lazydocker"
+        src: "{{ config_directory }}/lazydocker"
         dest: /usr/local/bin/lazydocker
         state: link

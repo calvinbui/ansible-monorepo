@@ -15,7 +15,6 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create scripts folder
       ansible.builtin.file:

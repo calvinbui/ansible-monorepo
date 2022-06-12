@@ -19,12 +19,11 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Clone kk7ds/ubnt-proxy
       ansible.builtin.git:
         repo: "https://github.com/kk7ds/ubnt-proxy"
-        dest: "{{ _config_dir.path }}/ubnt-proxy"
+        dest: "{{ config_directory }}/ubnt-proxy"
         update: true
       notify: Restart
 
@@ -37,7 +36,7 @@
           pip3 install --no-cache-dir scapy
           ip="$(hostname -i | awk 'BEGIN{RS=" "} 1' | grep {{ docker_network.prefix }})"
           python3 /app/ubnt-proxy/ubnt-proxy.py "$ip"
-        dest: "{{ _config_dir.path }}/entrypoint.sh"
+        dest: "{{ config_directory }}/entrypoint.sh"
         mode: "0755"
       notify: Restart
 
@@ -51,7 +50,7 @@
           - /bin/sh
           - /app/entrypoint.sh
         volumes:
-          - "{{ _config_dir.path }}:/app"
+          - "{{ config_directory }}:/app"
         network:
           - name: "{{ docker_network.name }}"
           - name: "{{ networks.user.name }}"

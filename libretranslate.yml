@@ -15,11 +15,10 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: "Touch {{ item }}"
       ansible.builtin.file:
-        path: "{{ _config_dir.path }}/{{ item }}"
+        path: "{{ config_directory }}/{{ item }}"
         state: touch
         modification_time: preserve
         access_time: preserve
@@ -42,11 +41,11 @@
           LT_API_KEYS: "true"
           LT_REQUIRE_API_KEY_ORIGIN: "true"
         volumes:
-          - "{{ _config_dir.path }}/api_keys.db:/app/api_keys.db"
-          - "{{ _config_dir.path }}/suggestions.db:/app/suggestions.db"
-          - "{{ _config_dir.path }}/LibreTranslate:/root/.local/share/LibreTranslate"
-          - "{{ _config_dir.path }}/argos-translate:/root/.local/share/argos-translate"
-          - "{{ _config_dir.path }}/cache:/root/.local/cache"
+          - "{{ config_directory }}/api_keys.db:/app/api_keys.db"
+          - "{{ config_directory }}/suggestions.db:/app/suggestions.db"
+          - "{{ config_directory }}/LibreTranslate:/root/.local/share/LibreTranslate"
+          - "{{ config_directory }}/argos-translate:/root/.local/share/argos-translate"
+          - "{{ config_directory }}/cache:/root/.local/cache"
         traefik:
           - port: 5000
         homer:

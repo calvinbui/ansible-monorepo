@@ -121,7 +121,6 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Install ruamel.yaml
       ansible.builtin.pip:
@@ -134,7 +133,7 @@
       vars:
         image: lscr.io/linuxserver/nzbhydra2
         volumes:
-          - "{{ _config_dir.path }}:/config"
+          - "{{ config_directory }}:/config"
         env:
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_group_id | string }}"
@@ -152,13 +151,13 @@
     # General config
     - name: Wait until application is ready
       ansible.builtin.wait_for:
-        path: "{{ _config_dir.path }}/logs/nzbhydra2.log"
+        path: "{{ config_directory }}/logs/nzbhydra2.log"
         search_regex: "Started NzbHydra in"
       when: _docker_container.changed
 
     - name: Configure general settings
       yedit:
-        src: "{{ _config_dir.path }}/nzbhydra.yml"
+        src: "{{ config_directory }}/nzbhydra.yml"
         key: "{{ item.key }}"
         value: "{{ item.value }}"
         state: present
@@ -186,7 +185,7 @@
     # Downloader config
     - name: Configure downloaders
       yedit:
-        src: "{{ _config_dir.path }}/nzbhydra.yml"
+        src: "{{ config_directory }}/nzbhydra.yml"
         key: "downloading.downloaders"
         value: "{{ _nzbhydra_downloaders | to_yaml }}"
         state: present
@@ -206,7 +205,7 @@
     # Indexers config
     - name: Grab NZBHydra indexers
       yedit:
-        src: "{{ _config_dir.path }}/nzbhydra.yml"
+        src: "{{ config_directory }}/nzbhydra.yml"
         key: "indexers"
         state: list
       register: nzbhydra_configured_indexers
@@ -241,7 +240,7 @@
 
     - name: Remove indexers that no longer configured
       yedit:
-        src: "{{ _config_dir.path }}/nzbhydra.yml"
+        src: "{{ config_directory }}/nzbhydra.yml"
         key: "indexers[{{ item }}]"
         state: absent
       become: false
@@ -252,7 +251,7 @@
 
     - name: Set permissions on nzbhydra.yml
       ansible.builtin.file:
-        path: "{{ _config_dir.path }}/nzbhydra.yml"
+        path: "{{ config_directory }}/nzbhydra.yml"
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
       notify: Restart

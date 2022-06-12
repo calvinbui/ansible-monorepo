@@ -16,7 +16,6 @@
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
         mode: "0700"
-      register: _config_dir
 
     - name: Update apt cache
       ansible.builtin.apt:
@@ -33,25 +32,25 @@
     - name: Download Neilpang's acme.sh
       ansible.builtin.git:
         repo: https://github.com/acmesh-official/acme.sh.git
-        dest: "{{ _config_dir.path }}/repo"
+        dest: "{{ config_directory }}/repo"
         version: 3.0.4
 
     - name: Setup acme.sh
       ansible.builtin.shell: |
         ./acme.sh --install \
-        --home "{{ _config_dir.path }}/install" \
-        --config-home "{{ _config_dir.path }}/config" \
-        --cert-home "{{ _config_dir.path }}/certs" \
+        --home "{{ config_directory }}/install" \
+        --config-home "{{ config_directory }}/config" \
+        --cert-home "{{ config_directory }}/certs" \
         --accountemail "{{ common_email_username }}" \
-        --log "{{ _config_dir.path }}/{{ application }}.log"
+        --log "{{ config_directory }}/{{ application }}.log"
       args:
-        chdir: "{{ _config_dir.path }}/repo"
+        chdir: "{{ config_directory }}/repo"
         executable: "/bin/bash"
       changed_when: false
 
     - name: Create scripts directories
       ansible.builtin.file:
-        path: "{{ _config_dir.path }}/scripts"
+        path: "{{ config_directory }}/scripts"
         state: directory
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
@@ -60,13 +59,13 @@
     - name: Copy scripts
       ansible.builtin.template:
         src: "{{ files_directory }}/{{ item.script }}"
-        dest: "{{ _config_dir.path }}/scripts/{{ item.script }}"
+        dest: "{{ config_directory }}/scripts/{{ item.script }}"
         mode: "0755"
       loop: "{{ cert_domains }}"
 
     - name: Setup Cloudflare creds
       ansible.builtin.lineinfile:
-        path: "{{ _config_dir.path }}/config/account.conf"
+        path: "{{ config_directory }}/config/account.conf"
         regex: "{{ item.regex }}"
         line: "{{ item.line }}"
       loop:
@@ -76,9 +75,9 @@
           line: "SAVED_CF_Email='{{ cert_cloudflare_email }}'"
 
     - name: Generate certs for each domain
-      ansible.builtin.shell: /bin/bash -ic ". acme.sh.env && acme.sh --issue {{ item.method }} --domain {{ item.domain }} --post-hook '{{ _config_dir.path }}/scripts/{{ item.script }} {{ item.script_args }}'"
+      ansible.builtin.shell: /bin/bash -ic ". acme.sh.env && acme.sh --issue {{ item.method }} --domain {{ item.domain }} --post-hook '{{ config_directory }}/scripts/{{ item.script }} {{ item.script_args }}'"
       args:
-        chdir: "{{ _config_dir.path }}/install"
+        chdir: "{{ config_directory }}/install"
         executable: /bin/bash
       register: result
       loop: "{{ cert_domains }}"

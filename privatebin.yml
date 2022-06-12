@@ -19,11 +19,10 @@
         mode: "0700"
         owner: nobody
         group: "82"  # nobody in alpine
-      register: _config_dir
 
     - name: Create folders
       ansible.builtin.file:
-        path: "{{ _config_dir.path }}/{{ item }}"
+        path: "{{ config_directory }}/{{ item }}"
         state: directory
         mode: "0700"
         owner: nobody
@@ -31,7 +30,6 @@
       loop:
         - cfg
         - data
-      register: _dir
 
     - name: Install jmespath locally
       ansible.builtin.pip:
@@ -56,7 +54,7 @@
     - name: Template config
       ansible.builtin.template:
         src: "{{ files_directory }}/conf.php.j2"
-        dest: "{{ _dir.results | selectattr('item', 'match', 'cfg') | flatten | map(attribute='path') | first }}/conf.php"
+        dest: "{{ config_directory }}/cfg/conf.php"
         mode: "0644"
         owner: nobody
         group: "82"
@@ -68,8 +66,8 @@
       vars:
         image: privatebin/nginx-fpm-alpine
         volumes:
-          - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/srv/data"
-          - "{{ _dir.results | selectattr('item', 'match', 'cfg') | flatten | map(attribute='path') | first }}:/srv/cfg"
+          - "{{ config_directory }}/data:/srv/data"
+          - "{{ config_directory }}/cfg:/srv/cfg"
         traefik:
           - port: 8080
         homer:

@@ -4,4 +4,4 @@ cert_domains:
   - domain: "octopi.{{ common_local_tld }}"
     method: --dns dns_cf
     script: "octopi.sh"
-    script_args: "{{ _config_dir.path }}/certs/octopi.{{ common_local_tld }}/fullchain.cer {{ _config_dir.path }}/certs/octopi.{{ common_local_tld }}/octopi.{{ common_local_tld }}.key"
+    script_args: "{{ config_directory }}/certs/octopi.{{ common_local_tld }}/fullchain.cer {{ config_directory }}/certs/octopi.{{ common_local_tld }}/octopi.{{ common_local_tld }}.key"

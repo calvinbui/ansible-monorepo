@@ -39,7 +39,6 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create {{ application }} server container
       ansible.builtin.include_role:
@@ -59,7 +58,7 @@
 
           MINIO_BROWSER: "off"
         volumes:
-          - "{{ _config_dir.path }}/data:/data"
+          - "{{ config_directory }}/data:/data"
         traefik:
           - port: 9000
             rule: Host(`{{ application }}.{{ common_tld }}`)
@@ -93,7 +92,7 @@
     - name: Create {{ application }}-mc config
       notify: Restart minio-mc
       ansible.builtin.copy:
-        dest: "{{ _config_dir.path }}/config.json"
+        dest: "{{ config_directory }}/config.json"
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
         mode: "0644"
@@ -122,4 +121,4 @@
           - /dev/null
         image: minio/mc
         volumes:
-          - "{{ _config_dir.path }}/config.json:/root/.mc/config.json"
+          - "{{ config_directory }}/config.json:/root/.mc/config.json"

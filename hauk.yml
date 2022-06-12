@@ -21,12 +21,11 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Copy config
       ansible.builtin.template:
         src: "{{ files_directory }}/config.php.j2"
-        dest: "{{ _config_dir.path }}/config.php"
+        dest: "{{ config_directory }}/config.php"
         owner: "{{ common_user_id }}"
         group: "33"
         mode: "0440"
@@ -38,7 +37,7 @@
       vars:
         image: bilde2910/hauk
         volumes:
-          - "{{ _config_dir.path }}:/etc/hauk"
+          - "{{ config_directory }}:/etc/hauk"
         traefik:
           - port: 80
         homer:

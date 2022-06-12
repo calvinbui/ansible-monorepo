@@ -14,7 +14,6 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create mariadb container
       ansible.builtin.include_role:
@@ -41,7 +40,7 @@
 
           PHOTOVIEW_DISABLE_FACE_RECOGNITION: "1"
         volumes:
-          - "{{ _config_dir.path }}/cache:/app/photo_cache"
+          - "{{ config_directory }}/cache:/app/photo_cache"
 
           - "/mnt/files/Photos/WeddingGrouped:/photos:ro"
         traefik:

@@ -19,7 +19,6 @@
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create postgres container
       ansible.builtin.include_role:
@@ -36,7 +35,7 @@
 
     - name: Create app directories
       ansible.builtin.file:
-        path: "{{ _config_dir.path }}/mattermost/{{ item }}"
+        path: "{{ config_directory }}/mattermost/{{ item }}"
         state: directory
         recurse: true
         owner: "2000"
@@ -47,7 +46,6 @@
         - logs
         - plugins
         - client-plugins
-      register: _dir
 
     - name: Create container
       ansible.builtin.include_role:
@@ -55,11 +53,11 @@
       vars:
         image: mattermost/mattermost-team-edition:6.7
         volumes:
-          - "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}:/mattermost/config"
-          - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/mattermost/data"
-          - "{{ _dir.results | selectattr('item', 'match', 'logs') | flatten | map(attribute='path') | first }}:/mattermost/logs"
-          - "{{ _dir.results | selectattr('item', 'match', 'plugins') | flatten | map(attribute='path') | first }}:/mattermost/plugins"
-          - "{{ _dir.results | selectattr('item', 'match', 'client-plugins') | flatten | map(attribute='path') | first }}:/mattermost/client/plugins"
+          - "{{ config_directory }}/mattermost/config:/mattermost/config"
+          - "{{ config_directory }}/mattermost/data:/mattermost/data"
+          - "{{ config_directory }}/mattermost/logs:/mattermost/logs"
+          - "{{ config_directory }}/mattermost/plugins:/mattermost/plugins"
+          - "{{ config_directory }}/mattermost/client-plugins:/mattermost/client/plugins"
           - /etc/localtime:/etc/localtime:ro
         env:
           TZ: "{{ common_timezone }}"
@@ -73,7 +71,7 @@
 
     - name: Configure
       json_patch:
-        src: "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}/config.json"
+        src: "{{ config_directory }}/mattermost/config/config.json"
         pretty: true
         operations:
           - op: add

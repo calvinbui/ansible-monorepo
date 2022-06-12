@@ -19,7 +19,6 @@
         owner: "{{ common_user_id }}"
         group: "{{ common_group_id }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create mariadb container
       ansible.builtin.include_role:
@@ -41,7 +40,7 @@
       vars:
         image: lscr.io/linuxserver/bookstack
         volumes:
-          - "{{ _config_dir.path }}/bookstack:/config"
+          - "{{ config_directory }}/bookstack:/config"
         env:
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_group_id | string }}"
@@ -60,11 +59,11 @@
 
     - name: Wait for .env file
       ansible.builtin.wait_for:
-        path: "{{ _config_dir.path }}/bookstack/www/.env"
+        path: "{{ config_directory }}/bookstack/www/.env"
 
     - name: Configure .env
       ansible.builtin.lineinfile:
-        dest: "{{ _config_dir.path }}/bookstack/www/.env"
+        dest: "{{ config_directory }}/bookstack/www/.env"
         regexp: "^{{ item.key }}="
         line: "{{ item.key }}={{ item.value }}"
       loop: "{{ values | dict2items }}"
@@ -83,7 +82,7 @@
 
     - name: Configure PHP options
       ansible.builtin.lineinfile:
-        dest: "{{ _config_dir.path }}/bookstack/php/php-local.ini"
+        dest: "{{ config_directory }}/bookstack/php/php-local.ini"
         regexp: "^{{ item.key }}="
         line: "{{ item.key }}={{ item.value }}"
       loop: "{{ values | dict2items }}"

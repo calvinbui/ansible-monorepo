@@ -15,7 +15,6 @@
         owner: "{{ common_user }}"
         group: "{{ common_root_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create container
       ansible.builtin.include_role:
@@ -23,7 +22,7 @@
       vars:
         image: jlongster/actual-server
         volumes:
-          - "{{ _config_dir.path }}:/data"
+          - "{{ config_directory }}:/data"
         traefik:
           - port: 5006
         homer:

@@ -28,7 +28,6 @@
       loop:
         - "{{ config_directory }}/zfswatcher"
         - "/var/log/zfswatcher"
-      register: _config_dir
 
     - name: Create container
       ansible.builtin.include_role:

@@ -15,7 +15,6 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create mariadb container
       ansible.builtin.include_role:
@@ -61,7 +60,7 @@
           PHOTOPRISM_DATABASE_DRIVER: "mysql"
           PHOTOPRISM_DATABASE_DSN: "{{ _mariadb_username }}:{{ _mariadb_password }}@tcp({{ _mariadb_hostname }}:{{ _mariadb_port }})/{{ application }}?charset=utf8mb4,utf8&parseTime=true"
         volumes:
-          - "{{ _config_dir.path }}/photoprism:/photoprism/storage"
+          - "{{ config_directory }}/photoprism:/photoprism/storage"
           - "{{ common_directory_photos }}:/photoprism/originals"
         traefik:
           - port: 2342

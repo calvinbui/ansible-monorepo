@@ -14,7 +14,6 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create redis container
       ansible.builtin.include_role:
@@ -36,7 +35,7 @@
       ansible.builtin.git:
         repo: "https://github.com/TheSpaghettiDetective/obico-server.git"
         version: release
-        dest: "{{ _config_dir.path }}/repo"
+        dest: "{{ config_directory }}/repo"
         update: true
       register: _obico_repo_updated
 
@@ -44,7 +43,7 @@
       community.docker.docker_image:
         name: "{{ application }}-ml_api"
         build:
-          path: "{{ _config_dir.path }}/repo/ml_api"
+          path: "{{ config_directory }}/repo/ml_api"
           dockerfile: Dockerfile
           pull: true
         source: build
@@ -82,7 +81,7 @@
       community.docker.docker_image:
         name: "{{ application }}-backend"
         build:
-          path: "{{ _config_dir.path }}/repo/backend"
+          path: "{{ config_directory }}/repo/backend"
           dockerfile: Dockerfile
           pull: true
         source: build

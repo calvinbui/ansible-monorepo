@@ -15,7 +15,6 @@
         owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create container
       ansible.builtin.include_role:
@@ -25,10 +24,10 @@
         env:
           TZ: "{{ common_timezone }}"
         volumes:
-          - "{{ _config_dir.path }}/cert:/cert"
-          - "{{ _config_dir.path }}/data:/opt/tplink/EAPController/data"
-          - "{{ _config_dir.path }}/work:/opt/tplink/EAPController/work"
-          - "{{ _config_dir.path }}/logs:/opt/tplink/EAPController/logs"
+          - "{{ config_directory }}/cert:/cert"
+          - "{{ config_directory }}/data:/opt/tplink/EAPController/data"
+          - "{{ config_directory }}/work:/opt/tplink/EAPController/work"
+          - "{{ config_directory }}/logs:/opt/tplink/EAPController/logs"
         ipv4_address: "{{ docker_network.prefix }}.3"
         homer:
           name: TP-Link Omada Controller

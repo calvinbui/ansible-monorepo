@@ -19,7 +19,6 @@
         owner: "{{ common_user }}"
         group: "{{ common_root_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create container
       ansible.builtin.include_role:
@@ -27,7 +26,7 @@
       vars:
         image: lscr.io/linuxserver/radarr
         volumes:
-          - "{{ _config_dir.path }}:/config"
+          - "{{ config_directory }}:/config"
           - "{{ common_directory_storage }}:{{ common_mounted_directory }}"
         env:
           PUID: "{{ common_user_id | string }}"
@@ -44,7 +43,7 @@
 
     - name: Wait for config
       ansible.builtin.wait_for:
-        path: "{{ _config_dir.path }}/config.xml"
+        path: "{{ config_directory }}/config.xml"
 
     - name: Install lxml
       ansible.builtin.pip:
@@ -53,7 +52,7 @@
 
     - name: Configure config.xml
       ansible.builtin.xml:
-        path: "{{ _config_dir.path }}/config.xml"
+        path: "{{ config_directory }}/config.xml"
         xpath: "/Config/{{ item.key }}"
         value: "{{ item.value | string }}"
       loop: "{{ _radarr_config | dict2items }}"

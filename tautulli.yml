@@ -19,7 +19,6 @@
         owner: "{{ common_user }}"
         group: "{{ common_root_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create  container
       ansible.builtin.include_role:
@@ -31,7 +30,7 @@
           PGID: "{{ common_root_group | string }}"
           TZ: "{{ common_timezone }}"
         volumes:
-          - "{{ _config_dir.path }}:/config"
+          - "{{ config_directory }}:/config"
         traefik:
           - port: 8181
         homer:

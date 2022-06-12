@@ -19,7 +19,6 @@
         owner: "{{ common_user }}"
         group: "{{ common_root_group }}"
         mode: "0771"
-      register: _config_dir
 
     - name: Create container
       ansible.builtin.include_role:
@@ -33,7 +32,7 @@
           UMASK: "022"
           WEBUI_PORT: "8090"
         volumes:
-          - "{{ _config_dir.path }}:/config/qBittorrent"
+          - "{{ config_directory }}:/config/qBittorrent"
           - "{{ common_directory_download }}:{{ common_mounted_directory_download }}"
         ipv4_address: "{{ docker_network.prefix }}.2"
         traefik:
@@ -47,7 +46,7 @@
 
     - name: Wait for config
       ansible.builtin.wait_for:
-        path: "{{ _config_dir.path }}/qBittorrent.conf"
+        path: "{{ config_directory }}/qBittorrent.conf"
       register: _config_file
 
     - name: Check if config changes required
@@ -157,7 +156,7 @@
 
     - name: Find search engines to disable
       ansible.builtin.stat:
-        path: "{{ _config_dir.path }}/nova3/engines/{{ item }}.py"
+        path: "{{ config_directory }}/nova3/engines/{{ item }}.py"
       loop:
         - eztv
         - legittorrents
@@ -172,7 +171,7 @@
     - name: Disable search engines
       ansible.builtin.command: "mv {{ item }}.py {{ item }}.py.bak"
       args:
-        chdir: "{{ _config_dir.path }}/nova3/engines/"
+        chdir: "{{ config_directory }}/nova3/engines/"
       when: item.stat.exists
       loop: "{{ _qbittorrent_search_engines.results }}"
       notify: Restart
