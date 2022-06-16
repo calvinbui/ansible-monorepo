@@ -11,7 +11,7 @@
       "disableExtruderGCode": "M18 E",
       "zBabystepGCode": "M290 Z",
       "defaultTemperatureFanSpeed": {
-        "hotend": 200,
+        "hotend": 210,
         "heatbed": 60,
         "fan": 100
       }
@@ -45,11 +45,11 @@
         "enabled": true
       },
       "psuControl": {
-        "enabled": false,
-        "turnOnPSUWhenExitingSleep": false
+        "enabled": true,
+        "turnOnPSUWhenExitingSleep": true
       },
       "tpLinkSmartPlug": {
-        "enabled": true,
+        "enabled": false,
         "smartPlugIP": "192.168.3.23/3"
       },
       "tasmota": {
@@ -63,7 +63,7 @@
         "relayNumber": null
       },
       "spoolManager": {
-        "enabled": false
+        "enabled": true
       },
       "ophom": {
         "enabled": false
@@ -119,13 +119,13 @@
       "pollingInterval": 2000,
       "touchscreen": true,
       "turnScreenOffWhileSleeping": true,
-      "turnOnPrinterWhenExitingSleep": false,
+      "turnOnPrinterWhenExitingSleep": true,
       "preferPreviewWhilePrinting": true,
-      "previewProgressCircle": false,
+      "previewProgressCircle": true,
       "screenSleepCommand": "xset dpms force standby",
       "screenWakeupCommand": "xset s off && xset -dpms && xset s noblank",
       "showExtruderControl": true,
-      "showNotificationCenterIcon": true
+      "showNotificationCenterIcon": false
     }
   }
 }
