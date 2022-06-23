@@ -5,7 +5,7 @@ groups:
     rules:
       -
         alert: HTTP Connection
-        expr: probe_success == 0 unless sum(probe_success{job="blackbox_internet_connectivity"}) > 0
+        expr: probe_success == 0
         for: 5m
         annotations:
           title: "HTTP Connection"
@@ -34,7 +34,7 @@ groups:
       -
         alert: Internet Connectivity
         expr: sum(probe_success{job="blackbox_internet_connectivity"}) == 0
-        for: 4m
+        for: 2m
         annotations:
           title: "Internet Connectivity"
           description: "Pings to the Internet endpoints are unsuccessful"

@@ -4,6 +4,14 @@
 global:
   slack_api_url: {{ alertmanager_slack_url }}
 
+inhibit_rules:
+  - target_matchers:
+      - alertname = Internet Connectivity
+    source_matchers:
+      - alertname =~ "(HTTP Connection|Notification Failing|Clock Sync)"
+    equal:
+      - 'alertstate'
+
 templates:
   - '/etc/alertmanager/template/*.tmpl'
 
