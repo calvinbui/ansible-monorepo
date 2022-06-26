@@ -32,7 +32,10 @@
       TZ: "{{ common_timezone }}"
 
     volumes:
-      - "{{ mongo_directory }}:/data/db"
+      - "{{ mongo_directory }}/db:/data/db"
+      - "{{ mongo_directory }}/dump:/dump"
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
 
     labels:
       traefik.enable: "false"
