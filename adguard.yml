@@ -1,0 +1,33 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: adguard
+
+    docker_network: "{{ networks.iot }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: adguard/adguardhome
+        ipv4_address: "{{ docker_network.prefix }}.101"
+        homer:
+          name: AdGuard Home
+          service: Infrastructure
+          priority: 585
+          subtitle: "Ads & tracker blocking DNS server"
+          url: http://adguard.{{ common_local_tld }}
+        volumes:
+          - "{{ config_directory }}/work:/opt/adguardhome/work"
+          - "{{ config_directory }}/conf:/opt/adguardhome/conf"
