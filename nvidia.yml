@@ -7,10 +7,8 @@
 
     # https://www.nvidia.com/en-us/drivers/unix/
     # check compatibility table https://github.com/keylase/nvidia-patch
-    nvidia_driver_version: "515.48.07"
+    nvidia_driver_version: "515.57"
 
-    # manually generated
-    nvidia_driver_checksum: "sha256:e28764cc5b13c32e76370513daeafc05c289b77ee0511552450f1a00e31ae1e3"
 
   tasks:
     - name: Create config folder
@@ -71,7 +69,6 @@
         url: "https://international.download.nvidia.com/XFree86/Linux-x86_64/{{ nvidia_driver_version }}/NVIDIA-Linux-x86_64-{{ nvidia_driver_version }}.run"
         dest: "{{ config_directory }}/{{ nvidia_driver_version }}.run"
         mode: '0755'
-        checksum: "{{ nvidia_driver_checksum }}"
 
     - name: Install NVIDIA driver
       ansible.builtin.command: "{{ config_directory }}/{{ nvidia_driver_version }}.run --silent --no-questions"
