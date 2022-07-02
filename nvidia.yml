@@ -9,6 +9,11 @@
     # check compatibility table https://github.com/keylase/nvidia-patch
     nvidia_driver_version: "515.57"
 
+    nvidia_driver_containers:
+      - obico-ml_api
+      - obico-tasks
+      - obico-web
+      - plex
 
   tasks:
     - name: Create config folder
@@ -69,6 +74,12 @@
         url: "https://international.download.nvidia.com/XFree86/Linux-x86_64/{{ nvidia_driver_version }}/NVIDIA-Linux-x86_64-{{ nvidia_driver_version }}.run"
         dest: "{{ config_directory }}/{{ nvidia_driver_version }}.run"
         mode: '0755'
+      register: __download_nvidia_drivers
+
+    - name: Stop containers using NVIDIA GPU
+      ansible.builtin.command: "docker stop {{ item }}"
+      loop: "{{ nvidia_driver_containers }}"
+      when: __download_nvidia_drivers.changed
 
     - name: Install NVIDIA driver
       ansible.builtin.command: "{{ config_directory }}/{{ nvidia_driver_version }}.run --silent --no-questions"
@@ -140,6 +151,11 @@
     - name: Run NvFBC unlock patch
       ansible.builtin.command: "bash {{ config_directory }}/nvidia-patch/patch-fbc.sh"
       when: __nvidia_patch_updated.changed
+
+    - name: Start containers using NVIDIA GPU
+      ansible.builtin.command: "docker start {{ item }}"
+      loop: "{{ nvidia_driver_containers }}"
+      when: __download_nvidia_drivers.changed
 
 # The NVIDIA driver install can mess with the Docker daemon settings.
 # Rerun docker again to be safe.
