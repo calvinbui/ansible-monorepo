@@ -32,6 +32,9 @@
       ansible.builtin.get_url:
         url: "https://languagetool.org/download/ngram-data/ngrams-{{ item.lang }}-{{ item.version }}.zip"
         dest: "{{ config_directory }}/ngrams-{{ item.lang }}-{{ item.version }}.zip"
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
         checksum: "{{ item.checksum }}"
       loop:
         - lang: en
@@ -51,6 +54,9 @@
       ansible.builtin.get_url:
         url: "https://languagetool.org/download/ngram-lang-detect/model_ml50_new.zip"
         dest: "{{ config_directory }}/ngram-lang-detect.zip"
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
 
     - name: Create word2vec folder
       ansible.builtin.file:
@@ -64,6 +70,9 @@
       ansible.builtin.get_url:
         url: https://languagetool.org/download/word2vec/en.zip
         dest: "{{ config_directory }}/word2vec.tar.gz"
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
 
     - name: Unarchive word2vec
       ansible.builtin.unarchive:

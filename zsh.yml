@@ -72,7 +72,7 @@
       become: false
       become_user: "{{ common_user }}"
 
-    - name: Template zshrc
+    - name: Template zshrc # noqa var-spacing
       ansible.builtin.copy:
         content: |
           # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.

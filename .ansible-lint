@@ -1,7 +1,7 @@
 skip_list:
   - empty-string-compare
   - git-latest
-  - line-length
+  - yaml[line-length]
   - no-handler
   - no-tabs
 

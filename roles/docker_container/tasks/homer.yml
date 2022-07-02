@@ -4,7 +4,7 @@
 - name: Find logo file extension
   ansible.builtin.find:
     path: "{{ homer_logos_local_dir }}"
-    patterns: "^{{ application }}.(png|svg|jpg|jpeg)"
+    patterns: "^{{ application }}.(png|svg|jpg|jpeg)" # noqa var-spacing
     file_type: file
     use_regex: true
   register: _homer_logo_local

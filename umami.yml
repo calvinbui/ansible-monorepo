@@ -20,6 +20,9 @@
       ansible.builtin.get_url:
         url: https://raw.githubusercontent.com/mikecao/umami/master/sql/schema.postgresql.sql
         dest: "{{ config_directory }}/schema.postgresql.sql"
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
       register: _sql_file
 
     - name: Create postgres container
