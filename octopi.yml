@@ -132,17 +132,22 @@
             update: true
           notify: Reboot
 
+        - name: Check if hyperpixel drivers are installed and running
+          ansible.builtin.service_facts: ~
+
         - name: Install hyperpixel drivers
           ansible.builtin.command: sudo ./install.sh
           args:
             chdir: /root/hyperpixel4
           notify: Reboot
           register: _hyperpixel_driver_install
+          when: "'hyperpixel4-init.service' not in ansible_facts.services"
 
         - name: Print hyperpixel installation output
           ansible.builtin.debug:
             msg: "{{ _hyperpixel_driver_install.stdout_lines }}"
           notify: Reboot
+          when: "'hyperpixel4-init.service' not in ansible_facts.services"
 
         # https://github.com/pimoroni/hyperpixel4/issues/111#issuecomment-932707716
         - name: Rotate hyperpixel display
