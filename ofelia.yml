@@ -8,7 +8,7 @@
     docker_network: "{{ networks.pub }}"
 
   tasks:
-    - name: Create  container
+    - name: Create container
       ansible.builtin.include_role:
         name: docker_container
       vars:

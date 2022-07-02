@@ -20,7 +20,7 @@
         group: "{{ common_root_group }}"
         mode: "0771"
 
-    - name: Create  container
+    - name: Create container
       ansible.builtin.include_role:
         name: docker_container
       vars:
