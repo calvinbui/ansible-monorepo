@@ -1,11 +1,19 @@
 ---
 
+ipmi_password: !vault |
+  $ANSIBLE_VAULT;1.1;AES256
+  65613035363330656537376663373532663139353630343330346630373965663034646661626463
+  6466356136303237333637323434653863363561383265360a356164383533353338303761343338
+  35353166666461383330663936643162313266393761316439326465613166303132316662383363
+  3465346261343662350a663538653535636466313136343064363262376461643338336263653736
+  3034
+
 cert_domains:
   -
     domain: "homelab-ipmi.{{ common_local_tld }}"
     method: --dns dns_cf
     script: "ipmi.py"
-    script_args: "--ipmi-url=https://homelab-ipmi.{{ common_local_tld }} --username=ADMIN --password=ADMIN --cert-file={{ config_directory }}/certs/homelab-ipmi.{{ common_local_tld }}/fullchain.cer --key-file={{ config_directory }}/certs/homelab-ipmi.{{ common_local_tld }}/homelab-ipmi.{{ common_local_tld }}.key --model=X10"
+    script_args: "--ipmi-url=https://homelab-ipmi.{{ common_local_tld }} --username=ADMIN --password={{ ipmi_password }} --cert-file={{ config_directory }}/certs/homelab-ipmi.{{ common_local_tld }}/fullchain.cer --key-file={{ config_directory }}/certs/homelab-ipmi.{{ common_local_tld }}/homelab-ipmi.{{ common_local_tld }}.key --model=X10"
   -
     domain: "omada.{{ common_local_tld }}"
     method: --dns dns_cf

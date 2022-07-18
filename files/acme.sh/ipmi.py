@@ -26,8 +26,9 @@ import requests
 import logging
 from base64 import b64encode
 from datetime import datetime
-from lxml import etree
+import xml.etree.ElementTree as etree
 from urllib.parse import urlparse
+
 from requests.auth import HTTPBasicAuth
 
 REQUEST_TIMEOUT = 5.0
@@ -145,15 +146,15 @@ class IPMIUpdater:
         self.logger.debug(result.text)
         root = etree.fromstring(result.text)
         # <?xml> <IPMI> <SSL_INFO> <STATUS>
-        status = root.xpath('//IPMI/SSL_INFO/STATUS')
+        status = root.findall('.//SSL_INFO/STATUS')
         if not status:
             return False
         # Since xpath will return a list, just pick the first one from it.
         status = status[0]
         has_cert = bool(int(status.get('CERT_EXIST')))
         if has_cert:
-            valid_from = status.get('VALID_FROM')
-            valid_until = status.get('VALID_UNTIL')
+            valid_from = datetime.strptime(status.get('VALID_FROM'), r"%b %d %H:%M:%S %Y")
+            valid_until = datetime.strptime(status.get('VALID_UNTIL'), r"%b %d %H:%M:%S %Y")
 
         return {
             'has_cert': has_cert,
@@ -181,7 +182,7 @@ class IPMIUpdater:
         self.logger.debug(result.text)
         root = etree.fromstring(result.text)
         # <?xml> <IPMI> <SSL_INFO>
-        status = root.xpath('//IPMI/SSL_INFO')
+        status = root.findall('.//SSL_INFO')
         if not status:
             return False
         # Since xpath will return a list, just pick the first one from it.
@@ -250,6 +251,83 @@ class IPMIUpdater:
             return False
         return True
 
+class IPMIX9Updater(IPMIUpdater):
+
+    class TLSv1HttpAdapter(requests.adapters.HTTPAdapter):
+        """"Transport adapter" that allows us to use SSLv3."""
+
+        def init_poolmanager(self, connections, maxsize, block=False):
+            import ssl
+            from urllib3.poolmanager import PoolManager
+            ctx = ssl.SSLContext(protocol=ssl.PROTOCOL_TLSv1)
+            ctx.load_default_certs()
+            ctx.set_ciphers('DEFAULT@SECLEVEL=1')
+            self.poolmanager = PoolManager(
+                num_pools=connections, maxsize=maxsize,
+                block=block, ssl_context=ctx)
+
+    def __init__(self, session, ipmi_url):
+        super().__init__(session, ipmi_url)
+        self.reboot_url = f'{ipmi_url}/cgi/BMCReset.cgi'
+        self.use_b64encoded_login = False
+        self.session.mount('https://', IPMIX9Updater.TLSv1HttpAdapter())
+
+    def _get_op_data(self, op, r):
+        timestamp = datetime.utcnow().strftime('%a %d %b %Y %H:%M:%S GMT')
+
+        data = {
+            'time_stamp': timestamp  # 'Thu Jul 12 2018 19:52:48 GMT+0300 (FLE Daylight Time)'
+        }
+        if r is not None:
+            data[op] = r
+        return data
+
+    def _get_upload_data(self, cert_data, key_data):
+        return [
+            ('sslcrt_file', ('cert.pem', cert_data, 'application/octet-stream')),
+            ('privkey_file', ('privkey.pem', key_data, 'application/octet-stream'))
+        ]
+
+    def _check_reboot_result(self, result):
+        self.logger.debug(result.text)
+        root = etree.fromstring(result.text)
+        # <?xml> <IPMI> <SSL_INFO>
+        status = root.findall('.//BMC_RESET/STATE')
+        if not status:
+            return False
+        if status[0].get('CODE') == 'OK':
+            return True
+        return False
+        #if '<STATE CODE="OK"/>' not in result.text:
+        #    return False
+
+    def get_ipmi_cert_valid(self):
+        """
+        Verify existing certificate information
+        :return: bool
+        """
+
+        headers = self.get_xhr_headers("config_ssl")
+
+        cert_info_data = self._get_op_data('SSL_VALIDATE.XML', '(0,0)')
+
+        try:
+            result = self.session.post(self.cert_info_url, cert_info_data, headers=headers, timeout=REQUEST_TIMEOUT, verify=False)
+        except ConnectionError:
+            return False
+        if not result.ok:
+            return False
+
+        self.logger.debug(result.text)
+        root = etree.fromstring(result.text)
+        # <?xml> <IPMI> <SSL_INFO> <VALIDATE>
+        status = root.findall('.//SSL_INFO/VALIDATE')
+        if not status:
+            return False
+        # Since xpath will return a list, just pick the first one from it.
+        status = status[0]
+        return bool(int(status.get('CERT'))) and bool(int(status.get('KEY')))
+
 class IPMIX10Updater(IPMIUpdater):
     def __init__(self, session, ipmi_url):
         super().__init__(session, ipmi_url)
@@ -276,7 +354,7 @@ class IPMIX10Updater(IPMIUpdater):
         self.logger.debug(result.text)
         root = etree.fromstring(result.text)
         # <?xml> <IPMI> <SSL_INFO>
-        status = root.xpath('//IPMI/BMC_RESET/STATE')
+        status = root.findall('.//BMC_RESET/STATE')
         if not status:
             return False
         if status[0].get('CODE') == 'OK':
@@ -308,6 +386,12 @@ class IPMIX11Updater(IPMIUpdater):
             ('key_file', ('privkey.pem', key_data, 'application/octet-stream'))
         ]
 
+def parse_valid_until(pem):
+    from datetime import datetime
+    from OpenSSL import crypto as c
+    with open(pem, 'rb') as fh:
+        cert = c.load_certificate(c.FILETYPE_PEM, fh.read())
+    return datetime.strptime(cert.get_notAfter().decode('utf8'), "%Y%m%d%H%M%SZ")
 
 def create_updater(args):
     session = requests.session()
@@ -324,6 +408,8 @@ def create_updater(args):
         return IPMIX10Updater(session, args.ipmi_url)
     elif model == "X11":
         return IPMIX11Updater(session, args.ipmi_url)
+    elif model == "X9":
+        return IPMIX9Updater(session, args.ipmi_url)
     else:
         raise Exception(f"Unknown model: {model}")
 
@@ -361,10 +447,12 @@ def main():
                         help='X.509 Certificate filename')
     parser.add_argument('--username', required=True,
                         help='IPMI username with admin access')
-    parser.add_argument('--password', required=True,
-                        help='IPMI user password')
+    parser.add_argument('--password', required=False,
+                        help='IPMI user password [%(default)s]', default=os.environ.get('IPMI_UPDATER_PASSWORD', None))
     parser.add_argument('--no-reboot', action='store_true',
                         help='The default is to reboot the IPMI after upload for the change to take effect.')
+    parser.add_argument('--force-update', action='store_true',
+                        help='Ignore the cert end date check, always replace the cert.')
     parser.add_argument('--quiet', action='store_true',
                         help='Do not output anything if successful')
     parser.add_argument('--debug', action='store_true',
@@ -409,8 +497,17 @@ def main():
     if not cert_info:
         print("Failed to extract certificate information from IPMI!")
         exit(2)
+    current_valid_until = cert_info.get('valid_until', None)
     if not args.quiet and cert_info['has_cert']:
         print("There exists a certificate, which is valid until: %s" % cert_info['valid_until'])
+
+    new_valid_until = parse_valid_until(args.cert_file)
+    if current_valid_until == new_valid_until:
+        if not args.force_update:
+            print("New cert validity period matches existing cert, nothing to do")
+            exit(0)
+        else:
+            print("New cert validity period matches existing cert, will update regardless")
 
     # Go upload!
     if not updater.upload_cert(args.key_file, args.cert_file):
