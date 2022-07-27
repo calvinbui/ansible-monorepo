@@ -9,6 +9,7 @@ common_directory_photos: "{{ common_directory_storage }}/Photos"
 common_directory_music: "{{ common_directory_storage }}/Music"
 common_directory_misc: "{{ common_directory_storage }}/Misc"
 common_directory_backup: "{{ common_directory_storage }}/Backups"
+common_directory_games: "{{ common_directory_storage }}/Games"
 
 config_directory: "{{ common_directory }}/{{ application }}"
 files_directory: "files/{{ application }}"
