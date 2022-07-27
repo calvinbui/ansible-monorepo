@@ -37,6 +37,8 @@
         name: docker_container
       vars:
         image: ghcr.io/analogj/scrutiny:master-omnibus
+        env:
+          COLLECTOR_CRON_SCHEDULE: "*/5 * * * *"
         capabilities:
           - SYS_RAWIO
         volumes:
@@ -51,10 +53,3 @@
           service: Monitoring
           priority: 780
           subtitle: "S.M.A.R.T. monitoring"
-        labels:
-          ofelia.enabled: "true"
-          ofelia.job-exec.scrutiny-cron.user: "0"
-          ofelia.job-exec.scrutiny-cron.schedule: "@every 5m"
-          ofelia.job-exec.scrutiny-cron.command: "/scrutiny/bin/scrutiny-collector-metrics run"
-          ofelia.job-exec.scrutiny-cron.tty: "false"
-          ofelia.job-exec.scrutiny-cron.no-overlap: "true"
