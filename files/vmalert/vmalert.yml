@@ -9,13 +9,6 @@ groups:
           title: vmalert config reload errors
           description: ""
       -
-        alert: vmalert execution errors
-        expr: vmalert_execution_errors_total > 0
-        for: 5m
-        annotations:
-          title: vmalert execution errors
-          description: ""
-      -
         alert: vmalert alerts send errors
         expr: vmalert_alerts_send_errors_total > 0
         for: 5m
