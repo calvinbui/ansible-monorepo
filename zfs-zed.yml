@@ -46,8 +46,8 @@
 
     - name: Configure msmtp
       ansible.builtin.copy:
-        dest: "{{ item.dest }}"
-        owner: "{{ item.owner }}"
+        dest: /etc/msmtprc
+        owner: root
         group: msmtp
         mode: "600"
         content: |
@@ -66,16 +66,9 @@
           password       {{ common_email_password }}
 
           account default : alerts
-      loop:
-        -
-          dest: "/etc/msmtprc"
-          owner: root
-        -
-          dest: "/root/.msmtprc"
-          owner: root
-        -
-          dest: "/home/{{ common_user }}/.msmtprc"
-          owner: "{{ common_user }}"
+
+          root: homelab-root-user{{ common_email_to }}
+          default: homelab-root-user{{ common_email_to }}
 
       notify: Restart
 
