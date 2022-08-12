@@ -38,7 +38,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: lscr.io/linuxserver/bookstack
+        image: lscr.io/linuxserver/bookstack:22.07.3
         volumes:
           - "{{ config_directory }}/bookstack:/config"
         env:

@@ -34,7 +34,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ajanvier/polr:latest
+        image: ajanvier/polr:2.3.0c
         # https://github.com/ajanvier/docker-polr#environment-variables
         env:
           DB_CONNECTION: "mysql"

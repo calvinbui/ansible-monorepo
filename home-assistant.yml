@@ -34,7 +34,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/home-assistant/home-assistant:stable
+        image: ghcr.io/home-assistant/home-assistant:2022.8.3
         env:
           TZ: "{{ common_timezone }}"
         volumes:
@@ -106,7 +106,7 @@
             name: docker_container
           vars:
             name: "eufy-security-ws"
-            image: bropat/eufy-security-ws
+            image: bropat/eufy-security-ws:0.9.4
             env:
               USERNAME: "{{ application }}{{ common_email_to }}"
               PASSWORD: !vault |

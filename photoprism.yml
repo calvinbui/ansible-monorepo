@@ -33,7 +33,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: photoprism/photoprism
+        image: photoprism/photoprism:latest
         security_opts:
           - seccomp=unconfined
           - apparmor=unconfined

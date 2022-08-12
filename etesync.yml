@@ -49,7 +49,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: victorrds/etebase:alpine
+        image: victorrds/etebase:0.9.1-alpine
         user: "{{ common_user_id }}:{{ common_group_id }}"
         env:
           SERVER: "http-socket"
@@ -106,7 +106,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-dav"
-        image: etesync/etesync-dav
+        image: etesync/etesync-dav:latest
         volumes:
           - "{{ _dav_dir.path }}:/data"
         traefik:
@@ -133,7 +133,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-web"
-        image: nginx:alpine
+        image: nginx:1.23.1-alpine
         volumes:
           - "{{ _web_dir.path }}:/usr/share/nginx/html"
         labels:

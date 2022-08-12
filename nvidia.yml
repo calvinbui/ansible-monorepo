@@ -7,7 +7,7 @@
 
     # https://www.nvidia.com/en-us/drivers/unix/
     # check compatibility table https://github.com/keylase/nvidia-patch
-    nvidia_driver_version: "515.57"
+    nvidia_driver_version: "515.65.01"
 
     nvidia_driver_containers:
       - obico-ml_api
