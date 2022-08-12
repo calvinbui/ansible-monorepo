@@ -70,7 +70,8 @@
 
     - name: No password sudo
       ansible.builtin.lineinfile:
-        path: /etc/sudoers
+        path: "/etc/sudoers.d/{{ common_user }}"
+        create: true
         state: present
         regexp: "^{{ common_user }}"
         line: "{{ common_user }} ALL=(ALL) NOPASSWD: ALL"

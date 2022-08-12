@@ -95,16 +95,24 @@
 
     # https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker
     - name: Add NVIDIA's Docker GPG key
-      ansible.builtin.apt_key:
+      ansible.builtin.get_url:
         url: https://nvidia.github.io/nvidia-docker/gpgkey
-        state: present
+        dest: "/etc/apt/trusted.gpg.d/{{ application }}"
+      register: result
+      until: result is success
       retries: 5
       delay: 5
 
-    - name: Download NVIDIA's Docker Repository
-      ansible.builtin.get_url:
-        url: "https://nvidia.github.io/nvidia-docker/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/nvidia-docker.list"
-        dest: /etc/apt/sources.list.d/nvidia-docker.list
+    # modified from https://nvidia.github.io/nvidia-docker/ubuntu22.04/nvidia-docker.list
+    - name: Add NVIDIA's Docker Repository to APT
+      ansible.builtin.copy:
+        content: |
+          deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/{{ application }}] https://nvidia.github.io/libnvidia-container/stable/ubuntu18.04/$(ARCH) /
+          #deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/{{ application }}] https://nvidia.github.io/libnvidia-container/experimental/ubuntu18.04/$(ARCH) /
+          deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/{{ application }}] https://nvidia.github.io/nvidia-container-runtime/stable/ubuntu18.04/$(ARCH) /
+          #deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/{{ application }}] https://nvidia.github.io/nvidia-container-runtime/experimental/ubuntu18.04/$(ARCH) /
+          deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/{{ application }}] https://nvidia.github.io/nvidia-docker/ubuntu18.04/$(ARCH) /
+        dest: /etc/apt/sources.list.d/{{ application }}.list
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
         mode: "0644"
@@ -114,6 +122,10 @@
       ansible.builtin.apt:
         update_cache: true
       when: __apt_repository.changed
+      register: result
+      until: result is success
+      retries: 5
+      delay: 5
 
     - name: Install NVIDIA Container Toolkit
       ansible.builtin.apt:
