@@ -27,12 +27,16 @@
 
     volumes: "{{ postgres_directories }}"
 
+    # https://github.com/docker-library/docs/blob/master/postgres/README.md#environment-variables
     env:
       POSTGRES_USER: "{{ postgres_user }}"
       POSTGRES_PASSWORD: "{{ postgres_password }}"
       POSTGRES_DB: "{{ postgres_database }}"
       TZ: "{{ common_timezone }}"
       POSTGRES_INITDB_ARGS: "{{ postgres_initdb_args | default(omit) }}"
+      LC_COLLATE:  "{{ lc_collate | default(omit) }}"
+      LC_CTYPE: "{{ lc_ctype | default(omit) }}"
+      POSTGRES_HOST_AUTH_METHOD: "{{ postgres_host_auth_method | default(omit) }}"
 
     labels:
       traefik.enable: "false"
