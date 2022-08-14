@@ -15,7 +15,7 @@ services:
         logo: jira.svg
         subtitle: Project management
         url: https://thingstodo.atlassian.net
-        priority: 100
+        priority: 300
         monitor: false
 
   - group: Sharing
