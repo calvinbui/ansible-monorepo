@@ -54,6 +54,9 @@
           - -promscrape.config=/promscrape-config.yml
           - -promscrape.configCheckInterval=60s
           - -promscrape.config.strictParse=true
+
+          # fixes problem with cadvisor
+          - -search.cacheTimestampOffset=10m0s
         volumes:
           - "{{ config_directory }}:/victoria-metrics-data"
 
