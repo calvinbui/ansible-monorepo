@@ -68,6 +68,8 @@
           service: Collaboration
           priority: 99
           subtitle: "CI"
+        blackbox:
+          path: /healthz
 
     - name: Create runner container
       ansible.builtin.include_role:
@@ -96,4 +98,4 @@
           priority: 98
           subtitle: "CI"
         blackbox:
-          auth: basic
+          path: /healthz
