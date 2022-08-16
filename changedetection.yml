@@ -13,7 +13,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-webdriver"
-        image: selenium/standalone-chrome-debug
+        image: selenium/standalone-chrome-debug:3.141.59
         volumes:
           - /dev/shm:/dev/shm
         comparisons:
@@ -23,7 +23,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: dgtlmoon/changedetection.io
+        image: dgtlmoon/changedetection.io:0.39.17.2
         volumes:
           - "{{ config_directory }}:/datastore"
         env:

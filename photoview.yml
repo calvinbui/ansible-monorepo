@@ -32,7 +32,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: viktorstrate/photoview:2
+        image: viktorstrate/photoview:2.3
         env:
           PHOTOVIEW_LISTEN_IP: 0.0.0.0
           PHOTOVIEW_DATABASE_DRIVER: mysql

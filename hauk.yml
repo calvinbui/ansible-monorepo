@@ -35,7 +35,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: bilde2910/hauk
+        image: bilde2910/hauk:1.6.1
         volumes:
           - "{{ config_directory }}:/etc/hauk"
         traefik:

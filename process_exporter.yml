@@ -42,7 +42,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ncabatoff/process-exporter:latest
+        image: ncabatoff/process-exporter:0.7.10
         command:
           - --procfs=/host/proc
           - --config.path=/config/config.yml

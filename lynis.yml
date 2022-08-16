@@ -4,6 +4,9 @@
 
 - hosts: homelab
 
+  vars:
+    application: lynis
+
   handlers:
     - name: Restart SSH
       ansible.builtin.service:
@@ -27,10 +30,10 @@
         cache_valid_time: 600
       changed_when: false
 
-    - name: Import key
-      ansible.builtin.apt_key:
+    - name: Download GPG Key
+      ansible.builtin.get_url:
         url: https://packages.cisofy.com/keys/cisofy-software-public.key
-        state: present
+        dest: "/etc/apt/trusted.gpg.d/{{ application }}"
       register: result
       until: result is success
       retries: 5
@@ -55,10 +58,23 @@
         mode: "0644"
 
     - name: Add repository
-      ansible.builtin.apt_repository:
-        repo: "deb https://packages.cisofy.com/community/lynis/deb/ stable main"
-        state: present
+      ansible.builtin.copy:
+        content: |
+          "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/{{ application }}] https://packages.cisofy.com/community/lynis/deb/ stable main"
+        dest: /etc/apt/sources.list.d/{{ application }}.list
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
+      register: __apt_repository
+
+    - name: Update apt cache
+      ansible.builtin.apt:
         update_cache: true
+      when: __apt_repository.changed
+      register: result
+      until: result is success
+      retries: 5
+      delay: 5
 
     - name: Install lynis
       ansible.builtin.apt:

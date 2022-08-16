@@ -106,6 +106,14 @@
         port: "37"
         description: "printer"
         access: "{{ networks.user.vlan }}"
+      -
+        port: "38"
+        description: "solar-inverter-bridge-1"
+        access: "{{ networks.iot.vlan }}"
+      -
+        port: "39"
+        description: "solar-inverter-bridge-2"
+        access: "{{ networks.iot.vlan }}"
       #
       # WIFI
       #

@@ -1,0 +1,92 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: gitea
+
+    docker_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Create postgres container
+      ansible.builtin.include_role:
+        name: postgres
+      vars:
+        postgres_version: 14
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          61343333353734383736653837366562643461333136616136343137343762336361613038343662
+          3938343633353465303438356335376331663765376435320a343835386261636163356166343361
+          62656439656431393136616533626265363738313864626464643334373663653166393137396638
+          3763626466613631310a656366336136653036393139626133613264643938353333663264373665
+          63383862376364343634656635666261393062363136333239656634663132316233656537343265
+          3232646432666434363733383764653137633363313234316263
+
+        # https://docs.gitea.io/en-us/database-prep/
+        postgres_initdb_args: '-E "UTF8"'
+        lc_collate: en_US.UTF-8
+        lc_ctype: en_US.UTF-8
+        postgres_host_auth_method: scram-sha-256
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: gitea/gitea:1.17.0
+        volumes:
+          - "{{ config_directory }}/data:/data"
+          - /etc/timezone:/etc/timezone:ro
+          - /etc/localtime:/etc/localtime:ro
+        env:
+          USER_UID: "{{ common_user_id | string }}"
+          USER_GID: "{{ common_group_id | string }}"
+
+          GITEA__database__DB_TYPE: postgres
+          GITEA__database__HOST: "{{ _postgres_hostname }}:{{ _postgres_port | string }}"
+          GITEA__database__NAME: "{{ _postgres_database }}"
+          GITEA__database__USER:  "{{ _postgres_username }}"
+          GITEA__database__PASSWD: "{{ _postgres_password }}"
+
+          GITEA__mailer__ENABLED: "true"
+          GITEA__mailer__MAILER_TYPE: smtp
+          GITEA__mailer__HOST: "{{ common_email_server }}:{{ common_email_tls_port | string }}"
+          GITEA__mailer__IS_TLS_ENABLED: "{{ 'true' if common_email_protocol=='tls' else 'false' }}"
+          GITEA__mailer__USER: "{{ common_email_username }}"
+          GITEA__mailer__PASSWD: "{{ common_email_password }}"
+          GITEA__mailer__FROM: "{{ application }}{{ common_email_to }}"
+
+          GITEA__server__DOMAIN: "{{ application }}.{{ common_tld }}"
+          GITEA__server__ROOT_URL: "https://{{ application }}.{{ common_tld }}"
+          GITEA__server__OFFLINE_MODE: "true"
+
+          GITEA__picture__DISABLE_GRAVATAR: "true"
+          GITEA__picture__ENABLE_FEDERATED_AVATAR: "false"
+
+          GITEA__service__DISABLE_REGISTRATION: "true"
+          GITEA__service__REQUIRE_SIGNIN_VIEW: "true"
+          GITEA__service__ENABLE_NOTIFY_MAIL: "true"
+          GITEA__service__DEFAULT_KEEP_EMAIL_PRIVATE: "true"
+          GITEA__service__DEFAULT_ALLOW_CREATE_ORGANIZATION: "true"
+          GITEA__service__DEFAULT_ENABLE_TIMETRACKING: "false"
+
+          GITEA__openid__ENABLE_OPENID_SIGNIN: "false"
+          GITEA__openid__ENABLE_OPENID_SIGNUP: "false"
+        traefik:
+          - port: 3000
+        homer:
+          name: Gitea
+          service: Collaboration
+          priority: 100
+          subtitle: "Git service"
