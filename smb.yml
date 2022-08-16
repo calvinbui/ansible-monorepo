@@ -35,7 +35,7 @@
           read only = no
           browseable = yes
         dest: /etc/samba/smb.conf
-        validate: "testparm --suppress-prompt"
+        validate: "testparm %s --suppress-prompt"
         mode: "0440"
       notify: Restart
 
