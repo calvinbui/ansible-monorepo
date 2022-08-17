@@ -6,5 +6,6 @@
   "schedule": ["* 17 * * 5"],
   "commitMessagePrefix": "{{depName}}:",
   "commitMessageAction": "update",
-  "commitMessageTopic": ""
+  "commitMessageTopic": "",
+  "prBodyTemplate": "{{{notes}}}{{{changelogs}}}{{{controls}}}"
 }
