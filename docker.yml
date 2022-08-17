@@ -49,6 +49,9 @@
       ansible.builtin.get_url:
         url: https://download.docker.com/linux/ubuntu/gpg
         dest: "/etc/apt/trusted.gpg.d/{{ application }}"
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
       register: result
       until: result is success
       retries: 5
@@ -57,7 +60,7 @@
     - name: Add Docker Repository
       ansible.builtin.copy:
         content: |
-          deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+          deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/{{ application }}] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
         dest: /etc/apt/sources.list.d/{{ application }}.list
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"

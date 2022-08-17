@@ -46,7 +46,7 @@
       ansible.builtin.file:
         path: "{{ config_directory }}"
         state: directory
-        owner: "{{ common_user }}"
+        owner: "{{ common_root_id }}"
         group: "{{ common_group }}"
         mode: "0771"
 
@@ -75,12 +75,28 @@
         privileged: true
 
     - name: Sync config files
-      ansible.posix.synchronize:
-        src: "{{ files_directory }}/{{ item }}/"
-        dest: "{{ config_directory }}/{{ item }}"
-        delete: true
-      notify: Restart
-      loop:
-        - action.d
-        - filter.d
-        - jail.d
+      block:
+        - name: Synchronise rules
+          ansible.posix.synchronize:
+            src: "{{ files_directory }}/{{ item }}/"
+            dest: "{{ config_directory }}/{{ item }}"
+            delete: true
+            owner: false
+            group: false
+          notify: Restart
+          loop:
+            - action.d
+            - filter.d
+            - jail.d
+
+        - name: Take ownership of config files
+          ansible.builtin.file:
+            path: "{{ config_directory }}/{{ item }}"
+            state: directory
+            recurse: true
+            owner: "{{ common_root_id }}"
+            group: "{{ common_group }}"
+          loop:
+            - action.d
+            - filter.d
+            - jail.d

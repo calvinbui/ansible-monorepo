@@ -34,6 +34,9 @@
       ansible.builtin.get_url:
         url: https://packages.cisofy.com/keys/cisofy-software-public.key
         dest: "/etc/apt/trusted.gpg.d/{{ application }}"
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
       register: result
       until: result is success
       retries: 5

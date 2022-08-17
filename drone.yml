@@ -14,7 +14,7 @@
       39643636303930363363303466396339643736393861393538376237323339343035633732613732
       6131623939663130316337613264383863326535303534303839
 
-    docker_network: "{{ networks.pub }}"
+    docker_network: "{{ networks.user }}"
 
   handlers:
     - name: Restart
@@ -49,6 +49,7 @@
             63393131383864386465613432636465353733383538306138613863346464383432666439316332
             396264393431663830643438626664623735
           DRONE_GITEA_SERVER: "https://gitea.{{ common_tld }}"
+          DRONE_GIT_ALWAYS_AUTH: "true"
 
           DRONE_RPC_SECRET: "{{ drone_rpc_secret }}"
 
@@ -89,6 +90,8 @@
 
           DRONE_UI_USERNAME: "{{ htpasswd.username }}"
           DRONE_UI_PASSWORD: "{{ htpasswd.password }}"
+
+          DRONE_RUNNER_NETWORKS: "{{ docker_network.name }}"
         traefik:
           - port: 3000
             rule: Host(`{{ application }}-runner.{{ common_tld }}`)

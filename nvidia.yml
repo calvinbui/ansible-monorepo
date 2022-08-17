@@ -98,6 +98,9 @@
       ansible.builtin.get_url:
         url: https://nvidia.github.io/nvidia-docker/gpgkey
         dest: "/etc/apt/trusted.gpg.d/{{ application }}"
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
       register: result
       until: result is success
       retries: 5

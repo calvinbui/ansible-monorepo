@@ -1,0 +1,44 @@
+---
+
+kind: pipeline
+type: docker
+name: default
+
+steps:
+  - name: ansible-lint
+    image: python:3.10.6
+    environment:
+      ANSIBLE_VAULT_PASSWORD:
+        from_secret: ansible_vault_password
+    commands:
+      - .drone/ansible-lint.sh
+
+  - name: ansible-playbook
+    image: python:3.10.6
+    environment:
+      ANSIBLE_VAULT_PASSWORD:
+        from_secret: ansible_vault_password
+      SSH_KEY:
+        from_secret: ssh_key
+    commands:
+      - .drone/ansible-playbook.sh
+    when:
+      branch:
+        - master
+
+  - name: mattermost failure notification
+    image: kenshaw/drone-mattermost
+    settings:
+      url:
+        from_secret: mattermost_url
+      token:
+        from_secret: mattermost_token
+      team: nguoi-dep
+      channel: home-lab-alerts
+      template: |
+        👎 **{{ repo.name }} ({{ build.branch }}) #{{ build.number }}**
+        {{ commit.message.title }} - {{ commit.author.name }} ([{{ truncate commit 7 }}]({{commit.link}}))
+        [View build]({{ build.link }})
+    when:
+      status:
+        - failure

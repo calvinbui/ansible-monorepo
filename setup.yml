@@ -76,6 +76,9 @@
         regexp: "^{{ common_user }}"
         line: "{{ common_user }} ALL=(ALL) NOPASSWD: ALL"
         validate: "visudo -cf %s"
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0640"
 
     - name: Install apt packages
       ansible.builtin.apt:

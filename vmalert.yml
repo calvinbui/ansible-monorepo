@@ -21,10 +21,22 @@
         mode: "0755"
 
     - name: Copy rules
-      ansible.posix.synchronize:
-        src: "{{ files_directory }}/"
-        dest: "{{ config_directory }}/"
-        delete: true
+      block:
+        - name: Synchronise rules
+          ansible.posix.synchronize:
+            src: "{{ files_directory }}/"
+            dest: "{{ config_directory }}/"
+            delete: true
+            owner: false
+            group: false
+
+        - name: Take ownership of rules
+          ansible.builtin.file:
+            path: "{{ config_directory }}/"
+            state: directory
+            recurse: true
+            owner: "1000"
+            group: "50"
 
     - name: Create container
       ansible.builtin.include_role:
