@@ -3,7 +3,7 @@
   "ansible": {
     "fileMatch": ["^.*\\.ya?ml$"]
   },
-  "schedule": ["0 17 * * 5"],
+  "schedule": ["* 17 * * 5"],
   "commitMessagePrefix": "{{depName}}:",
   "commitMessageAction": "update",
   "commitMessageTopic": ""
