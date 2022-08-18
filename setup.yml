@@ -110,6 +110,7 @@
           - apt-show-versions
           - iotop
           - powertop
+          - mc
         state: present
 
     - name: Install snap packages
