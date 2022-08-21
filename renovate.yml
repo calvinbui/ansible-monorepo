@@ -1,0 +1,88 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: renovate
+
+    docker_network: "{{ networks.pub }}"
+
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: renovate/renovate:32.168
+        entrypoint:
+          - /usr/bin/bash
+          - -c
+          - |
+              while true; do
+                echo "Running entrypoint"
+                docker-entrypoint.sh renovate
+                echo "Sleeping 6h because of Docker Hub rate limits"
+                sleep 6h
+              done
+        env:
+          RENOVATE_PLATFORM: "gitea"
+          RENOVATE_ENDPOINT: "https://gitea.{{ common_tld }}"
+
+          # it's own bot account
+          RENOVATE_USERNAME: "renovate"
+          RENOVATE_TOKEN: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            39363761636636646234636139316134356538363864326130356664613062383939323962363133
+            3563653133373962626362303433396431666566363066370a356539346336613165363265633862
+            37316266616639666665616332303630373461613165336336323466616337396563353533663138
+            3534643035656462640a663364326132386634303763373364313334663130653562333439613866
+            30313037326362636437366363313466643166626164396262336164386535326134313137613337
+            3836366663323965303262363865666139356437646361376262
+
+          RENOVATE_AUTODISCOVER: "true"
+          RENOVATE_GIT_AUTHOR: 'Renovate Bot <bot@renovateapp.com>'
+
+          # for release notes
+          GITHUB_COM_TOKEN: &github_token !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            64633362666138313139333061373933653730333130636164663634653839323738363366363130
+            3735373064333264336561323133613230346238616664300a396265336131303935626537643735
+            30373963383939663932313039333561393138326635333565653033346364326237363134623035
+            3032336539333334330a343162303163343463326461326338396533333436353334653637343961
+            31393565656636386364363861303262343335346630313865353962396230356264646430303534
+            6262366561396361316235373362636363666536626538656231
+
+          # create hostRules config using env vars
+          # https://github.com/renovatebot/renovate/blob/08e6203217c69a468c17fd86b48291c3d58b1e62/lib/workers/global/config/parse/host-rules-from-env.ts#L11
+          RENOVATE_DETECT_HOST_RULES_FROM_ENV: "true"
+
+          # ghcr.io
+          DOCKER_GHCR_IO_USERNAME: &github_username "calvinbui"
+          DOCKER_GHCR_IO_PASSWORD: *github_token
+
+          # lscr.io
+          DOCKER_LSCR_IO_USERNAME: *github_username
+          DOCKER_LSCR_IO_PASSWORD: *github_token
+
+          # increase DockerHub rate limits
+          # https://docs.renovatebot.com/docker/#dockerhub
+          # https://hub.docker.com/settings/security
+          DOCKER_USERNAME: "calvinbui"
+          DOCKER_PASSWORD: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            62366338363433336333646263396430646235643136633361366335323035383736313866303434
+            3665343462656134623233386266656465386232373138310a306366316163623563303939343233
+            30623735623436636662323536353938623737316662333862643330646161373766616536666436
+            6234346634323535610a343331626132643063666631303435303734356638323731313764393536
+            31366436383734343838313231336334636165643333623464383265353336326264626530393230
+            6461316338386437323364323936393230333563646638666331
+
+          LOG_LEVEL: debug
