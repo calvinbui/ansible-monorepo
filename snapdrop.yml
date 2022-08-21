@@ -13,7 +13,7 @@
         path: "{{ config_directory }}"
         state: directory
         owner: "{{ common_user }}"
-        group: "{{ common_root_group }}"
+        group: "{{ common_group }}"
         mode: "0771"
 
     - name: Create container
@@ -23,7 +23,7 @@
         image: lscr.io/linuxserver/snapdrop:latest
         env:
           PUID: "{{ common_user_id | string }}"
-          PGID: "{{ common_root_group | string }}"
+          PGID: "{{ common_group_id | string }}"
           TZ: "{{ common_timezone }}"
         volumes:
           - "{{ config_directory }}:/config"
