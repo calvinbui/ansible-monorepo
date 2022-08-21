@@ -37,7 +37,7 @@
     - name: "Generate {{ application }} usernames and passwords"
       community.docker.docker_container:
         name: "{{ application }}-password-generator"
-        image: eclipse-mosquitto:2.0.14
+        image: eclipse-mosquitto:2.0.15
         command: "mosquitto_passwd -b /mosquitto/config/password {{ item.username }} {{ item.password }}"
         volumes:
           - "{{ config_directory }}/config:/mosquitto/config"
@@ -113,7 +113,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: eclipse-mosquitto:2.0.14
+        image: eclipse-mosquitto:2.0.15
         volumes:
           - "{{ config_directory }}/config:/mosquitto/config"
           - "{{ config_directory }}/data:/mosquitto/data"
