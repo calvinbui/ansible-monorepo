@@ -14,7 +14,7 @@
   "commitMessageExtra": "to {{#if isMajor}}{{{prettyNewMajor}}}{{else}}{{{prettyNewVersion}}}{{/if}}",
   "docker": {
     "commitMessageTopic": "version",
-    "digests": {
+    "digest": {
       "commitMessageTopic": "digest",
       "group": {
         "commitMessageTopic": "digest"
