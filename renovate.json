@@ -10,6 +10,7 @@
   ],
   "commitMessagePrefix": "{{depName}}:",
   "commitMessageAction": "update",
-  "commitMessageTopic": "",
+  "commitMessageTopic": "to",
+  "commitMessageExtra": "{{#if isMajor}}{{{prettyNewMajor}}}{{else}}{{{prettyNewVersion}}}{{/if}}",
   "prBodyTemplate": "{{{notes}}}{{{changelogs}}}{{{controls}}}"
 }
