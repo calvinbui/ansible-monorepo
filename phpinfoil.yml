@@ -22,7 +22,9 @@
 
     - name: Clone repo
       ansible.builtin.git:
-        repo: "https://github.com/TheyKilledKenny/PHPinfoil"
+        repo: "https://github.com/calvinbui/PHPinfoil"
+        version: "patch-1"
+        single_branch: true
         dest: "{{ config_directory }}"
         update: true
       notify: Restart
@@ -54,3 +56,5 @@
           ofelia.job-exec.phpinfoil-reset-cache.schedule: "@every 1m"
           ofelia.job-exec.phpinfoil-reset-cache.command: "/usr/bin/curl --silent --output /dev/null http://localhost/?reset"
           ofelia.job-exec.phpinfoil-reset-cache.tty: "true"
+
+          com.centurylinklabs.watchtower.enable: "false"
