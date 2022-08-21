@@ -5,8 +5,8 @@
   },
   "timezone": "Australia/Sydney",
   "schedule": [
-    "after 5pm and before 9pm on Friday",
-    "after 9am and before 9pm every weekend"
+    "after 5pm and before 11:59pm on Friday",
+    "after 9am and before 11:59pm every weekend"
   ],
   "commitMessagePrefix": "{{depName}}:",
   "commitMessageAction": "update",
