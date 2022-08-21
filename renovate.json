@@ -3,6 +3,7 @@
   "ansible": {
     "fileMatch": ["^.*\\.ya?ml$"]
   },
+  "timezone": "Australia/Sydney",
   "schedule": [
     "after 5pm and before 9pm on Friday",
     "after 9am and before 9pm every weekend"
