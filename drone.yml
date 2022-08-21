@@ -114,7 +114,7 @@
     - name: Locate all Dockerfile folders
       ansible.builtin.find:
         paths: "{{ config_directory }}/Dockerfiles"
-        recurse: no
+        recurse: false
         file_type: directory
       register: _drone_dockerfiles
 
@@ -122,8 +122,27 @@
       community.docker.docker_image:
         build:
           path: "{{ item.path }}"
-        name: "localhost/{{ item.path.split('/')[-1] }}"
+        name: "calvinbui/{{ item.path.split('/')[-1] }}:localhost"
         tag: latest
         push: false
         source: build
       loop: "{{ _drone_dockerfiles.files }}"
+
+    - name: Pull and retag images
+      block:
+        - name: Pull images
+          community.docker.docker_image:
+            name: "{{ item }}"
+            source: pull
+          loop: "{{ _drone_retag_images }}"
+
+        - name: Retag image
+          community.docker.docker_image:
+            name: "{{ item }}"
+            repository: "calvinbui/{{ item.split('/')[-1].split(':')[0] }}:localhost"
+            push: false
+            source: local
+          loop: "{{ _drone_retag_images }}"
+      vars:
+        _drone_retag_images:
+          - kenshaw/drone-mattermost:latest

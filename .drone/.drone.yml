@@ -10,7 +10,7 @@ trigger:
 
 steps:
   - name: ansible-lint
-    image: localhost/ansible-runner
+    image: calvinbui/ansible-runner:localhost
     environment:
       ANSIBLE_VAULT_PASSWORD:
         from_secret: ansible_vault_password
@@ -18,7 +18,7 @@ steps:
       - .drone/ansible-lint.sh
 
   - name: ansible-playbook
-    image: localhost/ansible-runner
+    image: calvinbui/ansible-runner:localhost
     environment:
       ANSIBLE_VAULT_PASSWORD:
         from_secret: ansible_vault_password
@@ -28,7 +28,7 @@ steps:
       - .drone/ansible-playbook.sh
 
   - name: mattermost failure notification
-    image: kenshaw/drone-mattermost
+    image: calvinbui/drone-mattermost:localhost
     settings:
       url:
         from_secret: mattermost_url
