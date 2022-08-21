@@ -4,8 +4,8 @@
     "fileMatch": ["^.*\\.ya?ml$"]
   },
   "schedule": [
-    "* 17-21 * * 5",
-    "* 9-21 * * 6,0"
+    "after 5pm and before 9pm every Friday",
+    "after 9am and before 9pm every weekend"
   ],
   "commitMessagePrefix": "{{depName}}:",
   "commitMessageAction": "update",
