@@ -20,7 +20,18 @@ chmod -R 400 ~/.ssh
 echo "--- Put vault key"
 echo "$ANSIBLE_VAULT_PASSWORD" > ~/.vault_pass.txt
 
+skip_playbooks=(
+  "drone.yml"
+  "nvidia.yml"
+  "docker.yml"
+)
+
 for playbook in "${playbooks_updated[@]}"; do
+  # shellcheck disable=SC2076
+  if [[ " ${skip_playbooks[*]} " =~ " ${playbook} " ]]; then
+    continue
+  fi
+
   echo "--- $playbook"
   ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook "$playbook"
 done
