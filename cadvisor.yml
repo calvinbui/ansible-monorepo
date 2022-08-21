@@ -27,7 +27,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: gcr.io/cadvisor/cadvisor:v0.45.0
+        image: gcr.io/cadvisor/cadvisor:v0.44.0
         command:
           - --allow_dynamic_housekeeping=true
           - --docker_only=true
