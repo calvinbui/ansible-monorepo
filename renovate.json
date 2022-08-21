@@ -12,6 +12,15 @@
   "commitMessageAction": "update",
   "commitMessageTopic": "version",
   "commitMessageExtra": "to {{#if isMajor}}{{{prettyNewMajor}}}{{else}}{{{prettyNewVersion}}}{{/if}}",
+  "digest": {
+    "commitMessageTopic": "digest"
+  },
+  "pin": {
+    "commitMessageTopic": "version",
+    "group": {
+      "commitMessageTopic": "version"
+    }
+  },
   "group": {
     "commitMessageTopic": "version"
   },
