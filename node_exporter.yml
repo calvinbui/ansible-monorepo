@@ -20,9 +20,9 @@
       ansible.builtin.file:
         path: "{{ config_directory }}/textfile-collector-scripts"
         state: directory
-        owner: "{{ common_user }}"
-        group: "{{ common_group }}"
-        mode: "0771"
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0775"
       register: _scripts_dir
 
     - name: Clone node-exporter-textfile-collector-scripts repo
