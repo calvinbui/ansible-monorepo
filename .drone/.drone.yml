@@ -4,6 +4,10 @@ kind: pipeline
 type: docker
 name: default
 
+trigger:
+  branch:
+    - master
+
 steps:
   - name: ansible-lint
     image: python:3.10.6
@@ -22,9 +26,6 @@ steps:
         from_secret: ssh_key
     commands:
       - .drone/ansible-playbook.sh
-    when:
-      branch:
-        - master
 
   - name: mattermost failure notification
     image: kenshaw/drone-mattermost
