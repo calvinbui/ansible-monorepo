@@ -10,7 +10,6 @@ if [[ "${#playbooks_updated[@]}" -eq 0 ]]; then
 fi
 
 echo "--- Install dependencies"
-pip3 install -r requirements.txt
 apt-get update && apt-get install rsync -y
 
 echo "--- Put SSH key"

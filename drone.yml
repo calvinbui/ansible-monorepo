@@ -102,3 +102,28 @@
           subtitle: "CI"
         blackbox:
           path: /healthz
+
+    - name: Copy Dockerfiles
+      ansible.builtin.copy:
+        src: "{{ files_directory }}/Dockerfiles"
+        dest: "{{ config_directory }}/"
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0751"
+
+    - name: Locate all Dockerfile folders
+      ansible.builtin.find:
+        paths: "{{ config_directory }}/Dockerfiles"
+        recurse: no
+        file_type: directory
+      register: _drone_dockerfiles
+
+    - name: Build local Docker images
+      community.docker.docker_image:
+        build:
+          path: "{{ item.path }}"
+        name: "localhost/{{ item.path.split('/')[-1] }}"
+        tag: latest
+        push: false
+        source: build
+      loop: "{{ _drone_dockerfiles.files }}"

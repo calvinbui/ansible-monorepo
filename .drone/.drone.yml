@@ -10,7 +10,7 @@ trigger:
 
 steps:
   - name: ansible-lint
-    image: python:3.10.6
+    image: localhost/ansible-runner:latest
     environment:
       ANSIBLE_VAULT_PASSWORD:
         from_secret: ansible_vault_password
@@ -18,7 +18,7 @@ steps:
       - .drone/ansible-lint.sh
 
   - name: ansible-playbook
-    image: python:3.10.6
+    image: localhost/ansible-runner:latest
     environment:
       ANSIBLE_VAULT_PASSWORD:
         from_secret: ansible_vault_password
