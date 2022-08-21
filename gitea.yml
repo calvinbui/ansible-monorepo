@@ -70,6 +70,7 @@
           GITEA__server__DOMAIN: "{{ application }}.{{ common_tld }}"
           GITEA__server__ROOT_URL: "https://{{ application }}.{{ common_tld }}"
           GITEA__server__OFFLINE_MODE: "true"
+          GITEA__server__DISABLE_SSH: "true"
 
           GITEA__picture__DISABLE_GRAVATAR: "true"
           GITEA__picture__ENABLE_FEDERATED_AVATAR: "false"
@@ -80,9 +81,21 @@
           GITEA__service__DEFAULT_KEEP_EMAIL_PRIVATE: "true"
           GITEA__service__DEFAULT_ALLOW_CREATE_ORGANIZATION: "true"
           GITEA__service__DEFAULT_ENABLE_TIMETRACKING: "false"
+          GITEA__service__DEFAULT_USER_VISIBILITY: "private"
+          GITEA__service__ALLOWED_USER_VISIBILITY_MODES: "private"
+          GITEA__service__DEFAULT_ORG_VISIBILITY: "private"
+          GITEA__service__SHOW_MILESTONES_DASHBOARD_PAGE: "false"
 
           GITEA__openid__ENABLE_OPENID_SIGNIN: "false"
           GITEA__openid__ENABLE_OPENID_SIGNUP: "false"
+
+          GITEA__repository__DEFAULT_BRANCH: "master"
+          GITEA__repository__FORCE_PRIVATE: "true"
+          GITEA__repository__DEFAULT_PRIVATE: "true"
+          GITEA__repository__DISABLED_REPO_UNITS: "repo.issues,repo.ext_issues,repo.wiki,repo.ext_wiki,repo.projects"
+          GITEA__repository__DISABLE_STARS: "true"
+
+          GITEA__packages__ENABLED: "false"
         traefik:
           - port: 3000
         homer:
