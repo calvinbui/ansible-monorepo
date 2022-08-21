@@ -29,6 +29,7 @@
           - "{{ config_directory }}:/config"
           - "{{ common_directory_tv }}:{{ common_mounted_directory_tv }}"
           - "{{ common_directory_movies }}:{{ common_mounted_directory_movies }}"
+          - "{{ common_directory_anime }}:{{ common_mounted_directory_anime }}"
         env:
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_root_group | string }}"

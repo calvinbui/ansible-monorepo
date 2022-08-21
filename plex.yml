@@ -37,6 +37,7 @@
           - "{{ config_directory }}:/config"
           - "{{ common_directory_movies }}:/data/movies"
           - "{{ common_directory_tv }}:/data/tv"
+          - "{{ common_directory_anime }}:/data/anime"
           - /tmp/plex:/transcode
         device_requests:
           - driver: nvidia
