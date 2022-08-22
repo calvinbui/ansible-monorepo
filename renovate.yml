@@ -29,8 +29,8 @@
               while true; do
                 echo "Running entrypoint"
                 docker-entrypoint.sh renovate
-                echo "Sleeping 6h because of Docker Hub rate limits"
-                sleep 6h
+                echo "Sleeping 2h because of Docker Hub rate limits"
+                sleep 2h
               done
         env:
           RENOVATE_PLATFORM: "gitea"
