@@ -123,7 +123,7 @@
       community.docker.docker_image:
         build:
           path: "{{ item.path }}"
-        name: "calvinbui/{{ item.path.split('/')[-1] }}:localhost"
+        name: "calvinbui/{{ item.path.split('/') | last }}:localhost"
         tag: latest
         push: false
         source: build
@@ -142,7 +142,7 @@
         - name: Retag image
           community.docker.docker_image:
             name: "{{ item }}"
-            repository: "calvinbui/{{ item.split('/')[-1].split(':')[0] }}:localhost"
+            repository: "calvinbui/{{ item.split('/') | last | split(':') | first }}:localhost"
             push: false
             source: local
           loop: "{{ _drone_retag_images }}"

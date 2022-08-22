@@ -3,7 +3,7 @@
 - name: "Generating Traefik labels for {{ route_name }}"
   when: traefik
   ansible.builtin.set_fact:
-    traefik_labels: "{{ traefik_labels | default({}) | combine({ item.key: item.value }) }}"
+    traefik_labels: "{{ traefik_labels | default({}) | combine({item.key: item.value}) }}"
   loop:
     # service
     - key: "traefik.{{ route.type | default('http') }}.routers.{{ route_name }}.service"

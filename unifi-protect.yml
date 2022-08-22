@@ -77,7 +77,7 @@
         key: "{{ item }}"
       loop:
         - https://github.com/calvinbui.keys
-        - "{{ hostvars['homelab.' + common_local_tld ]['__homelab_public_key']['content'] | b64decode }}"
+        - "{{ hostvars['homelab.' + common_local_tld]['__homelab_public_key']['content'] | b64decode }}"
 
     - name: Update apt cache
       ansible.builtin.apt:

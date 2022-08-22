@@ -42,7 +42,7 @@
           3231366665366137380a323932633634396132376331363030613835616435626332303732303731
           39396138663536663432663664386264386333623437616237643630663831353533
 
-    - name: Create container # noqa var-spacing
+    - name: Create container
       ansible.builtin.include_role:
         name: docker_container
       vars:

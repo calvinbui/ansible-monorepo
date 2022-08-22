@@ -3,7 +3,7 @@
 - name: "Generating Prometheus service discovery labels"
   when: metrics is defined
   ansible.builtin.set_fact:
-    metrics_labels: "{{ metrics_labels | default({}) | combine({ item.key: item.value }) }}"
+    metrics_labels: "{{ metrics_labels | default({}) | combine({item.key: item.value}) }}"
   loop:
     -
       key: "prometheus.enable"

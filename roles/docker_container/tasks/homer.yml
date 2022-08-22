@@ -4,7 +4,7 @@
 - name: Find logo file extension
   ansible.builtin.find:
     path: "{{ homer_logos_local_dir }}"
-    patterns: "^{{ application }}.(png|svg|jpg|jpeg)" # noqa var-spacing
+    patterns: "^{{ application }}.(png|svg|jpg|jpeg)"
     file_type: file
     use_regex: true
   register: _homer_logo_local
@@ -28,7 +28,7 @@
 - name: Add Homer labels
   when: (homer[item.label] is defined) or (item.default is defined)
   ansible.builtin.set_fact:
-    homer_labels: "{{ homer_labels | default({}) | combine({ 'homer.' + item.label : (homer[item.label] | default(item.default) | string ) }) }}"
+    homer_labels: "{{ homer_labels | default({}) | combine({'homer.' + item.label : (homer[item.label] | default(item.default) | string)}) }}"
   loop: "{{ _labels }}"
   vars:
     _labels:
@@ -39,7 +39,7 @@
       - label: name
         default: "{{ app_name }}"
       - label: logo
-        default: "{{ (homer_logos_container_dir  + '/' + _homer_logo_local.files.0.path.split('/')[-1]) if homer['icon'] is not defined else omit }}"
+        default: "{{ (homer_logos_container_dir + '/' + _homer_logo_local.files.0.path.split('/') | last) if homer['icon'] is not defined else omit }}"
       - label: icon
       - label: subtitle
       - label: tag

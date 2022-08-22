@@ -67,12 +67,12 @@
     - name: Clone theme
       ansible.builtin.git:
         repo: "{{ zsh_theme.repo }}"
-        dest: "~/.oh-my-zsh/custom/themes/{{ zsh_theme.repo.split('/')[-1] | regex_replace('.git$', '') }}"
+        dest: "~/.oh-my-zsh/custom/themes/{{ zsh_theme.repo.split('/') | last | regex_replace('.git$', '') }}"
         version: "{{ zsh_theme.version | default(omit) }}"
       become: false
       become_user: "{{ common_user }}"
 
-    - name: Template zshrc # noqa var-spacing
+    - name: Template zshrc
       ansible.builtin.copy:
         content: |
           # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.

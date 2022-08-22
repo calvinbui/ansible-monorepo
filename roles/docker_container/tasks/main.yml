@@ -43,7 +43,7 @@
 
 - name: Disable Traefik labels
   ansible.builtin.set_fact:
-    combined_labels: "{{ { 'traefik.enable': 'false' } | combine(combined_labels) }}"
+    combined_labels: "{{ {'traefik.enable': 'false'} | combine(combined_labels) }}"
   when: traefik is undefined
 
 # homer-service-discovery labels and icon
@@ -105,7 +105,7 @@
 
     security_opts: "{{ security_opts | default(omit) }}"
     capabilities: "{{ capabilities | default(omit) }}"
-    cap_drop: "{{ cap_drop  | default(omit) }}"
+    cap_drop: "{{ cap_drop | default(omit) }}"
     pid_mode: "{{ pid_mode | default(omit) }}"
     privileged: "{{ privileged | default(omit) }}"
     devices: "{{ devices | default(omit) }}"

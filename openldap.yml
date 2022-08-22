@@ -63,7 +63,7 @@
           SMTP_HOST_PORT: "{{ common_email_smtp_port | string }}"
           SMTP_USERNAME: "{{ common_email_username }}"
           SMTP_PASSWORD: "{{ common_email_password }}"
-          SMTP_USE_TLS: "{{ 'TRUE' if common_email_protocol=='tls' else 'FALSE' }}"
+          SMTP_USE_TLS: "{{ 'TRUE' if common_email_protocol == 'tls' else 'FALSE' }}"
           EMAIL_FROM_ADDRESS: "lum{{ common_email_to }}"
           EMAIL_FROM_NAME: "ldap-user-manager"
         traefik:

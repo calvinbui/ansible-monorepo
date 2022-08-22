@@ -219,7 +219,7 @@
 
     - name: Fill nzbhydra_configured_indexers_index with currently configured downloader indexes
       ansible.builtin.set_fact:
-        nzbhydra_configured_indexers_index: "{{ nzbhydra_configured_indexers_index + [ ansible_loop.index0 ] }}"
+        nzbhydra_configured_indexers_index: "{{ nzbhydra_configured_indexers_index + [ansible_loop.index0] }}"
       loop: "{{ nzbhydra_configured_indexers.result }}"
       loop_control:
         extended: true
