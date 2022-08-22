@@ -35,6 +35,13 @@
         "commitMessageTopic": "version",
       },
     },
+    /*
+      Plex images
+    */
+    {
+      "matchPackagePatterns": ["plexinc/pms-docker"],
+      "versioning": "loose",
+    },
   ],
   "prBodyTemplate": "{{{table}}}{{{notes}}}{{{changelogs}}}",
 }
