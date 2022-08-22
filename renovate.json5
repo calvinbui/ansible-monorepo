@@ -36,5 +36,5 @@
       },
     },
   ],
-  "prBodyTemplate": "{{{notes}}}{{{changelogs}}}{{{controls}}}",
+  "prBodyTemplate": "{{{table}}}{{{notes}}}{{{changelogs}}}",
 }
