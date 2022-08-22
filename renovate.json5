@@ -1,36 +1,40 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "ansible": {
-    "fileMatch": ["^.*\\.ya?ml$"]
+    "fileMatch": ["^.*\\.ya?ml$"],
   },
   "timezone": "Australia/Sydney",
   "schedule": [
     "after 5pm and before 11:59pm every weekday",
-    "after 9am and before 11:59pm every weekend"
+    "after 9am and before 11:59pm every weekend",
   ],
   "commitMessagePrefix": "{{depName}}:",
   "commitMessageAction": "update",
   "commitMessageTopic": "version",
   "commitMessageExtra": "to {{#if isMajor}}{{{prettyNewMajor}}}{{else}}{{{prettyNewVersion}}}{{/if}}",
   "packageRules": [
+    /*
+      override Docker datasource defaults
+      https://docs.renovatebot.com/modules/datasource/#docker-datasource
+    */
     {
       "matchDatasources": ["docker"],
       "commitMessageTopic": "version",
       "digest": {
         "commitMessageTopic": "digest",
         "group": {
-          "commitMessageTopic": "digest"
-        }
+          "commitMessageTopic": "digest",
+        },
       },
       "pin": {
         "group": {
-          "commitMessageTopic": "version"
-        }
+          "commitMessageTopic": "version",
+        },
       },
       "group": {
-        "commitMessageTopic": "version"
-      }
-    }
+        "commitMessageTopic": "version",
+      },
+    },
   ],
-  "prBodyTemplate": "{{{notes}}}{{{changelogs}}}{{{controls}}}"
+  "prBodyTemplate": "{{{notes}}}{{{changelogs}}}{{{controls}}}",
 }
