@@ -1,18 +1,31 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
+
   ansible: {
     fileMatch: ["^.*\\.ya?ml$"],
   },
+
   timezone: "Australia/Sydney",
+
   schedule: [
     "after 5pm and before 11:59pm every weekday",
     "after 9am and before 11:59pm every weekend",
   ],
+
   reviewers: ["calvinbui"],
+
   commitMessagePrefix: "{{depName}}:",
   commitMessageAction: "update",
   commitMessageTopic: "version",
   commitMessageExtra: "to {{#if isMajor}}{{{prettyNewMajor}}}{{else}}{{{prettyNewVersion}}}{{/if}}",
+
+  regexManagers: [
+    {
+      fileMatch: ["^.*\\.ya?ml$"],
+      matchStrings: ["\\s*image:\\s+?(:?[\\/a-z\\.-]+\\/)*(?<depName>[\\/a-z-]+)(?::(?<currentValue>[a-z0-9.-]+))?"],
+    },
+  ],
+
   // rules are evaluated in order
   packageRules: [
     /*
@@ -46,5 +59,6 @@
       versioning: "loose",
     },
   ],
+
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}",
 }
