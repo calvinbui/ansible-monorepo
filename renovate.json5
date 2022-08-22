@@ -8,6 +8,7 @@
     "after 5pm and before 11:59pm every weekday",
     "after 9am and before 11:59pm every weekend",
   ],
+  reviewers: ["calvinbui"],
   commitMessagePrefix: "{{depName}}:",
   commitMessageAction: "update",
   commitMessageTopic: "version",
