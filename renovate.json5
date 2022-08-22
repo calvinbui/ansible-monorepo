@@ -20,9 +20,12 @@
   commitMessageExtra: "to {{#if isMajor}}{{{prettyNewMajor}}}{{else}}{{{prettyNewVersion}}}{{/if}}",
 
   regexManagers: [
+    // extract depName as Docker image repository
     {
+      datasourceTemplate: "docker",
       fileMatch: ["^.*\\.ya?ml$"],
-      matchStrings: ["\\s*image:\\s+?(:?[\\/a-z\\.-]+\\/)*(?<depName>[\\/a-z-]+)(?::(?<currentValue>[a-z0-9.-]+))?"],
+      matchStrings: ["\\s*image:\\s+?(?<registry>:?[\\/a-z\\.-]+\\/)*(?<depName>[\\/a-z-]+)(?::(?<currentValue>[a-z0-9.-]+))?"],
+      packageNameTemplate: "{{{ registry }}}/{{{ depName }}}"
     },
   ],
 
