@@ -9,9 +9,6 @@ if [[ "${#playbooks_updated[@]}" -eq 0 ]]; then
   exit 0
 fi
 
-echo "--- Install dependencies"
-apt-get update && apt-get install rsync -y
-
 echo "--- Put SSH key"
 mkdir -p ~/.ssh
 echo "$SSH_KEY" > ~/.ssh/id_ed25519

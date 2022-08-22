@@ -110,13 +110,14 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0751"
+      register: _drone_dockerfiles_copy
 
     - name: Locate all Dockerfile folders
       ansible.builtin.find:
         paths: "{{ config_directory }}/Dockerfiles"
         recurse: false
         file_type: directory
-      register: _drone_dockerfiles
+      register: _drone_dockerfiles_location
 
     - name: Build local Docker images
       community.docker.docker_image:
@@ -126,7 +127,9 @@
         tag: latest
         push: false
         source: build
-      loop: "{{ _drone_dockerfiles.files }}"
+        state: present
+        force_source: "{{ true if _drone_dockerfiles_copy.changed else false }}"
+      loop: "{{ _drone_dockerfiles_location.files }}"
 
     - name: Pull and retag images
       block:
