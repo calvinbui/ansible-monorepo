@@ -58,6 +58,8 @@
         name: docker_container
       vars:
         image: renovate/renovate:32.172
+        volumes:
+          - "{{ config_directory }}:/base"
         env:
           RENOVATE_BASE_DIR: "/base"
 
