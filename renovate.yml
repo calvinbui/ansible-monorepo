@@ -21,7 +21,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: renovate/renovate:32.169
+        image: renovate/renovate:32.172
         entrypoint:
           - /usr/bin/bash
           - -c
