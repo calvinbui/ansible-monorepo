@@ -73,5 +73,5 @@
     },
   ],
 
-  prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}",
+  prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
 }
