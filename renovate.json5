@@ -20,12 +20,17 @@
   commitMessageExtra: "to {{#if isMajor}}{{{prettyNewMajor}}}{{else}}{{{prettyNewVersion}}}{{/if}}",
 
   regexManagers: [
-    // extract depName from Docker image
+    /*
+      extract depName from Docker image within Ansible playbooks, i.e.:
+        - image: lscr.io/linuxserver/jackett:0.20.1778 --> jackett
+        - image: plexinc/pms-docker:1.28.1.6104-788f82488 --> pms-docker
+        - image: image: eclipse-mosquitto:2.0.15 --> eclipse-mosquitto
+    */
     {
       datasourceTemplate: "docker",
       fileMatch: ["^.*\\.ya?ml$"],
       matchStrings: ["\\s*image:\\s+?(?<registry>:?[\\/a-z\\.-]+\\/)*(?<depName>[\\/a-z-]+)(?::(?<currentValue>[a-z0-9.-]+))?"],
-      packageNameTemplate: "{{{ registry }}}{{{ depName }}}"
+      packageNameTemplate: "{{{ registry }}}{{{ depName }}}",
     },
   ],
 
