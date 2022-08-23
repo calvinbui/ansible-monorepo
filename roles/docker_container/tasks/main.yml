@@ -121,4 +121,4 @@
 
     labels: "{{ combined_labels }}"
 
-    comparisons: "{{ comparisons | default(omit) }}"
+    comparisons: "{{ {'volumes': 'strict'} | combine(comparisons | default({})) }}"
