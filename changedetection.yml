@@ -23,7 +23,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: dgtlmoon/changedetection.io:0.39.17.2
+        image: dgtlmoon/changedetection.io:0.39.18
         volumes:
           - "{{ config_directory }}:/datastore"
         env:
