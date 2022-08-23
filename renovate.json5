@@ -71,13 +71,6 @@
       matchPackagePatterns: ["^lscr.io\\/linuxserver\\/.*$"],
       versioning: "regex:^version-v?(?<major>\\d+)\\.(?<minor>\\d+)\\.?(?<patch>\\d+)?\\.?(?<build>.*)?$",
     },
-    /*
-      If all else fails
-    */
-    {
-      matchDatasources: ["docker"],
-      versioning: "loose",
-    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}",
