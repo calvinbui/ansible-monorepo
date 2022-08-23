@@ -58,6 +58,7 @@
         name: docker_container
       vars:
         image: renovate/renovate:32.173
+        entrypoint: ["/base/entrypoint.sh"]
         volumes:
           - "{{ config_directory }}:/base"
         env:
