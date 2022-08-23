@@ -7,6 +7,9 @@
 
     docker_network: "{{ networks.pub }}"
 
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
 
   tasks:
     - name: Create config folder
@@ -17,22 +20,47 @@
         group: "{{ common_root_group }}"
         mode: "0771"
 
+    - name: Copy entrypoint script
+      ansible.builtin.copy:
+        content: |
+          #!/usr/bin/env bash
+          sleep_hours=2
+          last_run_file=/base/lastrun.txt
+
+          while true; do
+            if [ -f "${last_run_file}" ]; then
+              last_run=$(cat ${last_run_file})
+              now=$(date +%s)
+              time_since_last_run=$(( now - last_run ))
+              sleep_seconds=$(( sleep_hours * 60 * 60 ))
+              next_run=$(( last_run + sleep_seconds ))
+
+              if [ "${time_since_last_run}" -lt "${sleep_seconds}" ]; then
+                sleep_seconds_until_next_run=$(( next_run - now ))
+                echo "Renovate ran earlier. Sleeping ${sleep_seconds_until_next_run} second/s until next run"
+                sleep ${sleep_seconds_until_next_run}
+              fi
+            fi
+
+            docker-entrypoint.sh renovate
+
+            date +%s > "${last_run_file}"
+
+            echo "Sleeping ${sleep_hours}h because of Docker Hub rate limits"
+            sleep "${sleep_hours}h"
+          done
+        dest: "{{ config_directory }}/entrypoint.sh"
+        mode: "0755"
+      notify: Restart
+
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
       vars:
         image: renovate/renovate:32.172
-        entrypoint:
-          - /usr/bin/bash
-          - -c
-          - |
-              while true; do
-                echo "Running entrypoint"
-                docker-entrypoint.sh renovate
-                echo "Sleeping 2h because of Docker Hub rate limits"
-                sleep 2h
-              done
         env:
+          RENOVATE_BASE_DIR: "/base"
+
           RENOVATE_PLATFORM: "gitea"
           RENOVATE_ENDPOINT: "https://gitea.{{ common_tld }}"
 
