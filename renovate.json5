@@ -59,7 +59,7 @@
     */
     {
       matchDatasources: ["docker"],
-      matchPackagePatterns: ["^plexinc\\/pms-docker$"],
+      matchPackageNames: ["plexinc/pms-docker"],
       versioning: "loose",
     },
     /*
