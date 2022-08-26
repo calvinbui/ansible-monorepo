@@ -29,7 +29,7 @@ steps:
         from_secret: ansible_vault_password
     volumes:
       - name: ssh
-        path: ~/.ssh/
+        path: /root/.ssh/
     commands:
       - .drone/ansible-playbook.sh
 
