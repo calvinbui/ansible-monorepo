@@ -30,25 +30,8 @@
     },
   ],
 
-  // rules are evaluated in order
+  // Renovate will evaluate all packageRules and not stop once it gets a first match
   packageRules: [
-    /*
-      Plex image
-    */
-    {
-      matchDatasources: ["docker"],
-      matchPackagePatterns: ["^plexinc\\/pms-docker$"],
-      versioning: "loose",
-    },
-    /*
-      Linuxserver.io images
-    */
-    {
-      // images prefixed with 'version'
-      matchDatasources: ["docker"],
-      matchPackagePatterns: ["^lscr\\.io\\/linuxserver\\/"],
-      versioning: "regex:^version-v?(?<major>\\d+)\\.(?<minor>\\d+)(\\.(?<patch>\\d+))?(\\.(?<build>.*))?$",
-    },
     /*
       override Docker datasource defaults
       https://docs.renovatebot.com/modules/datasource/#docker-datasource
@@ -70,6 +53,23 @@
       group: {
         commitMessageTopic: "version",
       },
+    },
+    /*
+      Plex image
+    */
+    {
+      matchDatasources: ["docker"],
+      matchPackagePatterns: ["^plexinc\\/pms-docker$"],
+      versioning: "loose",
+    },
+    /*
+      Linuxserver.io images
+    */
+    {
+      matchDatasources: ["docker"],
+      matchPackageNames: ["lscr.io/linuxserver/nzbget"],
+      matchUpdateTypes: ["patch"],
+      automerge: true,
     },
   ],
 
