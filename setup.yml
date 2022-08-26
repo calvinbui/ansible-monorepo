@@ -72,7 +72,7 @@
       ansible.posix.authorized_key:
         user: "{{ common_user }}"
         state: present
-        key: "{{ _setup_user_ssh_key.public_key}}"
+        key: "{{ _setup_user_ssh_key.public_key }}"
 
     - name: Disable motd files
       ansible.builtin.file:
