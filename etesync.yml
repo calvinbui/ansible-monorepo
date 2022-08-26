@@ -137,13 +137,14 @@
         volumes:
           - "{{ _web_dir.path }}:/usr/share/nginx/html"
         labels:
-          ofelia.enabled: "true"
-
-          ofelia.job-exec.etesync-web-update.user: "0"
-          ofelia.job-exec.etesync-web-update.schedule: "@every 1d"
-          ofelia.job-exec.etesync-web-update.command: "sh -c \"cd /usr/share/nginx/html; curl -s https://pim.etesync.com/etesync-web.tgz | tar zx --strip-components 1\""
-          ofelia.job-exec.etesync-web-update.tty: "false"
-          ofelia.job-exec.etesync-web-update.no-overlap: "true"
+          '{
+            ofelia.enabled: "true",
+            "ofelia.job-exec.{{ application }}-web.user": "0",
+            "ofelia.job-exec.{{ application }}-web.schedule": "@every 1d",
+            "ofelia.job-exec.{{ application }}-web.command": "sh -c \"cd /usr/share/nginx/html; curl -s https://pim.etesync.com/etesync-web.tgz | tar zx --strip-components 1\"",
+            "ofelia.job-exec.{{ application }}-web.tty": "false",
+            "ofelia.job-exec.{{ application }}-web.no-overlap": "true"
+          }'
         traefik:
           - port: 80
             rule: Host(`{{ application }}-web.{{ common_tld }}`)
