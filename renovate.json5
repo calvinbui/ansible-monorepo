@@ -47,7 +47,7 @@
       // images prefixed with 'version'
       matchDatasources: ["docker"],
       matchPackagePatterns: ["^lscr\\.io\\/linuxserver\\/"],
-      versioning: "regex:^version-v?(?<major>\\d+)\\.(?<minor>\\d+)\\.?(?<patch>\\d+)?\\.?(?<build>.*)?$",
+      versioning: "regex:^version-v?(?<major>\\d+)\\.(?<minor>\\d+)(\\.(?<patch>\\d+))?(\\.(?<build>.*))?$",
     },
     /*
       override Docker datasource defaults
