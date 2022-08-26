@@ -10,7 +10,7 @@
   register: _homer_logo_local
   when:
     - homer['icon'] is not defined
-  failed_when: _homer_logo_local.files|length != 1
+  failed_when: _homer_logo_local.files | length != 1
   become: false
   delegate_to: localhost
 

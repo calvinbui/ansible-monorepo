@@ -4,6 +4,8 @@ skip_list:
   - yaml[line-length]
   - no-handler
   - no-tabs
+  - name[play]
+  - jinja[spacing]
 
 exclude_paths:
   - inventory.yml
