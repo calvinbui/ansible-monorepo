@@ -55,10 +55,17 @@
         - root
         - "{{ common_user }}"
 
-    - name: Generate a root OpenSSH keypair
+    - name: Generate root OpenSSH keypair
       community.crypto.openssh_keypair:
         path: /root/.ssh/id_ed25519
         type: ed25519
+      register: _setup_root_ssh_key
+
+    - name: Allow root self-SSH
+      ansible.posix.authorized_key:
+        user: "root"
+        state: present
+        key: "{{ _setup_root_ssh_key.public_key }}"
 
     - name: Generate user OpenSSH keypair
       community.crypto.openssh_keypair:
@@ -68,7 +75,7 @@
       become_user: "{{ common_user }}"
       register: _setup_user_ssh_key
 
-    - name: Allow self-SSH
+    - name: Allow user self-SSH
       ansible.posix.authorized_key:
         user: "{{ common_user }}"
         state: present
