@@ -69,6 +69,7 @@
           service: Collaboration
           priority: 99
           subtitle: "CI"
+          url: "https://{{ application }}.{{ common_tld }}"
         blackbox:
           path: /healthz
 
