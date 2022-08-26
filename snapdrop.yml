@@ -20,7 +20,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: lscr.io/linuxserver/snapdrop:version-a96dde25
+        image: lscr.io/linuxserver/snapdrop:latest
         env:
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_group_id | string }}"
