@@ -63,3 +63,25 @@
           - 80:80
           - 443:443
           - 123:123/udp
+
+    - name: Create logrotate container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-logrotate"
+        image: vegardit/traefik-logrotate:latest
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock # required to send USR1 signal to Traefik after log rotation
+          - /var/log/traefik:/var/log/traefik
+        env:
+          TZ: "{{ common_timezone }}"
+
+          LOGROTATE_LOGS: "/var/log/traefik/*.log"
+          LOGROTATE_TRIGGER_INTERVAL: daily
+          LOGROTATE_TRIGGER_SIZE: "1M"
+          LOGROTATE_MAX_BACKUPS: "5"
+          LOGROTATE_START_INDEX: "1"
+          CRON_SCHEDULE: "* * * * *"
+          CRON_LOG_LEVEL: "8"
+
+          TRAEFIK_CONTAINER_ID_COMMAND: docker ps --no-trunc --quiet --filter label=org.opencontainers.image.title=Traefik
