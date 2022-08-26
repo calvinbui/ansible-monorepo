@@ -9,11 +9,6 @@ if [[ "${#playbooks_updated[@]}" -eq 0 ]]; then
   exit 0
 fi
 
-echo "--- Put SSH key"
-mkdir -p ~/.ssh
-echo "$SSH_KEY" > ~/.ssh/id_ed25519
-chmod -R 400 ~/.ssh
-
 echo "--- Put vault key"
 echo "$ANSIBLE_VAULT_PASSWORD" > ~/.vault_pass.txt
 

@@ -46,7 +46,7 @@
         - python3-pip
         - python3-setuptools
 
-    - name: Set authorized keys
+    - name: Set authorized keys from GitHub
       ansible.posix.authorized_key:
         user: "{{ item }}"
         state: present
@@ -55,10 +55,24 @@
         - root
         - "{{ common_user }}"
 
-    - name: Generate an OpenSSH keypair
+    - name: Generate a root OpenSSH keypair
       community.crypto.openssh_keypair:
         path: /root/.ssh/id_ed25519
         type: ed25519
+
+    - name: Generate user OpenSSH keypair
+      community.crypto.openssh_keypair:
+        path: "/home/{{ common_user }}/.ssh/id_ed25519"
+        type: ed25519
+      become: false
+      become_user: "{{ common_user }}"
+      register: _setup_user_ssh_key
+
+    - name: Allow self-SSH
+      ansible.posix.authorized_key:
+        user: "{{ common_user }}"
+        state: present
+        key: "{{ _setup_user_ssh_key.public_key}}"
 
     - name: Disable motd files
       ansible.builtin.file:
