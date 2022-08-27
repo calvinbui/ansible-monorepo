@@ -76,6 +76,7 @@
       matchPackageNames: ["minio/minio"],
       versioning: "regex:^RELEASE\\.(?<major>\\d+)-(?<minor>\\d+)-(?<patch>\\d+)T(?<build>.*)Z$",
       automerge: true,
+      ignoreTests: true,
     },
     /* Linuxserver.io images prefixed with 'version' */
     {
@@ -87,7 +88,8 @@
     {
       matchPackagePatterns: [".*\\/nzbget$"],
       matchUpdateTypes: ["patch"],
-      "automerge": true,
+      automerge: true,
+      ignoreTests: true,
     },
     /* NZBHydra 2 */
     {
