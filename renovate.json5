@@ -68,7 +68,7 @@
     {
       matchDatasources: ["docker"],
       matchPackageNames: ["ghcr.io/mikecao/umami"],
-      versioning: "regex:^\\w+-v(?<major>\\d+)\\.(?<minor>\\d+)\\.?(?<patch>\\d+)$",
+      versioning: "regex:^\\w+-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$",
     },
     /*
       Linuxserver.io images
