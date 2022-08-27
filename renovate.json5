@@ -29,7 +29,7 @@
     */
     {
       matchDatasources: ["docker"],
-      matchCurrentVersion: ["latest", "localhost"],
+      matchCurrentVersion: "/localhost|latest/",
       enabled: false,
     },
     /*
