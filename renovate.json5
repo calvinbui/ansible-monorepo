@@ -86,6 +86,7 @@
     },
     /* NZBGet */
     {
+      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/nzbget$"],
       matchUpdateTypes: ["patch"],
       automerge: true,
@@ -93,16 +94,19 @@
     },
     /* NZBHydra 2 */
     {
+      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/nzbhydra2$"],
       customChangelogUrl: "https://github.com/theotherp/nzbhydra2",
     },
     /* Jackett */
     {
+      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/jackett$"],
       customChangelogUrl: "https://github.com/Jackett/Jackett",
     },
     /* Homer */
     {
+      matchDatasources: ["docker"],
       matchPackageNames: ["b4bz/homer"],
       customChangelogUrl: "https://github.com/bastienwirtz/homer",
     },
