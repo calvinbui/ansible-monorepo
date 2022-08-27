@@ -24,9 +24,7 @@
     You should order your packageRules in order of importance so that later rules can override settings from earlier rules if needed.
   */
   packageRules: [
-    /*
-      Ignore latest and localhost tags
-    */
+    /* Ignore latest and localhost tags */
     {
       matchDatasources: ["docker"],
       matchCurrentVersion: "/localhost|latest/",
@@ -54,34 +52,38 @@
         commitMessageTopic: "version",
       },
     },
-    /*
-      Plex image
-    */
+    /* Plex */
     {
       matchDatasources: ["docker"],
       matchPackageNames: ["plexinc/pms-docker"],
       versioning: "loose",
     },
-    /*
-      Umami image
-    */
+    /* Umami */
     {
       matchDatasources: ["docker"],
       matchPackageNames: ["ghcr.io/mikecao/umami"],
-      versioning: "regex:^\\w+-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$",
+      versioning: "regex:^postgresql+-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$",
     },
-    /*
-      Linuxserver.io images
-    */
+    /* Borgmatic */
+    {
+      matchDatasources: ["docker"],
+      matchPackageNames: ["b3vis/borgmatic"],
+      versioning: "regex:^base-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$",
+    },
+    /* Minio */
+    {
+      matchDatasources: ["docker"],
+      matchPackageNames: ["minio/minio"],
+      versioning: "regex:^RELEASE\\.(?<major>\\d+)-(?<minor>\\d+)-(?<patch>\\d+)T(?<build>.*)Z$",
+    },
+    /* Linuxserver.io images */
     {
       // images prefixed with 'version'
       matchDatasources: ["docker"],
       matchPackagePatterns: ["^lscr\\.io\\/linuxserver\\/"],
       versioning: "regex:^version-v?(?<major>\\d+)\\.(?<minor>\\d+)(\\.(?<patch>\\d+))?(\\.(?<build>.*))?$",
     },
-    /*
-      Changelogs
-    */
+    /* Changelogs */
     {
       matchPackagePatterns: [".*\\/nzbhydra2$"],
       customChangelogUrl: "https://github.com/theotherp/nzbhydra2",
