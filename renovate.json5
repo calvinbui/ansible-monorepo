@@ -73,7 +73,7 @@
     /* Minio */
     {
       matchDatasources: ["docker"],
-      matchPackageNames: ["minio/minio"],
+      matchPackageNames: ["minio/minio", "minio/mc"],
       versioning: "regex:^RELEASE\\.(?<major>\\d+)-(?<minor>\\d+)-(?<patch>\\d+)T(?<build>.*)Z$",
       automerge: true,
       ignoreTests: true,
