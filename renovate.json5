@@ -15,22 +15,10 @@
   commitMessageTopic: "version",
   commitMessageExtra: "to {{#if isMajor}}{{{prettyNewMajor}}}{{else}}{{{prettyNewVersion}}}{{/if}}",
 
-  regexManagers: [
-    /*
-      extract depName from Docker image within Ansible playbooks, i.e.:
-        - image: lscr.io/linuxserver/jackett:0.20.1778 --> jackett
-        - image: plexinc/pms-docker:1.28.1.6104-788f82488 --> pms-docker
-        - image: image: eclipse-mosquitto:2.0.15 --> eclipse-mosquitto
-    */
-    {
-      datasourceTemplate: "docker",
-      fileMatch: ["^.*\\.ya?ml$"],
-      matchStrings: ["\\s*image:\\s+?(?<registry>:?[\\/a-z\\.-]+\\/)*(?<depName>[\\/a-z-]+)(?::(?<currentValue>[a-z0-9.-]+))?"],
-      packageNameTemplate: "{{{ registry }}}{{{ depName }}}",
-    },
-  ],
-
-  // Renovate will evaluate all packageRules and not stop once it gets a first match
+  /*
+    Renovate will evaluate all packageRules and not stop once it gets a first match
+    You should order your packageRules in order of importance so that later rules can override settings from earlier rules if needed.
+  */
   packageRules: [
     /*
       override Docker datasource defaults
@@ -59,7 +47,7 @@
     */
     {
       matchDatasources: ["docker"],
-      matchPackageNames: ["pms-docker"],
+      matchPackageNames: ["plexinc/pms-docker"],
       versioning: "loose",
     },
     /*
@@ -67,17 +55,17 @@
     */
     {
       matchDatasources: ["docker"],
-      matchPackageNames: ["umami"],
+      matchPackageNames: ["ghcr.io/mikecao/umami"],
       versioning: "regex:^postgresql-v(?<major>\\d+)\\.(?<minor>\\d+)\\.?(?<patch>\\d+)$",
     },
     /*
       Linuxserver.io images
     */
     {
+      // images prefixed with 'version'
       matchDatasources: ["docker"],
-      matchPackageNames: ["nzbget"],
-      matchUpdateTypes: ["patch"],
-      automerge: true,
+      matchPackagePatterns: ["^lscr\\.io\\/linuxserver\\/"],
+      versioning: "regex:^version-v?(?<major>\\d+)\\.(?<minor>\\d+)(\\.(?<patch>\\d+))?(\\.(?<build>.*))?$",
     },
   ],
 
