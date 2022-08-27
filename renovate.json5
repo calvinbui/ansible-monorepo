@@ -62,7 +62,7 @@
     {
       matchDatasources: ["docker"],
       matchPackageNames: ["ghcr.io/mikecao/umami"],
-      versioning: "regex:^postgresql+-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$",
+      versioning: "regex:^postgresql-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$",
     },
     /* Borgmatic */
     {
@@ -75,23 +75,31 @@
       matchDatasources: ["docker"],
       matchPackageNames: ["minio/minio"],
       versioning: "regex:^RELEASE\\.(?<major>\\d+)-(?<minor>\\d+)-(?<patch>\\d+)T(?<build>.*)Z$",
+      automerge: true,
     },
-    /* Linuxserver.io images */
+    /* Linuxserver.io images prefixed with 'version' */
     {
-      // images prefixed with 'version'
       matchDatasources: ["docker"],
       matchPackagePatterns: ["^lscr\\.io\\/linuxserver\\/"],
       versioning: "regex:^version-v?(?<major>\\d+)\\.(?<minor>\\d+)(\\.(?<patch>\\d+))?(\\.(?<build>.*))?$",
     },
-    /* Changelogs */
+    /* NZBGet */
+    {
+      matchPackagePatterns: [".*\\/nzbget$"],
+      matchUpdateTypes: ["patch"],
+      "automerge": true,
+    },
+    /* NZBHydra 2 */
     {
       matchPackagePatterns: [".*\\/nzbhydra2$"],
       customChangelogUrl: "https://github.com/theotherp/nzbhydra2",
     },
+    /* Jackett */
     {
       matchPackagePatterns: [".*\\/jackett$"],
       customChangelogUrl: "https://github.com/Jackett/Jackett",
     },
+    /* Homer */
     {
       matchPackageNames: ["b4bz/homer"],
       customChangelogUrl: "https://github.com/bastienwirtz/homer",
