@@ -80,16 +80,13 @@
       automerge: true,
       ignoreTests: true,
     },
-    /* Linuxserver.io images prefixed with 'version' */
-    {
-      matchDatasources: ["docker"],
-      matchPackagePatterns: ["^lscr\\.io\\/linuxserver\\/"],
-      versioning: "regex:^version-v?(?<major>\\d+)\\.(?<minor>\\d+)(\\.(?<patch>\\d+))?(\\.(?<build>.*))?$",
-    },
-    /* NZBGet */
+    /*
+      NZBGet -- no two number versioning tag provided.
+    */
     {
       matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/nzbget$"],
+      versioning: "regex:^version-v?(?<major>\\d+)\\.(?<minor>\\d+)(\\.(?<patch>\\d+))?(\\.(?<build>.*))?$",
       matchUpdateTypes: ["patch"],
       automerge: true,
       ignoreTests: true,
