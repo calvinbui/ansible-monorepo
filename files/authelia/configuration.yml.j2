@@ -15,7 +15,7 @@ authentication_backend:
   refresh_interval: 5m
   ldap:
     implementation: custom
-    url: ldap://openldap
+    url: ldap://{{ ldap_host }}
 
     username_attribute: uid
     base_dn: {{ ldap_base_dn }}

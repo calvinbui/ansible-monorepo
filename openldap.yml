@@ -5,7 +5,7 @@
   vars:
     application: openldap
 
-    docker_network: "{{ networks.pub }}"
+    docker_network: "{{ ldap_network }}"
 
   handlers:
     - name: Restart
@@ -44,7 +44,7 @@
         env:
           SERVER_HOSTNAME: "lum.{{ common_tld }}"
 
-          LDAP_URI: "ldap://{{ application }}.{{ docker_network.name }}"
+          LDAP_URI: "ldap://{{ ldap_host }}"
           LDAP_BASE_DN: "{{ ldap_base_dn }}"
 
           LDAP_ADMIN_BIND_DN: "{{ ldap_admin_dn }}"
