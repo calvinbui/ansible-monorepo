@@ -89,6 +89,8 @@
           URL: "https://{{ application }}.{{ common_tld }}"
           PORT: "443"
 
+          # policy, user, bucket are made manually (in that order)
+          # readonly access rules on bucket required on `public` and `avatars` prefix
           AWS_ACCESS_KEY_ID: "{{ application }}"
           AWS_SECRET_ACCESS_KEY: !vault |
             $ANSIBLE_VAULT;1.1;AES256
