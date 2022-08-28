@@ -66,13 +66,13 @@
           job: "PATH=$PATH:/usr/sbin/ {{ _scripts_dir.path }}/smartmon.py"
         -
           name: apt
-          job: "{{ _scripts_dir.path }}/apt.sh"
+          job: "{{ _scripts_dir.path }}/apt_info.py"
         -
           name: directory-size
           job: "{{ _scripts_dir.path }}/directory-size.sh /apps"
         -
           name: ipmitool
-          job: "ipmitool -I lan -U ADMIN -P ADMIN -H homelab-ipmi.{{ common_local_tld }} sensor | {{ _scripts_dir.path }}/ipmitool"
+          job: "ipmitool sensor | {{ _scripts_dir.path }}/ipmitool"
 
     - name: Create container
       ansible.builtin.include_role:
