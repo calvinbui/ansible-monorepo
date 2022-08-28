@@ -28,7 +28,7 @@ groups:
           title: Alertmanager config not synced
           description: "Configurations of Alertmanager cluster instances are out of sync"
 
-  - name: alertmaanger_notifications
+  - name: alertmanager_notifications
     rules:
       -
         alert: Notification Failing
