@@ -82,7 +82,7 @@
         command:
           - "--path.rootfs=/host"
           - "--collector.mountstats"
-          - "--collector.filesystem.ignored-fs-types=^(tmpfs|vfat|rpc_pipefs|fuse.lxcfs|rootfs|squashfs|nsfs)$"
+          - "--collector.filesystem.fs-types-exclude=^(tmpfs|vfat|rpc_pipefs|fuse.lxcfs|rootfs|squashfs|nsfs)$"
           - "--collector.textfile.directory=/textfiles"
           - "--no-collector.arp"
           - "--no-collector.bcache"
