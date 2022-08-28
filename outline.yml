@@ -1,0 +1,135 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: outline
+
+    docker_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Create redis container
+      ansible.builtin.include_role:
+        name: redis
+      vars:
+        redis_version: 7
+        redis_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          34343430363733366263646563383863633466613466386532396264623737613663313035613966
+          3936363233636566313165653431626233336433303932370a383936623064643630626266393730
+          34613435373237303737323462356264396463303462646131626131316361333930333235336332
+          3134356136613563390a613831323939313265373164626562336535633939643364663764316438
+          39633465333733663062616433333061636439376137383635363835306662643562613264353238
+          3261643462666165663230356365643439633930616266303131
+
+    - name: Create postgres container
+      ansible.builtin.import_role:
+        name: postgres
+      vars:
+        postgres_version: 14
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          65663437646664343736376237346235646337613734313361396537636362393164623266303038
+          3962626163346430666166386432663236343035346231380a393538646462366265393532643938
+          36396234353030633132333535303133613361333038353736363663383835653339653936366332
+          6136386561376537650a323831616266306531353664626638373063363135666635396239323863
+          34333635396535356432343663386435373965623238623363323737353939373866643238383562
+          6535313237663232633063383438393035653136303131386263
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: outlinewiki/outline:0.65.2
+        command:
+          - sh
+          - -c
+          - yarn db:migrate --env=production-ssl-disabled && yarn start --env=production-ssl-disabled
+        env:
+          # https://github.com/outline/outline/blob/main/.env.sample
+          SECRET_KEY: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            32356161313362373733393362356462323032356231336434353033396138346335643135636133
+            3334393166356634313536303335353930613464363763300a666339373664376238623965363634
+            32353436643630633432393830633135386631623462376365363762323638616665346164363365
+            3638323063333762650a313936376631306265663864646465323831613838616664383664663762
+            32356134653439386364666336306561343337343265633166643636633136333066623464656262
+            39336561633037323266613263643837666431623430363033373863333734653535626437653937
+            32343261356338306631343030326533316338333934343065613934353931643532633763343166
+            63333435313134363634
+
+          UTILS_SECRET: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            62656236616531366431356637346633306662666133323532306236613139663833666130616130
+            3733306566396430366331346263643834306164633132650a313633313230633462336439376331
+            63306462663166386566316335333764663738643464313739633764343463623936393330373061
+            6364653264316166610a343062313666303734373630663236356465303063626636663737656335
+            31663964373266333639343935623731383437316231336531316666616334653466326431633266
+            62306531333236353835376561353964643933643233663539363739643734396365366661663230
+            31656161636239626434643834303366626663313134356466346535643130643632656331626466
+            32373734323835373839
+
+          DATABASE_URL: "{{ _postgres_url }}"
+          PGSSLMODE: disable
+
+          REDIS_URL: "{{ _redis_url }}"
+
+          URL: "https://{{ application }}.{{ common_tld }}"
+          PORT: "443"
+
+          AWS_ACCESS_KEY_ID: "{{ application }}"
+          AWS_SECRET_ACCESS_KEY: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            36366661393334316334626264306431323738383531356261636233353462343734653565656135
+            3166646434303930393463636537373262323639623464300a346234396665323330363864356535
+            64313635303236313734343334343566363139633537333539363230323464636335643861626633
+            3735376336636538380a373936326463343363333234386134616132393966323064653165613434
+            61623737313166313630346536383933623066636632373639316134383434323762353830326331
+            3435656636646635653231316337656334636561323435643439
+          AWS_S3_UPLOAD_BUCKET_URL: "https://minio.{{ common_tld }}"
+          AWS_S3_UPLOAD_BUCKET_NAME: "{{ application }}"
+          AWS_S3_UPLOAD_MAX_SIZE: "26214400"
+          AWS_S3_FORCE_PATH_STYLE: "true"
+          AWS_S3_ACL: private
+
+          OIDC_CLIENT_ID: "{{ application }}"
+          OIDC_CLIENT_SECRET: "{{ ldap_oidc_secrets.outline }}"
+          OIDC_AUTH_URI: "https://dex.{{ common_tld }}/auth"
+          OIDC_TOKEN_URI: "https://dex.{{ common_tld }}/token"
+          OIDC_USERINFO_URI: "https://dex.{{ common_tld }}/userinfo"
+          OIDC_USERNAME_CLAIM: preferred_username
+          OIDC_DISPLAY_NAME: Dex
+          OIDC_SCOPES: "openid profile email"
+
+          FORCE_HTTPS: "false"
+          ENABLE_UPDATES: "false"
+
+          SMTP_HOST: "{{ common_email_server }}"
+          SMTP_PORT: "{{ common_email_smtp_port | string }}"
+          SMTP_USERNAME: "{{ common_email_username }}"
+          SMTP_PASSWORD:  "{{ common_email_password }}"
+          SMTP_FROM_EMAIL: "{{ application }}{{ common_email_to }}"
+          SMTP_SECURE: "{{ 'true' if common_email_protocol == 'tls' else 'false' }}"
+
+          RATE_LIMITER_ENABLED: "false"
+
+          DEBUG: http
+        traefik:
+          - port: 443
+        # homer:
+        #   name: Outline
+        #   service: Collaboration
+        #   priority: 851
+        #   subtitle: "Wiki"
