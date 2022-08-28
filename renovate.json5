@@ -81,12 +81,6 @@
       ignoreTests: true,
     },
     /* NZBGet */
-    // no two number versioning tag provided.
-    {
-      matchDatasources: ["docker"],
-      matchPackagePatterns: [".*\\/nzbget$"],
-      versioning: "regex:^version-v?(?<major>\\d+)\\.(?<minor>\\d+)(\\.(?<patch>\\d+))?(\\.(?<build>.*))?$",
-    },
     // automerge patch version which linuxserver.io puts as the date of the build
     {
       matchDatasources: ["docker"],
