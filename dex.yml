@@ -107,3 +107,5 @@
           - "{{ config_directory }}/config.yaml:/etc/dex/config.yaml"
         traefik:
           - port: 5556
+        blackbox:
+          path: /healthz
