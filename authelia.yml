@@ -57,7 +57,7 @@
       ansible.builtin.include_role:
         name: redis
       vars:
-        redis_version: 6
+        redis_version: 7
         redis_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           30306365373164346565373038643030313035363630306431663036323335663335316665323064
