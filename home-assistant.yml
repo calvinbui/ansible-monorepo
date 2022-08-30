@@ -5,7 +5,7 @@
   vars:
     application: home-assistant
 
-    home_assistant_dir: "{{ config_directory }}/addons"
+    home_assistant_dir: "{{ config_directory }}/config/addons"
 
     home_assistant_google_secure_devices_pin: !vault |
       $ANSIBLE_VAULT;1.1;AES256
@@ -24,11 +24,25 @@
   tasks:
     - name: Create config folder
       ansible.builtin.file:
-        path: "{{ config_directory }}"
+        path: "{{ config_directory }}/config"
         state: directory
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
         mode: "0771"
+
+    - name: Create postgres container
+      ansible.builtin.import_role:
+        name: postgres
+      vars:
+        postgres_version: 14
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          32633539336137363933353436636432623537373832643930306335333333616364376162346332
+          3837343131623965653961313661643363353563626566350a346334356436653337393738383535
+          36623461656638313732393732363933393734326438646462633830613238353535303637323431
+          6562633838373165360a343239626161646138666432316566636337343530633963326666326665
+          61306432353564653366363434666232343731343437343439306361346561366536643635353864
+          3266623034333431363434306365336361333932613164306264
 
     - name: Create container
       ansible.builtin.include_role:
@@ -38,7 +52,7 @@
         env:
           TZ: "{{ common_timezone }}"
         volumes:
-          - "{{ config_directory }}:/config"
+          - "{{ config_directory }}/config:/config"
           - /etc/localtime:/etc/localtime:ro
         ipv4_address: "{{ docker_network.prefix }}.20"
         traefik:
@@ -58,11 +72,11 @@
 
     - name: Wait for config file
       ansible.builtin.wait_for:
-        path: "{{ config_directory }}/configuration.yaml"
+        path: "{{ config_directory }}/config/configuration.yaml"
 
     - name: Configure default settings
       yedit:
-        src: "{{ config_directory }}/configuration.yaml"
+        src: "{{ config_directory }}/config/configuration.yaml"
         key: "{{ item.key }}"
         value: "{{ item.value }}"
       notify: Restart
@@ -85,7 +99,7 @@
 
         - name: Create python_scripts folder
           ansible.builtin.file:
-            path: "{{ config_directory }}/python_scripts"
+            path: "{{ config_directory }}/config/python_scripts"
             state: directory
             owner: "{{ common_root_id }}"
             group: "{{ common_root_group }}"
@@ -95,7 +109,7 @@
         - name: Copy Google Service Account file
           ansible.builtin.copy:
             src: "{{ files_directory }}/google-service-account.json"
-            dest: "{{ config_directory }}/google-service-account.json"
+            dest: "{{ config_directory }}/config/google-service-account.json"
             owner: "{{ common_root_id }}"
             group: "{{ common_root_group }}"
             mode: "0771"
@@ -126,14 +140,14 @@
         - name: Create integration configurations
           ansible.builtin.template:
             src: "{{ files_directory }}/integration_template.yaml.j2"
-            dest: "{{ config_directory }}/{{ item.key }}.yaml"
+            dest: "{{ config_directory }}/config/{{ item.key }}.yaml"
             mode: "0644"
           notify: Restart
           loop: "{{ _home_assistant_config_integrations | dict2items }}"
 
         - name: Include integration config within main configuration file
           ansible.builtin.lineinfile:
-            path: "{{ config_directory }}/configuration.yaml"
+            path: "{{ config_directory }}/config/configuration.yaml"
             regexp: "^{{ item.key }}"
             line: "{{ item.key }}: !include {{ item.key }}.yaml"
             state: present
@@ -141,6 +155,21 @@
           loop: "{{ _home_assistant_config_integrations | dict2items }}"
       vars:
         _home_assistant_config_integrations:
+          recorder: |
+            db_url: {{ _postgresql_url }}
+            exclude:
+              domains:
+                - automation
+                - updater
+              entity_globs:
+                - sensor.weather_*
+              entities:
+                - sun.sun # Don't record sun data
+                - sensor.last_boot # Comes from 'systemmonitor' sensor platform
+                - sensor.date
+              event_types:
+                - call_service # Don't record service calls
+
           notify: |
             - name: MOBILE_PHONES
               platform: group
