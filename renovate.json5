@@ -107,6 +107,11 @@
       matchPackageNames: ["b4bz/homer"],
       customChangelogUrl: "https://github.com/bastienwirtz/homer",
     },
+    {
+      matchDatasources: ["docker"],
+      matchPackageNames: ["renovate/renovate"],
+      customChangelogUrl: "https://github.com/renovatebot/renovate",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
