@@ -57,7 +57,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: renovate/renovate:32.181
+        image: renovate/renovate:32.183
         entrypoint: ["/base/entrypoint.sh"]
         volumes:
           - "{{ config_directory }}:/base"
