@@ -119,6 +119,6 @@
           - tail
           - -f
           - /dev/null
-        image: minio/mc:RELEASE.2022-08-23T05-45-20Z
+        image: minio/mc:RELEASE.2022-08-28T20-08-11Z
         volumes:
           - "{{ config_directory }}/config.json:/root/.mc/config.json"
