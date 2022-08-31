@@ -101,12 +101,31 @@
       matchPackagePatterns: [".*\\/jackett$"],
       customChangelogUrl: "https://github.com/Jackett/Jackett",
     },
+    /* Bazarr */
+    {
+      matchDatasources: ["docker"],
+      matchPackagePatterns: [".*\\/bazarr"],
+      customChangelogUrl: "https://github.com/morpheus65535/bazarr",
+    },
+    /* VictoriaMetrics */
+    {
+      matchDatasources: ["docker"],
+      matchPackageNames: ["victoriametrics/victoria-metrics"],
+      customChangelogUrl: "https://github.com/VictoriaMetrics/VictoriaMetrics",
+    },
+    /* vmalert */
+    {
+      matchDatasources: ["docker"],
+      matchPackageNames: ["victoriametrics/vmalert"],
+      customChangelogUrl: "https://github.com/VictoriaMetrics/VictoriaMetrics",
+    },
     /* Homer */
     {
       matchDatasources: ["docker"],
       matchPackageNames: ["b4bz/homer"],
       customChangelogUrl: "https://github.com/bastienwirtz/homer",
     },
+    /* Renovate */
     {
       matchDatasources: ["docker"],
       matchPackageNames: ["renovate/renovate"],
