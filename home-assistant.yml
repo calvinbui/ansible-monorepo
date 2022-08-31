@@ -7,14 +7,6 @@
 
     home_assistant_dir: "{{ config_directory }}/config/addons"
 
-    home_assistant_google_secure_devices_pin: !vault |
-      $ANSIBLE_VAULT;1.1;AES256
-      32323164346637373262363162386333636531326133336139633236626138356136333835343965
-      3438613663613164333634363137303030653662646462640a373163353661333732616665313761
-      32303535316530656232363833613662386630653435303731366464346563326630313035356533
-      3134336332663365390a633966653764313164306336316663326635313930306238646363303538
-      6630
-
     docker_network: "{{ networks.iot }}"
 
   handlers:
@@ -24,9 +16,9 @@
   tasks:
     - name: Create config folder
       ansible.builtin.file:
-        path: "{{ config_directory }}/config"
+        path: "{{ config_directory }}"
         state: directory
-        owner: "{{ common_root_id }}"
+        owner: "{{ common_user_id }}"
         group: "{{ common_root_group }}"
         mode: "0771"
 
@@ -167,6 +159,13 @@
           notify: Restart
           loop: "{{ _home_assistant_config_integrations | dict2items }}"
       vars:
+        home_assistant_google_secure_devices_pin: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          32323164346637373262363162386333636531326133336139633236626138356136333835343965
+          3438613663613164333634363137303030653662646462640a373163353661333732616665313761
+          32303535316530656232363833613662386630653435303731366464346563326630313035356533
+          3134336332663365390a633966653764313164306336316663326635313930306238646363303538
+          6630
         _home_assistant_influxdb_token: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           38656665356237313932316331313366616663333365326431636634623363353638643937623239
