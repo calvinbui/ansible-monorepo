@@ -1,0 +1,53 @@
+---
+
+- name: Create InfluxDB directory
+  ansible.builtin.file:
+    path: "{{ influxdb_directory }}"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: "700"
+
+- name: Create InfluxDB container
+  community.docker.docker_container:
+    name: "{{ influxdb_name }}"
+    image: "influxdb:{{ influxdb_version }}-alpine"
+
+    state: started
+
+    hostname: "{{ influxdb_name }}"
+    published_ports: "{{ influxdb_ports | default(omit) }}"
+    networks:
+      - name: "{{ docker_network.name | default('bridge') }}"
+    network_mode: "{{ docker_network.name | default('omit') }}"
+    networks_cli_compatible: "{{ influxdb_networks_cli_compatible | default(true) }}"
+    purge_networks: "{{ influxdb_purge_networks | default(true) }}"
+
+    command: "{{ influxdb_command | default(omit) }}"
+
+    env:
+      DOCKER_INFLUXDB_INIT_MODE: "setup"
+      DOCKER_INFLUXDB_INIT_USERNAME: "{{ influxdb_username }}"
+      DOCKER_INFLUXDB_INIT_PASSWORD: "{{ influxdb_password }}"
+      DOCKER_INFLUXDB_INIT_ORG: "{{ influxdb_org }}"
+      DOCKER_INFLUXDB_INIT_BUCKET: "{{ influxdb_bucket }}"
+
+    volumes:
+      - "{{ influxdb_directory }}/data:/var/lib/influxdb2"
+      - "{{ influxdb_directory }}/config:/etc/influxdb2"
+
+    labels:
+      traefik.enable: "false"
+
+    restart_policy: unless-stopped
+
+    container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
+
+- name: Set variables
+  ansible.builtin.set_fact:
+    _influxdb_hostname: "{{ influxdb_name }}.{{ docker_network.name }}"
+    _influxdb_username: "{{ influxdb_username }}"
+    _influxdb_password: "{{ influxdb_password }}"
+    _influxdb_org: "{{ influxdb_org }}"
+    _influxdb_bucket: "{{ influxdb_bucket }}"
+    _influxdb_port: 8086

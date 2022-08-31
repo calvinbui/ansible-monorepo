@@ -1,0 +1,10 @@
+---
+
+influxdb_directory: "{{ config_directory }}/influxdb"
+
+influxdb_name: "{{ application }}-influxdb"
+influxdb_version: "2.4"
+influxdb_username: "{{ application }}"
+influxdb_password: "changeme"
+influxdb_org: "{{ application }}-org"
+influxdb_bucket: "{{ application }}-bucket"

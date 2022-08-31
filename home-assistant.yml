@@ -44,6 +44,19 @@
           61306432353564653366363434666232343731343437343439306361346561366536643635353864
           3266623034333431363434306365336361333932613164306264
 
+    - name: Create influxdb container
+      ansible.builtin.import_role:
+        name: influxdb
+      vars:
+        influxdb_version: 2.4
+        influxdb_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          39383139643961303364626537306531346530373162353465356237386332636239343238633663
+          6134353665323265386338633634393038663665316239390a623663343530666462623031633662
+          37656435353865356539353566656133643339656130623938393639303631303665343431393963
+          6263613830323737390a356566613732656163303430313162303330323330393461653432376166
+          37333531656136633639373735616532663264633030373365623030336239666262
+
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
@@ -154,6 +167,17 @@
           notify: Restart
           loop: "{{ _home_assistant_config_integrations | dict2items }}"
       vars:
+        _home_assistant_influxdb_token: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          38656665356237313932316331313366616663333365326431636634623363353638643937623239
+          6634646436663635363936616230306165313836343035370a393735386535356131356265303338
+          64366161373563653763663562383538336662366139383431656232376633366139333334306262
+          3834396436346634630a363366396337366133316563386437663364353461323134656465396231
+          35643232666132323739363439326161623333363630643439666336353662343530303731303666
+          64376537356538393537316233633332393865346665363530323136353762646234623439363535
+          63393766663239653463656534306363626235646564663265383833323230336234383731623761
+          35323663306661363036393732363765313338663432356665363230323837643734336564616234
+          3338
         _home_assistant_config_integrations:
           recorder: |
             db_url: {{ _postgresql_url }}
@@ -169,6 +193,27 @@
                 - sensor.date
               event_types:
                 - call_service # Don't record service calls
+
+          influxdb: |
+            api_version: 2
+
+            ssl: false
+            verify_ssl: false
+
+            host: {{ application }}-influxdb.{{ docker_network.name }}
+            port: {{ _influxdb_port }}
+
+            organization: {{ _influxdb_org }}
+            bucket: {{ _influxdb_bucket }}
+
+            # influx auth list
+            token: {{ _home_assistant_influxdb_token }}
+
+            tags:
+              source: {{ application }}
+            tags_attributes:
+              - friendly_name
+            default_measurement: units
 
           notify: |
             - name: MOBILE_PHONES
