@@ -68,6 +68,11 @@
         group: "{{ common_root_group }}"
         mode: "0755"
 
+    - name: Get current driver version
+      ansible.builtin.command: nvidia-smi --query-gpu=driver_version --format=csv,noheader --id=0
+      changed_when: false
+      register: _nvidia_installed_version
+
     # https://www.nvidia.com/en-us/drivers/unix/
     - name: Download NVIDIA driver
       ansible.builtin.get_url:
@@ -75,17 +80,20 @@
         dest: "{{ config_directory }}/{{ nvidia_driver_version }}.run"
         mode: '0755'
       register: __download_nvidia_drivers
+      when: _nvidia_installed_version.stdout != nvidia_driver_version
 
     - name: Stop containers using NVIDIA GPU
-      ansible.builtin.command: "docker stop {{ item }}"
+      community.docker.docker_container:
+        name: "{{ item }}"
+        state: stopped
       loop: "{{ nvidia_driver_containers }}"
-      when: __download_nvidia_drivers.changed
+      register: _nvidia_stopped_containers
+      when: _nvidia_installed_version.stdout != nvidia_driver_version
 
     - name: Install NVIDIA driver
-      ansible.builtin.command: "{{ config_directory }}/{{ nvidia_driver_version }}.run --silent --no-questions"
-      args:
-        creates: "/usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.{{ nvidia_driver_version }}"
+      ansible.builtin.command: "{{ config_directory }}/{{ nvidia_driver_version }}.run --silent"
       register: __install_nvidia_drivers
+      when: _nvidia_installed_version.stdout != nvidia_driver_version
 
     - name: Create persistenced override directory
       ansible.builtin.file:
@@ -157,21 +165,24 @@
         repo: "https://github.com/keylase/nvidia-patch"
         dest: "{{ config_directory }}/nvidia-patch"
         update: true
-      register: __nvidia_patch_updated
 
     - name: Run NVENV video encoding patch
       ansible.builtin.command: "bash {{ config_directory }}/nvidia-patch/patch.sh"
-      when: __nvidia_patch_updated.changed
+      register: _nvidia_patch_video_encoding
+      changed_when: "'Patched!' in _nvidia_patch_video_encoding.stdout"
 
     - name: Run NvFBC unlock patch
       ansible.builtin.command: "bash {{ config_directory }}/nvidia-patch/patch-fbc.sh"
-      when: __nvidia_patch_updated.changed
+      register: _nvidia_patch_nvfbc_unlock
+      changed_when: "'Patched!' in _nvidia_patch_nvfbc_unlock.stdout"
 
     - name: Start containers using NVIDIA GPU
-      ansible.builtin.command: "docker start {{ item }}"
+      community.docker.docker_container:
+        name: "{{ item }}"
+        state: started
       loop: "{{ nvidia_driver_containers }}"
-      when: __download_nvidia_drivers.changed
 
 # The NVIDIA driver install can mess with the Docker daemon settings.
 # Rerun docker again to be safe.
 - ansible.builtin.import_playbook: docker.yml
+  when: __install_nvidia_drivers.changed
