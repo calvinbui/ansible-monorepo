@@ -131,6 +131,12 @@
       matchPackageNames: ["renovate/renovate"],
       customChangelogUrl: "https://github.com/renovatebot/renovate",
     },
+    /* Authelia */
+    {
+      matchDatasources: ["docker"],
+      matchPackageNames: [".*\\/authelia"],
+      customChangelogUrl: "https://github.com/authelia/authelia",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
