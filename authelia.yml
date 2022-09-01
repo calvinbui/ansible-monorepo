@@ -106,7 +106,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/authelia/authelia:4.36.5
+        image: ghcr.io/authelia/authelia:4.36.6
         ipv4_address: "{{ docker_network.prefix }}.4"
         env:
           TZ: "{{ common_timezone }}"
