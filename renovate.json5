@@ -137,6 +137,12 @@
       matchPackageNames: [".*\\/authelia"],
       customChangelogUrl: "https://github.com/authelia/authelia",
     },
+    /* qBittorrent */
+    {
+      matchDatasources: ["docker"],
+      matchPackageNames: [".*\\/qbittorrent"],
+      customChangelogUrl: "https://github.com/qbittorrent/qBittorrent",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
