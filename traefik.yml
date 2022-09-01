@@ -43,6 +43,7 @@
         name: docker_container
       vars:
         image: traefik:v2.8
+        restart_policy: always
         env:
           CF_API_EMAIL: "{{ cloudflare_email }}"
           CF_API_KEY: "{{ cloudflare_api }}"
