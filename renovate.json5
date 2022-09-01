@@ -57,25 +57,25 @@
     /* Plex */
     {
       matchDatasources: ["docker"],
-      matchPackageNames: ["plexinc/pms-docker"],
+      matchPackagePatterns: [".*\\/pms-docker"],
       versioning: "loose",
     },
     /* Umami */
     {
       matchDatasources: ["docker"],
-      matchPackageNames: ["ghcr.io/mikecao/umami"],
+      matchPackagePatterns: [".*\\/umami"],
       versioning: "regex:^postgresql-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$",
     },
     /* Borgmatic */
     {
       matchDatasources: ["docker"],
-      matchPackageNames: ["b3vis/borgmatic"],
+      matchPackagePatterns: [".*\\/borgmatic"],
       versioning: "regex:^base-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$",
     },
     /* Minio */
     {
       matchDatasources: ["docker"],
-      matchPackageNames: ["minio/minio", "minio/mc"],
+      matchPackagePatterns: [".*\\/minio", ".*\\/mc"],
       versioning: "regex:^RELEASE\\.(?<major>\\d+)-(?<minor>\\d+)-(?<patch>\\d+)T(?<build>.*)Z$",
       automerge: true,
       ignoreTests: true,
@@ -110,37 +110,37 @@
     /* VictoriaMetrics */
     {
       matchDatasources: ["docker"],
-      matchPackageNames: ["victoriametrics/victoria-metrics"],
+      matchPackagePatterns: [".*\\/victoria-metrics"],
       customChangelogUrl: "https://github.com/VictoriaMetrics/VictoriaMetrics",
     },
     /* vmalert */
     {
       matchDatasources: ["docker"],
-      matchPackageNames: ["victoriametrics/vmalert"],
+      matchPackagePatterns: [".*\\/vmalert"],
       customChangelogUrl: "https://github.com/VictoriaMetrics/VictoriaMetrics",
     },
     /* Homer */
     {
       matchDatasources: ["docker"],
-      matchPackageNames: ["b4bz/homer"],
+      matchPackagePatterns: [".*\\/homer"],
       customChangelogUrl: "https://github.com/bastienwirtz/homer",
     },
     /* Renovate */
     {
       matchDatasources: ["docker"],
-      matchPackageNames: ["renovate/renovate"],
+      matchPackagePatterns: [".*\\/renovate"],
       customChangelogUrl: "https://github.com/renovatebot/renovate",
     },
     /* Authelia */
     {
       matchDatasources: ["docker"],
-      matchPackageNames: [".*\\/authelia"],
+      matchPackagePatterns: [".*\\/authelia"],
       customChangelogUrl: "https://github.com/authelia/authelia",
     },
     /* qBittorrent */
     {
       matchDatasources: ["docker"],
-      matchPackageNames: [".*\\/qbittorrent"],
+      matchPackagePatterns: [".*\\/qbittorrent"],
       customChangelogUrl: "https://github.com/qbittorrent/qBittorrent",
     },
   ],
