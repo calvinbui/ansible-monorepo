@@ -89,12 +89,6 @@
       automerge: true,
       ignoreTests: true,
     },
-    /* NZBHydra 2 */
-    {
-      matchDatasources: ["docker"],
-      matchPackagePatterns: [".*\\/nzbhydra2$"],
-      customChangelogUrl: "https://github.com/theotherp/nzbhydra2",
-    },
     /* Jackett */
     {
       matchDatasources: ["docker"],

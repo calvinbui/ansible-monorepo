@@ -61,8 +61,6 @@
 
           - "/mnt/source/monitoring/prometheus/data"
 
-          - "/mnt/source/nzbhydra/backup"
-
           - "/mnt/source/libretranslate/LibreTranslate"
           - "/mnt/source/libretranslate/argos-translate"
           - "/mnt/source/libretranslate/cache"
