@@ -170,7 +170,7 @@
       register: _qbittorrent_search_engines
 
     - name: Disable search engines
-      ansible.builtin.command: "mv {{ item }}.py {{ item }}.py.bak"
+      ansible.builtin.command: "mv '{{ item.stat.path }}' '{{ item.stat.path }}.bak'"
       args:
         chdir: "{{ config_directory }}/nova3/engines/"
       when: item.stat.exists
