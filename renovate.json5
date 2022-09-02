@@ -125,6 +125,9 @@
       matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/renovate"],
       customChangelogUrl: "https://github.com/renovatebot/renovate",
+      matchUpdateTypes: ["patch"],
+      automerge: true,
+      ignoreTests: true,
     },
     /* Authelia */
     {
