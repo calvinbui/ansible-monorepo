@@ -113,6 +113,13 @@
       matchPackagePatterns: [".*\\/homer"],
       customChangelogUrl: "https://github.com/bastienwirtz/homer",
     },
+    /* Prowlarr */
+    {
+      matchDatasources: ["docker"],
+      matchPackagePatterns: [".*\\/prowlarr"],
+      versioning: "regex:^develop-version(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)$",
+      customChangelogUrl: "https://github.com/Prowlarr/Prowlarr",
+    },
     /* Renovate */
     {
       matchDatasources: ["docker"],
