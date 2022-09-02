@@ -166,6 +166,7 @@
         - torlock
         - torrentscsv
         - zooqle
+        - jackett
       register: _qbittorrent_search_engines
 
     - name: Disable search engines

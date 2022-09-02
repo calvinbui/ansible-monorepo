@@ -89,12 +89,6 @@
       automerge: true,
       ignoreTests: true,
     },
-    /* Jackett */
-    {
-      matchDatasources: ["docker"],
-      matchPackagePatterns: [".*\\/jackett$"],
-      customChangelogUrl: "https://github.com/Jackett/Jackett",
-    },
     /* Bazarr */
     {
       matchDatasources: ["docker"],
