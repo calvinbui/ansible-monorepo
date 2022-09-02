@@ -37,7 +37,27 @@
       - "{{ influxdb_directory }}/config:/etc/influxdb2"
 
     labels:
-      traefik.enable: "false"
+      '{
+        "homer.enable": "{{ influxdb_homer.enable | default(false) | string }}",
+        "homer.name": "{{ influxdb_homer.name | default(omit) }}",
+        "homer.priority": "{{ influxdb_homer.priority | default(omit) | string }}",
+        "homer.service": "{{ influxdb_homer.service | default(omit) }}",
+        "homer.subtitle": "{{ influxdb_homer.subtitle | default(omit) }}",
+        "homer.url": "{{ influxdb_homer.url | default("https://" + influxdb_name + "." + common_tld) }}",
+        "homer.logo": "logos/influxdb.svg",
+
+        "traefik.enable": "{{ influxdb_homer.enable | default(false) | string }}",
+        "traefik.http.routers.{{ influxdb_name }}-secure.entrypoints": "web-secure",
+        "traefik.http.routers.{{ influxdb_name }}-secure.rule": "Host(`{{ influxdb_name }}.{{ common_tld }}`)",
+        "traefik.http.routers.{{ influxdb_name }}-secure.service": "{{ influxdb_name }}",
+        "traefik.http.routers.{{ influxdb_name }}-secure.tls": "true",
+        "traefik.http.routers.{{ influxdb_name }}-secure.tls.certresolver": "letsencrypt",
+        "traefik.http.routers.{{ influxdb_name }}.entrypoints": "web",
+        "traefik.http.routers.{{ influxdb_name }}.middlewares": "redirect@file",
+        "traefik.http.routers.{{ influxdb_name }}.rule": "Host(`{{ influxdb_name }}.{{ common_tld }}`)",
+        "traefik.http.routers.{{ influxdb_name }}.service": "{{ influxdb_name }}",
+        "traefik.http.services.{{ influxdb_name }}.loadbalancer.server.port": "8086"
+      }'
 
     restart_policy: unless-stopped
 

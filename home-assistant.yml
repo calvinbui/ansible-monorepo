@@ -48,6 +48,14 @@
           37656435353865356539353566656133643339656130623938393639303631303665343431393963
           6263613830323737390a356566613732656163303430313162303330323330393461653432376166
           37333531656136633639373735616532663264633030373365623030336239666262
+        influxdb_traefik:
+          enable: "true"
+        influxdb_homer:
+          enable: "true"
+          name: "Home Assistant InfluxDB"
+          subtitle: "Long term data from devices"
+          service: Monitoring
+          priority: 250
 
     - name: Create container
       ansible.builtin.include_role:
