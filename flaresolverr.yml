@@ -1,0 +1,18 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: flaresolverr
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: ghcr.io/flaresolverr/flaresolverr:v2.2.6
+        env:
+          TEST_URL: "https://{{ common_tld }}"
+          TZ: "{{ common_timezone }}"

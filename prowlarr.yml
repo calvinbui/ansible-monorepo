@@ -1,0 +1,63 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: prowlarr
+
+    docker_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: lscr.io/linuxserver/prowlarr:develop-version-0.4.4.1947
+        volumes:
+          - "{{ config_directory }}:/config"
+        env:
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_root_group | string }}"
+          TZ: "{{ common_timezone }}"
+        traefik:
+          - port: 9696
+            auth: basic
+        homer:
+          name: Prowlarr
+          service: Download
+          priority: 890
+          subtitle: "Index manager"
+
+    - name: Wait for config
+      ansible.builtin.wait_for:
+        path: "{{ config_directory }}/config.xml"
+
+    - name: Install lxml
+      ansible.builtin.pip:
+        name: lxml
+        executable: pip3
+
+    - name: Configure
+      ansible.builtin.xml:
+        path: "{{ config_directory }}/config.xml"
+        xpath: "/Config/{{ item.key }}"
+        value: "{{ item.value | string }}"
+      loop: "{{ _sonarr_config | dict2items }}"
+      notify: Restart
+      vars:
+        _sonarr_config:
+          ApiKey: "{{ prowlarr_api_key }}"
+          LaunchBrowser: "False"
+          AnalyticsEnabled: "False"

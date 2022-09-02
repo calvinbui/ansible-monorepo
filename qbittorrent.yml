@@ -176,3 +176,26 @@
       when: item.stat.exists
       loop: "{{ _qbittorrent_search_engines.results }}"
       notify: Restart
+
+    - name: Install Prowlarr search plugin
+      block:
+        - name: Download Prowlarr search plugin
+          ansible.builtin.get_url:
+            url: https://raw.githubusercontent.com/swannie-eire/prowlarr-qbittorrent-plugin/main/prowlarr.py
+            dest: "{{ config_directory }}/nova3/engines/"
+            mode: "0600"
+            owner: "{{ common_user }}"
+            group: "{{ common_root_group }}"
+
+        - name: Create Prowlarr search plugin config
+          ansible.builtin.copy:
+            content: |
+              {
+                "api_key": "{{ prowlarr_api_key }}",
+                "tracker_first": true,
+                "url": "http://prowlarr.{{ docker_network.name }}:9696"
+              }
+            dest: "{{ config_directory }}/nova3/engines/prowlarr.json"
+            owner: "{{ common_user }}"
+            group: "{{ common_root_group }}"
+            mode: "0600"
