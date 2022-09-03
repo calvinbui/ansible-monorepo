@@ -20,13 +20,44 @@
         group: "{{ common_root_group }}"
         mode: "0771"
 
+    - name: Copy SQL database init script to create log database
+      ansible.builtin.copy:
+        content: |
+          #!/usr/bin/env bash
+
+          set -euo pipefail
+
+          psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+            CREATE DATABASE "{{ application }}-log";
+            GRANT ALL PRIVILEGES ON DATABASE "{{ application }}-log" TO "$POSTGRES_USER";
+          EOSQL
+        dest: "{{ config_directory }}/init-log-db.sh"
+        mode: "0755"
+
+    - name: Create postgres container
+      ansible.builtin.import_role:
+        name: postgres
+      vars:
+        postgres_version: 14
+        postgres_database: "{{ application }}-main"
+        postgres_directory_extra:
+          - "{{ config_directory }}/init-log-db.sh:/docker-entrypoint-initdb.d/init-log-db.sh:ro"
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          63653466323833353964373365306233393238346261656430653264333561633134303566333831
+          3333386535343464376332666235653464643738303035310a663339623865666239393139646630
+          36373236383430376539623733656331333731343332616564346634626161306661303430313131
+          6537646239323834390a666433393565616338303462373963626562656537343465383836356463
+          63633438386233653233383466633231643432373437353966633462326135396633323438326539
+          3438313334343439646436366438616665383132326331353730
+
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
       vars:
         image: lscr.io/linuxserver/prowlarr:develop-version-0.4.4.1947
         volumes:
-          - "{{ config_directory }}:/config"
+          - "{{ config_directory }}/config:/config"
         env:
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_root_group | string }}"
@@ -42,7 +73,7 @@
 
     - name: Wait for config
       ansible.builtin.wait_for:
-        path: "{{ config_directory }}/config.xml"
+        path: "{{ config_directory }}/config/config.xml"
 
     - name: Install lxml
       ansible.builtin.pip:
@@ -51,13 +82,18 @@
 
     - name: Configure
       ansible.builtin.xml:
-        path: "{{ config_directory }}/config.xml"
+        path: "{{ config_directory }}/config/config.xml"
         xpath: "/Config/{{ item.key }}"
         value: "{{ item.value | string }}"
-      loop: "{{ _sonarr_config | dict2items }}"
+      loop: "{{ _prowlarr_config | dict2items }}"
       notify: Restart
       vars:
-        _sonarr_config:
+        _prowlarr_config:
           ApiKey: "{{ prowlarr_api_key }}"
           LaunchBrowser: "False"
           AnalyticsEnabled: "False"
+          PostgresHost: "{{ _postgres_hostname }}"
+          PostgresPort: "{{ _postgres_port }}"
+          PostgresMainDb: "{{ _postgres_database }}"
+          PostgresUser: "{{ _postgres_username }}"
+          PostgresPassword: "{{ _postgres_password }}"
