@@ -95,5 +95,6 @@
           PostgresHost: "{{ _postgres_hostname }}"
           PostgresPort: "{{ _postgres_port }}"
           PostgresMainDb: "{{ _postgres_database }}"
+          PostgresLogDb: "{{ application }}-log"
           PostgresUser: "{{ _postgres_username }}"
           PostgresPassword: "{{ _postgres_password }}"
