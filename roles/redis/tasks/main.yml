@@ -23,7 +23,7 @@
     networks_cli_compatible: "{{ redis_networks_cli_compatible | default(true) }}"
     purge_networks: "{{ redis_purge_networks | default(true) }}"
 
-    command: "{{ redis_command | default('redis-server --requirepass ' + redis_password) }}"
+    command: "redis-server --requirepass {{ redis_password }} {{ redis_command }}"
 
     env:
       TZ: "{{ common_timezone }}"
