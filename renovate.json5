@@ -141,6 +141,12 @@
       matchPackagePatterns: [".*\\/qbittorrent"],
       customChangelogUrl: "https://github.com/qbittorrent/qBittorrent",
     },
+    /* Portainer */
+    {
+      matchDatasources: ["docker"],
+      matchPackagePatterns: [".*\\/portainer-[c|e]e"],
+      customChangelogUrl: "    https://github.com/portainer/portainer",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
