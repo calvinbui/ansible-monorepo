@@ -1,4 +1,5 @@
 FROM python:3.10.6
+LABEL skip.prune=true
 WORKDIR /tmp
 
 COPY requirements.txt .

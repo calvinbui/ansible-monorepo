@@ -144,3 +144,10 @@
         group: "root"
         mode: "0755"
       notify: Restart
+
+    - name: Prune images daily
+      ansible.builtin.cron:
+        name: "docker image prune"
+        hour: "1"
+        minute: "0"
+        job: "docker image prune --filter 'label!=skip.prune=true' --all"
