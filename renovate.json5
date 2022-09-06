@@ -145,13 +145,13 @@
     {
       matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/portainer-[c|e]e"],
-      customChangelogUrl: "    https://github.com/portainer/portainer",
+      customChangelogUrl: "https://github.com/portainer/portainer",
     },
     /* Outline */
     {
       matchDatasources: ["docker"],
       matchPackagePatterns: ["outlinewiki\\/outline"],
-      customChangelogUrl: "    https://github.com/outline/outline",
+      customChangelogUrl: "https://github.com/outline/outline",
     },
   ],
 
