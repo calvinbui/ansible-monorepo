@@ -153,6 +153,12 @@
       matchPackagePatterns: ["outlinewiki\\/outline"],
       customChangelogUrl: "https://github.com/outline/outline",
     },
+    /* Tautulli */
+    {
+      matchDatasources: ["docker"],
+      matchPackagePatterns: [".*\\/tautulli"],
+      customChangelogUrl: "https://github.com/Tautulli/Tautulli",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
