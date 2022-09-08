@@ -1,4 +1,4 @@
-FROM python:3.10.6
+FROM python:3.10.7
 LABEL skip.prune=true
 WORKDIR /tmp
 
