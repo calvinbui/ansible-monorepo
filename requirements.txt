@@ -7,7 +7,7 @@ bcrypt==4.0.0
 bracex==2.3.post1
 cffi==1.15.1
 commonmark==0.9.1
-cryptography==38.0.0
+cryptography==38.0.1
 enrich==1.2.7
 importlib-resources==5.9.0
 iniconfig==1.1.1
