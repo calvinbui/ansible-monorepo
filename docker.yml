@@ -150,4 +150,4 @@
         name: "docker image prune"
         hour: "1"
         minute: "0"
-        job: "docker image prune --filter 'label!=skip.prune=true' --all"
+        job: "docker image prune --filter 'label!=skip.prune=true' --all --force"
