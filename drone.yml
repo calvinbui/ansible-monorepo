@@ -89,6 +89,8 @@
           DRONE_RUNNER_CAPACITY: "2"
           DRONE_RUNNER_NAME: "runner-01"
 
+          DRONE_RUNNER_CLONE_IMAGE: "calvinbui/git:localhost"
+
           DRONE_UI_USERNAME: "{{ htpasswd.username }}"
           DRONE_UI_PASSWORD: "{{ htpasswd.password }}"
 
@@ -131,22 +133,3 @@
         state: present
         force_source: "{{ true if _drone_dockerfiles_copy.changed else false }}"
       loop: "{{ _drone_dockerfiles_location.files }}"
-
-    - name: Pull and retag images
-      block:
-        - name: Pull images
-          community.docker.docker_image:
-            name: "{{ item }}"
-            source: pull
-          loop: "{{ _drone_retag_images }}"
-
-        - name: Retag image
-          community.docker.docker_image:
-            name: "{{ item }}"
-            repository: "calvinbui/{{ item.split('/') | last | split(':') | first }}:localhost"
-            push: false
-            source: local
-          loop: "{{ _drone_retag_images }}"
-      vars:
-        _drone_retag_images:
-          - kenshaw/drone-mattermost:latest
