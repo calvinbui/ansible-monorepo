@@ -3,3 +3,4 @@
 redis_name: "{{ application }}-redis"
 redis_directory: "{{ config_directory }}/redis"
 redis_password: "changeme"
+redis_command: ""
