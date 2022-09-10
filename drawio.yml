@@ -1,0 +1,41 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: drawio
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars: &drawio_vars
+        image: jgraph/drawio:20.2.8
+        env:
+          LETS_ENCRYPT_ENABLED: "false"
+
+          DRAWIO_BASE_URL: "https://{{ application }}.{{ common_tld }}"
+          DRAWIO_VIEWER_URL: "https://{{ application }}-viewer.{{ common_tld }}/js/viewer.min.js"
+          DRAWIO_LIGHTBOX_URL: "https://{{ application }}-viewer.{{ common_tld }}"
+        traefik:
+          - port: 8080
+            auth: page
+        homer:
+          name: draw.io
+          service: Tools
+          priority: 585
+          subtitle: "Diagramming"
+
+    - name: Create viewer container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        <<: *drawio_vars
+        name: "{{ application }}-viewer"
+        traefik:
+          - port: 8080
+            rule: Host(`{{ application }}-viewer.{{ common_tld }}`)
+        homer:
+          enabled: false
