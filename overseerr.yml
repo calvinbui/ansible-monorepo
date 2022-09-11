@@ -33,3 +33,38 @@
           service: Collaboration
           priority: 900
           subtitle: "Request and discover media"
+
+    - name: Configure
+      json_patch:
+        src: "{{ config_directory }}/settings.json"
+        pretty: true
+        operations:
+          - op: add
+            path: "{{ item.key }}"
+            value: "{{ item.value }}"
+      loop: "{{ _overseerr_configuration | dict2items }}"
+      notify: Restart
+      vars:
+        _overseerr_configuration:
+          main/applicationUrl: "https://{{ application }}.{{ common_tld }}"
+          main/cacheImages: true
+          main/localLogin: false
+          main/trustProxy: true
+
+          plex/name: plex
+          plex/ip: plex.{{ networks.pub.name }}
+          plex/webAppUrl: "https://plex.{{ common_tld }}"
+
+          # radarr/name: Radarr
+          # radarr/hostname: "radarr.{{ networks.pub.name }}"
+          # radarr/port: 7878
+          # radarr/apiKey: "{{ radarr_api_key }}"
+          # radarr/useSsl: false
+          # radarr/externalUrl: "https://radarr.{{ common_tld }}"
+          #
+          # sonarr/name: Sonarr
+          # sonarr/hostname: "sonarr.{{ networks.pub.name }}"
+          # sonarr/port: 8989
+          # sonarr/apiKey: "{{ sonarr_api_key }}"
+          # sonarr/useSsl: false
+          # sonarr/externalUrl: "https://sonarr.{{ common_tld }}"
