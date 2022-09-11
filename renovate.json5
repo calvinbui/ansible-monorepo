@@ -159,6 +159,12 @@
       matchPackagePatterns: [".*\\/tautulli"],
       customChangelogUrl: "https://github.com/Tautulli/Tautulli",
     },
+    /* Overseerr */
+    {
+      matchDatasources: ["docker"],
+      matchPackagePatterns: ["sctx\\/overseerr"],
+      customChangelogUrl: "https://github.com/sct/overseerr",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
