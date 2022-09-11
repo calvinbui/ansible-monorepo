@@ -191,3 +191,11 @@
         regex: "^GRUB_RECORDFAIL_TIMEOUT="
         line: "GRUB_RECORDFAIL_TIMEOUT=10"
       notify: Update grub
+
+    - name: Update sysctls
+      ansible.posix.sysctl:
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+      loop:
+        - name: fs.inotify.max_user_instances
+          value: 256

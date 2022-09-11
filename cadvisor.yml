@@ -48,5 +48,6 @@
         devices:
           - /dev/kmsg
         privileged: true
+        pid_mode: host
         metrics:
           - port: 8080
