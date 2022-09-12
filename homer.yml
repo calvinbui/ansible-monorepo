@@ -20,6 +20,38 @@
         group: "{{ common_group }}"
         mode: "0775"
 
+    - name: Template base config file
+      ansible.builtin.template:
+        src: "{{ files_directory }}/config.yml.j2"
+        dest: "{{ config_directory }}/hsd.yml"
+        owner: "{{ common_user_id }}"
+        group: "{{ common_group_id }}"
+        mode: "0775"
+      notify: Restart
+
+    - name: Create main config file
+      ansible.builtin.file:
+        path: "{{ config_directory }}/config.yml"
+        state: touch
+        modification_time: preserve
+        access_time: preserve
+        mode: "0775"
+
+    - name: "Create {{ application }}-service-discovery container"
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-service-discovery"
+        image: ghcr.io/calvinbui/homer-service-discovery:latest
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock:ro  # docker socket
+          - "{{ config_directory }}/config.yml:/config.yml"  # homer final config
+          - "{{ config_directory }}/hsd.yml:/base.yml"  # base
+        env:
+          LOG_LEVEL: Debug
+          HOMER_BASE_CONFIG: /base.yml
+          HOMER_CONFIG: /config.yml
+
     - name: Copy logos
       ansible.builtin.copy:
         src: "{{ homer_logos_local_dir }}/"
@@ -35,7 +67,7 @@
       vars:
         image: b4bz/homer:v22.08.1
         volumes:
-          - "{{ config_directory }}/assets/:/www/assets/"
+          - "{{ config_directory }}/config.yml:/www/assets/config.yml"
           - "{{ homer_logos_remote_dir }}/:/www/logos/"
         env:
           UID: "{{ common_user_id | string }}"
@@ -43,27 +75,3 @@
         traefik:
           - port: 8080
             rule: "Host(`{{ common_tld }}`)"
-
-    - name: Template base config file
-      ansible.builtin.template:
-        src: "{{ files_directory }}/config.yml.j2"
-        dest: "{{ config_directory }}/hsd.yml"
-        owner: "{{ common_user_id }}"
-        group: "{{ common_group_id }}"
-        mode: "0775"
-      notify: Restart
-
-    - name: "Create {{ application }}-service-discovery container"
-      ansible.builtin.include_role:
-        name: docker_container
-      vars:
-        name: "{{ application }}-service-discovery"
-        image: ghcr.io/calvinbui/homer-service-discovery:latest
-        volumes:
-          - /var/run/docker.sock:/var/run/docker.sock:ro  # docker socket
-          - "{{ config_directory }}/assets/config.yml:/config.yml"  # homer final config
-          - "{{ config_directory }}/hsd.yml:/base.yml"  # base
-        env:
-          LOG_LEVEL: Debug
-          HOMER_BASE_CONFIG: /base.yml
-          HOMER_CONFIG: /config.yml
