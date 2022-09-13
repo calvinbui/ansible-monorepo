@@ -1,6 +1,6 @@
 ansible==6.3.0
 ansible-compat==2.2.0
-ansible-core==2.13.3
+ansible-core==2.13.4
 ansible-lint==6.5.2
 attrs==22.1.0
 bcrypt==4.0.0
