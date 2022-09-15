@@ -20,7 +20,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: adguard/adguardhome:v0.107.12
+        image: adguard/adguardhome:v0.107.13
         ipv4_address: "{{ docker_network.prefix }}.101"
         homer:
           name: AdGuard Home
