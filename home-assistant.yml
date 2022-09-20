@@ -5,7 +5,9 @@
   vars:
     application: home-assistant
 
-    home_assistant_dir: "{{ config_directory }}/config/addons"
+    home_assistant_configuration: "{{ config_directory }}/config/configuration.yaml"
+    home_assistant_automations_dir: "{{ config_directory }}/config/automations"
+    home_assistant_addons_dir: "{{ config_directory }}/config/addons"
 
     docker_network: "{{ networks.iot }}"
 
@@ -85,11 +87,11 @@
 
     - name: Wait for config file
       ansible.builtin.wait_for:
-        path: "{{ config_directory }}/config/configuration.yaml"
+        path: "{{ home_assistant_configuration }}"
 
     - name: Configure default settings
       yedit:
-        src: "{{ config_directory }}/config/configuration.yaml"
+        src: "{{ home_assistant_configuration }}"
         key: "{{ item.key }}"
         value: "{{ item.value }}"
       notify: Restart
@@ -104,7 +106,7 @@
       block:
         - name: Create addons folder
           ansible.builtin.file:
-            path: "{{ home_assistant_dir }}"
+            path: "{{ home_assistant_addons_dir }}"
             state: directory
             owner: "{{ common_root_id }}"
             group: "{{ common_root_group }}"
@@ -146,7 +148,7 @@
               LANGUAGE: "{{ common_language_iso_639 }}"
               COUNTRY: "{{ common_country_iso_3166 }}"
             volumes:
-              - "{{ home_assistant_dir }}/eufy-security-ws:/data"
+              - "{{ home_assistant_addons_dir }}/eufy-security-ws:/data"
 
     - name: Configure integrations
       block:
@@ -160,7 +162,7 @@
 
         - name: Include integration config within main configuration file
           ansible.builtin.lineinfile:
-            path: "{{ config_directory }}/config/configuration.yaml"
+            path: "{{ home_assistant_configuration }}"
             regexp: "^{{ item.key }}"
             line: "{{ item.key }}: !include {{ item.key }}.yaml"
             state: present
@@ -253,6 +255,38 @@
                 aliases:
                   - Living Room Downlights
                   - Living Room Lights
+
+    - name: Configure Automations
+      block:
+        - name: Split ui created automations
+          ansible.builtin.lineinfile:
+            dest: "{{ home_assistant_configuration }}"
+            search_string: 'automation: !include automations.yaml'
+            line: 'automation ui: !include automations.yaml'
+            state: present
+          notify: Restart
+
+        - name: Create custom automations folder
+          ansible.builtin.file:
+            path: "{{ home_assistant_automations_dir }}"
+            state: directory
+            owner: "{{ common_root_id }}"
+            group: "{{ common_root_group }}"
+            mode: "0771"
+          notify: Restart
+
+        - name: Add custom automations folder to configuration
+          ansible.builtin.lineinfile:
+            dest: "{{ home_assistant_configuration }}"
+            line: 'automation custom: !include_dir_merge_list automations/'
+            state: present
+          notify: Restart
+
+        - name: Copy custom automations
+          ansible.builtin.copy:
+            src: "{{ files_directory }}/automations/"
+            dest: "{{ home_assistant_automations_dir }}"
+          notify: Restart
 
     - name: Install HACS
       community.docker.docker_container_exec:
