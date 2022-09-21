@@ -71,6 +71,7 @@
     - name: Get current driver version
       ansible.builtin.command: nvidia-smi --query-gpu=driver_version --format=csv,noheader --id=0
       changed_when: false
+      failed_when: false
       register: _nvidia_installed_version
 
     # https://www.nvidia.com/en-us/drivers/unix/
