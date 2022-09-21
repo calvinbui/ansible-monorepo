@@ -150,6 +150,15 @@
             volumes:
               - "{{ home_assistant_addons_dir }}/eufy-security-ws:/data"
 
+        - name: Create RTSP Simple Server for Eufy container
+          ansible.builtin.include_role:
+            name: docker_container
+          vars:
+            name: "eufy-rtsp"
+            image: aler9/rtsp-simple-server:v0.20.0
+            env:
+              RTSP_PROTOCOLS: tcp
+
     - name: Configure integrations
       block:
         - name: Create integration configurations
@@ -232,6 +241,9 @@
                 - service: mobile_app_tammy_s_galaxy_s21
 
           python_script: |
+
+          # for eufy
+          ffmpeg: |
 
           logger: |
             default: warning
