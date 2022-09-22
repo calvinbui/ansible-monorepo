@@ -95,3 +95,24 @@ services:
         url: https://www.borgbase.com
         priority: 290
         monitor: false
+      -
+        name: Dining Room Tablet
+        logo: fully-kiosk-browser.png
+        subtitle: Fully Kiosk Browser
+        url: "http://wall-tablet-dining.{{ common_local_tld }}:2323"
+        priority: 303
+        monitor: false
+      -
+        name: Foyer Tablet
+        logo: fully-kiosk-browser.png
+        subtitle: Fully Kiosk Browser
+        url: "http://wall-tablet-foyer.{{ common_local_tld }}:2323"
+        priority: 302
+        monitor: false
+      -
+        name: Upstairs Hallway Tablet
+        logo: fully-kiosk-browser.png
+        subtitle: Fully Kiosk Browser
+        url: "http://wall-tablet-upstairs-hallway.{{ common_local_tld }}:2323"
+        priority: 301
+        monitor: false
