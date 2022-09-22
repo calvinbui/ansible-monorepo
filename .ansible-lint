@@ -6,6 +6,7 @@ skip_list:
   - no-tabs
   - name[play]
   - jinja[spacing]
+  - template-instead-of-copy
 
 exclude_paths:
   - inventory.yml

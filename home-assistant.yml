@@ -371,6 +371,7 @@
           ansible.builtin.copy:
             src: "{{ files_directory }}/automations/"
             dest: "{{ home_assistant_automations_dir }}"
+            mode: "0644"
           notify: Restart
 
     - name: Install HACS
