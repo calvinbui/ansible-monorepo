@@ -63,7 +63,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/home-assistant/home-assistant:2022.9.5
+        image: ghcr.io/home-assistant/home-assistant:2022.9.6
         env:
           TZ: "{{ common_timezone }}"
         volumes:
