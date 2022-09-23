@@ -261,81 +261,81 @@
                 room: Garage
                 name: Garage Door
 
-              switch.shelly_plus_1pm_garage_downlights:
+              light.garage_downlights:
                 room: Garage
                 name: Downlights
                 aliases:
                   - Garage Downlights
                   - Garage Lights
 
-              switch.shelly_2_5_living_downlights:
+              light.living_room_downlights:
                 room: Living Room
                 name: Downlights
                 aliases:
                   - Living Room Downlights
                   - Living Room Lights
 
-              switch.shelly_2_5_living_leds:
+              light.living_room_leds:
                 room: Living Room
                 name: LEDs
                 aliases:
                   - Living Room LEDs
 
-              switch.shelly_plus_1pm_master_bedroom_downlights:
+              light.master_bedroom_downlights:
                 room: Master Bedroom
                 name: Downlights
                 aliases:
                   - Master Bedroom Downlights
                   - Master Bedroom Lights
 
-              switch.shelly_plus_1pm_alfresco_downlights:
+              light.alfresco_downlights:
                 room: Alfresco
                 name: Downlights
                 aliases:
                   - Alfresco Downlights
                   - Alfresco Lights
 
-              switch.shelly_plus_1pm_upstairs_hallway_downlights:
+              light.upstairs_hallway_downlights:
                 room: Upstairs Hallway
                 name: Downlights
                 aliases:
                   - Upstairs Hallway Downlights
                   - Upstairs Hallway Lights
 
-              switch.shelly_2_5_dining_downlights:
+              light.dining_room_downlights:
                 room: Dining Room
                 name: Downlights
                 aliases:
                   - Dining Downlights
                   - Dining Lights
 
-              switch.shelly_2_5_dining_leds:
+              light.dining_room_leds:
                 room: Dining Room
                 name: LEDs
                 aliases:
                   - Dining LEDs
 
-              switch.shelly_2_5_downstairs_hallway_downlights:
+              light.downstairs_hallway_downlights:
                 room: Foyer
                 name: Downlights
                 aliases:
                   - Foyer Downlights
                   - Foyer Lights
 
-              switch.shelly_2_5_downstairs_hallway_leds:
+              light.downstairs_hallway_leds:
                 room: Foyer
                 name: LEDs
                 aliases:
                   - Foyer LEDs
 
-              switch.shelly_2_5_kitchen_downlights:
+              light.kitchen_downlights:
                 room: Kitchen
                 name: Downlights
                 aliases:
                   - Kitchen Downlights
                   - Kitchen Lights
 
-              switch.shelly_2_5_kitchen_leds:
+              light.kitchen_leds:
                 room: Kitchen
                 name: LEDs
                 aliases:
