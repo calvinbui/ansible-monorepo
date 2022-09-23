@@ -45,7 +45,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-server"
-        image: minio/minio:RELEASE.2022-09-17T00-09-45Z
+        image: minio/minio:RELEASE.2022-09-22T18-57-27Z
         command:
           - server
           - /data
