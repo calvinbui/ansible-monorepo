@@ -253,6 +253,13 @@
             logs:
               homeassistant.components.python_script: info
 
+          panel_iframe: |
+            vscode:
+              title: "VS Code"
+              url: "https://vscode.{{ common_tld }}"
+              icon: mdi:microsoft-visual-studio-code
+              require_admin: true
+
           google_assistant: |
             project_id: home-assistant-14ee3
             report_state: true
