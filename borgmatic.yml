@@ -111,7 +111,7 @@
         repo: https://github.com/borgbackup/borg
         clone: true
         dest: "{{ config_directory }}/borgbackup"
-        version: "1.2.1"
+        version: "1.2.2"
 
     - name: "Create directories"
       ansible.builtin.file:
