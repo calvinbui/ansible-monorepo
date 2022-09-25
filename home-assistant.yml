@@ -326,16 +326,16 @@
                   - Dining LEDs
 
               light.downstairs_hallway_downlights:
-                room: Foyer
+                room: Downstairs Hallway
                 name: Downlights
                 aliases:
-                  - Foyer Downlights
-                  - Foyer Lights
+                  - Downstairs Hallway Lights
 
               light.downstairs_hallway_leds:
                 room: Foyer
                 name: LEDs
                 aliases:
+                  - Downstairs Hallway LEDs
                   - Foyer LEDs
 
               light.kitchen_downlights:
