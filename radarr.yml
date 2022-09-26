@@ -93,10 +93,11 @@
           ApiKey: "{{ radarr_api_key }}"
           LaunchBrowser: "False"
           AnalyticsEnabled: "False"
+
           # https://wiki.servarr.com/radarr/postgres-setup
-          # PostgresHost: "{{ _postgres_hostname }}"
-          # PostgresPort: "{{ _postgres_port }}"
-          # PostgresMainDb: "{{ _postgres_database }}"
-          # PostgresLogDb: "{{ application }}-log"
-          # PostgresUser: "{{ _postgres_username }}"
-          # PostgresPassword: "{{ _postgres_password }}"
+          PostgresHost: "{{ _postgres_hostname }}"
+          PostgresPort: "{{ _postgres_port }}"
+          PostgresMainDb: "{{ _postgres_database }}"
+          PostgresLogDb: "{{ application }}-log"
+          PostgresUser: "{{ _postgres_username }}"
+          PostgresPassword: "{{ _postgres_password }}"
