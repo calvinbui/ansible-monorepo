@@ -78,7 +78,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: quay.io/prometheus/node-exporter:v1.3.1
+        image: quay.io/prometheus/node-exporter:v1.4.0
         command:
           - "--path.rootfs=/host"
           - "--collector.mountstats"
