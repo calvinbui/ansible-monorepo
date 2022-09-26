@@ -269,28 +269,28 @@
                   frequency: DAILY
                   interval: 7
                   start: '2022-09-22'
-                  until: '2032-01-01'
+                  until: '2027-01-01'
               - name: static
                 args:
                   type: Recycling
                   frequency: DAILY
                   interval: 14
                   start: '2022-09-15'
-                  until: '2032-01-01'
+                  until: '2027-01-01'
               - name: static
                 args:
                   type: Green Waste
                   frequency: DAILY
                   interval: 14
                   start: '2022-09-22'
-                  until: '2032-01-01'
+                  until: '2027-01-01'
               - name: static
                 args:
                   type: Soft Plastics
                   frequency: DAILY
                   interval: 28
                   start: '2022-08-11'
-                  until: '2032-01-01'
+                  until: '2027-01-01'
 
           sensor: |
             - &waste_collection_schedule
@@ -304,11 +304,17 @@
               value_template: >-
                 {%- raw %}
                 {% if value.daysTo == 0 %}
-                TODAY
+                  Today
                 {% elif value.daysTo == 1 %}
-                TOMORROW
+                  Tomorrow
+                {% elif value.daysTo < 4 %}
+                  This Thursday
+                {% elif (value.daysTo >= 4) and (value.daysTo <= 11)  %}
+                  Next Thursday
+                {% elif (value.daysTo > 11) and (value.daysTo <= 14)  %}
+                  In 2 Weeks
                 {% else %}
-                in {{value.daysTo}} days
+                  {{ value.date }}
                 {% endif %}
                 {% endraw %}
 
