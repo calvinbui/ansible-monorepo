@@ -387,6 +387,7 @@
                 aliases:
                   - Upstairs Hallway Downlights
                   - Upstairs Hallway Lights
+                  - Upstairs Lights
 
               light.dining_room_downlights:
                 room: Dining Room
@@ -406,6 +407,7 @@
                 name: Downlights
                 aliases:
                   - Downstairs Hallway Lights
+                  - Hallway Lights
 
               light.downstairs_hallway_leds:
                 room: Foyer
