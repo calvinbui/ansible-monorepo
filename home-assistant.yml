@@ -63,7 +63,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/home-assistant/home-assistant:2022.9.5
+        image: ghcr.io/home-assistant/home-assistant:2022.9.6
         env:
           TZ: "{{ common_timezone }}"
         volumes:
@@ -240,6 +240,9 @@
                 - service: mobile_app_calvin_s_galaxy_s21
                 - service: mobile_app_tammy_s_galaxy_s21
 
+          frontend: |
+            themes: !include_dir_merge_named themes
+
           python_script: |
 
           # for eufy
@@ -249,6 +252,13 @@
             default: warning
             logs:
               homeassistant.components.python_script: info
+
+          panel_iframe: |
+            vscode:
+              title: "VS Code"
+              url: "https://vscode.{{ common_tld }}"
+              icon: mdi:microsoft-visual-studio-code
+              require_admin: true
 
           google_assistant: |
             project_id: home-assistant-14ee3
@@ -261,81 +271,81 @@
                 room: Garage
                 name: Garage Door
 
-              switch.shelly_plus_1pm_garage_downlights:
+              light.garage_downlights:
                 room: Garage
                 name: Downlights
                 aliases:
                   - Garage Downlights
                   - Garage Lights
 
-              switch.shelly_2_5_living_downlights:
+              light.living_room_downlights:
                 room: Living Room
                 name: Downlights
                 aliases:
                   - Living Room Downlights
                   - Living Room Lights
 
-              switch.shelly_2_5_living_leds:
+              light.living_room_leds:
                 room: Living Room
                 name: LEDs
                 aliases:
                   - Living Room LEDs
 
-              switch.shelly_plus_1pm_master_bedroom_downlights:
+              light.master_bedroom_downlights:
                 room: Master Bedroom
                 name: Downlights
                 aliases:
                   - Master Bedroom Downlights
                   - Master Bedroom Lights
 
-              switch.shelly_plus_1pm_alfresco_downlights:
+              light.alfresco_downlights:
                 room: Alfresco
                 name: Downlights
                 aliases:
                   - Alfresco Downlights
                   - Alfresco Lights
 
-              switch.shelly_plus_1pm_upstairs_hallway_downlights:
+              light.upstairs_hallway_downlights:
                 room: Upstairs Hallway
                 name: Downlights
                 aliases:
                   - Upstairs Hallway Downlights
                   - Upstairs Hallway Lights
 
-              switch.shelly_2_5_dining_downlights:
+              light.dining_room_downlights:
                 room: Dining Room
                 name: Downlights
                 aliases:
                   - Dining Downlights
                   - Dining Lights
 
-              switch.shelly_2_5_dining_leds:
+              light.dining_room_leds:
                 room: Dining Room
                 name: LEDs
                 aliases:
                   - Dining LEDs
 
-              switch.shelly_2_5_downstairs_hallway_downlights:
-                room: Foyer
+              light.downstairs_hallway_downlights:
+                room: Downstairs Hallway
                 name: Downlights
                 aliases:
-                  - Foyer Downlights
-                  - Foyer Lights
+                  - Downstairs Hallway Lights
 
-              switch.shelly_2_5_downstairs_hallway_leds:
+              light.downstairs_hallway_leds:
                 room: Foyer
                 name: LEDs
                 aliases:
+                  - Downstairs Hallway LEDs
                   - Foyer LEDs
 
-              switch.shelly_2_5_kitchen_downlights:
+              light.kitchen_downlights:
                 room: Kitchen
                 name: Downlights
                 aliases:
                   - Kitchen Downlights
                   - Kitchen Lights
 
-              switch.shelly_2_5_kitchen_leds:
+              light.kitchen_leds:
                 room: Kitchen
                 name: LEDs
                 aliases:
@@ -371,6 +381,7 @@
           ansible.builtin.copy:
             src: "{{ files_directory }}/automations/"
             dest: "{{ home_assistant_automations_dir }}"
+            mode: "0644"
           notify: Restart
 
     - name: Install HACS

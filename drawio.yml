@@ -11,9 +11,9 @@
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
-      vars: &drawio_vars
-        image: jgraph/drawio:20.2.8
-        env:
+      vars:
+        image: &drawio_image jgraph/drawio:20.2.8
+        env: &drawio_env_vars
           LETS_ENCRYPT_ENABLED: "false"
 
           DRAWIO_BASE_URL: "https://{{ application }}.{{ common_tld }}"
@@ -32,8 +32,10 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        <<: *drawio_vars
         name: "{{ application }}-viewer"
+        image: *drawio_image
+        env:
+          <<: *drawio_env_vars
         traefik:
           - port: 8080
             rule: Host(`{{ application }}-viewer.{{ common_tld }}`)

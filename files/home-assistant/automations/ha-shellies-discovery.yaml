@@ -10,6 +10,7 @@
     data:
       topic: shellies/command
       payload: announce
+
 - id: shellies_discovery
   alias: Shellies Discovery
   mode: queued
@@ -26,3 +27,31 @@
       model: '{{ trigger.payload_json.model | default }}'
       mode: '{{ trigger.payload_json.mode | default }}'
       host: '{{ trigger.payload_json.ip }}'
+
+      shellyswitch25-4c752532f979:
+        device_name: Shelly 2.5 - Kitchen
+        relay-0: light
+        relay-0-name: LEDs
+        relay-1: light
+        relay-1-name: Downlights
+
+      shellyswitch25-4c752534d9a4:
+        device_name: Shelly 2.5 - Dining Room
+        relay-0: light
+        relay-0-name: Downlights
+        relay-1: light
+        relay-1-name: LEDs
+
+      shellyswitch25-4c752532e5f4:
+        device_name: Shelly 2.5 - Living Room
+        relay-0: light
+        relay-0-name: LEDs
+        relay-1: light
+        relay-1-name: Downlights
+
+      shellyswitch25-4c752534242d:
+        device_name: Shelly 2.5 - Downstairs Hallway
+        relay-0: light
+        relay-0-name: Downlights
+        relay-1: light
+        relay-1-name: LEDs

@@ -1,0 +1,98 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: vscode
+
+    docker_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart
+      ansible.builtin.command: docker restart "{{ application }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: lscr.io/linuxserver/code-server:4.7.0
+        env:
+          PUID: "{{ common_root_id | string }}"
+          PGID: "{{ common_root_group | string }}"
+          TZ: "{{ common_timezone }}"
+
+          PROXY_DOMAIN: "{{ application }}.{{ common_tld }}"
+          PASSWORD: &vscode_password !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            66333461326163353033646637636638383934633433613039323939303133333134396638336538
+            3830666433616139656637656661343136643736316536310a386630626332386465633263343138
+            35323566303038303862313862336434633531363462343962353261393830353931623239623939
+            3530323432323535390a376135623232653165323762313933323464666232363736353766636536
+            64393833313232623936626662363130313137623465626661373830613938663661
+          SUDO_PASSWORD: *vscode_password
+
+          DEFAULT_WORKSPACE: "/home-assistant"
+        volumes:
+          - "{{ config_directory }}:/config"
+          - "/apps/home-assistant/config:/home-assistant"
+        traefik:
+          - port: 8443
+        homer:
+          name: VS Code
+          service: Tools
+          priority: 295
+          subtitle: "VS Code in the browser"
+
+    # follows https://github.com/hassio-addons/addon-vscode/blob/main/vscode/Dockerfile
+    - name: Install Home Assistant extensions
+      block:
+        - name: Create download directory
+          ansible.builtin.file:
+            path: "{{ config_directory }}/vsix/"
+            state: directory
+            owner: "{{ common_root_id }}"
+            group: "{{ common_root_group }}"
+            mode: "0771"
+
+        - name: Download extensions
+          ansible.builtin.get_url:
+            url: "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/{{ item.split('.')[0] }}/vsextensions/{{ item.split('.')[1].split('#')[0] }}/{{ item.split('#')[1] }}/vspackage"
+            dest: "{{ config_directory }}/vsix/{{ item.split('#')[0] }}-{{ item.split('#')[1] }}.vsix"
+            http_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"
+            headers:
+              x-market-user-id: "{{ 1000 | random | to_uuid }}"
+          loop: &home_assistant_vscode_extensions "{{ lookup('ansible.builtin.url', 'https://raw.githubusercontent.com/hassio-addons/addon-vscode/master/vscode/vscode.extensions', wantlist=True) }}"
+          register: result
+          until: result is success
+          retries: 5
+          delay: 5
+
+        - name: Create extension directories
+          ansible.builtin.file:
+            path: "{{ config_directory }}/extensions/{{ item.split('#')[0] }}-{{ item.split('#')[1] }}"
+            state: directory
+            owner: "{{ common_root_id }}"
+            group: "{{ common_root_group }}"
+            mode: "0771"
+          loop: *home_assistant_vscode_extensions
+
+        - name: Install bsdtar
+          ansible.builtin.apt:
+            name: libarchive-tools
+            state: present
+
+        - name: Unpack extensions
+          ansible.builtin.command: "bsdtar --strip-components=1 -xf {{ config_directory }}/vsix/{{ item.split('#')[0] }}-{{ item.split('#')[1] }}.vsix -C {{ config_directory }}/extensions/{{ item.split('#')[0] }}-{{ item.split('#')[1] }} extension"
+          args:
+            creates: "{{ config_directory }}/extensions/{{ item.split('#')[0] }}-{{ item.split('#')[1] }}/README.md"
+          loop: *home_assistant_vscode_extensions
+          notify: Restart

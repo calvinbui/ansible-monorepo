@@ -81,23 +81,39 @@
         description: "cam-09"
         access: "{{ networks.iot.vlan }}"
       #
-      # GENERAL
+      # ROOMS
       #
       -
         port: "24"
-        description: "master"
+        description: "master-bedroom"
         access: "{{ networks.iot.vlan }}"
       -
         port: "25"
-        description: "study"
+        description: "calvins-study"
         access: "{{ networks.user.vlan }}"
       -
         port: "26"
-        description: "living"
+        description: "living-room"
         access: "{{ networks.iot.vlan }}"
+      -
+        port: "27"
+        description: "reserved-1"
+        access: "{{ networks.user.vlan }}"
+      -
+        port: "28"
+        description: "reserved-2"
+        access: "{{ networks.user.vlan }}"
+      -
+        port: "29"
+        description: "reserved-3"
+        access: "{{ networks.user.vlan }}"
       #
       # STATIC DEVICES
       #
+      -
+        port: "30"
+        description: "eufy-homebase-lan"
+        access: "{{ networks.iot.vlan }}"
       -
         port: "36"
         description: "3d-printer"
