@@ -260,6 +260,76 @@
               icon: mdi:microsoft-visual-studio-code
               require_admin: true
 
+          waste_collection_schedule: |
+            day_switch_time: "08:30"
+            sources:
+              - name: static
+                args:
+                  type: General Waste
+                  frequency: DAILY
+                  interval: 7
+                  start: '2022-09-22'
+                  until: '2032-01-01'
+              - name: static
+                args:
+                  type: Recycling
+                  frequency: DAILY
+                  interval: 14
+                  start: '2022-09-15'
+                  until: '2032-01-01'
+              - name: static
+                args:
+                  type: Green Waste
+                  frequency: DAILY
+                  interval: 14
+                  start: '2022-09-22'
+                  until: '2032-01-01'
+              - name: static
+                args:
+                  type: Soft Plastics
+                  frequency: DAILY
+                  interval: 28
+                  start: '2022-08-11'
+                  until: '2032-01-01'
+
+          sensor: |
+            - &waste_collection_schedule
+              platform: waste_collection_schedule
+              name: General Waste
+              source_index: 0
+              types:
+                - General Waste
+              details_format: upcoming
+              add_days_to: true
+              value_template: >-
+                {%- raw %}
+                {% if value.daysTo == 0 %}
+                TODAY
+                {% elif value.daysTo == 1 %}
+                TOMORROW
+                {% else %}
+                in {{value.daysTo}} days
+                {% endif %}
+                {% endraw %}
+
+            - <<: *waste_collection_schedule
+              name: Recycling
+              source_index: 1
+              types:
+                - Recycling
+
+            - <<: *waste_collection_schedule
+              name: Green Waste
+              source_index: 2
+              types:
+                - Green Waste
+
+            - <<: *waste_collection_schedule
+              name: Soft Plastics
+              source_index: 3
+              types:
+                - Soft Plastics
+
           google_assistant: |
             project_id: home-assistant-14ee3
             report_state: true
