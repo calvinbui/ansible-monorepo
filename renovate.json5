@@ -165,6 +165,12 @@
       matchPackagePatterns: ["sctx\\/overseerr"],
       customChangelogUrl: "https://github.com/sct/overseerr",
     },
+    /* VS Code Server */
+    {
+      matchDatasources: ["docker"],
+      matchPackagePatterns: [".*\\/code-server"],
+      customChangelogUrl: "https://github.com/coder/code-server",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
