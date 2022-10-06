@@ -171,6 +171,12 @@
       matchPackagePatterns: [".*\\/code-server"],
       customChangelogUrl: "https://github.com/coder/code-server",
     },
+    /* LibreTranslate */
+    {
+      matchDatasources: ["docker"],
+      matchPackagePatterns: [".*\\/libretranslate"],
+      customChangelogUrl: "https://github.com/LibreTranslate/LibreTranslate",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
