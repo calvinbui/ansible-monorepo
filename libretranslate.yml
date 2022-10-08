@@ -12,7 +12,7 @@
       ansible.builtin.file:
         path: "{{ config_directory }}"
         state: directory
-        owner: "{{ common_user }}"
+        owner: "1032"
         group: "{{ common_group }}"
         mode: "0771"
 
