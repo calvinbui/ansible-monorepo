@@ -97,12 +97,12 @@
             "traefik.http.middlewares.{{ application }}-hsts.headers.STSIncludeSubdomains": "true",
             "traefik.http.middlewares.{{ application }}-hsts.headers.STSPreload": "true",
 
-            "ofelia.enabled": "true",
-            "ofelia.job-exec.{{ application }}-cron.user": "33",
-            "ofelia.job-exec.{{ application }}-cron.schedule": "@every 5m",
-            "ofelia.job-exec.{{ application }}-cron.command": "/usr/local/bin/php -f cron.php",
-            "ofelia.job-exec.{{ application }}-cron.tty": "false",
-            "ofelia.job-exec.{{ application }}-cron.no-overlap": "true"
+            "chadburn.enabled": "true",
+            "chadburn.job-exec.{{ application }}-cron.user": "33",
+            "chadburn.job-exec.{{ application }}-cron.schedule": "@every 5m",
+            "chadburn.job-exec.{{ application }}-cron.command": "/usr/local/bin/php -f cron.php",
+            "chadburn.job-exec.{{ application }}-cron.tty": "false",
+            "chadburn.job-exec.{{ application }}-cron.no-overlap": "true"
           }'
 
     - name: Overwrite Nextcloud protocol to HTTPS within config

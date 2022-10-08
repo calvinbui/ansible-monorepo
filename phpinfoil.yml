@@ -22,8 +22,8 @@
 
     - name: Clone repo
       ansible.builtin.git:
-        repo: "https://github.com/calvinbui/PHPinfoil"
-        version: "patch-1"
+        repo: "https://github.com/TheyKilledKenny/PHPinfoil/"
+        version: "main"
         single_branch: true
         dest: "{{ config_directory }}"
         update: true
@@ -51,10 +51,10 @@
           - "{{ common_directory_games }}/Switch/Games:/var/www/html/data/games"
         ipv4_address: "{{ docker_network.prefix }}.65"
         labels:
-          ofelia.enabled: "true"
+          chadburn.enabled: "true"
 
-          ofelia.job-exec.phpinfoil-reset-cache.schedule: "@every 1m"
-          ofelia.job-exec.phpinfoil-reset-cache.command: "/usr/bin/curl --silent --output /dev/null http://localhost/?reset"
-          ofelia.job-exec.phpinfoil-reset-cache.tty: "true"
+          chadburn.job-exec.phpinfoil-reset-cache.schedule: "@every 1m"
+          chadburn.job-exec.phpinfoil-reset-cache.command: "/usr/bin/curl --silent --output /dev/null http://localhost/?reset"
+          chadburn.job-exec.phpinfoil-reset-cache.tty: "true"
 
           com.centurylinklabs.watchtower.enable: "false"

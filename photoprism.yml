@@ -70,25 +70,25 @@
           priority: 790
           subtitle: "Photo management"
         labels:
-          ofelia.enabled: "true"
+          chadburn.enabled: "true"
 
-          ofelia.job-exec.photoprism-photo-permissions.user: "0"
-          ofelia.job-exec.photoprism-photo-permissions.schedule: "@every 1m"
-          ofelia.job-exec.photoprism-photo-permissions.command: "sh -c \"chown {{ common_user_id }}:33 -R /photoprism/originals && chmod -R 775 /photoprism/originals\""
-          ofelia.job-exec.photoprism-photo-permissions.tty: "false"
-          ofelia.job-exec.photoprism-photo-permissions.no-overlap: "true"
+          chadburn.job-exec.photoprism-photo-permissions.user: "0"
+          chadburn.job-exec.photoprism-photo-permissions.schedule: "@every 1m"
+          chadburn.job-exec.photoprism-photo-permissions.command: "sh -c \"chown {{ common_user_id }}:33 -R /photoprism/originals && chmod -R 775 /photoprism/originals\""
+          chadburn.job-exec.photoprism-photo-permissions.tty: "false"
+          chadburn.job-exec.photoprism-photo-permissions.no-overlap: "true"
 
           # https://dl.photoprism.org/docker/scheduler/jobs.ini
           ## https://docs.photoprism.org/user-guide/library/originals
-          ofelia.job-exec.photoprism-auto-index.user: "0"
-          ofelia.job-exec.photoprism-auto-index.schedule: "@hourly"
-          ofelia.job-exec.photoprism-auto-index.command: "/opt/photoprism/bin/photoprism index --cleanup"
-          ofelia.job-exec.photoprism-auto-index.tty: "false"
-          ofelia.job-exec.photoprism-auto-index.no-overlap: "true"
+          chadburn.job-exec.photoprism-auto-index.user: "0"
+          chadburn.job-exec.photoprism-auto-index.schedule: "@hourly"
+          chadburn.job-exec.photoprism-auto-index.command: "/opt/photoprism/bin/photoprism index --cleanup"
+          chadburn.job-exec.photoprism-auto-index.tty: "false"
+          chadburn.job-exec.photoprism-auto-index.no-overlap: "true"
 
           ## https://docs.photoprism.org/user-guide/organize/video/
-          ofelia.job-exec.photoprism-convert.user: "0"
-          ofelia.job-exec.photoprism-convert.schedule: "@daily"
-          ofelia.job-exec.photoprism-convert.command: "/opt/photoprism/bin/photoprism convert"
-          ofelia.job-exec.photoprism-convert.tty: "false"
-          ofelia.job-exec.photoprism-convert.no-overlap: "true"
+          chadburn.job-exec.photoprism-convert.user: "0"
+          chadburn.job-exec.photoprism-convert.schedule: "@daily"
+          chadburn.job-exec.photoprism-convert.command: "/opt/photoprism/bin/photoprism convert"
+          chadburn.job-exec.photoprism-convert.tty: "false"
+          chadburn.job-exec.photoprism-convert.no-overlap: "true"

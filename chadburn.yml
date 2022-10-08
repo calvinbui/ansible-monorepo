@@ -3,7 +3,7 @@
 - hosts: homelab
 
   vars:
-    application: ofelia
+    application: chadburn
 
     docker_network: "{{ networks.pub }}"
 
@@ -12,9 +12,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        # pending https://github.com/mcuadros/ofelia/pull/137
-        # image: mcuadros/ofelia:latest
-        image: rdelcorro/ofelia:handleChangesOnDocker
+        image: ghcr.io/premoweb/chadburn:1.0.3
         command:
           - daemon
         volumes:
