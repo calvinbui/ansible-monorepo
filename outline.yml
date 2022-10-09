@@ -102,7 +102,6 @@
             3435656636646635653231316337656334636561323435643439
           AWS_S3_UPLOAD_BUCKET_URL: "https://minio.{{ common_tld }}"
           AWS_S3_UPLOAD_BUCKET_NAME: "{{ application }}"
-          AWS_S3_UPLOAD_MAX_SIZE: "26214400"
           AWS_S3_FORCE_PATH_STYLE: "true"
           AWS_S3_ACL: private
 
