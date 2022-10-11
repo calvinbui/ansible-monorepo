@@ -21,9 +21,6 @@
         name: docker_container
       vars:
         image: portainer/portainer-ee:2.15.1-alpine
-        ipv4_address: "{{ docker_network.prefix }}.192"
-        published_ports:
-          - 9000:9000
         traefik:
           - port: 9000
         homer:
