@@ -183,6 +183,12 @@
       matchPackagePatterns: ["nextcloud"],
       customChangelogUrl: "https://github.com/nextcloud/server",
     },
+    /* Chadburn */
+    {
+      matchDatasources: ["docker"],
+      matchPackagePatterns: [".*\\/chadburn"],
+      customChangelogUrl: "https://github.com/PremoWeb/Chadburn",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
