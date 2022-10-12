@@ -1,0 +1,10 @@
+---
+
+# https://www.home-assistant.io/integrations/logger
+
+default: warning
+logs:
+  homeassistant.components.python_script: info
+
+  # too many errors when electric blanket are off
+  custom_components.localtuya.common: fatal

@@ -1,0 +1,17 @@
+---
+
+# https://www.home-assistant.io/integrations/recorder
+
+db_url: {{ _postgresql_url }}
+exclude:
+  domains:
+    - automation
+    - updater
+  entity_globs:
+    - sensor.weather_*
+  entities:
+    - sun.sun # Don't record sun data
+    - sensor.last_boot # Comes from 'systemmonitor' sensor platform
+    - sensor.date
+  event_types:
+    - call_service # Don't record service calls

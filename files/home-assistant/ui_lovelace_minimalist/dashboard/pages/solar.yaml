@@ -1,0 +1,476 @@
+---
+
+title: Solar
+path: solar
+icon: mdi:solar-power-variant
+
+type: custom:grid-layout
+layout:
+  grid-template-columns: "50% 1fr 1fr"
+  grid-template-rows: "repeat(3, 270px)"
+  grid-template-areas: |
+    "flow  cost forecast"
+    "graph grid solar   "
+    "graph .    .       "
+
+  mediaquery:
+    "(max-width: 800px)":
+      grid-template-columns: 100%
+      grid-template-areas: |
+        "flow"
+        "graph"
+        "cost"
+        "forecast"
+        "grid"
+        "solar"
+cards:
+  -
+    view_layout:
+      grid-area: flow
+    type: custom:power-flow-card
+    kw_decimals: 3
+    entities:
+      solar: sensor.total_solar_generation
+      grid: sensor.power_meter_active_power
+    inverted_entities: grid
+    card_mod:
+      style: |
+        ha-card {
+          --energy-grid-consumption-color: #f76354;
+          --energy-grid-return-color: #18cf87;
+          --energy-solar-color: #f76354;
+        }
+
+        .home {
+          color: #f76354 !important;
+        }
+
+        .solar {
+          color: #E3C729 !important;
+        }
+
+        .solar .circle {
+          color: #E3C729 !important;
+          border-color: #E3C729 !important;
+        }
+
+        .grid .circle {
+          color: #3798fe !important;
+          border-color: #3798fe !important;
+        }
+
+        .home .circle {
+          border-color: #f76354 !important;
+          color: #f76354 !important;
+        }
+
+  -
+    view_layout:
+      grid_area: graph
+    type: 'custom:config-template-card'
+    entities:
+      - sensor.sunrise
+      - sensor.sunset
+    variables:
+      getTime: |
+        sensor => {
+          const today = new Date();
+
+          var event_time = new Date(states[sensor].state);
+
+          if (event_time.getDate() == today.getDate()) {
+            return event_time.getTime();
+          }
+
+          return 0;
+        }
+      getTimeString: |
+        sensor => {
+          const today = new Date();
+
+          var event_time = new Date(states[sensor].state);
+
+          if (event_time.getDate() == today.getDate()) {
+            return event_time.toLocaleTimeString('en-AU', {hour: '2-digit', minute: '2-digit'});
+          }
+
+          return "";
+        }
+    card:
+      type: custom:apexcharts-card
+      update_interval: 30sec
+
+      graph_span: 24h
+      span:
+        start: day
+
+      show:
+        loading: true
+        last_updated: false
+
+      hours_12: true
+
+      cache: true
+
+      stacked: false
+
+      header:
+        show: false
+
+      yaxis:
+        - min: 0
+          max: 10
+          decimals: 0
+          apex_config:
+            tickAmount: 5
+
+      apex_config:
+        chart:
+          type: area
+          zoom:
+            enabled: true
+            type: x
+          toolbar:
+            show: true
+            tools:
+              reset: false
+              pan: false
+              download: false
+              selection: false
+              zoom: false
+              zoomin: true
+              zoomout: true
+        stroke:
+          show: true
+        dataLabels:
+          enabled: true
+        legend:
+          show: false
+        fill:
+          type: gradient
+          gradient:
+            inverseColors: true
+            type: vertical
+            shadeIntensity: 0
+            opacityFrom: 0.7
+            opacityTo: 0.7
+        grid:
+          show: true
+        annotations:
+          xaxis:
+            -
+              x: "${getTime('sensor.sunrise')}"
+              strokeDashArray: 2
+              label:
+                text: "${'☀️ Sunrise - ' + getTimeString('sensor.sunrise')}"
+                borderWidth: 0
+                style:
+                  background: '#0000'
+            -
+              x: "${getTime('sensor.sunset')}"
+              strokeDashArray: 2
+              label:
+                text: "${'🌙 Sunset - ' + getTimeString('sensor.sunset')}"
+                borderWidth: 0
+                style:
+                  background: '#0000'
+
+      locale: en
+
+      all_series_config:
+        stroke_width: 2
+        curve: smooth
+        opacity: 1
+        unit: kW
+      series:
+        -
+          name: Solar
+          entity: sensor.total_solar_generation
+          color: '#18cf87' # green
+          transform: return x / 1000;
+          type: area
+          float_precision: 3
+          extend_to: now
+          group_by:
+            func: avg
+            duration: 5m
+        -
+          name: Grid Consumption
+          entity: sensor.home_power_consumption
+          color: '#f76354' # red
+          transform: return x / 1000;
+          type: area
+          float_precision: 3
+          extend_to: now
+          group_by:
+            func: avg
+            duration: 5m
+        -
+          name: Forecast
+          entity: sensor.solcast_forecast_today
+          type: line
+          color: '#3798fe' # blue
+          curve: stepline
+          data_generator: |
+            // get sunrise minute offset
+            var sunrise = new Date(hass.states['sensor.sunrise'].state);
+            var sunrise_minutes = sunrise.getMinutes() * 60 * 1000
+
+            return entity.attributes.forecast.map((entry) => {
+              var date_period = new Date(entry.period_end);
+
+              // add on the sunrise minutes too offset the graph correctly
+              date_period.setTime(date_period.getTime() + sunrise_minutes)
+
+              return [date_period, entry.pv_estimate];
+            });
+
+  -
+    view_layout:
+      grid-area: cost
+    type: entities
+    entities:
+      # Costs
+      -
+        type: custom:multiple-entity-row
+        entity: sensor.electricity_costs_today_total
+        name: Usage
+        icon: mdi:home-lightning-bolt
+        show_state: false
+        entities:
+          - entity: sensor.electricity_usage_today_total
+            name: Today
+            unit: false
+            format: precision2
+          - entity: sensor.electricity_usage_yesterday_total
+            name: Yesterday
+            unit: false
+            format: precision2
+          - entity: sensor.electricity_usage_month_total
+            name: Month
+            unit: false
+            format: precision2
+      -
+        type: custom:multiple-entity-row
+        entity: sensor.electricity_costs_today_total
+        name: Cost ($)
+        icon: mdi:currency-usd
+        show_state: false
+        entities:
+          - entity: sensor.electricity_costs_today_total
+            name: Today
+            format: precision2
+            unit: false
+          - entity: sensor.electricity_costs_yesterday_total
+            name: Yesterday
+            format: precision2
+            unit: false
+          - entity: sensor.electricity_costs_month_total
+            name: Month
+            format: precision2
+            unit: false
+      -
+        type: custom:multiple-entity-row
+        entity: sensor.electricity_costs_today_import
+        name: Grid ($)
+        icon: mdi:transmission-tower-export
+        show_state: false
+        entities:
+          - entity: sensor.electricity_costs_today_import
+            name: Today
+            format: precision2
+            unit: false
+          - entity: sensor.electricity_costs_yesterday_import
+            name: Yesterday
+            format: precision2
+            unit: false
+          - entity: sensor.electricity_costs_month_import
+            name: Month
+            format: precision2
+            unit: false
+      -
+        type: custom:multiple-entity-row
+        entity: sensor.electricity_costs_today_export
+        name: Solar ($)
+        icon: mdi:transmission-tower-import
+        show_state: false
+        entities:
+          - entity: sensor.electricity_costs_today_export
+            name: Today
+            format: invert
+            unit: false
+          - entity: sensor.electricity_costs_yesterday_export
+            name: Yesterday
+            format: invert
+            unit: false
+          - entity: sensor.electricity_costs_month_export
+            name: Month
+            format: invert
+            unit: false
+
+      # Bill and Forecasts
+  -
+    view_layout:
+      grid-area: forecast
+    type: entities
+    entities:
+      -
+        type: custom:multiple-entity-row
+        entity: sensor.tou_period
+        name: Current Period
+        show_state: true
+      -
+        type: custom:multiple-entity-row
+        entity: sensor.electricity_costs_currently
+        name: Current Cost ($/Hour)
+        icon: mdi:currency-usd
+        unit: false
+        show_state: true
+      -
+        type: custom:multiple-entity-row
+        entity: sensor.electricity_costs_average_per_day
+        name: Average Cost Per Day ($)
+        icon: mdi:currency-usd
+        unit: false
+        show_state: true
+      -
+        type: custom:multiple-entity-row
+        entity: sensor.electricity_costs_bill_forecast
+        name: Forecasted Bill ($)
+        icon: mdi:chart-line
+        unit: false
+        show_state: true
+
+  # Usage
+  -
+    view_layout:
+      grid-area: grid
+    type: entities
+    entities:
+      -
+        type: custom:multiple-entity-row
+        entity: sensor.grid_power_import_daily_peak
+        name: Peak
+        icon: mdi:transmission-tower-export
+        show_state: false
+        entities:
+          - entity: sensor.grid_power_import_daily_peak
+            name: Today
+            unit: false
+            format: precision2
+          - entity: sensor.grid_power_import_daily_peak
+            attribute: last_period
+            name: Yesterday
+            unit: false
+            format: precision2
+          - entity: sensor.grid_power_import_monthly_peak
+            name: Month
+            unit: false
+            format: precision2
+
+      -
+        type: custom:multiple-entity-row
+        entity: sensor.grid_power_import_daily_peak
+        name: Off-Peak
+        icon: mdi:transmission-tower-export
+        show_state: false
+        entities:
+          - entity: sensor.grid_power_import_daily_offpeak
+            name: Today
+            unit: false
+            format: precision2
+          - entity: sensor.grid_power_import_daily_offpeak
+            attribute: last_period
+            name: Yesterday
+            unit: false
+            format: precision2
+          - entity: sensor.grid_power_import_monthly_offpeak
+            name: Month
+            unit: false
+            format: precision2
+
+      -
+        type: custom:multiple-entity-row
+        entity: sensor.grid_power_import_daily_peak
+        name: Shoulder
+        icon: mdi:transmission-tower-export
+        show_state: false
+        entities:
+          - entity: sensor.grid_power_import_daily_shoulder
+            name: Today
+            unit: false
+            format: precision2
+          - entity: sensor.grid_power_import_daily_shoulder
+            attribute: last_period
+            name: Yesterday
+            unit: false
+            format: precision2
+          - entity: sensor.grid_power_import_monthly_shoulder
+            name: Month
+            unit: false
+            format: precision2
+
+  # Solar
+  -
+    view_layout:
+      grid-area: solar
+    type: entities
+    entities:
+      -
+        type: custom:multiple-entity-row
+        entity: sensor.electricity_costs_today_total
+        name: Generated
+        icon: mdi:solar-panel-large
+        show_state: false
+        entities:
+          - entity: sensor.solar_generated_today
+            name: Today
+            unit: false
+            format: precision2
+          - entity: sensor.solar_generated_yesterday
+            name: Yesterday
+            unit: false
+            format: precision2
+          - entity: sensor.solar_generated_month
+            name: Month
+            unit: false
+            format: precision2
+      -
+        type: custom:multiple-entity-row
+        entity: sensor.electricity_costs_today_total
+        name: Exported
+        icon: mdi:transmission-tower-import
+        show_state: false
+        entities:
+          - entity: sensor.grid_power_export_daily_anytime
+            name: Today
+            unit: false
+            format: precision2
+          - entity: sensor.grid_power_export_daily_anytime
+            attribute: last_period
+            name: Yesterday
+            unit: false
+            format: precision2
+          - entity: sensor.grid_power_export_monthly_anytime
+            name: Month
+            unit: false
+            format: precision2
+      -
+        type: custom:multiple-entity-row
+        entity: sensor.electricity_costs_today_total
+        name: Used
+        icon: mdi:sun-wireless
+        show_state: false
+        entities:
+          - entity: sensor.electricity_usage_today_solar
+            name: Today
+            unit: false
+            format: precision2
+          - entity: sensor.electricity_usage_yesterday_solar
+            name: Yesterday
+            unit: false
+            format: precision2
+          - entity: sensor.electricity_usage_month_solar
+            name: Month
+            unit: false
+            format: precision2

@@ -1,0 +1,35 @@
+---
+
+# https://github.com/mampfes/hacs_waste_collection_schedule
+
+day_switch_time: "08:30"
+
+sources:
+  - name: static
+    args:
+      type: General Waste
+      frequency: DAILY
+      interval: 7
+      start: '2022-09-22'
+      until: '2027-01-01'
+  - name: static
+    args:
+      type: Recycling
+      frequency: DAILY
+      interval: 14
+      start: '2022-09-15'
+      until: '2027-01-01'
+  - name: static
+    args:
+      type: Green Waste
+      frequency: DAILY
+      interval: 14
+      start: '2022-09-22'
+      until: '2027-01-01'
+  - name: static
+    args:
+      type: Soft Plastics
+      frequency: DAILY
+      interval: 28
+      start: '2022-08-11'
+      until: '2027-01-01'

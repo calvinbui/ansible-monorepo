@@ -1,0 +1,118 @@
+---
+# TODO: add how long it's been running for next to the timer
+
+title: Air Conditioner
+path: air-conditioner
+icon: mdi:air-conditioner
+
+type: custom:grid-layout
+layout:
+  grid-column-columns: 1fr 40% 40% 1fr
+  grid-template-areas: |
+    ". controls rooms   ."
+  mediaquery:
+    "(max-width: 800px)":
+      grid-template-columns: 100%
+      grid-template-areas: |
+        "controls"
+        "rooms"
+
+cards:
+  -
+    type: vertical-stack
+    view_layout:
+      grid-area: controls
+    cards:
+      -
+        type: custom:simple-thermostat
+        entity: climate.daikin_ac
+        decimals: 0
+        step_size: 1
+        layout:
+          step: row
+          mode:
+            names: true
+            icons: true
+            headings: true
+        hide:
+          temperature: true
+          state: true
+        control:
+          hvac:
+            _name: ' '
+            heat_cool:
+              name: Auto
+            fan_only:
+              name: Fan
+          fan:
+            _name: Fan
+        header: false
+        card_mod:
+          style: |
+            .modes {
+              padding-right: 30px !important;
+            }
+      -
+        type: entities
+        entities:
+          - entity: input_datetime.daikin
+            name: Date
+            secondary_info: last-updated
+        show_header_toggle: true
+        state_color: false
+
+  -
+    type: vertical-stack
+    view_layout:
+      grid-area: rooms
+    cards:
+      -
+        type: horizontal-stack
+        cards:
+          -
+            &air_conditioning_room
+            type: custom:mushroom-template-card
+            primary: Living Room
+            icon: mdi:theater
+            entity: switch.daikin_ac_living
+            layout: vertical
+            icon_color: '{{ "#253e5c" if is_state(config.entity, "on") else "" }}'
+            card_mod:
+              style: |
+                {% if is_state(config.entity, "on") %}
+                  ha-card {
+                    --card-background-color: #8fb3f4;
+                    --primary-text-color: #253e5c;
+                  }
+                {% endif %}
+          -
+            <<: *air_conditioning_room
+            primary: Master Bedroom
+            icon: mdi:bed-king
+            entity: switch.daikin_ac_master
+      -
+        type: horizontal-stack
+        cards:
+          -
+            <<: *air_conditioning_room
+            primary: Tammy's Study
+            icon: mdi:face-woman
+            entity: switch.daikin_ac_tammy_study
+          -
+            <<: *air_conditioning_room
+            primary: Small Bedroom
+            icon: mdi:bed-outline
+            entity: switch.daikin_ac_small_bed
+      -
+        type: horizontal-stack
+        cards:
+          -
+            <<: *air_conditioning_room
+            primary: Large Bedroom
+            icon: mdi:bed
+            entity: switch.daikin_ac_large_bed
+          -
+            <<: *air_conditioning_room
+            primary: Calvin's Study
+            icon: mdi:face-man
+            entity: switch.daikin_ac_calvin_study

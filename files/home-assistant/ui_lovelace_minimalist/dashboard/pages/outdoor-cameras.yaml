@@ -1,0 +1,29 @@
+---
+
+title: Outdoor Cameras
+path: outdoor-cameras
+icon: mdi:camera-wireless-outline
+
+type: custom:horizontal-layout
+layout:
+  max_cols: 2
+  width: 420
+
+cards:
+  -
+    &outdoor_camera_card
+    type: custom:button-card
+    template: custom_card_camera
+    entity: camera.camera_driveway_high
+    show_icon: false
+    variables:
+      ulm_custom_card_camera_title: false
+  -
+    <<: *outdoor_camera_card
+    entity: camera.rear_balcony_high
+  -
+    <<: *outdoor_camera_card
+    entity: camera.camera_outdoor_side
+  -
+    <<: *outdoor_camera_card
+    entity: camera.camera_backyard

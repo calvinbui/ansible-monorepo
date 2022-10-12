@@ -1,0 +1,23 @@
+---
+
+# https://www.home-assistant.io/integrations/influxdb
+
+api_version: 2
+
+ssl: false
+verify_ssl: false
+
+host: {{ application }}-influxdb.{{ docker_network.name }}
+port: {{ _influxdb_port }}
+
+organization: {{ _influxdb_org }}
+bucket: {{ _influxdb_bucket }}
+
+# influx auth list
+token: {{ home_assistant_integrations.influxdb_token }}
+
+tags:
+  source: {{ application }}
+tags_attributes:
+  - friendly_name
+default_measurement: units

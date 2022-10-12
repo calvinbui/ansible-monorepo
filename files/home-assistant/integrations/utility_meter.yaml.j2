@@ -1,0 +1,59 @@
+---
+
+# Use kwh sensors
+
+# IMPORT
+grid_power_import_daily:
+  unique_id: utility_meter_daily_grid_power_import
+  source: sensor.grid_power_import_kwh
+  name: Electricity Meter - Daily Import
+  cycle: daily
+  tariffs:
+    - offpeak
+    - shoulder
+    - peak
+
+grid_power_import_monthly:
+  unique_id: utility_meter_monthly_grid_power_import
+  source: sensor.grid_power_import_kwh
+  name: Electricity Meter - Monthly Import
+  tariffs:
+    - offpeak
+    - shoulder
+    - peak
+
+# EXPORT
+grid_power_export_daily:
+  unique_id: utility_meter_daily_grid_power_export
+  source: sensor.grid_power_export_kwh
+  name: Electricity Meter - Daily Export
+  cycle: daily
+  tariffs:
+    - anytime
+
+grid_power_export_monthly:
+  unique_id: utility_meter_monthly_grid_power_export
+  source: sensor.grid_power_export_kwh
+  name: Electricity Meter - Monthly Export
+  tariffs:
+    - anytime
+
+# SOLAR SELF CONSUMPTION
+solar_self_consumption_daily:
+  unique_id: utility_meter_daily_solar_self_consumption
+  source: sensor.solar_self_consumption_kwh
+  name: Electricity Meter - Daily Solar Self-Consumption
+  cycle: daily
+  tariffs:
+    - offpeak
+    - shoulder
+    - peak
+
+solar_self_consumption_monthly:
+  unique_id: utility_meter_monthly_solar_self_consumption
+  source: sensor.solar_self_consumption_kwh
+  name: Electricity Meter - Monthly Solar Self-Consumption
+  tariffs:
+    - offpeak
+    - shoulder
+    - peak

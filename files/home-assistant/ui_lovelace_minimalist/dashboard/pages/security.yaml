@@ -1,0 +1,117 @@
+---
+
+title: Security
+path: security
+icon: mdi:shield-lock
+
+type: custom:horizontal-layout
+layout:
+  max_cols: 3
+  card_margin: 4px 15px 4px 15px
+
+cards:
+  - type: vertical-stack
+    cards:
+      -
+        &security_card_title
+        type: custom:button-card
+        template: card_title
+        name: 🚪 Doors
+      -
+        type: custom:button-card
+        template: custom_card_calvin_door
+        entity: lock.front_door_eufy_smart_lock
+        variables:
+          ulm_custom_card_entity_1_name: Front Door
+          ulm_custom_card_entity_1_lock: lock.front_door_eufy_smart_lock
+          ulm_custom_card_entity_1_lock_battery: sensor.front_door_eufy_smart_lock_battery
+
+      -
+        type: custom:button-card
+        template: custom_card_calvin_cover
+        entity: cover.garage_door_garage
+        variables:
+          ulm_card_cover_garage: true
+          ulm_card_cover_enable_controls: true
+
+  - type: vertical-stack
+    cards:
+      -
+        <<: *security_card_title
+        name: 🚨 Alarm
+      -
+        type: "custom:button-card"
+        template: custom_card_calvin_alarm
+        variables:
+          ulm_custom_alarm_grid_state: alarm_control_panel.bosch_2000
+          ulm_custom_alarm_name: Bosch 2000
+      -
+        type: horizontal-stack
+        cards:
+          -
+            &alarm_sensor_status
+            type: custom:button-card
+            template: card_binary_sensor_alert
+            entity: binary_sensor.alarm_foyer
+            variables:
+              ulm_card_binary_sensor_alert_name: Foyer
+              ulm_show_last_changed: true
+              ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
+          -
+            <<: *alarm_sensor_status
+            entity: binary_sensor.alarm_dining
+            variables:
+              ulm_card_binary_sensor_alert_name: Downstairs
+              ulm_show_last_changed: true
+              ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
+      -
+        type: horizontal-stack
+        cards:
+          -
+            <<: *alarm_sensor_status
+            entity: binary_sensor.alarm_upstairs_hallway
+            variables:
+              ulm_card_binary_sensor_alert_name: Upstairs
+              ulm_show_last_changed: true
+              ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
+          -
+            <<: *alarm_sensor_status
+            entity: binary_sensor.camera_backyard_motion
+            variables:
+              ulm_card_binary_sensor_alert_name: Backyard
+              ulm_show_last_changed: true
+              ulm_card_binary_sensor_alert_icon: mdi:cctv
+      -
+        type: horizontal-stack
+        cards:
+          -
+            <<: *alarm_sensor_status
+            entity: binary_sensor.camera_driveway_motion
+            variables:
+              ulm_card_binary_sensor_alert_name: Driveway
+              ulm_show_last_changed: true
+              ulm_card_binary_sensor_alert_icon: mdi:cctv
+          -
+            <<: *alarm_sensor_status
+            entity: binary_sensor.garage_motion
+            variables:
+              ulm_card_binary_sensor_alert_name: Garage
+              ulm_show_last_changed: true
+              ulm_card_binary_sensor_alert_icon: mdi:cctv
+      -
+        type: horizontal-stack
+        cards:
+          -
+            <<: *alarm_sensor_status
+            entity: binary_sensor.rear_balcony_motion
+            variables:
+              ulm_card_binary_sensor_alert_name: Rear Balcony
+              ulm_show_last_changed: true
+              ulm_card_binary_sensor_alert_icon: mdi:cctv
+          -
+            <<: *alarm_sensor_status
+            entity: binary_sensor.camera_outdoor_side_motion
+            variables:
+              ulm_card_binary_sensor_alert_name: Outdoor Side
+              ulm_show_last_changed: true
+              ulm_card_binary_sensor_alert_icon: mdi:cctv

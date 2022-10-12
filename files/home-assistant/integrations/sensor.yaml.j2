@@ -1,0 +1,87 @@
+---
+
+{%- raw %}
+
+#
+# Sun2 Sensor
+# https://github.com/pnbruckner/ha-sun2
+#
+- platform: sun2
+  monitored_conditions:
+    - sunrise
+    - sunset
+
+#
+# Waste Collection Calendar
+# https://github.com/mampfes/hacs_waste_collection_schedule
+#
+-
+  &waste_collection_schedule
+  platform: waste_collection_schedule
+  name: General Waste
+  source_index: 0
+  types:
+    - General Waste
+  details_format: upcoming
+  add_days_to: true
+  value_template: >-
+    {% if value.daysTo == 0 %}
+      Today
+    {% elif value.daysTo == 1 %}
+      Tomorrow
+    {% elif value.daysTo < 4 %}
+      This Thursday
+    {% elif (value.daysTo >= 4) and (value.daysTo <= 11)  %}
+      Next Thursday
+    {% elif (value.daysTo > 11) and (value.daysTo <= 14)  %}
+      In 2 Weeks
+    {% else %}
+      {{ value.date }}
+    {% endif %}
+-
+  <<: *waste_collection_schedule
+  name: Recycling
+  source_index: 1
+  types:
+    - Recycling
+-
+  <<: *waste_collection_schedule
+  name: Green Waste
+  source_index: 2
+  types:
+    - Green Waste
+-
+  <<: *waste_collection_schedule
+  name: Soft Plastics
+  source_index: 3
+  types:
+    - Soft Plastics
+#
+# kW to kWh
+# https://www.home-assistant.io/integrations/integration/
+#
+- platform: integration
+  name: Grid Power Import
+  unique_id: grid_power_import_kwh
+  source: sensor.grid_power_consumption
+  method: left
+  unit_prefix: k
+  unit_time: h
+
+- platform: integration
+  name: Grid Power Export
+  unique_id: grid_power_export_kwh
+  source: sensor.grid_power_export
+  method: left
+  unit_prefix: k
+  unit_time: h
+
+- platform: integration
+  name: Solar Self Consumption
+  unique_id: solar_self_consumption_kwh
+  source: sensor.solar_self_consumption
+  method: left
+  unit_prefix: k
+  unit_time: h
+
+{%- endraw %}

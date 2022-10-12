@@ -1,0 +1,9 @@
+- id: "set_theme_on_startup"
+  alias: "Theme - Set theme on startup"
+  trigger:
+    - event: start
+      platform: homeassistant
+  action:
+    - service: frontend.set_theme
+      data:
+        name: minimalist-desktop

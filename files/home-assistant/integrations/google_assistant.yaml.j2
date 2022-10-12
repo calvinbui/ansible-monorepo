@@ -1,0 +1,95 @@
+---
+
+# https://www.home-assistant.io/integrations/google_assistant
+
+project_id: home-assistant-14ee3
+report_state: true
+secure_devices_pin: {{ home_assistant_integrations.google_secure_devices_pin }}
+service_account: !include google-service-account.json
+expose_by_default: false
+entity_config:
+  cover.garage_door_garage:
+    room: Garage
+    name: Garage Door
+
+  light.garage_downlights:
+    room: Garage
+    name: Downlights
+    aliases:
+      - Garage Downlights
+      - Garage Lights
+
+  light.living_room_downlights:
+    room: Living Room
+    name: Downlights
+    aliases:
+      - Living Room Downlights
+      - Living Room Lights
+
+  light.living_room_leds:
+    room: Living Room
+    name: LEDs
+    aliases:
+      - Living Room LEDs
+
+  light.master_bedroom_downlights:
+    room: Master Bedroom
+    name: Downlights
+    aliases:
+      - Master Bedroom Downlights
+      - Master Bedroom Lights
+
+  light.alfresco_downlights:
+    room: Alfresco
+    name: Downlights
+    aliases:
+      - Alfresco Downlights
+      - Alfresco Lights
+
+  light.upstairs_hallway_downlights:
+    room: Upstairs Hallway
+    name: Downlights
+    aliases:
+      - Upstairs Hallway Downlights
+      - Upstairs Hallway Lights
+      - Upstairs Lights
+
+  light.dining_room_downlights:
+    room: Dining Room
+    name: Downlights
+    aliases:
+      - Dining Downlights
+      - Dining Lights
+
+  light.dining_room_leds:
+    room: Dining Room
+    name: LEDs
+    aliases:
+      - Dining LEDs
+
+  light.downstairs_hallway_downlights:
+    room: Downstairs Hallway
+    name: Downlights
+    aliases:
+      - Downstairs Hallway Lights
+      - Hallway Lights
+
+  light.downstairs_hallway_leds:
+    room: Foyer
+    name: LEDs
+    aliases:
+      - Downstairs Hallway LEDs
+      - Foyer LEDs
+
+  light.kitchen_downlights:
+    room: Kitchen
+    name: Downlights
+    aliases:
+      - Kitchen Downlights
+      - Kitchen Lights
+
+  light.kitchen_leds:
+    room: Kitchen
+    name: LEDs
+    aliases:
+      - Kitchen LEDs

@@ -1,0 +1,110 @@
+---
+
+title: Home
+path: home
+icon: mdi:home
+
+type: custom:horizontal-layout
+layout:
+  max_cols: 3
+  card_margin: 4px 10px 4px 10px
+
+cards:
+  - type: vertical-stack
+    cards:
+      -
+        type: custom:button-card
+        template: card_title
+        name: 📅 Calendar
+      - type: "custom:atomic-calendar-revive"
+        maxDaysToShow: 60
+        maxEventCount: 7
+        showMonth: true
+        showWeekDay: true
+        disableLocationLink: true
+        disableEventLink: true
+        hideDuplicates: true
+        showCalendarName: true
+        showDate: true
+        refreshInterval: 3600
+        entities:
+          - entity: calendar.my_calendar_calvin_s_calendar
+            name: Calvin
+            icon: mdi:face-man
+          - entity: calendar.tammy_nguyen013_gmail_com
+            name: Tammy
+            icon: mdi:face-woman
+
+  - type: vertical-stack
+    cards:
+      -
+        type: custom:button-card
+        template: card_title
+        name: 🗑️ Bin Day
+      -
+        type: custom:button-card
+        template: custom_card_calvin_waste
+        entity: sensor.general_waste
+        variables:
+          ulm_card_generic_swap_name: General Waste
+          ulm_card_generic_swap_icon: "mdi:delete"
+        card_mod:
+          style: |
+            ha-card {
+              --card-background-color: rgba(var(--color-red),0.1) !important;
+            }
+      -
+        type: custom:button-card
+        template: custom_card_calvin_waste
+        entity: sensor.recycling
+        variables:
+          ulm_card_generic_swap_name: Recycling
+          ulm_card_generic_swap_icon: "mdi:recycle"
+        card_mod:
+          style: |
+            ha-card {
+              --card-background-color: rgba(var(--color-yellow),0.1) !important;
+            }
+      -
+        type: custom:button-card
+        template: custom_card_calvin_waste
+        entity: sensor.green_waste
+        variables:
+          ulm_card_generic_swap_name: Greens
+          ulm_card_generic_swap_icon: "mdi:leaf"
+        card_mod:
+          style: |
+            ha-card {
+              --card-background-color: rgba(var(--color-green),0.1) !important;
+            }
+      -
+        type: custom:button-card
+        template: custom_card_calvin_waste
+        entity: sensor.soft_plastics
+        variables:
+          ulm_card_generic_swap_name: Soft Plastics
+          ulm_card_generic_swap_icon: "mdi:shopping"
+        card_mod:
+          style: |
+            ha-card {
+              --card-background-color: rgba(var(--color-blue),0.1) !important;
+            }
+  - type: vertical-stack
+    cards:
+      -
+        type: custom:button-card
+        template: card_title
+        name: Weather
+      -
+        type: custom:hourly-weather
+        entity: weather.north_strathfield_hourly
+        icons: true
+        offset: '0'
+        num_segments: '14'
+        name: ' '
+        label_spacing: '2'
+      -
+        type: weather-forecast
+        show_current: true
+        show_forecast: true
+        entity: weather.north_strathfield

@@ -1,0 +1,16 @@
+---
+
+button_card_templates: !include_dir_merge_named "../../custom_components/ui_lovelace_minimalist/__ui_minimalist__/ulm_templates/"
+
+title: "Dashboard"
+theme: "minimalist-desktop"
+background: "var(--background-image)"
+
+views:
+  - !include pages/home.yaml
+  - !include pages/security.yaml
+  - !include pages/solar.yaml
+  - !include pages/lighting.yaml
+  - !include pages/air-conditioner.yaml
+  - !include pages/indoor-cameras.yaml
+  - !include pages/outdoor-cameras.yaml

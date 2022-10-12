@@ -4,12 +4,55 @@
 
   vars:
     application: home-assistant
+    docker_network: "{{ networks.iot }}"
 
     home_assistant_configuration: "{{ config_directory }}/config/configuration.yaml"
     home_assistant_automations_dir: "{{ config_directory }}/config/automations"
     home_assistant_addons_dir: "{{ config_directory }}/config/addons"
 
-    docker_network: "{{ networks.iot }}"
+    home_assistant_integrations_dir: "{{ config_directory }}/config/integrations"
+    home_assistant_integrations:
+      google_secure_devices_pin: !vault |
+        $ANSIBLE_VAULT;1.1;AES256
+        32323164346637373262363162386333636531326133336139633236626138356136333835343965
+        3438613663613164333634363137303030653662646462640a373163353661333732616665313761
+        32303535316530656232363833613662386630653435303731366464346563326630313035356533
+        3134336332663365390a633966653764313164306336316663326635313930306238646363303538
+        6630
+      influxdb_token: !vault |
+        $ANSIBLE_VAULT;1.1;AES256
+        38656665356237313932316331313366616663333365326431636634623363353638643937623239
+        6634646436663635363936616230306165313836343035370a393735386535356131356265303338
+        64366161373563653763663562383538336662366139383431656232376633366139333334306262
+        3834396436346634630a363366396337366133316563386437663364353461323134656465396231
+        35643232666132323739363439326161623333363630643439666336353662343530303731303666
+        64376537356538393537316233633332393865346665363530323136353762646234623439363535
+        63393766663239653463656534306363626235646564663265383833323230336234383731623761
+        35323663306661363036393732363765313338663432356665363230323837643734336564616234
+        3338
+      calendar:
+        - url: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            39643837333964346232623333653161363832663339656365663334333265306534643134653934
+            6165363135623531646635356262616233316362313966330a313539636137376562653862313237
+            64663264636130333034643733386437663864386637366134306461313161323930383938656464
+            6233356433386532300a336561626262376236306235353337623234656538323233636564623032
+            35326566336239373137306636393435353331656433366466616637643630373637646362393431
+            64326339333939303339363963393431656439653761313338643635366432383761303437633933
+            64613264643732383232633864366431353634386237633430326464353233393538666635643261
+            62643837356365366330
+          username: calvin
+          password: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            33343663623633396334303736373364373532616564316634636130303164333332343964643336
+            3437613239356664336437373531643539373630366435390a313939353430383031653432633334
+            63336134373733616330303135356431643666383266643138396363333061343238623438313364
+            3839376136636630300a386465373466363465343634623835316231326362633565663264376436
+            32386664393066346430393739333038653866326264666463396164303035333964
+          custom_calendars:
+            - name: Calvin's Calendar
+              calendar: My Calendar
+              search: ".*"
 
   handlers:
     - name: Restart
@@ -25,6 +68,8 @@
         mode: "0771"
 
     - name: Create postgres container
+      tags:
+        - integrations
       ansible.builtin.import_role:
         name: postgres
       vars:
@@ -39,6 +84,8 @@
           3266623034333431363434306365336361333932613164306264
 
     - name: Create influxdb container
+      tags:
+        - integrations
       ansible.builtin.import_role:
         name: influxdb
       vars:
@@ -102,6 +149,38 @@
           http.trusted_proxies:
             - "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] | string }}"
 
+    - name: Configure integrations
+      tags:
+        - integrations
+      block:
+        - name: Create integration folder
+          ansible.builtin.file:
+            path: "{{ home_assistant_integrations_dir }}"
+            state: directory
+            owner: "{{ common_root_id }}"
+            group: "{{ common_root_group }}"
+            mode: "0771"
+
+        - name: Template integrations
+          ansible.builtin.template:
+            src: "{{ item }}"
+            dest: "{{ home_assistant_integrations_dir }}/{{ item | basename | regex_replace('\\.j2$', '') }}"
+            mode: "0644"
+            validate: "echo checking %s && docker exec {{ application }}/usr/local/bin/hass --script check_config --config /config"
+          notify: Restart
+          with_fileglob:
+            - "{{ files_directory }}/integrations/*"
+
+        - name: Include integration config within main configuration file
+          ansible.builtin.lineinfile:
+            path: "{{ home_assistant_configuration }}"
+            regexp: "^{{ item | basename | regex_replace('\\.yaml.j2$', '') }}"
+            line: "{{ item | basename | regex_replace('\\.yaml.j2$', '') }}: !include integrations/{{ item | basename | regex_replace('\\.j2$', '') }}"
+            state: present
+          notify: Restart
+          with_fileglob:
+            - "{{ files_directory }}/integrations/*"
+
     - name: Install Addons
       block:
         - name: Create addons folder
@@ -113,6 +192,8 @@
             mode: "0771"
 
         - name: Create python_scripts folder
+          tags:
+            - integrations
           ansible.builtin.file:
             path: "{{ config_directory }}/config/python_scripts"
             state: directory
@@ -122,9 +203,11 @@
           notify: Restart
 
         - name: Copy Google Service Account file
+          tags:
+            - integrations
           ansible.builtin.copy:
             src: "{{ files_directory }}/google-service-account.json"
-            dest: "{{ config_directory }}/config/google-service-account.json"
+            dest: "{{ home_assistant_integrations_dir }}/google-service-account.json"
             owner: "{{ common_root_id }}"
             group: "{{ common_root_group }}"
             mode: "0771"
@@ -159,277 +242,9 @@
             env:
               RTSP_PROTOCOLS: tcp
 
-    - name: Configure integrations
-      block:
-        - name: Create integration configurations
-          ansible.builtin.template:
-            src: "{{ files_directory }}/integration_template.yaml.j2"
-            dest: "{{ config_directory }}/config/{{ item.key }}.yaml"
-            mode: "0644"
-          notify: Restart
-          loop: "{{ _home_assistant_config_integrations | dict2items }}"
-
-        - name: Include integration config within main configuration file
-          ansible.builtin.lineinfile:
-            path: "{{ home_assistant_configuration }}"
-            regexp: "^{{ item.key }}"
-            line: "{{ item.key }}: !include {{ item.key }}.yaml"
-            state: present
-          notify: Restart
-          loop: "{{ _home_assistant_config_integrations | dict2items }}"
-      vars:
-        home_assistant_google_secure_devices_pin: !vault |
-          $ANSIBLE_VAULT;1.1;AES256
-          32323164346637373262363162386333636531326133336139633236626138356136333835343965
-          3438613663613164333634363137303030653662646462640a373163353661333732616665313761
-          32303535316530656232363833613662386630653435303731366464346563326630313035356533
-          3134336332663365390a633966653764313164306336316663326635313930306238646363303538
-          6630
-        _home_assistant_influxdb_token: !vault |
-          $ANSIBLE_VAULT;1.1;AES256
-          38656665356237313932316331313366616663333365326431636634623363353638643937623239
-          6634646436663635363936616230306165313836343035370a393735386535356131356265303338
-          64366161373563653763663562383538336662366139383431656232376633366139333334306262
-          3834396436346634630a363366396337366133316563386437663364353461323134656465396231
-          35643232666132323739363439326161623333363630643439666336353662343530303731303666
-          64376537356538393537316233633332393865346665363530323136353762646234623439363535
-          63393766663239653463656534306363626235646564663265383833323230336234383731623761
-          35323663306661363036393732363765313338663432356665363230323837643734336564616234
-          3338
-        _home_assistant_config_integrations:
-          recorder: |
-            db_url: {{ _postgresql_url }}
-            exclude:
-              domains:
-                - automation
-                - updater
-              entity_globs:
-                - sensor.weather_*
-              entities:
-                - sun.sun # Don't record sun data
-                - sensor.last_boot # Comes from 'systemmonitor' sensor platform
-                - sensor.date
-              event_types:
-                - call_service # Don't record service calls
-
-          influxdb: |
-            api_version: 2
-
-            ssl: false
-            verify_ssl: false
-
-            host: {{ application }}-influxdb.{{ docker_network.name }}
-            port: {{ _influxdb_port }}
-
-            organization: {{ _influxdb_org }}
-            bucket: {{ _influxdb_bucket }}
-
-            # influx auth list
-            token: {{ _home_assistant_influxdb_token }}
-
-            tags:
-              source: {{ application }}
-            tags_attributes:
-              - friendly_name
-            default_measurement: units
-
-          notify: |
-            - name: MOBILE_PHONES
-              platform: group
-              services:
-                - service: mobile_app_calvin_s_galaxy_s21
-                - service: mobile_app_tammy_s_galaxy_s21
-
-          frontend: |
-            themes: !include_dir_merge_named themes
-
-          python_script: |
-
-          # for eufy
-          ffmpeg: |
-
-          logger: |
-            default: warning
-            logs:
-              homeassistant.components.python_script: info
-
-          panel_iframe: |
-            vscode:
-              title: "VS Code"
-              url: "https://vscode.{{ common_tld }}"
-              icon: mdi:microsoft-visual-studio-code
-              require_admin: true
-
-          waste_collection_schedule: |
-            day_switch_time: "08:30"
-            sources:
-              - name: static
-                args:
-                  type: General Waste
-                  frequency: DAILY
-                  interval: 7
-                  start: '2022-09-22'
-                  until: '2027-01-01'
-              - name: static
-                args:
-                  type: Recycling
-                  frequency: DAILY
-                  interval: 14
-                  start: '2022-09-15'
-                  until: '2027-01-01'
-              - name: static
-                args:
-                  type: Green Waste
-                  frequency: DAILY
-                  interval: 14
-                  start: '2022-09-22'
-                  until: '2027-01-01'
-              - name: static
-                args:
-                  type: Soft Plastics
-                  frequency: DAILY
-                  interval: 28
-                  start: '2022-08-11'
-                  until: '2027-01-01'
-
-          sensor: |
-            - &waste_collection_schedule
-              platform: waste_collection_schedule
-              name: General Waste
-              source_index: 0
-              types:
-                - General Waste
-              details_format: upcoming
-              add_days_to: true
-              value_template: >-
-                {%- raw %}
-                {% if value.daysTo == 0 %}
-                  Today
-                {% elif value.daysTo == 1 %}
-                  Tomorrow
-                {% elif value.daysTo < 4 %}
-                  This Thursday
-                {% elif (value.daysTo >= 4) and (value.daysTo <= 11)  %}
-                  Next Thursday
-                {% elif (value.daysTo > 11) and (value.daysTo <= 14)  %}
-                  In 2 Weeks
-                {% else %}
-                  {{ value.date }}
-                {% endif %}
-                {% endraw %}
-
-            - <<: *waste_collection_schedule
-              name: Recycling
-              source_index: 1
-              types:
-                - Recycling
-
-            - <<: *waste_collection_schedule
-              name: Green Waste
-              source_index: 2
-              types:
-                - Green Waste
-
-            - <<: *waste_collection_schedule
-              name: Soft Plastics
-              source_index: 3
-              types:
-                - Soft Plastics
-
-          google_assistant: |
-            project_id: home-assistant-14ee3
-            report_state: true
-            secure_devices_pin: {{ home_assistant_google_secure_devices_pin }}
-            service_account: !include google-service-account.json
-            expose_by_default: false
-            entity_config:
-              cover.garage_door_garage:
-                room: Garage
-                name: Garage Door
-
-              light.garage_downlights:
-                room: Garage
-                name: Downlights
-                aliases:
-                  - Garage Downlights
-                  - Garage Lights
-
-              light.living_room_downlights:
-                room: Living Room
-                name: Downlights
-                aliases:
-                  - Living Room Downlights
-                  - Living Room Lights
-
-              light.living_room_leds:
-                room: Living Room
-                name: LEDs
-                aliases:
-                  - Living Room LEDs
-
-              light.master_bedroom_downlights:
-                room: Master Bedroom
-                name: Downlights
-                aliases:
-                  - Master Bedroom Downlights
-                  - Master Bedroom Lights
-
-              light.alfresco_downlights:
-                room: Alfresco
-                name: Downlights
-                aliases:
-                  - Alfresco Downlights
-                  - Alfresco Lights
-
-              light.upstairs_hallway_downlights:
-                room: Upstairs Hallway
-                name: Downlights
-                aliases:
-                  - Upstairs Hallway Downlights
-                  - Upstairs Hallway Lights
-                  - Upstairs Lights
-
-              light.dining_room_downlights:
-                room: Dining Room
-                name: Downlights
-                aliases:
-                  - Dining Downlights
-                  - Dining Lights
-
-              light.dining_room_leds:
-                room: Dining Room
-                name: LEDs
-                aliases:
-                  - Dining LEDs
-
-              light.downstairs_hallway_downlights:
-                room: Downstairs Hallway
-                name: Downlights
-                aliases:
-                  - Downstairs Hallway Lights
-                  - Hallway Lights
-
-              light.downstairs_hallway_leds:
-                room: Foyer
-                name: LEDs
-                aliases:
-                  - Downstairs Hallway LEDs
-                  - Foyer LEDs
-
-              light.kitchen_downlights:
-                room: Kitchen
-                name: Downlights
-                aliases:
-                  - Kitchen Downlights
-                  - Kitchen Lights
-
-              light.kitchen_leds:
-                room: Kitchen
-                name: LEDs
-                aliases:
-                  - Kitchen LEDs
-
     - name: Configure Automations
+      tags:
+        - automations
       block:
         - name: Split ui created automations
           ansible.builtin.lineinfile:
@@ -461,6 +276,16 @@
             dest: "{{ home_assistant_automations_dir }}"
             mode: "0644"
           notify: Restart
+
+    - name: Copy dashboard
+      tags:
+        - theme
+      ansible.posix.synchronize:
+        src: "{{ files_directory }}/ui_lovelace_minimalist/"
+        dest: "{{ config_directory }}/config/ui_lovelace_minimalist/"
+        delete: true
+        owner: false
+        group: false
 
     - name: Install HACS
       community.docker.docker_container_exec:

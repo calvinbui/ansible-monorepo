@@ -1,0 +1,56 @@
+---
+
+title: Indoor Cameras
+path: indoor-cameras
+icon: mdi:camera-wireless
+
+type: custom:grid-layout
+layout:
+  grid-column-columns: 10% repeat(auto-fill) 10%
+  grid-template-areas: |
+    ". bigcamera1   bigcamera1   bigcamera1   bigcamera2   bigcamera2   bigcamera2   ."
+    ". smallcamera1 smallcamera1 smallcamera2 smallcamera2 smallcamera3 smallcamera3 ."
+  mediaquery:
+    "(max-width: 800px)":
+      grid-template-columns: 1
+      grid-template-areas: |
+        "bigcamera1"
+        "bigcamera2"
+        "smallcamera1"
+        "smallcamera2"
+        "smallcamera3"
+
+cards:
+  -
+    &indoor_camera_card
+    entity: camera.camera_downstairs_common_high
+    show_state: false
+    show_name: false
+    camera_view: live
+    type: picture-entity
+    tap_action:
+      action: none
+    hold_action:
+      action: none
+    view_layout:
+      grid-area: bigcamera1
+  -
+    <<: *indoor_camera_card
+    entity: camera.foyer_high
+    view_layout:
+      grid-area: bigcamera2
+  -
+    <<: *indoor_camera_card
+    entity: camera.front_bedrooms_high
+    view_layout:
+      grid-area: smallcamera1
+  -
+    <<: *indoor_camera_card
+    entity: camera.upstairs_hallway_high
+    view_layout:
+      grid-area: smallcamera2
+  -
+    <<: *indoor_camera_card
+    entity: camera.garage_high
+    view_layout:
+      grid-area: smallcamera3

@@ -43,7 +43,7 @@
           DEFAULT_WORKSPACE: "/home-assistant"
         volumes:
           - "{{ config_directory }}:/config"
-          - "/apps/home-assistant/config:/home-assistant"
+          - "/apps/home-assistant/config/:/home-assistant"
         traefik:
           - port: 8443
         homer:
