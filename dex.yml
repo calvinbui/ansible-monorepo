@@ -96,7 +96,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/dexidp/dex:v2.35.2
+        image: ghcr.io/dexidp/dex:v2.35.3
         command:
           - dex
           - serve
