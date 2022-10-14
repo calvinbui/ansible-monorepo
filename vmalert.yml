@@ -42,7 +42,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: victoriametrics/vmalert:v1.82.0
+        image: victoriametrics/vmalert:v1.82.1
         command:
           - -rule=/rules/*
           - -configCheckInterval=60s
