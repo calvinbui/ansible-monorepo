@@ -84,7 +84,7 @@
     /* Minio Console */
     {
       matchDatasources: ["docker"],
-      matchPackagePatterns: [".*\\/minio/console"],
+      matchPackagePatterns: ["minio\\/console"],
       customChangelogUrl: "https://github.com/minio/console",
     },
     /* NZBGet */
