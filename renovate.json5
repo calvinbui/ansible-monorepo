@@ -77,8 +77,15 @@
       matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/minio", ".*\\/mc"],
       versioning: "regex:^RELEASE\\.(?<major>\\d+)-(?<minor>\\d+)-(?<patch>\\d+)T(?<build>.*)Z$",
+      customChangelogUrl: "https://github.com/minio/minio",
       automerge: true,
       ignoreTests: true,
+    },
+    /* Minio Console */
+    {
+      matchDatasources: ["docker"],
+      matchPackagePatterns: [".*\\/minio/console"],
+      customChangelogUrl: "https://github.com/minio/console",
     },
     /* NZBGet */
     // automerge patch version which linuxserver.io puts as the date of the build
