@@ -195,6 +195,12 @@
       matchPackagePatterns: [".*\\/grafana"],
       customChangelogUrl: "https://github.com/grafana/grafana",
     },
+    /* Mattermost */
+    {
+      matchDatasources: ["docker"],
+      matchPackagePatterns: [".*\\/mattermost-(team|enterprise)-edition"],
+      customChangelogUrl: "https://github.com/mattermost/mattermost-server",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
