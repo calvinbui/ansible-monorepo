@@ -1,0 +1,23 @@
+- id: electricity_update_solar_net_cost
+  alias: Electricity - Update Solar Net Cost
+  description: ""
+  trigger:
+    - platform: time
+      at: "00:05:00"
+  condition: []
+  action:
+    - service: input_number.set_value
+      data:
+        value: |
+          {{
+            states('input_number.solar_net_cost')|float(0)
+            +
+            (
+              states('sensor.electricity_costs_alternative_plan')|float(0)
+              -
+              states('sensor.electricity_costs_yesterday_total')|float(0)
+            )
+          }}
+      target:
+        entity_id: input_number.solar_net_cost
+  mode: single

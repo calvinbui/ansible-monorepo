@@ -224,7 +224,6 @@ cards:
 
               return [date_period, entry.pv_estimate];
             });
-
   -
     view_layout:
       grid-area: cost
@@ -474,3 +473,12 @@ cards:
             name: Month
             unit: false
             format: precision2
+      -
+        type: custom:multiple-entity-row
+        entity: input_number.solar_net_cost
+        name: Solar Net Cost ($)
+        unit: false
+      -
+        type: custom:multiple-entity-row
+        entity: sensor.solar_breakeven_date
+        name: Breakeven Date
