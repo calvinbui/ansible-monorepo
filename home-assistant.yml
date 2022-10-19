@@ -137,7 +137,7 @@
         path: "{{ home_assistant_configuration }}"
 
     - name: Configure default settings
-      yedit:
+      yedit: # noqa fqcn[action]
         src: "{{ home_assistant_configuration }}"
         key: "{{ item.key }}"
         value: "{{ item.value }}"

@@ -67,6 +67,7 @@
           ansible.builtin.get_url:
             url: "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/{{ item.split('.')[0] }}/vsextensions/{{ item.split('.')[1].split('#')[0] }}/{{ item.split('#')[1] }}/vspackage"
             dest: "{{ config_directory }}/vsix/{{ item.split('#')[0] }}-{{ item.split('#')[1] }}.vsix"
+            mode: "0640"
             http_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"
             headers:
               x-market-user-id: "{{ 1000 | random | to_uuid }}"

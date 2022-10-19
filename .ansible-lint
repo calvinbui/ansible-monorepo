@@ -1,18 +1,20 @@
 skip_list:
   - empty-string-compare
   - git-latest
-  - yaml[line-length]
+  - jinja[invalid]
+  - jinja[spacing]
+  - name[play]
+  - name[template]
   - no-handler
   - no-tabs
-  - name[play]
-  - jinja[spacing]
   - template-instead-of-copy
+  - yaml[line-length]
 
 exclude_paths:
   - inventory.yml
 
 enable_list:
-  - fqcn-builtins
+  - empty-string-compare
   - no-log-password
   - no-same-owner
   - yaml

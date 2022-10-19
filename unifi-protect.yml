@@ -95,6 +95,7 @@
       delay: 5
 
     - name: Configure nut
+      notify: Restart nut
       block:
         - name: Set nut mode
           ansible.builtin.lineinfile:
@@ -115,4 +116,3 @@
             - file: upsmon
               name: monitors
               block: "{{ nut_ups_monitors | string }}"
-      notify: Restart nut

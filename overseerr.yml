@@ -35,7 +35,7 @@
           subtitle: "Request and discover media"
 
     - name: Configure
-      json_patch:
+      json_patch: # noqa fqcn[action]
         src: "{{ config_directory }}/settings.json"
         pretty: true
         operations:

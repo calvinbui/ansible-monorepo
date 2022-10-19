@@ -70,7 +70,7 @@
           subtitle: "Online chat"
 
     - name: Configure
-      json_patch:
+      json_patch: # noqa fqcn[action]
         src: "{{ config_directory }}/mattermost/config/config.json"
         pretty: true
         operations:
