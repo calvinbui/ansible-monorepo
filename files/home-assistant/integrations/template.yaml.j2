@@ -568,7 +568,7 @@
   -
     name: Solar Days Until Breakeven
     state: >
-      {% set solar_days = (as_timestamp(now()) - as_timestamp(states('input_datetime.solar_installation_date'))) / 86400 %}
+      {% set solar_days = (as_timestamp(today_at()) - as_timestamp(states('input_datetime.solar_installation_date'))) / 86400 %}
       {% set paid_off = (states('sensor.solar_initial_cost')|float(0) - (states('input_number.solar_net_cost')|float(0) * -1)) %}
       {% set average = paid_off / solar_days %}
       {% set remaining_days = (states('input_number.solar_net_cost')|float(0) * -1) / average %}
@@ -577,6 +577,6 @@
     name: Solar Breakeven Date
     state: >
       {% set days = states('sensor.solar_days_until_breakeven') | float(0) %}
-      {% set nice_remaining_days = now() + timedelta(days=days) %}
+      {% set nice_remaining_days = today_at() + timedelta(days=days) %}
       {{ nice_remaining_days.strftime('%d %b %Y') }}
 {%- endraw %}
