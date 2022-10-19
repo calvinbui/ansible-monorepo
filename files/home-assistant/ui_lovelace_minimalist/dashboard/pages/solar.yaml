@@ -478,6 +478,7 @@ cards:
         entity: input_number.solar_net_cost
         name: Solar Net Cost ($)
         unit: false
+        format: precision2
       -
         type: custom:multiple-entity-row
         entity: sensor.solar_breakeven_date

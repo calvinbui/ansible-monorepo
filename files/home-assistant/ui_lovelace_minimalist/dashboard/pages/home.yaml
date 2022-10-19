@@ -103,6 +103,7 @@ cards:
         num_segments: '14'
         name: ' '
         label_spacing: '2'
+        show_wind: true
       -
         type: weather-forecast
         show_current: true
