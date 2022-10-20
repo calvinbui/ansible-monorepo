@@ -133,7 +133,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-web"
-        image: nginx:1.23.1-alpine
+        image: nginx:1.23.2-alpine
         volumes:
           - "{{ _web_dir.path }}:/usr/share/nginx/html"
         labels:
