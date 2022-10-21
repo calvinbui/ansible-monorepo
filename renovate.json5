@@ -213,6 +213,12 @@
       matchPackagePatterns: [".*\\/mattermost-(team|enterprise)-edition"],
       customChangelogUrl: "https://github.com/mattermost/mattermost-server",
     },
+    /* OnlyOffice */
+    {
+      matchDatasources: ["docker"],
+      matchPackagePatterns: ["onlyoffice\\/documentserver"],
+      customChangelogUrl: "https://github.com/ONLYOFFICE/DocumentServer",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
