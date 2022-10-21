@@ -122,7 +122,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-onlyoffice"
-        image: onlyoffice/documentserver:7.2.0
+        image: onlyoffice/documentserver:7.2.1
         volumes:
           - "{{ config_directory }}/onlyoffice/cache:/var/lib/onlyoffice"
         # https://github.com/ONLYOFFICE/Docker-DocumentServer#available-configuration-parameters
