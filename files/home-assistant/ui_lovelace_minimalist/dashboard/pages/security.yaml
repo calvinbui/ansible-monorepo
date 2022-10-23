@@ -24,8 +24,6 @@ cards:
         variables:
           ulm_custom_card_entity_1_name: Front Door
           ulm_custom_card_entity_1_lock: lock.front_door_eufy_smart_lock
-          ulm_custom_card_entity_1_lock_battery: sensor.front_door_eufy_smart_lock_battery
-
       -
         type: custom:button-card
         template: custom_card_calvin_cover
