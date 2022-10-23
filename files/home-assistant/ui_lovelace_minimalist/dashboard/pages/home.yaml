@@ -104,6 +104,7 @@ cards:
         name: ' '
         label_spacing: '2'
         show_wind: true
+        show_precipitation_amounts: true
       -
         type: weather-forecast
         show_current: true
