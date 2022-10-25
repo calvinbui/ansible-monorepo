@@ -45,7 +45,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-proxy"
-        image: python:3.10.8-alpine3.16
+        image: python:3.11.0-alpine3.16
         entrypoint:
           - /bin/sh
           - /app/entrypoint.sh
