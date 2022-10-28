@@ -25,27 +25,27 @@
       - name: backups
         source: "{{ common_directory_backup }}"
         crontab: "30 1 * * *"
-        repository: azy1uocs@azy1uocs.repo.borgbase.com:repo
+        repository: azy1uocs@azy1uocs.repo.borgbase.com
 
       - name: misc
         source: "{{ common_directory_misc }}"
         crontab: "45 1 * * *"
-        repository: q09177h4@q09177h4.repo.borgbase.com:repo
+        repository: q09177h4@q09177h4.repo.borgbase.com
 
       - name: work
         source: "{{ common_directory_storage }}/Work"
         crontab: "0 2 * * *"
-        repository: lh782u97@lh782u97.repo.borgbase.com:repo
+        repository: lh782u97@lh782u97.repo.borgbase.com
 
       - name: photos
         source: "{{ common_directory_photos }}"
         crontab: "30 4 * * *"
-        repository: g0h7y7az@g0h7y7az.repo.borgbase.com:repo
+        repository: g0h7y7az@g0h7y7az.repo.borgbase.com
 
       - name: apps
         source: "{{ common_directory }}"
         crontab: "0 4 * * *"
-        repository: y8p6ha46@y8p6ha46.repo.borgbase.com:repo
+        repository: y8p6ha46@y8p6ha46.repo.borgbase.com
         exclude_patterns:
           - "/mnt/source/languagetool"
 
@@ -161,10 +161,10 @@
         name: docker_container
       vars:
         name: "borgmatic-{{ item.name }}"
-        image: b3vis/borgmatic:base-1.6.2
+        image: b3vis/borgmatic:1.7.4
         volumes:
           # data to backup. dont mount as ro when a restore is needed
-          - "{{ item.source }}:/mnt/source:ro"
+          - "{{ item.source }}:/mnt/source:rw"
 
           - "{{ config_directory }}/borgbackup:/mnt/borg-repository"
 
