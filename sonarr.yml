@@ -51,7 +51,7 @@
         executable: pip3
 
     - name: Configure
-      ansible.builtin.xml:
+      community.general.files.xml:
         path: "{{ config_directory }}/config.xml"
         xpath: "/Config/{{ item.key }}"
         value: "{{ item.value | string }}"
