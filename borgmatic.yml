@@ -133,7 +133,7 @@
 
     - name: "Template crontab"
       ansible.builtin.copy:
-        content: "{{ item.crontab }} PATH=$PATH:/usr/bin /usr/bin/borgmatic --stats --files --progress -v 0 2>&1"
+        content: "{{ item.crontab }} /usr/local/bin/borgmatic --stats --files --progress -v 0 2>&1"
         dest: "{{ config_directory }}/{{ item.name }}/borgmatic.d/crontab.txt"
         owner: root
         group: root
