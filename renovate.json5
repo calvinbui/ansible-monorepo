@@ -219,6 +219,12 @@
       matchPackagePatterns: ["onlyoffice\\/documentserver"],
       customChangelogUrl: "https://github.com/ONLYOFFICE/DocumentServer",
     },
+    /* eufy-security-ws */
+    {
+      matchDatasources: ["docker"],
+      matchPackagePatterns: ["bropat\\/eufy-security-ws"],
+      customChangelogUrl: "https://github.com/bropat/eufy-security-ws",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
