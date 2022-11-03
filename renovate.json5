@@ -225,6 +225,13 @@
       matchPackagePatterns: ["bropat\\/eufy-security-ws"],
       customChangelogUrl: "https://github.com/bropat/eufy-security-ws",
     },
+    /* changedetection.io */
+    {
+      matchDatasources: ["docker"],
+      matchPackagePatterns: [".*\\/changedetection.io"],
+      versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.?(?<build>\\d+)?$",
+      customChangelogUrl: "https://github.com/dgtlmoon/changedetection.io",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
