@@ -41,6 +41,8 @@
           SUDO_PASSWORD: *vscode_password
 
           DEFAULT_WORKSPACE: "/home-assistant"
+
+          CS_DISABLE_GETTING_STARTED_OVERRIDE: "true"
         volumes:
           - "{{ config_directory }}:/config"
           - "/apps/home-assistant/config/:/home-assistant"
