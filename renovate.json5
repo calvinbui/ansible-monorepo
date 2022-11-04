@@ -225,6 +225,12 @@
       matchPackagePatterns: ["bropat\\/eufy-security-ws"],
       customChangelogUrl: "https://github.com/bropat/eufy-security-ws",
     },
+    /* eufy rtsp */
+    {
+      matchDatasources: ["docker"],
+      matchPackagePatterns: ["aler9\\/rtsp-simple-server	"],
+      customChangelogUrl: "https://github.com/aler9/rtsp-simple-server",
+    },
     /* changedetection.io */
     {
       matchDatasources: ["docker"],
