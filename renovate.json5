@@ -238,6 +238,12 @@
       versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.?(?<build>\\d+)?$",
       customChangelogUrl: "https://github.com/dgtlmoon/changedetection.io",
     },
+    /* watchtower */
+    {
+      matchDatasources: ["docker"],
+      matchPackagePatterns: ["containrrr\\/watchtower"],
+      customChangelogUrl: "https://github.com/containrrr/watchtower",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
