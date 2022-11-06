@@ -31,12 +31,12 @@
       Tomorrow
     {% elif value.daysTo < 4 %}
       This Thursday
-    {% elif (value.daysTo >= 4) and (value.daysTo <= 11)  %}
+    {% elif (value.daysTo >= 4) and (value.daysTo < 11)  %}
       Next Thursday
-    {% elif (value.daysTo > 11) and (value.daysTo <= 14)  %}
+    {% elif (value.daysTo >= 11) and (value.daysTo <= 14)  %}
       In 2 Weeks
     {% else %}
-      {{ value.date }}
+      {{ value.date }} ({{value.daysTo}} days)
     {% endif %}
 -
   <<: *waste_collection_schedule
