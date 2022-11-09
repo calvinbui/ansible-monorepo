@@ -1,4 +1,4 @@
-ansible==6.5.0
+ansible==6.6.0
 ansible-compat==2.2.4
 ansible-core==2.14.0
 ansible-lint==6.8.6
