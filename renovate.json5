@@ -244,6 +244,13 @@
       matchPackagePatterns: ["containrrr\\/watchtower"],
       customChangelogUrl: "https://github.com/containrrr/watchtower",
     },
+    /* cadvisor */
+    {
+      matchDatasources: ["docker"],
+      matchPackagePatterns: [".*\\/cadvisor"],
+      customChangelogUrl: "https://github.com/google/cadvisor",
+    },
+
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
