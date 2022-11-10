@@ -219,9 +219,6 @@ cards:
             return entity.attributes.forecast.map((entry) => {
               var date_period = new Date(entry.period_end);
 
-              // add on the sunrise minutes too offset the graph correctly
-              date_period.setTime(date_period.getTime() + sunrise_minutes)
-
               return [date_period, Math.min(entry.pv_estimate, 10)];
             });
   -
