@@ -17,6 +17,7 @@ grid_power_import_monthly:
   unique_id: utility_meter_monthly_grid_power_import
   source: sensor.grid_power_import_kwh
   name: Electricity Meter - Monthly Import
+  cycle: monthly
   tariffs:
     - offpeak
     - shoulder
@@ -35,6 +36,7 @@ grid_power_export_monthly:
   unique_id: utility_meter_monthly_grid_power_export
   source: sensor.grid_power_export_kwh
   name: Electricity Meter - Monthly Export
+  cycle: monthly
   tariffs:
     - anytime
 
@@ -53,6 +55,7 @@ solar_self_consumption_monthly:
   unique_id: utility_meter_monthly_solar_self_consumption
   source: sensor.solar_self_consumption_kwh
   name: Electricity Meter - Monthly Solar Self-Consumption
+  cycle: monthly
   tariffs:
     - offpeak
     - shoulder
