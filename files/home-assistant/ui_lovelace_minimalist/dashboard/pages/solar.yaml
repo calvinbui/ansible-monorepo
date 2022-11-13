@@ -349,7 +349,7 @@ cards:
       -
         type: custom:multiple-entity-row
         entity: sensor.electricity_costs_average_per_day
-        name: Average Cost Per Day ($)
+        name: Cost Per Day ($)
         icon: mdi:currency-usd
         unit: false
         show_state: true
@@ -453,7 +453,7 @@ cards:
       -
         type: custom:multiple-entity-row
         entity: sensor.electricity_costs_today_total
-        name: Yield (kWh)
+        name: Yield
         icon: mdi:solar-panel-large
         show_state: false
         style: *row_style
@@ -476,7 +476,7 @@ cards:
       -
         type: custom:multiple-entity-row
         entity: sensor.electricity_costs_today_total
-        name: Export (kWh)
+        name: Export
         icon: mdi:transmission-tower-import
         show_state: false
         style: *row_style
@@ -500,7 +500,7 @@ cards:
       -
         type: custom:multiple-entity-row
         entity: sensor.electricity_costs_today_total
-        name: Used (kWh)
+        name: Used
         icon: mdi:sun-wireless
         show_state: false
         style: *row_style
@@ -530,5 +530,5 @@ cards:
       -
         type: custom:multiple-entity-row
         entity: sensor.solar_breakeven_date
-        name: Forecasted Breakeven Date
+        name: Breakeven Date
         style: *row_style
