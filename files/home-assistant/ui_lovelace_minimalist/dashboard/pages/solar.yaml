@@ -230,40 +230,54 @@ cards:
       -
         type: custom:multiple-entity-row
         entity: sensor.electricity_costs_today_total
-        name: Usage
+        name: Usage (kWh)
         icon: mdi:home-lightning-bolt
         show_state: false
+        style: &row_style
+          hui-generic-entity-row:
+            $: |
+              .info.pointer.text-content {
+                margin-left: 0px !important;
+              }
         entities:
           - entity: sensor.electricity_usage_today_total
             name: Today
             unit: false
             format: precision2
+            styles: &entity_style
+              width: 45px
           - entity: sensor.electricity_usage_yesterday_total
             name: Yesterday
             unit: false
             format: precision2
+            styles: *entity_style
           - entity: sensor.electricity_usage_month_total
             name: Month
             unit: false
             format: precision2
+            styles: *entity_style
       -
         type: custom:multiple-entity-row
         entity: sensor.electricity_costs_today_total
         name: Cost ($)
         icon: mdi:currency-usd
         show_state: false
+        style: *row_style
         entities:
           - entity: sensor.electricity_costs_today_total
             name: Today
             format: precision2
+            styles: *entity_style
             unit: false
           - entity: sensor.electricity_costs_yesterday_total
             name: Yesterday
             format: precision2
+            styles: *entity_style
             unit: false
           - entity: sensor.electricity_costs_month_total
             name: Month
             format: precision2
+            styles: *entity_style
             unit: false
       -
         type: custom:multiple-entity-row
@@ -271,18 +285,22 @@ cards:
         name: Grid ($)
         icon: mdi:transmission-tower-export
         show_state: false
+        style: *row_style
         entities:
           - entity: sensor.electricity_costs_today_import
             name: Today
             format: precision2
+            styles: *entity_style
             unit: false
           - entity: sensor.electricity_costs_yesterday_import
             name: Yesterday
             format: precision2
+            styles: *entity_style
             unit: false
           - entity: sensor.electricity_costs_month_import
             name: Month
             format: precision2
+            styles: *entity_style
             unit: false
       -
         type: custom:multiple-entity-row
@@ -290,18 +308,22 @@ cards:
         name: Solar ($)
         icon: mdi:transmission-tower-import
         show_state: false
+        style: *row_style
         entities:
           - entity: sensor.electricity_costs_today_export
             name: Today
             format: invert
+            styles: *entity_style
             unit: false
           - entity: sensor.electricity_costs_yesterday_export
             name: Yesterday
             format: invert
+            styles: *entity_style
             unit: false
           - entity: sensor.electricity_costs_month_export
             name: Month
             format: invert
+            styles: *entity_style
             unit: false
 
       # Bill and Forecasts
@@ -315,6 +337,7 @@ cards:
         entity: sensor.tou_period
         name: Current Period
         show_state: true
+        style: *row_style
       -
         type: custom:multiple-entity-row
         entity: sensor.electricity_costs_currently
@@ -322,6 +345,7 @@ cards:
         icon: mdi:currency-usd
         unit: false
         show_state: true
+        style: *row_style
       -
         type: custom:multiple-entity-row
         entity: sensor.electricity_costs_average_per_day
@@ -329,6 +353,7 @@ cards:
         icon: mdi:currency-usd
         unit: false
         show_state: true
+        style: *row_style
       -
         type: custom:multiple-entity-row
         entity: sensor.electricity_costs_bill_forecast
@@ -336,6 +361,7 @@ cards:
         icon: mdi:chart-line
         unit: false
         show_state: true
+        style: *row_style
 
   # Usage
   -
@@ -346,65 +372,77 @@ cards:
       -
         type: custom:multiple-entity-row
         entity: sensor.grid_power_import_daily_peak
-        name: Peak
+        name: Peak (kWh)
         icon: mdi:transmission-tower-export
         show_state: false
+        style: *row_style
         entities:
           - entity: sensor.grid_power_import_daily_peak
             name: Today
             unit: false
             format: precision2
+            styles: *entity_style
           - entity: sensor.grid_power_import_daily_peak
             attribute: last_period
             name: Yesterday
             unit: false
             format: precision2
+            styles: *entity_style
           - entity: sensor.grid_power_import_monthly_peak
             name: Month
             unit: false
             format: precision2
+            styles: *entity_style
 
       -
         type: custom:multiple-entity-row
         entity: sensor.grid_power_import_daily_peak
-        name: Off-Peak
+        name: Off-Peak (kWh)
         icon: mdi:transmission-tower-export
         show_state: false
+        style: *row_style
         entities:
           - entity: sensor.grid_power_import_daily_offpeak
             name: Today
             unit: false
             format: precision2
+            styles: *entity_style
           - entity: sensor.grid_power_import_daily_offpeak
             attribute: last_period
             name: Yesterday
             unit: false
             format: precision2
+            styles: *entity_style
           - entity: sensor.grid_power_import_monthly_offpeak
             name: Month
             unit: false
             format: precision2
+            styles: *entity_style
 
       -
         type: custom:multiple-entity-row
         entity: sensor.grid_power_import_daily_peak
-        name: Shoulder
+        name: Shoulder (kWh)
         icon: mdi:transmission-tower-export
         show_state: false
+        style: *row_style
         entities:
           - entity: sensor.grid_power_import_daily_shoulder
             name: Today
             unit: false
             format: precision2
+            styles: *entity_style
           - entity: sensor.grid_power_import_daily_shoulder
             attribute: last_period
             name: Yesterday
             unit: false
             format: precision2
+            styles: *entity_style
           - entity: sensor.grid_power_import_monthly_shoulder
             name: Month
             unit: false
             format: precision2
+            styles: *entity_style
 
   # Solar
   -
@@ -415,68 +453,82 @@ cards:
       -
         type: custom:multiple-entity-row
         entity: sensor.electricity_costs_today_total
-        name: Generated
+        name: Yield (kWh)
         icon: mdi:solar-panel-large
         show_state: false
+        style: *row_style
         entities:
           - entity: sensor.solar_generated_today
             name: Today
             unit: false
             format: precision2
+            styles: *entity_style
           - entity: sensor.solar_generated_yesterday
             name: Yesterday
             unit: false
             format: precision2
+            styles: *entity_style
           - entity: sensor.solar_generated_month
             name: Month
             unit: false
             format: precision2
+            styles: *entity_style
       -
         type: custom:multiple-entity-row
         entity: sensor.electricity_costs_today_total
-        name: Exported
+        name: Export (kWh)
         icon: mdi:transmission-tower-import
         show_state: false
+        style: *row_style
         entities:
           - entity: sensor.grid_power_export_daily_anytime
             name: Today
             unit: false
             format: precision2
+            styles: *entity_style
           - entity: sensor.grid_power_export_daily_anytime
             attribute: last_period
             name: Yesterday
             unit: false
             format: precision2
+            styles: *entity_style
           - entity: sensor.grid_power_export_monthly_anytime
             name: Month
             unit: false
             format: precision2
+            styles: *entity_style
       -
         type: custom:multiple-entity-row
         entity: sensor.electricity_costs_today_total
-        name: Used
+        name: Used (kWh)
         icon: mdi:sun-wireless
         show_state: false
+        style: *row_style
         entities:
           - entity: sensor.electricity_usage_today_solar
             name: Today
             unit: false
             format: precision2
+            styles: *entity_style
           - entity: sensor.electricity_usage_yesterday_solar
             name: Yesterday
             unit: false
             format: precision2
+            styles: *entity_style
           - entity: sensor.electricity_usage_month_solar
             name: Month
             unit: false
             format: precision2
+            styles: *entity_style
       -
         type: custom:multiple-entity-row
         entity: input_number.solar_net_cost
         name: Solar Net Cost ($)
         unit: false
         format: precision2
+        style: *row_style
       -
         type: custom:multiple-entity-row
         entity: sensor.solar_breakeven_date
-        name: Breakeven Date
+        name: Forecasted Breakeven Date
+        style: *row_style
