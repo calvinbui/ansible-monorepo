@@ -250,7 +250,12 @@
       matchPackagePatterns: [".*\\/cadvisor"],
       customChangelogUrl: "https://github.com/google/cadvisor",
     },
-
+    /* psitransfer */
+    {
+      matchDatasources: ["docker"],
+      matchPackagePatterns: ["psitrax\\/psitransfer"],
+      customChangelogUrl: "https://github.com/psi-4ward/psitransfer",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
