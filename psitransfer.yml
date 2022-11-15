@@ -20,7 +20,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: psitrax/psitransfer:v2.1.1
+        image: psitrax/psitransfer:v2.1.2
         env:
           PSITRANSFER_ADMIN_PASS: !vault |
             $ANSIBLE_VAULT;1.1;AES256
