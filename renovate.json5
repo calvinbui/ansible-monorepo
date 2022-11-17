@@ -7,6 +7,10 @@
     fileMatch: ["^.*\\.ya?ml$"],
   },
 
+  python: {
+    enabled: false,
+  }
+
   timezone: "Australia/Sydney",
 
   schedule: [
