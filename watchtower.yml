@@ -15,10 +15,10 @@
         image: containrrr/watchtower:1.5.1
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock:ro
+          - /etc/localtime:/etc/localtime:ro
         env:
           TZ: "{{ common_timezone }}"
-          WATCHTOWER_SCHEDULE: "0 30 12 * * *"  # 12:30:00 AM each day
-          WATCHTOWER_POLL_INTERVAL: "12960"
+          WATCHTOWER_SCHEDULE: "0 30 17 * * *"
           WATCHTOWER_CLEANUP: "true"
           WATCHTOWER_REMOVE_VOLUMES: "true"
           # WATCHTOWER_NOTIFICATIONS: "slack"
