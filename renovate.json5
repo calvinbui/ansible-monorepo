@@ -9,7 +9,7 @@
 
   python: {
     enabled: false,
-  }
+  },
 
   timezone: "Australia/Sydney",
 
