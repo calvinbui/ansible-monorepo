@@ -16,6 +16,7 @@ layout:
   mediaquery:
     "(max-width: 800px)":
       grid-template-columns: 100%
+      grid-template-rows: fit-content(100%)
       grid-template-areas: |
         "flow"
         "graph"
