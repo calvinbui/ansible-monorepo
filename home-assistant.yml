@@ -230,6 +230,7 @@
                 6162
               LANGUAGE: "{{ common_language_iso_639 }}"
               COUNTRY: "{{ common_country_iso_3166 }}"
+              TRUSTED_DEVICE_NAME: somerandomthing
             volumes:
               - "{{ home_assistant_addons_dir }}/eufy-security-ws:/data"
 
