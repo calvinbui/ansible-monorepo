@@ -1,3 +1,6 @@
+---
+
+# Make sure every device is using this theme for the dashboards
 - id: "set_theme_on_startup"
   alias: "Theme - Set theme on startup"
   trigger:

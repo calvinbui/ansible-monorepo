@@ -1,3 +1,6 @@
+---
+
+# https://github.com/bieniu/ha-shellies-discovery-gen2#configuration
 - id: shellies_announce_gen2
   alias: Shellies Announce Gen2
   trigger:

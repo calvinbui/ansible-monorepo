@@ -1,3 +1,6 @@
+---
+
+# https://github.com/bieniu/ha-shellies-discovery#minimal-configuration
 - id: shellies_announce
   alias: Shellies Announce
   trigger:

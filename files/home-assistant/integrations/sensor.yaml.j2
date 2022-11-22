@@ -2,19 +2,14 @@
 
 {%- raw %}
 
-#
-# Sun2 Sensor
 # https://github.com/pnbruckner/ha-sun2
-#
 - platform: sun2
   monitored_conditions:
     - sunrise
     - sunset
 
-#
-# Waste Collection Calendar
+
 # https://github.com/mampfes/hacs_waste_collection_schedule
-#
 -
   &waste_collection_schedule
   platform: waste_collection_schedule
@@ -56,10 +51,9 @@
   source_index: 3
   types:
     - Soft Plastics
-#
-# kW to kWh
+
+# converts kW to kWh for the following solar/grid import/export sensors
 # https://www.home-assistant.io/integrations/integration/
-#
 - platform: integration
   name: Grid Power Import
   unique_id: grid_power_import_kwh

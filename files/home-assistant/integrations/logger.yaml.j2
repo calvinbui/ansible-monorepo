@@ -4,7 +4,8 @@
 
 default: warning
 logs:
+  # Python - drop to info
   homeassistant.components.python_script: info
 
-  # too many errors when electric blanket are off
+  # Localtuya - too many errors when electric blanket are off
   custom_components.localtuya.common: fatal
