@@ -260,6 +260,12 @@
       matchPackagePatterns: ["psitrax\\/psitransfer"],
       customChangelogUrl: "https://github.com/psi-4ward/psitransfer",
     },
+    /* ldap-user-manager */
+    {
+      matchDatasources: ["docker"],
+      matchPackagePatterns: ["wheelybird\\/ldap-user-manager"],
+      customChangelogUrl: "https://github.com/wheelybird/ldap-user-manager",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
