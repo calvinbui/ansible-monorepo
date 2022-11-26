@@ -247,7 +247,7 @@
             name: docker_container
           vars:
             name: "eufy-security-ws"
-            image: bropat/eufy-security-ws:1.1.0
+            image: bropat/eufy-security-ws:1.2.0
             env:
               USERNAME: "{{ application }}{{ common_email_to }}"
               PASSWORD: !vault |
