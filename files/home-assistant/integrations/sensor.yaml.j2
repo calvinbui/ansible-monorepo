@@ -13,44 +13,54 @@
 -
   &waste_collection_schedule
   platform: waste_collection_schedule
-  name: General Waste
+  name: Waste Collection Schedule - Waste
   source_index: 0
-  types:
-    - General Waste
+  types: [Waste]
   details_format: upcoming
   add_days_to: true
   value_template: >-
+    {% set today = now() %}
+
     {% if value.daysTo == 0 %}
       Today
+
     {% elif value.daysTo == 1 %}
       Tomorrow
-    {% elif value.daysTo < 4 %}
-      This Thursday
-    {% elif (value.daysTo >= 4) and (value.daysTo < 11)  %}
-      Next Thursday
-    {% elif (value.daysTo >= 11) and (value.daysTo <= 14)  %}
-      In 2 Weeks
+
+    {% elif value.date.isocalendar().week == today.isocalendar().week %}
+      {{ value.date.strftime("%A")}}
+
+    {% elif value.date.isocalendar().week - today.isocalendar().week == 1 %}
+      Next {{ value.date.strftime("%A")}}
+
+    {% elif value.date.isocalendar().week - today.isocalendar().week == 2 %}
+      In 2 weeks
+
     {% else %}
       {{ value.date }} ({{value.daysTo}} days)
+
     {% endif %}
+
 -
   <<: *waste_collection_schedule
-  name: Recycling
+  name: Waste Collection Schedule - Recycling
+  source_index: 0
+  types: [Recycling]
+-
+  <<: *waste_collection_schedule
+  name: Waste Collection Schedule - Organics
+  source_index: 0
+  types: [Organics]
+-
+  <<: *waste_collection_schedule
+  name: Waste Collection Schedule - Bulk Household
+  source_index: 0
+  types: [Bulk Household]
+-
+  <<: *waste_collection_schedule
+  name: Waste Collection Schedule - Soft Plastics
   source_index: 1
-  types:
-    - Recycling
--
-  <<: *waste_collection_schedule
-  name: Green Waste
-  source_index: 2
-  types:
-    - Green Waste
--
-  <<: *waste_collection_schedule
-  name: Soft Plastics
-  source_index: 3
-  types:
-    - Soft Plastics
+  types: [Soft Plastics]
 
 # converts kW to kWh for the following solar/grid import/export sensors
 # https://www.home-assistant.io/integrations/integration/

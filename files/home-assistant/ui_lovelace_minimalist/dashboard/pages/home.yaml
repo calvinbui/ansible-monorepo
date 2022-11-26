@@ -44,9 +44,9 @@ cards:
       -
         type: custom:button-card
         template: custom_card_calvin_waste
-        entity: sensor.general_waste
+        entity: sensor.waste_collection_schedule_waste
         variables:
-          ulm_card_generic_swap_name: General Waste
+          ulm_card_generic_swap_name: Waste
           ulm_card_generic_swap_icon: "mdi:delete"
         card_mod:
           style: |
@@ -56,7 +56,19 @@ cards:
       -
         type: custom:button-card
         template: custom_card_calvin_waste
-        entity: sensor.recycling
+        entity: sensor.waste_collection_schedule_organics
+        variables:
+          ulm_card_generic_swap_name: Organics
+          ulm_card_generic_swap_icon: "mdi:leaf"
+        card_mod:
+          style: |
+            ha-card {
+              --card-background-color: rgba(var(--color-green),0.1) !important;
+            }
+      -
+        type: custom:button-card
+        template: custom_card_calvin_waste
+        entity: sensor.waste_collection_schedule_recycling
         variables:
           ulm_card_generic_swap_name: Recycling
           ulm_card_generic_swap_icon: "mdi:recycle"
@@ -68,19 +80,19 @@ cards:
       -
         type: custom:button-card
         template: custom_card_calvin_waste
-        entity: sensor.green_waste
+        entity: sensor.waste_collection_schedule_bulk_household
         variables:
-          ulm_card_generic_swap_name: Greens
-          ulm_card_generic_swap_icon: "mdi:leaf"
+          ulm_card_generic_swap_name: Bulk Household
+          ulm_card_generic_swap_icon: "mdi:sofa"
         card_mod:
           style: |
             ha-card {
-              --card-background-color: rgba(var(--color-green),0.1) !important;
+              --card-background-color: rgba(var(--color-purple),0.1) !important;
             }
       -
         type: custom:button-card
         template: custom_card_calvin_waste
-        entity: sensor.soft_plastics
+        entity: sensor.waste_collection_schedule_soft_plastics
         variables:
           ulm_card_generic_swap_name: Soft Plastics
           ulm_card_generic_swap_icon: "mdi:shopping"
