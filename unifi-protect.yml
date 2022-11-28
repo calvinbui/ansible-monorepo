@@ -10,7 +10,7 @@
   handlers:
     - name: Restart
       community.docker.docker_container:
-        name: "{{ application }}"
+        name: "{{ application }}-proxy"
         restart: true
 
   tasks:
