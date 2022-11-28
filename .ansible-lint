@@ -1,5 +1,4 @@
 skip_list:
-  - empty-string-compare
   - git-latest
   - jinja[invalid]
   - jinja[spacing]
