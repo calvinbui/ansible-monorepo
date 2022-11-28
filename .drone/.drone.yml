@@ -11,7 +11,7 @@ trigger:
 volumes:
   - name: ssh
     host:
-      path: /home/calvin/.ssh
+      path: /apps/drone/ssh
 
 steps:
   - name: ansible-lint

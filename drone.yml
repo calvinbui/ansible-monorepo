@@ -30,6 +30,40 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
+      tags:
+        - ssh
+
+    - name: Create SSH folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}/ssh"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0700"
+      tags:
+        - ssh
+
+    - name: Create SSH key
+      community.crypto.openssh_keypair:
+        path: "{{ config_directory }}/ssh/id_ed25519"
+        type: ed25519
+      register: _drone_ssh_key
+      tags:
+        - ssh
+
+    - name: Set SSH variable
+      ansible.builtin.set_fact:
+        drone_ssh_public_key: "{{ _drone_ssh_key.public_key }}"
+      tags:
+        - ssh
+
+    - name: Allow SSH
+      ansible.posix.authorized_key:
+        user: "{{ common_user }}"
+        state: present
+        key: "{{ drone_ssh_public_key }}"
+      tags:
+        - ssh
 
     - name: Create server container
       ansible.builtin.include_role:
@@ -135,3 +169,25 @@
         state: present
         force_source: "{{ true if _drone_dockerfiles_copy.changed else false }}"
       loop: "{{ _drone_dockerfiles_location.files }}"
+
+- hosts: nvr
+  gather_facts: false
+  tasks:
+    - name: Set authorized keys
+      ansible.posix.authorized_key:
+        user: root
+        state: present
+        key: "{{ hostvars['homelab.' + common_local_tld]['drone_ssh_public_key'] }}"
+      tags:
+        - ssh
+
+- hosts: octopi
+  gather_facts: false
+  tasks:
+    - name: Set authorized keys
+      ansible.posix.authorized_key:
+        user: pi
+        state: present
+        key: "{{ hostvars['homelab.' + common_local_tld]['drone_ssh_public_key'] }}"
+      tags:
+        - ssh
