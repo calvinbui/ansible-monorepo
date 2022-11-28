@@ -67,9 +67,21 @@
 
           account default : alerts
 
-          root: homelab-root-user{{ common_email_to }}
-          default: homelab-root-user{{ common_email_to }}
+          aliases        /etc/aliases
+      notify: Restart
 
+    - name: Configure aliases
+      ansible.builtin.copy:
+        dest: /etc/aliases
+        owner: root
+        group: msmtp
+        mode: "600"
+        content: |
+          # Send root to
+          root: homelab-root-user{{ common_email_to }}
+
+          # Send everything else to
+          default: homelab{{ common_email_to }}
       notify: Restart
 
     - name: Configure ZFS ZED
