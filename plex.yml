@@ -39,7 +39,8 @@
           - "{{ config_directory }}:/config"
           - "{{ common_directory_movies }}:/data/movies"
           - "{{ common_directory_tv }}:/data/tv"
-          - /tmp/plex:/transcode
+        tmpfs:
+          - /transcode:rw,mode=1777
         device_requests:
           - driver: nvidia
             count: -1
