@@ -24,6 +24,7 @@ steps:
 
   - name: ansible-playbook
     image: calvinbui/ansible-runner:localhost
+    retries: 2
     environment:
       ANSIBLE_VAULT_PASSWORD:
         from_secret: ansible_vault_password
