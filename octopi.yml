@@ -51,12 +51,11 @@
         - "{{ common_user }}"
 
     - name: No password sudo
-      ansible.builtin.lineinfile:
-        path: /etc/sudoers
-        state: present
-        regexp: "^{{ common_user }}"
-        line: "{{ common_user }} ALL=(ALL) NOPASSWD: ALL"
-        validate: "visudo -cf %s"
+      community.general.sudoers:
+        name: "{{ common_user }}"
+        user: "{{ common_user }}"
+        commands: ALL
+        nopassword: true
 
     - name: Install apt packages
       ansible.builtin.apt:

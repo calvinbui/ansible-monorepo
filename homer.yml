@@ -8,8 +8,17 @@
     docker_network: "{{ networks.pub }}"
 
   handlers:
-    - name: Restart
-      ansible.builtin.command: docker restart "{{ application }}" "{{ application }}-service-discovery"
+    - name: "Restart {{ application }}"
+      community.docker.docker_container:
+        name: "{{ application }}"
+        restart: true
+      listen: Restart
+
+    - name: "Restart {{ application }}-service-discovery"
+      community.docker.docker_container:
+        name: "{{ application }}-service-discovery"
+        restart: true
+      listen: Restart
 
   tasks:
     - name: Create config folder

@@ -10,7 +10,7 @@ inhibit_rules:
     source_matchers:
       - alertname =~ "(HTTP Connection|Notification Failing|Clock Sync)"
     equal:
-      - 'alertstate'
+      - alertstate
 
 templates:
   - '/etc/alertmanager/template/*.tmpl'

@@ -21,12 +21,8 @@
         ansible_ssh_pipelining: false
 
     - name: Set hostname
-      ansible.builtin.copy:
-        content: "homelab.{{ common_local_tld }}"
-        dest: /etc/hostname
-        owner: "{{ common_root_id }}"
-        group: "{{ common_root_group }}"
-        mode: "0644"
+      ansible.builtin.hostname:
+        name: "homelab.{{ common_local_tld }}"
 
     - name: Update apt cache
       ansible.builtin.apt:
@@ -90,16 +86,11 @@
         - /etc/update-motd.d/10-help-text
 
     - name: No password sudo
-      ansible.builtin.lineinfile:
-        path: "/etc/sudoers.d/{{ common_user }}"
-        create: true
-        state: present
-        regexp: "^{{ common_user }}"
-        line: "{{ common_user }} ALL=(ALL) NOPASSWD: ALL"
-        validate: "visudo -cf %s"
-        owner: "{{ common_root_id }}"
-        group: "{{ common_root_group }}"
-        mode: "0640"
+      community.general.sudoers:
+        name: "{{ common_user }}"
+        user: "{{ common_user }}"
+        commands: ALL
+        nopassword: true
 
     - name: Install apt packages
       ansible.builtin.apt:

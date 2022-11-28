@@ -9,7 +9,9 @@
 
   handlers:
     - name: Restart
-      ansible.builtin.command: docker restart "{{ application }}"
+      community.docker.docker_container:
+        name: "{{ application }}"
+        restart: true
 
   tasks:
     - name: Create config folder

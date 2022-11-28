@@ -29,7 +29,9 @@
 
   handlers:
     - name: Restart minio-mc
-      ansible.builtin.command: docker restart "{{ application }}-mc"
+      community.docker.docker_container:
+        name: "{{ application }}-mc"
+        restart: true
 
   tasks:
     - name: Create config folder
