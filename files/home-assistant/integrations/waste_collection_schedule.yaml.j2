@@ -12,10 +12,7 @@ sources:
       street_name: {{ home_assistant_integrations.waste_collection_schedule.street_name }}
       street_number: {{ home_assistant_integrations.waste_collection_schedule.street_number }}
   -
-    name: static
+    name: recyclesmart_com
     args:
-      type: Soft Plastics
-      frequency: DAILY
-      interval: 28
-      start: '2022-08-11'
-      until: '2027-01-01'
+      email: "{{ home_assistant_integrations.waste_collection_schedule.recyclesmart_email }}"
+      password: "{{ home_assistant_integrations.waste_collection_schedule.recyclesmart_password }}"
