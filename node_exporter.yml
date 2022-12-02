@@ -68,9 +68,6 @@
           name: apt
           job: "{{ _scripts_dir.path }}/apt_info.py"
         -
-          name: directory-size
-          job: "{{ _scripts_dir.path }}/directory-size.sh /apps"
-        -
           name: ipmitool
           job: "ipmitool sensor | {{ _scripts_dir.path }}/ipmitool"
 
