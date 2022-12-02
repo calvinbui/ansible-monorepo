@@ -240,21 +240,6 @@
             mode: "0640"
           notify: Restart auditd
 
-    # https://cisofy.com/lynis/controls/HRDN-7230/
-    - name: Install malware scanners
-      ansible.builtin.apt:
-        name:
-          - rkhunter
-          - chkrootkit
-        state: present
-
-    # https://cisofy.com/lynis/controls/FINT-4350/
-    # https://help.ubuntu.com/community/FileIntegrityAIDE#Resources
-    - name: Install file integrity tool
-      ansible.builtin.apt:
-        name: aide
-        state: present
-
     # https://cisofy.com/lynis/controls/AUTH-9282/
     - name: Set password expirations
       ansible.builtin.user:
