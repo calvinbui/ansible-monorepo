@@ -16,7 +16,7 @@ else
   done
 fi
 
-if [[ "${#playbooks[@]}" -eq 0 ]]; then
+if [[ "${#allplaybooks[@]}" -eq 0 ]]; then
   echo "--- No playbooks changed"
   exit 0
 fi
