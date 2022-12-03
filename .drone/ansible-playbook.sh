@@ -3,9 +3,17 @@
 set -eo pipefail
 
 if [[ -z $playbooks ]]; then
-  mapfile -t playbooks < <(git show --name-only HEAD | grep -E "^(\w|-|_)+.y*ml")
+  mapfile -t allplaybooks < <(git show --name-only HEAD | grep -E "^(\w|-|_)+.y*ml")
 else
   IFS="," read -r -a playbooks <<< "${playbooks[@]}"
+  allplaybooks=( )
+  for playbook in "${playbooks[@]}"; do
+    if [[ $playbook != *.yml ]]; then
+      playbook="${playbook}.yml"
+    fi
+
+    allplaybooks+=( "$playbook" )
+  done
 fi
 
 if [[ "${#playbooks[@]}" -eq 0 ]]; then
@@ -18,12 +26,6 @@ if [ ! -f ~/.vault_pass.txt ]; then
   echo "$ANSIBLE_VAULT_PASSWORD" > ~/.vault_pass.txt
 fi
 
-for playbook in "${playbooks[@]}"; do
-  # if provided without the extension
-  if [[ $playbook != *.yml ]]; then
-    playbook="${playbook}.yml"
-  fi
-
-  echo "--- $playbook"
-  ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook "$playbook"
-done
+# shellcheck disable=SC2068
+# i want it to split
+ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook ${allplaybooks[@]}
