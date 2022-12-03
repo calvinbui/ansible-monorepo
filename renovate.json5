@@ -272,6 +272,12 @@
       matchPackagePatterns: [".*\\/node(-|_)exporter"],
       customChangelogUrl: "https://github.com/prometheus/node_exporter",
     },
+    /* blackbox_exporter */
+    {
+      matchDatasources: ["docker"],
+      matchPackagePatterns: [".*\\/blackbox(-|_)exporter"],
+      customChangelogUrl: "https://github.com/prometheus/blackbox_exporter",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
