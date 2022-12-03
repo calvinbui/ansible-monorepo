@@ -5,7 +5,7 @@ set -eo pipefail
 if [[ -z $playbooks ]]; then
   mapfile -t playbooks < <(git show --name-only HEAD | grep -E "^(\w|-|_)+.y*ml")
 else
-  IFS=" " read -r -a playbooks <<< "${playbooks[@]}"
+  IFS="," read -r -a playbooks <<< "${playbooks[@]}"
 fi
 
 if [[ "${#playbooks[@]}" -eq 0 ]]; then
