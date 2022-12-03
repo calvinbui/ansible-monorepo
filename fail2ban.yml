@@ -13,6 +13,8 @@
       community.docker.docker_container:
         name: "{{ application }}"
         restart: true
+        comparisons:
+          '*': ignore
 
   tasks:
     - name: Update apt cache

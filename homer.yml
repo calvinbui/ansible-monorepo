@@ -9,16 +9,20 @@
 
   handlers:
     - name: "Restart {{ application }}"
+      listen: Restart
       community.docker.docker_container:
         name: "{{ application }}"
         restart: true
-      listen: Restart
+        comparisons:
+          '*': ignore
 
     - name: "Restart {{ application }}-service-discovery"
+      listen: Restart
       community.docker.docker_container:
         name: "{{ application }}-service-discovery"
         restart: true
-      listen: Restart
+        comparisons:
+          '*': ignore
 
   tasks:
     - name: Create config folder
