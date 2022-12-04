@@ -7,6 +7,17 @@
 
     docker_network: "{{ networks.pub }}"
 
+    gitea_server: "gitea.{{ common_tld }}"
+    gitea_username: calvinbui
+    gitea_password: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      35643738306162643030316465323039393934363263303732646261656466613563653338323566
+      3638663435643935366562633164323730613664656337310a353037373639656664326266636632
+      66353735303562336466663035626535393130336339313935656338613932346434353962613065
+      3961646432306630350a323534306664313338646632653637653139366465366436313830323036
+      38626362336135323534626132616666656534326334313463343962396131356261346532373037
+      3133306163306165663264343737633035376364313137366263
+
   handlers:
     - name: Restart
       community.docker.docker_container:
@@ -22,6 +33,24 @@
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
         mode: "0771"
+
+    - name: Create repos folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}/repos"
+        state: directory
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+
+    - name: Clone repos
+      ansible.builtin.git:
+        clone: true
+        repo: "https://{{ gitea_username }}:{{ gitea_password }}@{{ gitea_server }}/{{ gitea_username }}/{{ item }}.git"
+        dest: "{{ config_directory }}/repos/{{ item }}"
+        update: false
+      loop:
+        - ansible-monorepo
+        - calvin.me
 
     - name: Create container
       ansible.builtin.include_role:
@@ -49,6 +78,7 @@
         volumes:
           - "{{ config_directory }}:/config"
           - "/apps/home-assistant/config/:/home-assistant"
+          - "{{ config_directory }}/repos:/repos"
         traefik:
           - port: 8443
         homer:
