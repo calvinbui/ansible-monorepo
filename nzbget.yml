@@ -192,34 +192,6 @@
           Server6.IpVersion: 'ipv4'
           Server6.Notes: ''
 
-          Server7.Name: 'secure.news.thecubenet.com'
-          Server7.Level: '0'
-          Server7.Optional: 'no'
-          Server7.Group: '3'
-          Server7.Host: 'secure.news.thecubenet.com'
-          Server7.Port: '563'
-          Server7.Username: !vault |
-            $ANSIBLE_VAULT;1.1;AES256
-            64366463653637653066646261623065393463336139666464396263633566653864613161623939
-            3133623430306462333334373532386366636438353861650a346632373637313833356563623334
-            31333839343331396231643862643439636630326465363261316235393733633164656237393663
-            3431633662643761370a313738633965326162643132623231313730313431663434303264656633
-            61613036366533333730333435386265313437353764303462633465636262663664
-          Server7.Password: !vault |
-            $ANSIBLE_VAULT;1.1;AES256
-            30396565356235636465666365646332326638633336393362356439333265616363643137656132
-            3135323132663332653431326163656137633333613936390a623330613139366536666336623736
-            37376131376532633737393532646435363935393930663765373065353330366534643536356463
-            3432313035656230340a353363356538333935383637613633376663666430326363633464383064
-            3533
-          Server7.JoinGroup: 'no'
-          Server7.Encryption: 'yes'
-          Server7.Cipher: 'AES128-SHA'
-          Server7.Connections: '50'
-          Server7.Retention: '4000'
-          Server7.IpVersion: 'ipv4'
-          Server7.Notes: 'Expires 30th December 2022'
-
           # SECURITY
           ControlUsername: ''
           ControlPassword: ''
@@ -246,7 +218,6 @@
           Server4.Active: 'yes'
           Server5.Active: 'yes'
           Server6.Active: 'yes'
-          Server7.Active: 'yes'
 
           # INCOMING NZBS
           DupeCheck: 'no'
