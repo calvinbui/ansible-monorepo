@@ -23,7 +23,7 @@ layout:
 cards:
   -
     &indoor_camera_card
-    entity: camera.camera_downstairs_common_high
+    entity: camera.downstairs_common
     show_state: false
     show_name: false
     camera_view: live
@@ -36,21 +36,21 @@ cards:
       grid-area: bigcamera1
   -
     <<: *indoor_camera_card
-    entity: camera.foyer_high
+    entity: camera.foyer
     view_layout:
       grid-area: bigcamera2
   -
     <<: *indoor_camera_card
-    entity: camera.front_bedrooms_high
+    entity: camera.front_bedrooms
     view_layout:
       grid-area: smallcamera1
   -
     <<: *indoor_camera_card
-    entity: camera.upstairs_hallway_high
+    entity: camera.upstairs_hallway
     view_layout:
       grid-area: smallcamera2
   -
     <<: *indoor_camera_card
-    entity: camera.garage_high
+    entity: camera.garage
     view_layout:
       grid-area: smallcamera3

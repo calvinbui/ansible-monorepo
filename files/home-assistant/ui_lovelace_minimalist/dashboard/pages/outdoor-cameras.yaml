@@ -14,16 +14,16 @@ cards:
     &outdoor_camera_card
     type: custom:button-card
     template: custom_card_camera
-    entity: camera.camera_driveway_high
     show_icon: false
     variables:
       ulm_custom_card_camera_title: false
+    entity: camera.driveway
   -
     <<: *outdoor_camera_card
-    entity: camera.rear_balcony_high
+    entity: camera.rear_balcony
   -
     <<: *outdoor_camera_card
-    entity: camera.camera_outdoor_side
+    entity: camera.outdoor_side
   -
     <<: *outdoor_camera_card
-    entity: camera.camera_backyard
+    entity: camera.backyard
