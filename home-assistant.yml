@@ -104,6 +104,14 @@
         restart: true
         comparisons:
           '*': ignore
+
+    - name: Restart go2rtc
+      community.docker.docker_container:
+        name: "{{ application }}-go2rtc"
+        restart: true
+        comparisons:
+          '*': ignore
+
   tasks:
     - name: Create config folder
       ansible.builtin.file:
@@ -291,6 +299,31 @@
               RTSP_PROTOCOLS: tcp
               RTSP_PATHS_ALL_RUNONDEMAND: "echo 'incoming'"
               RTSP_PATHS_ALL_RUNONDEMANDRESTART: "yes"
+
+        - name: Create go2rtc config file
+          ansible.builtin.copy:
+            dest: "{{ home_assistant_addons_dir }}/go2rtc.yaml"
+            mode: "755"
+            content: |
+              api:
+                listen: ":1984"
+
+              webrtc:
+                listen: ":8555"
+          notify: Restart go2rtc
+          tags:
+            - go2rtc
+
+        - name: Create go2rtc server
+          ansible.builtin.include_role:
+            name: docker_container
+          vars:
+            name: "{{ application }}-go2rtc"
+            image: alexxit/go2rtc:0.1-rc.4
+            volumes:
+              - "{{ home_assistant_addons_dir }}/go2rtc.yaml:/config/go2rtc.yaml"
+          tags:
+            - go2rtc
 
     - name: Configure Automations
       tags:
