@@ -1,0 +1,20 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: autoheal
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: willfarrell/autoheal:1.2.0
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+        env:
+          AUTOHEAL_CONTAINER_LABEL: "all"
+          AUTOHEAL_INTERVAL: "30"

@@ -73,6 +73,13 @@
           service: Download
           priority: 890
           subtitle: "Index manager"
+        healthcheck:
+          test: "curl -f http://localhost:9696/ || exit 1"
+          start_period: 5s
+          interval: 5s
+          retries: 3
+        labels:
+          autoheal: "true"
 
     - name: Wait for config
       ansible.builtin.wait_for:

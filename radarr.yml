@@ -74,6 +74,13 @@
           service: Download
           priority: 780
           subtitle: "Manage and download movies"
+        healthcheck:
+          test: "curl -f http://localhost:7878/ || exit 1"
+          start_period: 5s
+          interval: 5s
+          retries: 3
+        labels:
+          autoheal: "true"
 
     - name: Wait for config
       ansible.builtin.wait_for:
