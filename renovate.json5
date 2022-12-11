@@ -63,6 +63,7 @@
       matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/pms-docker"],
       versioning: "loose",
+      prBodyNotes: "[Release Notes](https://forums.plex.tv/t/plex-media-server/30447)",
     },
     /* Umami */
     {
