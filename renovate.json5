@@ -193,6 +193,7 @@
       matchDatasources: ["docker"],
       matchPackagePatterns: ["nextcloud"],
       customChangelogUrl: "https://github.com/nextcloud/server",
+      prBodyNotes: "[Changelog](https://nextcloud.com/changelog/)",
     },
     /* Chadburn */
     {
