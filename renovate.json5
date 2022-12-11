@@ -278,6 +278,11 @@
       matchPackagePatterns: [".*\\/blackbox(-|_)exporter"],
       customChangelogUrl: "https://github.com/prometheus/blackbox_exporter",
     },
+    {
+      matchDatasources: ["docker"],
+      matchPackagePatterns: ["privatebin\\/.*"],
+      customChangelogUrl: "https://github.com/PrivateBin/PrivateBin",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
