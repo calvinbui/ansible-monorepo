@@ -278,10 +278,17 @@
       matchPackagePatterns: [".*\\/blackbox(-|_)exporter"],
       customChangelogUrl: "https://github.com/prometheus/blackbox_exporter",
     },
+    /* privatebin */
     {
       matchDatasources: ["docker"],
       matchPackagePatterns: ["privatebin\\/.*"],
       customChangelogUrl: "https://github.com/PrivateBin/PrivateBin",
+    },
+    /* actualbudget */
+    {
+      matchDatasources: ["docker"],
+      matchPackagePatterns: ["jlongster\\/actual-server"],
+      customChangelogUrl: "https://github.com/actualbudget/docs/blob/master/docs/Release-Notes/Release-Notes.md",
     },
   ],
 
