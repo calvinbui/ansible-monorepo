@@ -70,12 +70,6 @@
       matchPackagePatterns: [".*\\/umami"],
       versioning: "regex:^postgresql-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$",
     },
-    /* Borgmatic */
-    {
-      matchDatasources: ["docker"],
-      matchPackagePatterns: [".*\\/borgmatic"],
-      versioning: "regex:^base-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$",
-    },
     /* Minio */
     {
       matchDatasources: ["docker"],
