@@ -28,7 +28,7 @@ cards:
         showDate: true
         refreshInterval: 3600
         entities:
-          - entity: calendar.my_calendar_calvin_s_calendar
+          - entity: calendar.calvin_s_calendar
             name: Calvin
             icon: mdi:face-man
           - entity: calendar.tammy_nguyen013_gmail_com

@@ -1,10 +1,19 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
+
 ---
 
-# https://www.home-assistant.io/integrations/caldav/
+# https://github.com/franc6/ics_calendar
+- platform: ics_calendar
+  calendars:
 {% for i in home_assistant_integrations.calendar %}
-- platform: caldav
-  username: {{ i.username }}
-  password: {{ i.password }}
-  url: {{ i.url }}
-  custom_calendars: {{ i.custom_calendars }}
+    - name: {{ i.name }}
+      url: {{ i.url }}
+      include_all_day: True
+      {% if i.username is defined and i.password is defined %}
+      username: {{ i.username }}
+      password: {{ i.password }}
+      {% endif %}
+      {% if i.user_agent is defined %}
+      user_agent: {{ i.user_agent }}
+      {% endif %}
 {% endfor %}
