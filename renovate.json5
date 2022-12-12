@@ -288,6 +288,12 @@
       customChangelogUrl: "https://github.com/actualbudget/actual-server",
       prBodyNotes: "[Release-Notes.md](https://github.com/actualbudget/docs/blob/master/docs/Release-Notes/Release-Notes.md)",
     },
+    /* borgmatic */
+    {
+      matchDatasources: ["docker"],
+      matchPackagePatterns: [".*\\/borgmatic"],
+      customChangelogUrl: "https://github.com/borgmatic-collective/borgmatic",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
