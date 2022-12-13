@@ -8,6 +8,7 @@ background: "var(--background-image)"
 
 views:
   - !include pages/home.yaml
+  - !include pages/cleaning.yaml
   - !include pages/security.yaml
   - !include pages/solar.yaml
   - !include pages/lighting.yaml
