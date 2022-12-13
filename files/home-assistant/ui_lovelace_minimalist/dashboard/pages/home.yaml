@@ -34,6 +34,9 @@ cards:
           - entity: calendar.tammy_nguyen013_gmail_com
             name: Tammy
             icon: mdi:face-woman
+          - entity: calendar.nsw_public_holidays_2021_2023
+            name: Public Holidays
+            icon: mdi:umbrella-beach
 
   - type: vertical-stack
     cards:

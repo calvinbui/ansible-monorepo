@@ -31,6 +31,10 @@
         35323663306661363036393732363765313338663432356665363230323837643734336564616234
         3338
       calendar:
+        - name: NSW Public Holidays 2021-2023
+          url: https://staticontent.dpc.nsw.gov.au/ir/calendar/NSW-Public-Holidays-dates-2021-2023.ics
+          user_agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36
+          parser: ics
         - name: Calvin's Calendar
           url: !vault |
             $ANSIBLE_VAULT;1.1;AES256
@@ -50,10 +54,6 @@
             63336134373733616330303135356431643666383266643138396363333061343238623438313364
             3839376136636630300a386465373466363465343634623835316231326362633565663264376436
             32386664393066346430393739333038653866326264666463396164303035333964
-          custom_calendars:
-            - name: Calvin's Calendar
-              calendar: My Calendar
-              search: ".*"
       waste_collection_schedule:
         source: !vault |
           $ANSIBLE_VAULT;1.1;AES256
