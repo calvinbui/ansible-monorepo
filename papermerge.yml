@@ -20,14 +20,8 @@
         name: "{{ application }}"
         create_home: false
         home: "{{ config_directory }}/import"
-        password: "$6$vgLah.l13sGfNWEP$/vrPocaGTCDC601velsai68JfVzIzaQ18OrO0Y8Q2FPpey7kmXfx/fwZcJQkLPkbnJ2SIS.S.CLBbP8iB4MfS0"
+        password: "$6$GbBqXO8BE$3gAl2uWHvBWdSUYl1EpTCYjJuGzi4HnlQlTmmbyOpbw6jNwZRwiDZ8.ADiyO9j/i2HyknE6jh3PYIlg7DrD.i/"
       register: _papermerge_user
-
-    - name: Set password expiration
-      ansible.builtin.user:
-        name: "{{ _papermerge_user.name }}"
-        password_expire_min: 1
-        password_expire_max: 90
 
     - name: Create config directory
       ansible.builtin.file:
