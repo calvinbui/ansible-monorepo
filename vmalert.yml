@@ -56,6 +56,8 @@
           - "-datasource.url=http://victoriametrics.{{ vm_network.name }}:8428"
           - "-remoteWrite.url=http://victoriametrics.{{ vm_network.name }}:8428"
           - "-remoteRead.url=http://victoriametrics.{{ vm_network.name }}:8428"
+
+          - "-external.url=https://{{ application }}.{{ common_tld }}"
         volumes:
           - "{{ config_directory }}:/rules"
         traefik:
