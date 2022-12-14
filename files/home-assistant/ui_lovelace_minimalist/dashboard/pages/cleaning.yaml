@@ -4,13 +4,23 @@ title: Cleaning
 path: cleaning
 icon: mdi:broom
 
-type: custom:horizontal-layout
+type: custom:grid-layout
 layout:
-  max_cols: 2
-  card_margin: 4px 10px 4px 10px
+  grid-column-columns: 1fr 2fr 5fr 1fr
+  grid-column-gap: 20px
+  grid-template-areas: |
+    ". bins vacuum ."
+  mediaquery:
+    "(max-width: 800px)":
+      grid-template-columns: 100%
+      grid-template-areas: |
+        "bins"
+        "vacuum"
 
 cards:
   - type: vertical-stack
+    view_layout:
+      grid-area: bins
     cards:
       -
         type: custom:button-card
@@ -78,8 +88,15 @@ cards:
             }
 
   - type: vertical-stack
+    view_layout:
+      grid-area: vacuum
     cards:
-      - type: custom:xiaomi-vacuum-map-card
+      -
+        type: custom:button-card
+        template: card_title
+        name: 🤖 Vacuum
+      -
+        type: custom:xiaomi-vacuum-map-card
         preset_name: Downstairs
         entity: vacuum.downstairs_s7
         map_source:
