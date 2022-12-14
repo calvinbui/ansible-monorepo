@@ -6,7 +6,7 @@ icon: mdi:broom
 
 type: custom:grid-layout
 layout:
-  grid-column-columns: 1fr 2fr 5fr 1fr
+  grid-column-columns: 1fr 1fr 5fr 1fr
   grid-column-gap: 20px
   grid-template-areas: |
     ". bins vacuum ."
@@ -98,15 +98,50 @@ cards:
       -
         type: custom:xiaomi-vacuum-map-card
         preset_name: Downstairs
+        activate_on_switch: true
+        activate:
+          service: vacuum.send_command
+          service_data:
+            command: load_multi_map
+            entity_id: "[[entity_id]]"
+            params: 0
         entity: vacuum.downstairs_s7
         map_source:
           camera: camera.downstairs_s7
+          crop:
+            top: 55
+            bottom: 45
         calibration_source:
           camera: camera.downstairs_s7
         additional_presets:
-          - preset_name: Upstairs
+          -
+            preset_name: Foyer
+            activate_on_switch: true
+            activate:
+              service: vacuum.send_command
+              service_data:
+                command: load_multi_map
+                entity_id: "[[entity_id]]"
+                params: 1
+            entity: vacuum.downstairs_s7
+            map_source:
+              camera: camera.downstairs_s7
+              crop:
+                top: 200
+                bottom: 200
+                left: 200
+                right: 200
+            calibration_source:
+              camera: camera.downstairs_s7
+          -
+            preset_name: Upstairs
             entity: vacuum.upstairs_s7
             map_source:
               camera: camera.upstairs_s7
+              crop:
+                top: 55
+                bottom: 45
+                left: 40
+                right: 50
             calibration_source:
               camera: camera.upstairs_s7
