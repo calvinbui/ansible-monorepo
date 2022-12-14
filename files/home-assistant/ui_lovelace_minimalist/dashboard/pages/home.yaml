@@ -4,41 +4,69 @@ title: Home
 path: home
 icon: mdi:home
 
-type: custom:horizontal-layout
+type: custom:grid-layout
 layout:
-  max_cols: 2
-  card_margin: 4px 10px 4px 10px
+  grid-column-columns: 1fr 5fr 5fr 1fr
+  grid-column-gap: 20px
+  grid-template-areas: |
+    ". calendar weather ."
+  mediaquery:
+    "(max-width: 800px)":
+      grid-template-columns: 100%
+      grid-template-areas: |
+        "calendar"
+        "weather"
 
 cards:
   - type: vertical-stack
+    view_layout:
+      grid-area: calendar
     cards:
       -
         type: custom:button-card
         template: card_title
         name: 📅 Calendar
-      - type: "custom:atomic-calendar-revive"
+      -
+        type: custom:atomic-calendar-revive
         maxDaysToShow: 60
         maxEventCount: 7
+        refreshInterval: 3600
+        showCalendarName: true
+
+        showLocation: true
         showMonth: true
         showWeekDay: true
-        disableLocationLink: true
-        disableEventLink: true
-        hideDuplicates: true
-        showCalendarName: true
+        showHours: true
+        showLoader: true
         showDate: true
-        refreshInterval: 3600
+        showDescription: false
+        showNoEventsForToday: false
+        showRelativeTime: true
+        showPrivate: true
+        showMultiDay: true
+
+        hideDuplicates: true
+
+        startDaysAhead: 0
+        sortByStartTime: true
+
+        disableEventLink: true
+        disableLocationLink: true
+
         entities:
-          - entity: calendar.calvin_s_calendar
+          -
+            entity: calendar.calvin_s_calendar
             name: Calvin
-            icon: mdi:face-man
-          - entity: calendar.tammy_nguyen013_gmail_com
+          -
+            entity: calendar.tammy_nguyen013_gmail_com
             name: Tammy
-            icon: mdi:face-woman
-          - entity: calendar.nsw_public_holidays_2021_2023
+          -
+            entity: calendar.nsw_public_holidays_2021_2023
             name: Public Holidays
-            icon: mdi:umbrella-beach
 
   - type: vertical-stack
+    view_layout:
+      grid-area: weather
     cards:
       -
         type: custom:button-card
