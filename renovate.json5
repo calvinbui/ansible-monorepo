@@ -108,14 +108,12 @@
     },
     /* VictoriaMetrics */
     {
+      groupName: "VictoriaMetrics",
       matchDatasources: ["docker"],
-      matchPackagePatterns: [".*\\/victoria-metrics"],
-      customChangelogUrl: "https://github.com/VictoriaMetrics/VictoriaMetrics",
-    },
-    /* vmalert */
-    {
-      matchDatasources: ["docker"],
-      matchPackagePatterns: [".*\\/vmalert"],
+      matchPackagePatterns: [
+        ".*\\/vmalert",
+        ".*\\/victoria-metrics"
+      ],
       customChangelogUrl: "https://github.com/VictoriaMetrics/VictoriaMetrics",
     },
     /* Homer */
