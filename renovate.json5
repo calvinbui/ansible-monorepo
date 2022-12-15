@@ -294,6 +294,11 @@
       matchPackagePatterns: [".*\\/borgmatic"],
       customChangelogUrl: "https://github.com/borgmatic-collective/borgmatic",
     },
+    /* nginx */
+    {
+      matchPackagePatterns: ["nginx"],
+      prBodyNotes: "[CHANGES](https://nginx.org/en/CHANGES)",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
