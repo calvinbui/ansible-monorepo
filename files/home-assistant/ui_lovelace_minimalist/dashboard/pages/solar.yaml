@@ -213,21 +213,18 @@ cards:
           color: '#3798fe' # blue
           curve: stepline
           data_generator: |
-            // get sunrise minute offset
-            var sunrise = new Date(hass.states['sensor.sunrise'].state);
-            var sunrise_minutes = sunrise.getMinutes() * 60 * 1000
-
             return entity.attributes.forecast.map((entry) => {
-              var date_period = new Date(entry.period_end);
+              var date_period = new Date(entry.period_start);
 
               return [date_period, Math.min(entry.pv_estimate, 10)];
             });
+
+  # Costs
   -
     view_layout:
       grid-area: cost
     type: entities
     entities:
-      # Costs
       -
         type: custom:multiple-entity-row
         entity: sensor.electricity_costs_today_total
@@ -327,7 +324,7 @@ cards:
             styles: *entity_style
             unit: false
 
-      # Bill and Forecasts
+  # Bill and Forecasts
   -
     view_layout:
       grid-area: forecast
@@ -344,7 +341,7 @@ cards:
         entity: sensor.electricity_costs_currently
         name: Current Cost ($/Hour)
         icon: mdi:currency-usd
-        unit: false
+        unit: USD
         show_state: true
         style: *row_style
       -
@@ -352,7 +349,7 @@ cards:
         entity: sensor.electricity_costs_average_per_day
         name: Cost Per Day ($)
         icon: mdi:currency-usd
-        unit: false
+        unit: USD
         show_state: true
         style: *row_style
       -
@@ -360,7 +357,7 @@ cards:
         entity: sensor.electricity_costs_bill_forecast
         name: Forecasted Bill ($)
         icon: mdi:chart-line
-        unit: false
+        unit: USD
         show_state: true
         style: *row_style
 
