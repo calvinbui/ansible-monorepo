@@ -60,41 +60,35 @@
     },
     /* Plex */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/pms-docker"],
       versioning: "loose",
       prBodyNotes: "[Release Notes](https://forums.plex.tv/t/plex-media-server/30447)",
     },
     /* Umami */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/umami"],
       versioning: "regex:^postgresql-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$",
     },
     /* Minio */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/minio"],
       versioning: "regex:^RELEASE\\.(?<major>\\d+)-(?<minor>\\d+)-(?<patch>\\d+)T(?<build>.*)Z$",
       customChangelogUrl: "https://github.com/minio/minio",
     },
     /* Minio MC */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/mc"],
       versioning: "regex:^RELEASE\\.(?<major>\\d+)-(?<minor>\\d+)-(?<patch>\\d+)T(?<build>.*)Z$",
       customChangelogUrl: "https://github.com/minio/mc",
     },
     /* Minio Console */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: ["minio\\/console"],
       customChangelogUrl: "https://github.com/minio/console",
     },
     /* NZBGet */
     // automerge patch version which linuxserver.io puts as the date of the build
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/nzbget$"],
       matchUpdateTypes: ["patch"],
       automerge: true,
@@ -102,14 +96,12 @@
     },
     /* Bazarr */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/bazarr"],
       customChangelogUrl: "https://github.com/morpheus65535/bazarr",
     },
     /* VictoriaMetrics */
     {
       groupName: "VictoriaMetrics",
-      matchDatasources: ["docker"],
       matchPackagePatterns: [
         ".*\\/vmalert",
         ".*\\/victoria-metrics"
@@ -118,13 +110,11 @@
     },
     /* Homer */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/homer"],
       customChangelogUrl: "https://github.com/bastienwirtz/homer",
     },
     /* Prowlarr */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/prowlarr"],
       versioning: "regex:^develop-version-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)$",
       customChangelogUrl: "https://github.com/Prowlarr/Prowlarr",
@@ -132,7 +122,6 @@
     },
     /* Renovate */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/renovate"],
       customChangelogUrl: "https://github.com/renovatebot/renovate",
       matchUpdateTypes: ["patch"],
@@ -141,154 +130,129 @@
     },
     /* Authelia */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/authelia"],
       customChangelogUrl: "https://github.com/authelia/authelia",
     },
     /* qBittorrent */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/qbittorrent"],
       customChangelogUrl: "https://github.com/qbittorrent/qBittorrent",
     },
     /* Portainer */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/portainer-[c|e]e"],
       customChangelogUrl: "https://github.com/portainer/portainer",
     },
     /* Outline */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: ["outlinewiki\\/outline"],
       customChangelogUrl: "https://github.com/outline/outline",
     },
     /* Tautulli */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/tautulli"],
       customChangelogUrl: "https://github.com/Tautulli/Tautulli",
     },
     /* Overseerr */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: ["sctx\\/overseerr"],
       customChangelogUrl: "https://github.com/sct/overseerr",
     },
     /* VS Code Server */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/code-server"],
       customChangelogUrl: "https://github.com/coder/code-server",
     },
     /* LibreTranslate */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/libretranslate"],
       customChangelogUrl: "https://github.com/LibreTranslate/LibreTranslate",
     },
     /* Nextcloud */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: ["nextcloud"],
       customChangelogUrl: "https://github.com/nextcloud/server",
       prBodyNotes: "[Changelog](https://nextcloud.com/changelog/)",
     },
     /* Chadburn */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/chadburn"],
       customChangelogUrl: "https://github.com/PremoWeb/Chadburn",
     },
     /* Grafana */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/grafana"],
       customChangelogUrl: "https://github.com/grafana/grafana",
     },
     /* Mattermost */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/mattermost-(team|enterprise)-edition"],
       customChangelogUrl: "https://github.com/mattermost/mattermost-server",
     },
     /* OnlyOffice */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: ["onlyoffice\\/documentserver"],
       customChangelogUrl: "https://github.com/ONLYOFFICE/DocumentServer",
     },
     /* eufy-security-ws */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: ["bropat\\/eufy-security-ws"],
       customChangelogUrl: "https://github.com/bropat/eufy-security-ws",
     },
     /* eufy rtsp */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: ["aler9\\/rtsp-simple-server"],
       customChangelogUrl: "https://github.com/aler9/rtsp-simple-server",
     },
     /* changedetection.io */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/changedetection.io"],
       versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.?(?<build>\\d+)?$",
       customChangelogUrl: "https://github.com/dgtlmoon/changedetection.io",
     },
     /* watchtower */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: ["containrrr\\/watchtower"],
       customChangelogUrl: "https://github.com/containrrr/watchtower",
     },
     /* cadvisor */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/cadvisor"],
       customChangelogUrl: "https://github.com/google/cadvisor",
     },
     /* psitransfer */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: ["psitrax\\/psitransfer"],
       customChangelogUrl: "https://github.com/psi-4ward/psitransfer",
     },
     /* ldap-user-manager */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: ["wheelybird\\/ldap-user-manager"],
       customChangelogUrl: "https://github.com/wheelybird/ldap-user-manager",
     },
     /* node_exporter */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/node(-|_)exporter"],
       customChangelogUrl: "https://github.com/prometheus/node_exporter",
     },
     /* blackbox_exporter */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/blackbox(-|_)exporter"],
       customChangelogUrl: "https://github.com/prometheus/blackbox_exporter",
     },
     /* privatebin */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: ["privatebin\\/.*"],
       customChangelogUrl: "https://github.com/PrivateBin/PrivateBin",
     },
     /* actualbudget */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: ["jlongster\\/actual-server"],
       customChangelogUrl: "https://github.com/actualbudget/actual-server",
       prBodyNotes: "[Release-Notes.md](https://github.com/actualbudget/docs/blob/master/docs/Release-Notes/Release-Notes.md)",
     },
     /* borgmatic */
     {
-      matchDatasources: ["docker"],
       matchPackagePatterns: [".*\\/borgmatic"],
       customChangelogUrl: "https://github.com/borgmatic-collective/borgmatic",
     },
