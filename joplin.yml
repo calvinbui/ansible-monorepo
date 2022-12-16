@@ -25,7 +25,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: joplin/server:2.9.7-beta
+        image: joplin/server:2.10.3-beta
         env:
           APP_BASE_URL: "https://{{ application }}.{{ common_tld }}"
           APP_PORT: "22300"
