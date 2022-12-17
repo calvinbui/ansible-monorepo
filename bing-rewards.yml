@@ -29,7 +29,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: killerherts/bing-rewards:DockerFix
+        image: killerherts/bing-rewards:latest
         command:
           - python
           - setup.py
@@ -37,5 +37,5 @@
           - "{{ bing_rewards_username }}"
           - -p
           - "{{ bing_rewards_password }}"
-        volumes:
-          - "{{ config_directory }}:/config"
+        env:
+          TZ: "{{ common_timezone }}"
