@@ -295,7 +295,7 @@
             name: docker_container
           vars:
             name: "eufy-rtsp"
-            image: aler9/rtsp-simple-server:v0.20.4
+            image: aler9/rtsp-simple-server:v0.21.0
             env:
               RTSP_PROTOCOLS: tcp
               RTSP_PATHS_ALL_RUNONDEMAND: "echo 'incoming'"
