@@ -47,6 +47,7 @@
         restart: true
         comparisons:
           '*': ignore
+
   tasks:
     - name: Create config folder
       ansible.builtin.file:
