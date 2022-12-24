@@ -266,6 +266,11 @@
       matchPackagePatterns: ["joplin\\/server"],
       prBodyNotes: "[changelog_server.md](https://github.com/laurent22/joplin/blob/dev/readme/changelog_server.md)",
     },
+    /* alertmanager */
+    {
+      matchPackagePatterns: [".*\\/alertmanager"],
+      customChangelogUrl: "https://github.com/prometheus/alertmanager",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
