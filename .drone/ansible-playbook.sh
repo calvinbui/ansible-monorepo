@@ -3,7 +3,7 @@
 set -eo pipefail
 
 if [[ -z $playbooks ]]; then
-  mapfile -t allplaybooks < <(git show --name-only HEAD | grep -E "^(\w|-|_)+.y*ml")
+  mapfile -t allplaybooks < <(git show --name-only --diff-filter=ACMRTU HEAD | grep -E "^(\w|-|_)+.y*ml")
 else
   IFS="," read -r -a playbooks <<< "${playbooks[@]}"
   allplaybooks=( )
