@@ -68,8 +68,8 @@
           EVENTS_DAYS_RETAIN: "14"
 
           SMTP_HOST: "{{ common_email_server }}"
-          SMTP_SSL: "true"
           SMTP_PORT: "{{ common_email_port | string }}"
+          SMTP_SECURITY: "{{ 'starttls' if common_email_protocol == 'tls' else 'false' }}"
           SMTP_USERNAME: "{{ common_email_username }}"
           SMTP_PASSWORD: "{{ common_email_password }}"
           SMTP_FROM: "{{ application }}{{ common_email_to }}"
