@@ -122,7 +122,7 @@
           ENABLE_UPDATES: "false"
 
           SMTP_HOST: "{{ common_email_server }}"
-          SMTP_PORT: "{{ common_email_smtp_port | string }}"
+          SMTP_PORT: "{{ common_email_port | string }}"
           SMTP_USERNAME: "{{ common_email_username }}"
           SMTP_PASSWORD: "{{ common_email_password }}"
           SMTP_FROM_EMAIL: "{{ application }}{{ common_email_to }}"

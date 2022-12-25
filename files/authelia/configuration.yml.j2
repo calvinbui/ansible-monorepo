@@ -69,6 +69,6 @@ notifier:
     username: "{{ common_email_username }}"
     password: "{{ common_email_password }}"
     host: "{{ common_email_server }}"
-    port: "{{ common_email_smtp_port }}"
+    port: "{{ common_email_port }}"
     sender: "{{ application }}{{ common_email_to }}"
     disable_require_tls: "{{ 'false' if common_email_protocol=='tls' else 'true' }}"

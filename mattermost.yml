@@ -111,7 +111,7 @@
           # https://docs.mattermost.com/configure/configuration-settings.html#smtp
           # https://docs.mattermost.com/configure/smtp-email.html#gmail
           EmailSettings/SMTPServer: "{{ common_email_server }}"
-          EmailSettings/SMTPPort: "{{ common_email_smtp_port | string }}"
+          EmailSettings/SMTPPort: "{{ common_email_port | string }}"
           EmailSettings/ConnectionSecurity: "STARTTLS"
           EmailSettings/EnableSMTPAuth: true
           EmailSettings/SMTPUsername: "{{ common_email_username }}"

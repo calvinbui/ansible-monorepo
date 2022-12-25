@@ -63,7 +63,7 @@
           TZ: "{{ common_timezone }}"
 
           SSMTP_HOST: "{{ common_email_server }}"
-          SSMTP_PORT: "{{ common_email_smtp_port | string }}"
+          SSMTP_PORT: "{{ common_email_port | string }}"
           SSMTP_USER: "{{ common_email_username }}"
           SSMTP_PASSWORD: "{{ common_email_password }}"
           SSMTP_SECURE: "YES"

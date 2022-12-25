@@ -38,7 +38,7 @@
 
           MAILER_ENABLED: "true"
           MAILER_HOST: "{{ common_email_server }}"
-          MAILER_PORT: "{{ common_email_smtp_port | string }}"
+          MAILER_PORT: "{{ common_email_port | string }}"
           MAILER_SECURITY: "{{ common_email_protocol }}"
           MAILER_AUTH_USER: "{{ common_email_username }}"
           MAILER_AUTH_PASSWORD: "{{ common_email_password }}"

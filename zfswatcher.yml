@@ -78,7 +78,7 @@
           value: "true"
         - section: email "main"
           option: server
-          value: "{{ common_email_server }}:{{ common_email_smtp_port }}"
+          value: "{{ common_email_server }}:{{ common_email_port }}"
         - section: email "main"
           option: username
           value: "{{ common_email_username }}"

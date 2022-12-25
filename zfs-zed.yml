@@ -59,7 +59,7 @@
 
           account alerts
           host           {{ common_email_server }}
-          port           {{ common_email_smtp_port }}
+          port           {{ common_email_port }}
           tls            on
           from           {{ common_email_username }}
           user           {{ common_email_username }}

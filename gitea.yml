@@ -65,7 +65,7 @@
 
           GITEA__mailer__ENABLED: "true"
           GITEA__mailer__MAILER_TYPE: smtp
-          GITEA__mailer__HOST: "{{ common_email_server }}:{{ common_email_tls_port | string }}"
+          GITEA__mailer__HOST: "{{ common_email_server }}:{{ common_email_ssl_port | string }}"
           GITEA__mailer__IS_TLS_ENABLED: "{{ 'true' if common_email_protocol == 'tls' else 'false' }}"
           GITEA__mailer__USER: "{{ common_email_username }}"
           GITEA__mailer__PASSWD: "{{ common_email_password }}"

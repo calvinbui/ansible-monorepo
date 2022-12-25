@@ -63,13 +63,13 @@
 
           SIGNUPS_ALLOWED: "false"
           INVITATIONS_ALLOWED: "true"
-          
+
           ORG_EVENTS_ENABLED: "true"
           EVENTS_DAYS_RETAIN: "14"
 
           SMTP_HOST: "{{ common_email_server }}"
-          SMTP_PORT: "{{ common_email_smtp_port | string }}"
           SMTP_SSL: "true"
+          SMTP_PORT: "{{ common_email_port | string }}"
           SMTP_USERNAME: "{{ common_email_username }}"
           SMTP_PASSWORD: "{{ common_email_password }}"
           SMTP_FROM: "{{ application }}{{ common_email_to }}"

@@ -62,7 +62,7 @@
           ADMIN_EMAIL: "{{ application }}{{ common_email_to }}"
 
           MAIL_HOST: "{{ common_email_server }}"
-          MAIL_PORT: "{{ common_email_smtp_port | string }}"
+          MAIL_PORT: "{{ common_email_port | string }}"
           MAIL_USERNAME: "{{ common_email_username }}"
           MAIL_PASSWORD: "{{ common_email_password }}"
           MAIL_FROM_ADDRESS: "{{ common_email_username }}"
