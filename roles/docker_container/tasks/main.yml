@@ -97,6 +97,7 @@
     hostname: "{{ name | default(omit) }}"
     networks: "{{ network }}"
     dns_servers: "{{ docker_network.dns | default(omit) }}"
+    dns_search_domains: "{{ docker_network.name }}"
     network_mode: "{{ docker_network.name | default('omit') }}"
     published_ports: "{{ published_ports | default(omit) }}"
     exposed_ports: "{{ exposed_ports | default(omit) }}"
