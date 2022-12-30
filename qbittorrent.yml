@@ -68,79 +68,68 @@
         qbittorrent_config:
           # Downloads
           ## When adding a torrent
-          BitTorrent.Session\CreateTorrentSubfolder: "true"
-          Preferences.Downloads\StartInPause: "false"
+          Core.AutoDeleteAddedTorrentFile: "IfAdded" # Delete .torrent files afterwards
 
-          ## Gap inbetween
-          Preferences.Downloads\PreAllocation: "false"
-          Preferences.Downloads\UseIncompleteExtension: "false"
-
-          # Saving Management
-          Preferences.Downloads\SavePath: "{{ common_mounted_directory_download }}"
-          Preferences.Downloads\TempPath: "{{ common_mounted_directory_download }}/Intermediate/"
+          ## Saving Management
+          BitTorrent.Session\DisableAutoTMMByDefault: "false" # Default Torrent Management Mode
+          BitTorrent.Session\DisableAutoTMMTriggers\DefaultSavePathChanged: "false" # When Default Save Path changed:
+          BitTorrent.Session\DisableAutoTMMTriggers\CategorySavePathChanged: "false" # When Category Save Path changed
+          BitTorrent.Session\DefaultSavePath: "{{ common_mounted_directory_download }}" # Default Save Path
 
           # Run external program on torrent completion
           AutoRun.enabled: "true"
-          AutoRun.program: chmod -R 770 \"%F/\"
+          AutoRun.program: chmod -R 770 \"%F/\" # Run external program on torrent finished
+          AutoRun.OnTorrentAdded\Enabled: "false"
+          AutoRun.OnTorrentAdded\Program: ""
 
           # Connections
-          ## Enabled Protocol
-          BitTorrent.Session\BTProtocol: Both
-          Preferences.WebUI\UseUPnP: "false"
-          Preferences.General\UseRandomPort: "false"
+          BitTorrent.Session\BTProtocol: TCP # Peer connection protocol
 
           ## Listening Port
-          Preferences.Connection\PortRangeMin: 54935
+          BitTorrent.Session\Port: 54935 # Port used for incoming connections
 
           ## Connection Limits
-          Preferences.Bittorrent\MaxConnecs: -1
-          Preferences.Bittorrent\MaxConnecsPerTorrent: -1
-          Preferences.Bittorrent\MaxUploads: -1
-          Preferences.Bittorrent\MaxUploadsPerTorrent: -1
+          BitTorrent.Session\MaxConnections: -1 # Global maximum number of connections
+          BitTorrent.Session\MaxConnectionsPerTorrent: -1 # Maximum number of connections per torrent
+          BitTorrent.Session\MaxUploads: -1 # Global maximum number of upload slots
+          BitTorrent.Session\MaxUploadsPerTorrent: -1 # Maximum number of upload slots per torrent
 
           # Speed
           ## Global Rate Limits
-          Preferences.Connection\GlobalUPLimit: 200
-          Preferences.Connection\GlobalDLLimit: 0
-          Preferences.Connection\GlobalDLLimitAlt: 0
-          Preferences.Connection\GlobalUPLimitAlt: 0
-          Preferences.Connection\alt_speeds_on: "false"
+          BitTorrent.Session\GlobalUPSpeedLimit: 200 # Upload
 
-          ## Rate Limit Settings
-          Preferences.Bittorrent\uTP_rate_limited: "true"
-          Preferences.Advanced\IncludeOverhead: "true"
-          Preferences.Advanced\IgnoreLimitsLAN: "false"
+          ## Alternative Rate Limits
+          BitTorrent.Session\AlternativeGlobalUPSpeedLimit: 0 # Upload
+          BitTorrent.Session\AlternativeGlobalDLSpeedLimit: 0 # Download
 
           # BitTorrent
-          ## Privacy
-          Preferences.Bittorrent\DHT: "true"
-          Preferences.Bittorrent\LSD: "true"
-          Preferences.Bittorrent\PeX: "true"
-          Preferences.Bittorrent\Encryption: 1
-          Preferences.Advanced\AnonymousMode: "true"
-
           ## Torrent Queueing
-          Preferences.Queueing\MaxActiveDownloads: 20
-          Preferences.Queueing\MaxActiveTorrents: 20
+          BitTorrent.Session\MaxActiveDownloads: 20 # Maximum active downloads
+          BitTorrent.Session\MaxActiveUploads: 0 # Maximum active uploads
+          BitTorrent.Session\MaxActiveTorrents: 20 # Maximum active torrents
 
           ## Seeding Limits
-          Preferences.Bittorrent\MaxRatio: 0
+          BitTorrent.Session\GlobalMaxRatio: 0 # When ratio reaches
           Preferences.Bittorrent\MaxRatioAction: 0
 
           # Web UI
           ## Language
-          Preferences.General\Locale: en_AU
+          Preferences.General\Locale: "{{ common_locale | regex_replace('-', '_') }}"
+
+          ## Web User Interface (Remote Control)
+          Preferences.WebUI\UseUPnP: "false" # Use UPnP / NAT-PMP to forward the port from my router
 
           ## Authentication
-          Preferences.WebUI\AuthSubnetWhitelist: 0.0.0.0/0
-          Preferences.WebUI\AuthSubnetWhitelistEnabled: "true"
-          Preferences.WebUI\CSRFProtection: "false"
-          Preferences.WebUI\ClickjackingProtection: "false"
+          Preferences.WebUI\AuthSubnetWhitelist: 0.0.0.0/0 # Bypass authentication for clients in whitelisted IP subnets
+          Preferences.WebUI\AuthSubnetWhitelistEnabled: "true" # Bypass authentication for clients in whitelisted IP subnets
+
+          ## Security
+          Preferences.WebUI\ClickjackingProtection: "false" # Enable clickjacking protection
+          Preferences.WebUI\CSRFProtection: "false" # Enable Cross-Site Request Forgery (CSRF) protection
 
           # Advanced
           ## qBittorrent Section
-          Preferences.Connection\ResolvePeerCountries: "false"
-          LegalNotice.Accepted: "true"
+          Preferences.Connection\ResolvePeerCountries: "false" # Resolve peer countries
 
     - name: Stop to make changes
       community.docker.docker_container:
