@@ -31,7 +31,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: libretranslate/libretranslate:v1.3.6
+        image: libretranslate/libretranslate:v1.3.7
         env:
           LT_CHAR_LIMIT: "150"
           LT_REQ_LIMIT: "150"
