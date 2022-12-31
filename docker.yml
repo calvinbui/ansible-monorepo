@@ -58,13 +58,8 @@
       delay: 5
 
     - name: Add Docker Repository
-      ansible.builtin.copy:
-        content: |
-          deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/{{ application }}] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
-        dest: /etc/apt/sources.list.d/{{ application }}.list
-        owner: "{{ common_root_id }}"
-        group: "{{ common_root_group }}"
-        mode: "0644"
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/{{ application }}] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
       register: __apt_repository
 
     - name: Update apt cache
