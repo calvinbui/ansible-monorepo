@@ -123,6 +123,7 @@
           - iotop
           - powertop
           - mc
+          - nethogs
         state: present
 
     - name: Install snap packages
