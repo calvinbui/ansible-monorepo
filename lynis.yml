@@ -13,16 +13,6 @@
         name: ssh
         state: restarted
 
-    - name: Restart sysstat
-      ansible.builtin.service:
-        name: sysstat
-        state: restarted
-
-    - name: Restart auditd
-      ansible.builtin.service:
-        name: auditd
-        state: restarted
-
   tasks:
     - name: Update apt cache
       ansible.builtin.apt:
@@ -203,42 +193,6 @@
       loop:
         - /etc/issue
         - /etc/issue.net
-
-    - name: Accounting tools
-      block:
-        # https://cisofy.com/lynis/controls/ACCT-9622/
-        # https://cisofy.com/lynis/controls/ACCT-9626/
-        # https://cisofy.com/lynis/controls/ACCT-9628/
-        - name: Install accounting tools
-          ansible.builtin.apt:
-            name:
-              - acct
-              - sysstat
-              - auditd
-            state: present
-
-        # https://cisofy.com/lynis/controls/ACCT-9626/
-        - name: Enable sysstat config
-          ansible.builtin.lineinfile:
-            path: /etc/default/sysstat
-            regex: "^ENABLED="
-            line: 'ENABLED="true"'
-          notify: Restart sysstat
-
-        # https://cisofy.com/lynis/controls/ACCT-9626/
-        - name: Enable sysstat service
-          ansible.builtin.service:
-            name: sysstat
-            enabled: true
-            state: started
-
-        # https://cisofy.com/lynis/controls/ACCT-9630
-        - name: Setup auditd rules
-          ansible.builtin.get_url:
-            url: https://raw.githubusercontent.com/Neo23x0/auditd/master/audit.rules
-            dest: /etc/audit/rules.d/audit.rules
-            mode: "0640"
-          notify: Restart auditd
 
     # https://cisofy.com/lynis/controls/AUTH-9282/
     - name: Set password expirations
