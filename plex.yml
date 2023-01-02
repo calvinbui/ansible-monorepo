@@ -64,3 +64,34 @@
           service: Sharing
           priority: 990
           subtitle: "Media server"
+
+
+    - name: Install Absolute Series Scanner
+      block:
+        - name: Setup Scanners/Series folder
+          ansible.builtin.file:
+            path: "{{ plex_main_folder }}/Scanners/Series"
+            state: directory
+            owner: "{{ common_user_id }}"
+            group: "{{ common_root_group }}"
+            mode: "0755"
+          register: _plex_scanner_series_folder
+
+        - name: Download Absolute Series Scanner
+          ansible.builtin.get_url:
+            url: https://raw.githubusercontent.com/ZeroQI/Absolute-Series-Scanner/master/Scanners/Series/Absolute%20Series%20Scanner.py
+            dest: "{{ _plex_scanner_series_folder.path }}/Absolute Series Scanner.py"
+            owner: "{{ common_user_id }}"
+            group: "{{ common_root_group }}"
+            mode: "0755"
+          notify: Restart
+
+    - name: Install HTTP Anidb Metadata Agent (HAMA)
+      ansible.builtin.git:
+        repo: https://github.com/ZeroQI/Hama.bundle.git
+        dest: "{{ plex_main_folder }}/Plug-ins/Hama.bundle"
+        version: master
+        update: true
+      become: false
+      become_user: "{{ common_user }}"
+      notify: Restart
