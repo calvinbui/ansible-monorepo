@@ -1,4 +1,4 @@
-ansible-lint==6.9.0
+ansible-lint==6.10.2
 ansible==7.0.0
 ncclient==0.6.13
 paramiko==2.12.0
