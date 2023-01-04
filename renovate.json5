@@ -274,7 +274,8 @@
     /* radarr */
     {
       matchPackagePatterns: [".*\\/radarr"],
-      customChangelogUrl: "https://github.com/Radarr/Radarr",
+      versioning: "regex:^version-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)$",
+      prBodyNotes: "[Releases](https://github.com/Radarr/Radarr/releases)",
     },
   ],
 
