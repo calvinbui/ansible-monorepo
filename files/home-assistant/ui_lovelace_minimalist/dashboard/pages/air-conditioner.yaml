@@ -35,7 +35,7 @@ cards:
             icons: true
             headings: true
         hide:
-          temperature: true
+          temperature: false
           state: true
         control:
           hvac:
@@ -49,6 +49,15 @@ cards:
         header: false
         card_mod:
           style: |
+            /* put temperatures into a column */
+            .body {
+              grid-auto-flow: row !important;
+            }
+            .sensors {
+              margin-top: 0.5em;
+              order: 1
+            }
+
             /* hide headings */
             .mode-title {
               display: none !important;
@@ -68,7 +77,6 @@ cards:
             /* hvac mode columns */
             .modes:nth-child(2) {
               grid-template-columns: repeat(3, 1fr) !important;
-
             }
 
             /* fan modes columns */
