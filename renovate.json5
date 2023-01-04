@@ -271,6 +271,11 @@
       matchPackagePatterns: [".*\\/alertmanager"],
       customChangelogUrl: "https://github.com/prometheus/alertmanager",
     },
+    /* radarr */
+    {
+      matchPackagePatterns: [".*\\/radarr"],
+      customChangelogUrl: "https://github.com/Radarr/Radarr",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
