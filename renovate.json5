@@ -279,7 +279,7 @@
     },
     /* gotenberg */
     {
-      matchPackagePatterns: [".*\\/alertmanager"],
+      matchPackagePatterns: [".*\\/gotenberg"],
       customChangelogUrl: "https://github.com/gotenberg/gotenberg",
     },
   ],
