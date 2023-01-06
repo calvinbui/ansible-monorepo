@@ -116,7 +116,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-runner"
-        image: drone/drone-runner-docker:1.8.2
+        image: drone/drone-runner-docker:1.8.3
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock
         env:
