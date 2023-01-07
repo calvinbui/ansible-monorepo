@@ -6,7 +6,6 @@
     application: cadvisor
 
     cadvisor_disabled_metrics:
-      - accelerator
       - advtcp
       - cpu_topology
       - disk
