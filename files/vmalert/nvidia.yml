@@ -1,0 +1,19 @@
+---
+groups:
+  - name: nvidia_exporter
+    rules:
+      - alert: nvidia_exporter is down
+        expr: up{job="nvidia-dcgm-exporter"} != 1
+        for: 5m
+        annotations:
+          title: nvidia_exporter is down
+          description: "The exporter could not be reached"
+
+  - name: nvidia_temperature
+    rules:
+      - alert: GPU Temperature High
+        expr: DCGM_FI_DEV_GPU_TEMP > 90
+        for: 5m
+        annotations:
+          title: GPU Temperature High
+          description: "The GPU {{ $labels.modelName }} is currently {{ $value }}°C"
