@@ -169,7 +169,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: silviof/docker-languagetool:5.8
+        image: silviof/docker-languagetool:6.0
         cap_drop:
           - all
         env:
