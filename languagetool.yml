@@ -62,29 +62,6 @@
         group: "{{ common_root_group }}"
         mode: "0644"
 
-    - name: Create word2vec folder
-      ansible.builtin.file:
-        path: "{{ config_directory }}/word2vec"
-        state: directory
-        owner: "{{ common_user_id }}"
-        group: 101
-        mode: "0771"
-
-    - name: Download word2vec model
-      ansible.builtin.get_url:
-        url: https://languagetool.org/download/word2vec/en.zip
-        dest: "{{ config_directory }}/word2vec.tar.gz"
-        owner: "{{ common_root_id }}"
-        group: "{{ common_root_group }}"
-        mode: "0644"
-
-    - name: Unarchive word2vec
-      ansible.builtin.unarchive:
-        src: "{{ config_directory }}/word2vec.tar.gz"
-        dest: "{{ config_directory }}/word2vec/"
-        creates: "{{ config_directory }}/word2vec/en"
-        remote_src: true
-
     - name: Create FastText folder
       ansible.builtin.file:
         path: "{{ config_directory }}/fasttext"
@@ -159,7 +136,6 @@
         content: |
           languageModel=/ngrams
           ngramLangIdentData=/ngram-lang-detect.zip
-          word2vecModel=/word2vec
           fasttextModel=/fasttext/lid.176.bin
           fasttextBinary=/fasttext/fasttext.git/fasttext
           premiumAlways=true
@@ -178,7 +154,6 @@
           - "{{ config_directory }}/ngrams/:/ngrams"
           - "{{ config_directory }}/config.properties:/LanguageTool/config.properties"
           - "{{ config_directory }}/fasttext:/fasttext"
-          - "{{ config_directory }}/word2vec:/word2vec"
           - "{{ config_directory }}/ngram-lang-detect.zip:/ngram-lang-detect.zip"
         traefik:
           - port: 8010
