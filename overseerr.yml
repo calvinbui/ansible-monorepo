@@ -30,8 +30,8 @@
           - port: 5055
         homer:
           name: Overseerr
-          service: Collaboration
-          priority: 900
+          service: Download
+          priority: 991
           subtitle: "Request and discover media"
 
     - name: Configure

@@ -180,8 +180,8 @@
             rule: Host(`{{ application }}.{{ common_tld }}`)
         homer:
           name: Home Assistant
-          service: Tools
-          priority: 795
+          service: Home
+          priority: 950
           subtitle: "Home automation"
           url: "https://home.{{ common_tld }}"
         network_mode: "host"

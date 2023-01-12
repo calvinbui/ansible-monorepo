@@ -36,4 +36,4 @@
         homer:
           name: Mealie
           service: Home
-          priority: 900
+          priority: 925

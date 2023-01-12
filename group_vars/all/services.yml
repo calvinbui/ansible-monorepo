@@ -4,8 +4,32 @@
 
 services:
   - group: Download
-    homer_icon: fas fa-cloud-download-alt
+    homer_icon: fas fa-cloud-download
     items: []
+
+  - group: Home
+    homer_icon: fas fa-home-lg-alt
+    items:
+      -
+        name: UniFi Protect
+        logo: unifi-protect.png
+        subtitle: Home Security Cameras
+        url: https://nvr.{{ common_local_tld }}
+        priority: 710
+        monitor: true
+      -
+        name: Blue Iris
+        logo: blueiris.png
+        subtitle: Grandma's Security Cameras
+        url: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          65306366313434376463353439646663623532393635303337623936646334373163643030366533
+          3730373136363730663334326131303633383037633663320a316666353134393062393738636532
+          32303538346462633761346238646235313763386664636133646531383865323138343064373638
+          3239373139393038620a636265363765633636633130343262306132336238643266303061303165
+          31646230383863376463363132623264626432343535636332363439353766303966
+        priority: 700
+        monitor: true
 
   - group: Collaboration
     homer_icon: fas fa-people-carry
@@ -17,6 +41,7 @@ services:
         url: https://thingstodo.atlassian.net
         priority: 300
         monitor: false
+
 
   - group: Sharing
     homer_icon: fas fa-people-arrows
@@ -39,26 +64,6 @@ services:
         url: https://octopi.{{ common_local_tld }}/webcam/?action=stream
         priority: 880
         monitor: false
-      -
-        name: UniFi Protect
-        logo: unifi-protect.png
-        subtitle: Home Security Cameras
-        url: https://nvr.{{ common_local_tld }}
-        priority: 710
-        monitor: true
-      -
-        name: Blue Iris
-        logo: blueiris.png
-        subtitle: Grandma's Security Cameras
-        url: !vault |
-          $ANSIBLE_VAULT;1.1;AES256
-          65306366313434376463353439646663623532393635303337623936646334373163643030366533
-          3730373136363730663334326131303633383037633663320a316666353134393062393738636532
-          32303538346462633761346238646235313763386664636133646531383865323138343064373638
-          3239373139393038620a636265363765633636633130343262306132336238643266303061303165
-          31646230383863376463363132623264626432343535636332363439353766303966
-        priority: 700
-        monitor: true
 
   - group: Monitoring
     homer_icon: fas fa-chart-area
