@@ -1,6 +1,6 @@
 # Commented Scrutiny Configuration File
 #
-# The default location for this file is /scrutiny/config/scrutiny.yaml.
+# The default location for this file is /opt/scrutiny/config/scrutiny.yaml.
 # In some cases to improve clarity default values are specified,
 # uncommented. Other example values are commented out.
 #
@@ -20,39 +20,48 @@ web:
   listen:
     port: 8080
     host: 0.0.0.0
+    # if you're using a reverse proxy like apache/nginx, you can override this value to serve scrutiny on a subpath.
+    # eg. http://example.com/scrutiny/* vs http://example.com:8080
+    # see docs/TROUBLESHOOTING_REVERSE_PROXY.md
+    # basepath: `/scrutiny`
+    # leave empty unless behind a path prefixed proxy
+    basepath: ''
   database:
     # can also set absolute path here
-    location: /scrutiny/config/scrutiny.db
+    location: /opt/scrutiny/config/scrutiny.db
   src:
     frontend:
-      path: /scrutiny/web
+      path: /opt/scrutiny/web
 
+influxdb:
+  host: 0.0.0.0
+  port: 8086
+  retention_policy: true
 
 log:
   file: '' #absolute or relative paths allowed, eg. web.log
   level: INFO
-
 
 # Notification "urls" look like the following. For more information about service specific configuration see
 # Shoutrrr's documentation: https://containrrr.dev/shoutrrr/services/overview/
 
 notify:
   urls:
-#    - "discord://token@channel"
-#    - "telegram://token@telegram?channels=channel-1[,channel-2,...]"
-#    - "pushover://shoutrrr:apiToken@userKey/?priority=1&devices=device1[,device2, ...]"
-#    - "slack://[botname@]token-a/token-b/token-c"
+    # - "discord://token@channel"
+    # - "telegram://token@telegram?channels=channel-1[,channel-2,...]"
+    # - "pushover://shoutrrr:apiToken@userKey/?priority=1&devices=device1[,device2, ...]"
+    # - "slack://[botname@]token-a/token-b/token-c"
     - "smtp://{{ common_email_username }}:{{ common_email_password }}@{{ common_email_server }}:{{ common_email_port }}/?fromAddress={{ common_email_username }}&toAddresses=security{{ common_email_to }}"
-#    - "teams://token-a/token-b/token-c"
-#    - "gotify://gotify-host/token"
-#    - "pushbullet://api-token[/device/#channel/email]"
-#    - "ifttt://key/?events=event1[,event2,...]&value1=value1&value2=value2&value3=value3"
-#    - "mattermost://[username@]mattermost-host/token[/channel]"
-#    - "hangouts://chat.googleapis.com/v1/spaces/FOO/messages?key=bar&token=baz"
-#    - "zulip://bot-mail:bot-key@zulip-domain/?stream=name-or-id&topic=name"
-#    - "join://shoutrrr:api-key@join/?devices=device1[,device2, ...][&icon=icon][&title=title]"
-#    - "script:///file/path/on/disk"
-#    - "https://www.example.com/path"
+    # - "teams://token-a/token-b/token-c"
+    # - "gotify://gotify-host/token"
+    # - "pushbullet://api-token[/device/#channel/email]"
+    # - "ifttt://key/?events=event1[,event2,...]&value1=value1&value2=value2&value3=value3"
+    - "mattermost://{{ application }}@mattermost.{{ common_tld }}/{{ scrutiny_mattermost_token }}/home-lab-alerts"
+    # - "hangouts://chat.googleapis.com/v1/spaces/FOO/messages?key=bar&token=baz"
+    # - "zulip://bot-mail:bot-key@zulip-domain/?stream=name-or-id&topic=name"
+    # - "join://shoutrrr:api-key@join/?devices=device1[,device2, ...][&icon=icon][&title=title]"
+    # - "script:///file/path/on/disk"
+    # - "https://www.example.com/path"
 
 ########################################################################################################################
 # FEATURES COMING SOON
@@ -60,12 +69,6 @@ notify:
 # The following commented out sections are a preview of additional configuration options that will be available soon.
 #
 ########################################################################################################################
-
-#disks:
-#  include:
-#    # - /dev/sda
-#  exclude:
-#    # - /dev/sdb
 
 #limits:
 #  ata:
@@ -80,15 +83,3 @@ notify:
 #  nvme:
 #    critical: true
 #    standard: true
-
-
-#collect:
-#  metric:
-#    enable: true
-#    command: '-a -o on -S on'
-#  long:
-#    enable: false
-#    command: ''
-#  short:
-#    enable: false
-#    command: ''

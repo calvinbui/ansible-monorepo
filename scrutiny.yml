@@ -5,6 +5,14 @@
   vars:
     application: scrutiny
 
+    scrutiny_mattermost_token: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      30653664646435353630326235646636663231666132356630623066396230383336303464646563
+      6565383536363962303330373731373031343463653336640a626562666263313938313163326630
+      63343063623037346133323164626638353264643633346331656364653131663531313132643464
+      3363346239376138310a366430306236626330643331386461346266666530643930386465326439
+      66333563343334313730353065636338326536613530663862333761303534623062
+
     docker_network: "{{ networks.pub }}"
 
   handlers:
@@ -27,7 +35,7 @@
     - name: Template config
       ansible.builtin.template:
         src: "{{ files_directory }}/scrutiny.yaml.j2"
-        dest: "{{ config_directory }}/scrutiny.yaml"
+        dest: "{{ config_directory }}/config/scrutiny.yaml"
         mode: "0440"
       notify: Restart
 
@@ -47,7 +55,8 @@
           - SYS_RAWIO
         volumes:
           - /run/udev:/run/udev:ro
-          - "{{ config_directory }}:/scrutiny/config/"
+          - "{{ config_directory }}/config:/opt/scrutiny/config"
+          - "{{ config_directory }}/influxdb:/opt/scrutiny/influxdb"
         devices: "{{ lsblk_disks.stdout_lines }}"
         traefik:
           - port: 8080
