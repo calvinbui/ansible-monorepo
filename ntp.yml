@@ -24,10 +24,10 @@
               [
                 "ntp0.cs.mu.OZ.AU",
                 "ntp1.cs.mu.OZ.AU",
-                "0.oceania.pool.ntp.org",
-                "1.oceania.pool.ntp.org",
-                "2.oceania.pool.ntp.org",
-                "3.oceania.pool.ntp.org",
+                "0.au.pool.ntp.org",
+                "1.au.pool.ntp.org",
+                "2.au.pool.ntp.org",
+                "3.au.pool.ntp.org",
               ] | join(',')
             }}
           LOG_LEVEL: "0"
