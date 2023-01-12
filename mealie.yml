@@ -1,0 +1,39 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: mealie
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: hkotel/mealie:omni-nightly
+        env:
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_group_id | string }}"
+          TZ: "{{ common_timezone }}"
+
+          ALLOW_SIGNUP: "false"
+          RECIPE_PUBLIC: "false"
+          RECIPE_DISABLE_COMMENTS: "true"
+        volumes:
+          - "{{ config_directory }}/data:/app/data"
+        traefik:
+          - port: 3000
+        homer:
+          name: Mealie
+          service: Home
+          priority: 900
