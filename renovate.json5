@@ -299,6 +299,7 @@
     {
       matchPackagePatterns: [".*\\/drawio"],
       customChangelogUrl: "https://github.com/jgraph/drawio",
+      prBodyNotes: "[ChangeLog](https://github.com/jgraph/drawio/blob/dev/ChangeLog)",
     },
   ],
 
