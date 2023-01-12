@@ -284,7 +284,7 @@
     },
     /* languagetool */
     {
-      matchPackagePatterns: [".*\\/languagetool"],
+      matchPackagePatterns: [".*\\/.*languagetool"],
       customChangelogUrl: "https://github.com/silvio/docker-languagetool",
       prBodyNotes: "[CHANGES](https://github.com/languagetool-org/languagetool/blob/master/languagetool-standalone/CHANGES.md)",
     },
@@ -293,6 +293,12 @@
       matchPackagePatterns: [".*\\/scrutiny"],
       versioning: "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-omnibus$",
       customChangelogUrl: "https://github.com/AnalogJ/scrutiny",
+      prBodyNotes: "[Releases](https://github.com/AnalogJ/scrutiny/releases)",
+    },
+    /* drawio */
+    {
+      matchPackagePatterns: [".*\\/drawio"],
+      customChangelogUrl: "https://github.com/jgraph/drawio",
     },
   ],
 
