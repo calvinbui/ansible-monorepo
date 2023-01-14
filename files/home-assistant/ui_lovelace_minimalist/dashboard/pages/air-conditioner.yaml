@@ -115,49 +115,49 @@ cards:
         type: horizontal-stack
         cards:
           -
-            &air_conditioning_room
-            type: custom:mushroom-template-card
             primary: Living Room
             icon: mdi:theater
             entity: switch.daikin_ac_living
-            layout: vertical
-            icon_color: '{{ "#253e5c" if is_state(config.entity, "on") else "" }}'
-            card_mod:
-              style: |
-                {% if is_state(config.entity, "on") %}
-                  ha-card {
-                    --card-background-color: #8fb3f4;
-                    --primary-text-color: #253e5c;
-                  }
-                {% endif %}
+            <<: &air_conditioning_room
+              type: custom:mushroom-template-card
+              layout: vertical
+              icon_color: '{{ "#253e5c" if is_state(config.entity, "on") else "" }}'
+              card_mod:
+                style: |
+                  {% if is_state(config.entity, "on") %}
+                    ha-card {
+                      --card-background-color: #8fb3f4;
+                      --primary-text-color: #253e5c;
+                    }
+                  {% endif %}
           -
-            <<: *air_conditioning_room
             primary: Master Bedroom
             icon: mdi:bed-king
             entity: switch.daikin_ac_master
+            <<: *air_conditioning_room
       -
         type: horizontal-stack
         cards:
           -
-            <<: *air_conditioning_room
             primary: Tammy's Study
             icon: mdi:face-woman
             entity: switch.daikin_ac_tammy_study
-          -
             <<: *air_conditioning_room
+          -
             primary: Small Bedroom
             icon: mdi:bed-outline
             entity: switch.daikin_ac_small_bed
+            <<: *air_conditioning_room
       -
         type: horizontal-stack
         cards:
           -
-            <<: *air_conditioning_room
             primary: Large Bedroom
             icon: mdi:bed
             entity: switch.daikin_ac_large_bed
-          -
             <<: *air_conditioning_room
+          -
             primary: Calvin's Study
             icon: mdi:face-man
             entity: switch.daikin_ac_calvin_study
+            <<: *air_conditioning_room

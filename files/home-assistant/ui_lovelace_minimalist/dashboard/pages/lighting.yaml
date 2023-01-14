@@ -34,113 +34,113 @@ cards:
       grid-area: room1
     cards:
       -
-        &lighting_card_title
-        type: custom:button-card
-        template: card_title
         name: 🛋️ Living Room
+        <<: &lighting_card_title
+          type: custom:button-card
+          template: card_title
       -
-        &lighting_card
-        type: custom:button-card
-        template: card_light
         entity: light.living_room_downlights
-        variables:
-          ulm_card_light_name: >-
-            [[[
-              if (entity.entity_id.includes('downlights')) {
-                return 'Downlights';
-              } else if (entity.entity_id.includes('leds')) {
-                return 'LEDs';
-              } else {
-                return entity.name;
-              }
-            ]]]
-        card_mod:
-          style: |
-            {% if is_state(config.entity, "on") %}
-              ha-card {
-                --card-background-color: #fcd6631a !important;
-                background-color: #fcd6631a !important;
-                --primary-text-color: #253e5c;
-              }
-            {% endif %}
+        <<: &lighting_card_switch
+          type: custom:button-card
+          template: card_light
+          variables:
+            ulm_card_light_name: >-
+              [[[
+                if (entity.entity_id.includes('downlights')) {
+                  return 'Downlights';
+                } else if (entity.entity_id.includes('leds')) {
+                  return 'LEDs';
+                } else {
+                  return entity.name;
+                }
+              ]]]
+          card_mod:
+            style: |
+              {% if is_state(config.entity, "on") %}
+                ha-card {
+                  --card-background-color: #fcd6631a !important;
+                  background-color: #fcd6631a !important;
+                  --primary-text-color: #253e5c;
+                }
+              {% endif %}
       -
-        <<: *lighting_card
         entity: light.living_room_leds
+        <<: *lighting_card_switch
 
   - type: vertical-stack
     view_layout:
       grid-area: room2
     cards:
       -
-        <<: *lighting_card_title
         name: 🍳 Kitchen
+        <<: *lighting_card_title
       -
-        <<: *lighting_card
         entity: light.kitchen_downlights
+        <<: *lighting_card_switch
       -
-        <<: *lighting_card
         entity: light.kitchen_leds
+        <<: *lighting_card_switch
 
   - type: vertical-stack
     view_layout:
       grid-area: room3
     cards:
       -
-        <<: *lighting_card_title
         name: 🍴 Dining
+        <<: *lighting_card_title
       -
-        <<: *lighting_card
         entity: light.dining_room_downlights
+        <<: *lighting_card_switch
       -
-        <<: *lighting_card
         entity: light.dining_room_leds
+        <<: *lighting_card_switch
 
   - type: vertical-stack
     view_layout:
       grid-area: room4
     cards:
       -
-        <<: *lighting_card_title
         name: 👟 Downstairs Hallway
+        <<: *lighting_card_title
       -
-        <<: *lighting_card
         entity: light.downstairs_hallway_downlights
+        <<: *lighting_card_switch
       -
-        <<: *lighting_card
         entity: light.downstairs_hallway_leds
+        <<: *lighting_card_switch
 
   - type: vertical-stack
     view_layout:
       grid-area: room5
     cards:
       -
-        <<: *lighting_card_title
         name: 🚗 Garage
+        <<: *lighting_card_title
       -
-        <<: *lighting_card
         entity: light.garage_downlights
+        <<: *lighting_card_switch
 
   - type: vertical-stack
     view_layout:
       grid-area: room6
     cards:
       -
-        <<: *lighting_card_title
         name: 🚀 Upstairs Hallway
+        <<: *lighting_card_title
       -
-        <<: *lighting_card
         entity: light.upstairs_hallway_downlights
+        <<: *lighting_card_switch
 
   - type: vertical-stack
     view_layout:
       grid-area: room7
     cards:
       -
-        <<: *lighting_card_title
         name: 🛏️ Master Bedroom
+        <<: *lighting_card_title
       -
-        <<: *lighting_card
         entity: light.master_bedroom_downlights
+        <<: *lighting_card_switch
 
 
   - type: vertical-stack
@@ -148,51 +148,54 @@ cards:
       grid-area: room8
     cards:
       -
-        <<: *lighting_card_title
         name: 🌱 Alfresco
+        <<: *lighting_card_title
       -
-        <<: *lighting_card
         entity: light.alfresco_downlights
+        <<: *lighting_card_switch
 
   - type: vertical-stack
     view_layout:
       grid-area: motion
     cards:
       -
-        <<: *lighting_card_title
         name: 🧍‍♂️ Motion Detection
+        <<: *lighting_card_title
       -
-        &input_boolean_card
-        type: custom:button-card
-        template: card_input_boolean
         entity: input_boolean.downstairs_common_motion_detection_automations
         variables:
           ulm_card_input_boolean_name: Downstairs Common
+        <<: &input_boolean_card
+          type: custom:button-card
+          template: card_input_boolean
       -
-        <<: *input_boolean_card
         entity: input_boolean.alfresco_motion_detection_automations
         variables:
           ulm_card_input_boolean_name: Alfresco
-      -
         <<: *input_boolean_card
+
+      -
         entity: automation.lights_foyer_motion_detection_on_off
         variables:
           ulm_card_input_boolean_name: Foyer
-      -
         <<: *input_boolean_card
+
+      -
         entity: input_boolean.garage_downlights_motion_detection_automations
         variables:
           ulm_card_input_boolean_name: Garage
+        <<: *input_boolean_card
+
 
   - type: vertical-stack
     view_layout:
       grid-area: schedule
     cards:
       -
-        <<: *lighting_card_title
         name: 🕑 Schedule
+        <<: *lighting_card_title
       -
-        <<: *input_boolean_card
         entity: automation.lights_foyer_schedule
         variables:
           ulm_card_input_boolean_name: Foyer
+        <<: *input_boolean_card

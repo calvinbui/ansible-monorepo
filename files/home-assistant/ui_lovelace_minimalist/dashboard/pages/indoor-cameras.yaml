@@ -22,35 +22,35 @@ layout:
 
 cards:
   -
-    &indoor_camera_card
     entity: camera.downstairs_common
-    show_state: false
-    show_name: false
-    camera_view: live
-    type: picture-entity
-    tap_action:
-      action: none
-    hold_action:
-      action: none
     view_layout:
       grid-area: bigcamera1
+    <<: &indoor_camera_card
+      show_state: false
+      show_name: false
+      camera_view: live
+      type: picture-entity
+      tap_action:
+        action: none
+      hold_action:
+        action: none
   -
-    <<: *indoor_camera_card
     entity: camera.foyer
     view_layout:
       grid-area: bigcamera2
-  -
     <<: *indoor_camera_card
+  -
     entity: camera.front_bedrooms
     view_layout:
       grid-area: smallcamera1
-  -
     <<: *indoor_camera_card
+  -
     entity: camera.upstairs_hallway
     view_layout:
       grid-area: smallcamera2
-  -
     <<: *indoor_camera_card
+  -
     entity: camera.garage
     view_layout:
       grid-area: smallcamera3
+    <<: *indoor_camera_card
