@@ -107,12 +107,12 @@ cards:
             params: 0
         entity: vacuum.downstairs_s7
         map_source:
-          camera: camera.downstairs_s7
+          camera: camera.downstairs_s7_map
           crop:
             top: 55
             bottom: 45
         calibration_source:
-          camera: camera.downstairs_s7
+          camera: camera.downstairs_s7_map
         additional_presets:
           -
             preset_name: Foyer
@@ -125,23 +125,23 @@ cards:
                 params: 1
             entity: vacuum.downstairs_s7
             map_source:
-              camera: camera.downstairs_s7
+              camera: camera.downstairs_s7_map
               crop:
                 top: 200
                 bottom: 200
                 left: 200
                 right: 200
             calibration_source:
-              camera: camera.downstairs_s7
+              camera: camera.downstairs_s7_map
           -
             preset_name: Upstairs
             entity: vacuum.upstairs_s7
             map_source:
-              camera: camera.upstairs_s7
+              camera: camera.upstairs_s7_map
               crop:
                 top: 55
                 bottom: 45
                 left: 40
                 right: 50
             calibration_source:
-              camera: camera.upstairs_s7
+              camera: camera.upstairs_s7_map
