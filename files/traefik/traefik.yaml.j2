@@ -35,9 +35,7 @@ pilot:
 
 log:
   level: "INFO"
+  filePath: "/var/log/traefik/traefik.log"
 
 accessLog:
-  filePath: "/var/log/access.log"
-  filters:
-    statusCodes:
-      - "401-499"
+  filePath: "/var/log/traefik/access.log"

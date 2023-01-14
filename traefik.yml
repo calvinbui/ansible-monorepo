@@ -5,7 +5,8 @@
   vars:
     application: traefik
 
-    docker_network: bridge
+    docker_network:
+      name: bridge
 
   handlers:
     - name: Restart
@@ -60,10 +61,12 @@
           subtitle: "Reverse proxy"
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock
+
           - "{{ config_directory }}/traefik.yaml:/etc/traefik/traefik.yaml"
           - "{{ config_directory }}/acme.json:/acme.json"
           - "{{ config_directory }}/dynamic_conf.yaml:/dynamic_conf.yaml"
-          - /var/log/traefik:/var/log
+
+          - /var/log/traefik:/var/log/traefik
         published_ports:
           - 80:80
           - 443:443
