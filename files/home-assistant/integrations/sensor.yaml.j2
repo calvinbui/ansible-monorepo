@@ -1,86 +1,85 @@
 ---
 
 {%- raw %}
-
 # https://github.com/pnbruckner/ha-sun2
-- platform: sun2
+-
+  platform: sun2
   monitored_conditions:
     - sunrise
     - sunset
 
-
 # https://github.com/mampfes/hacs_waste_collection_schedule
 -
-  &waste_collection_schedule
-  platform: waste_collection_schedule
   name: Waste Collection Schedule - Waste
   source_index: 0
   types: [Waste]
-  details_format: upcoming
-  add_days_to: true
-  value_template: >-
-    {% set today = now() %}
+  <<: &waste_collection_schedule
+    platform: waste_collection_schedule
+    details_format: upcoming
+    add_days_to: true
+    value_template: >-
+      {% set today = now() %}
 
-    {% if value.daysTo == 0 %}
-      Today
+      {% if value.daysTo == 0 %}
+        Today
 
-    {% elif value.daysTo == 1 %}
-      Tomorrow
+      {% elif value.daysTo == 1 %}
+        Tomorrow
 
-    {% elif value.date.isocalendar().week == today.isocalendar().week %}
-      {{ value.date.strftime("%A")}}
+      {% elif value.date.isocalendar().week == today.isocalendar().week %}
+        {{ value.date.strftime("%A")}}
 
-    {% elif value.date.isocalendar().week - today.isocalendar().week == 1 %}
-      Next {{ value.date.strftime("%A")}}
+      {% elif value.date.isocalendar().week - today.isocalendar().week == 1 %}
+        Next {{ value.date.strftime("%A")}}
 
-    {% elif value.date.isocalendar().week - today.isocalendar().week == 2 %}
-      In 2 weeks
+      {% elif value.date.isocalendar().week - today.isocalendar().week == 2 %}
+        In 2 weeks
 
-    {% else %}
-      {{ value.date }} ({{value.daysTo}} days)
+      {% else %}
+        {{ value.date }} ({{value.daysTo}} days)
 
-    {% endif %}
-
+      {% endif %}
 -
-  <<: *waste_collection_schedule
   name: Waste Collection Schedule - Recycling
   source_index: 0
   types: [Recycling]
--
   <<: *waste_collection_schedule
+-
   name: Waste Collection Schedule - Organics
   source_index: 0
   types: [Organics]
--
   <<: *waste_collection_schedule
+-
   name: Waste Collection Schedule - Bulk Household
   source_index: 0
   types: [Bulk Household]
--
   <<: *waste_collection_schedule
+-
   name: Waste Collection Schedule - Soft Plastics
   source_index: 1
   types: [Pickup]
+  <<: *waste_collection_schedule
 
 # converts kW to kWh for the following solar/grid import/export sensors
 # https://www.home-assistant.io/integrations/integration/
-- platform: integration
+-
+  platform: integration
   name: Grid Power Import
   unique_id: grid_power_import_kwh
   source: sensor.grid_power_consumption
   method: left
   unit_prefix: k
   unit_time: h
-
-- platform: integration
+-
+  platform: integration
   name: Grid Power Export
   unique_id: grid_power_export_kwh
   source: sensor.grid_power_export
   method: left
   unit_prefix: k
   unit_time: h
-
-- platform: integration
+-
+  platform: integration
   name: Solar Self Consumption
   unique_id: solar_self_consumption_kwh
   source: sensor.solar_self_consumption
