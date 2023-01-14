@@ -3,9 +3,22 @@
 # https://www.home-assistant.io/integrations/logger
 
 default: warning
+
 logs:
-  # Python - drop to info
+  # python - drop to info
   homeassistant.components.python_script: info
 
-  # Localtuya - too many errors when electric blanket are off
-  custom_components.localtuya.common: fatal
+filters:
+  # govee
+  custom_components.govee:
+    - "API is back online."
+
+  # ics_calendar
+  custom_components.ics_calendar.calendar:
+    # Warning about NSW Government format not correct
+    - "Trying to decode strm!"
+
+  # localtuya
+  custom_components.localtuya.common:
+    # suppress error when electric blanket are off
+    - ".*Connect to {{ docker_network.prefix }}.4(4|5) failed"
