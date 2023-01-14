@@ -2,10 +2,19 @@
 
 ---
 
+# https://www.home-assistant.io/integrations/caldav/
+{% for i in home_assistant_integrations.caldav %}
+- platform: caldav
+  url: {{ i.url }}
+  username: {{ i.username }}
+  password: {{ i.password }}
+  custom_calendars: {{ i.custom_calendars }}
+{% endfor %}
+
 # https://github.com/franc6/ics_calendar
 - platform: ics_calendar
   calendars:
-{% for i in home_assistant_integrations.calendar %}
+{% for i in home_assistant_integrations.ics_calendar %}
     - name: {{ i.name }}
       url: {{ i.url }}
       include_all_day: True

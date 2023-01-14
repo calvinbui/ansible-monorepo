@@ -55,7 +55,7 @@ cards:
 
         entities:
           -
-            entity: calendar.calvin_s_calendar
+            entity: calendar.my_calendar_calvin_s_calendar
             name: Calvin
           -
             entity: calendar.tammy_nguyen013_gmail_com
