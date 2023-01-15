@@ -309,3 +309,4 @@
           PORT: "8080"
           CROWDSEC_BOUNCER_API_KEY: "{{ crowdsec_bouncer_key.traefik }}"
           GIN_MODE: "release"
+          CROWDSEC_BOUNCER_LOG_LEVEL: "2"
