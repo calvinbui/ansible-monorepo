@@ -18,11 +18,14 @@
   tasks:
     - name: Create config folder
       ansible.builtin.file:
-        path: "{{ config_directory }}"
+        path: "{{ item }}"
         state: directory
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
+      loop:
+        - "{{ config_directory }}"
+        - /var/log/gitea
 
     - name: Create postgres container
       ansible.builtin.include_role:
@@ -64,9 +67,9 @@
           GITEA__database__PASSWD: "{{ _postgres_password }}"
 
           GITEA__mailer__ENABLED: "true"
-          GITEA__mailer__MAILER_TYPE: smtp
-          GITEA__mailer__HOST: "{{ common_email_server }}:{{ common_email_ssl_port | string }}"
-          GITEA__mailer__IS_TLS_ENABLED: "{{ 'true' if common_email_protocol == 'tls' else 'false' }}"
+          GITEA__mailer__PROTOCOL: "smtp+starttls"
+          GITEA__mailer__SMTP_ADDR: "{{ common_email_server }}"
+          GITEA__mailer__SMTP_PORT: "{{ common_email_port | string }}"
           GITEA__mailer__USER: "{{ common_email_username }}"
           GITEA__mailer__PASSWD: "{{ common_email_password }}"
           GITEA__mailer__FROM: "{{ application }}{{ common_email_to }}"
@@ -100,6 +103,11 @@
           GITEA__repository__DISABLE_STARS: "true"
 
           GITEA__packages__ENABLED: "false"
+
+          GITEA__log__MODE: "console,file"
+          GITEA__log__ENABLE_XORM_LOG: "false"
+          GITEA__log__DISABLE_ROUTER_LOG: "true"
+          GITEA__log__ENABLE_ACCESS_LOG: "false"
         traefik:
           - port: 3000
         homer:

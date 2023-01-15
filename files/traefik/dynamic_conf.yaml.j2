@@ -21,6 +21,12 @@ http:
       basicAuth:
         users:
           - '{{ htpasswd.username }}:{{ htpasswd.password_hashed }}'
+
+    crowdsec-bouncer:
+      forwardauth:
+        address: http://crowdsec-traefik-bouncer.{{ common_local_tld }}:8080/api/v1/forwardAuth
+        trustForwardHeader: true
+
 tls:
   options:
     default:

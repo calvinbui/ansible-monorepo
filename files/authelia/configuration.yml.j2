@@ -72,3 +72,6 @@ notifier:
     port: "{{ common_email_port }}"
     sender: "{{ application }}{{ common_email_to }}"
     disable_require_tls: "{{ 'false' if common_email_protocol=='tls' else 'true' }}"
+
+log:
+  file_path: /var/log/authelia/authelia.log

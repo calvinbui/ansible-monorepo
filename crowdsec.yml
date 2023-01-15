@@ -1,0 +1,311 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: crowdsec
+
+    crowdsec_bouncer_key:
+      traefik: !vault |
+        $ANSIBLE_VAULT;1.1;AES256
+        39356134633137633537623839353762316637643265323765313833616132336237376639623639
+        3463363031643738363666366332306638656261353963300a396166303933633961323037323738
+        63643835396433303731316639666339623362313032636262626433336263363531643630316435
+        3263396138633362620a373664386131393531303232336230636235373762333737393437363832
+        66396337666131353861396665323337393762323062373462396166373861663636
+
+    docker_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart
+      community.docker.docker_container:
+        name: "{{ application }}"
+        restart: true
+        comparisons:
+          '*': ignore
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Create config.yaml.local
+      ansible.builtin.copy:
+        content: |
+          common:
+            log_level: info
+          config_paths:
+            notification_dir: /etc/crowdsec/notifications.local/
+          api:
+            server:
+              log_level: warn
+        dest: "{{ config_directory }}/config.yaml.local"
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
+      notify: Restart
+
+    - name: Create acquis.yaml
+      ansible.builtin.copy:
+        content: |
+          ---
+          filenames: [/var/log/traefik/*]
+          labels:
+            type: traefik
+          ---
+          filenames: [/var/log/authelia.log]
+          labels:
+            type: authelia
+          ---
+          filenames: [/var/log/gitea.log]
+          labels:
+            type: gitea
+          ---
+          filenames: [/var/log/home-assistant.log]
+          labels:
+            type: home-assistant
+          ---
+          filenames: [/var/log/nextcloud.log]
+          labels:
+            type: nextcloud
+          ---
+          filenames: [/var/log/samba/log.*]
+          labels:
+            type: smb
+          ---
+          filenames:
+            - /var/log/auth.log
+            - /var/log/kern.log
+            - /var/log/syslog
+          labels:
+            type: syslog
+          ---
+          filenames: [/var/log/vsftpd.log]
+          labels:
+            type: vsftpd
+          ---
+          filenames: [/var/log/prowlarr.txt]
+          labels:
+            type: Prowlarr
+          ---
+          filenames: [/var/log/sonarr.txt]
+          labels:
+            type: Sonarr
+          ---
+          filenames: [/var/log/radarr.txt]
+          labels:
+            type: Radarr
+          ---
+          filenames: [/var/log/vaultwarden.log]
+          labels:
+            type: Vaultwarden
+        dest: "{{ config_directory }}/acquis.yaml"
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
+      notify: Restart
+
+    - name: Create email.yaml
+      ansible.builtin.copy:
+        content: |
+          type: email
+          name: email
+
+          log_level: info
+
+          {% raw %}
+          format: |
+            {{range . -}}
+              {{$alert := . -}}
+              {{range .Decisions -}}
+                <a href=https://www.whois.com/whois/{{.Value}}>{{.Value}}</a> will get <b>{{.Type}}</b> for next <b>{{.Duration}}</b> for triggering <b>{{.Scenario}}</b>. <a href=https://www.shodan.io/host/{{.Value}}>Shodan</a>
+              {{end -}}
+            {{end -}}
+          {% endraw %}
+
+          smtp_host: {{ common_email_server }}
+          smtp_username: {{ common_email_username }}
+          smtp_password: {{ common_email_password }}
+          smtp_port: {{ common_email_port }}
+          sender_email: {{ common_email_username }}
+          receiver_emails:
+           - {{ application }}{{ common_email_to }}
+          encryption_type: starttls
+          auth_type: login
+          email_subject: CrowdSec Notification
+
+          timeout: 20s
+        dest: "{{ config_directory }}/email.yaml"
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
+      notify: Restart
+
+    - name: Create slack.yaml
+      ansible.builtin.copy:
+        content: |
+          type: slack
+          name: slack
+
+          log_level: info
+
+          {% raw %}
+          format: |
+            {{range . -}}
+            {{$alert := . -}}
+            {{range .Decisions -}}
+            {{if $alert.Source.Cn -}}
+            :flag-{{$alert.Source.Cn}}: <https://www.whois.com/whois/{{.Value}}|{{.Value}}> will get {{.Type}} for next {{.Duration}} for triggering {{.Scenario}} on machine '{{$alert.MachineID}}'. <https://app.crowdsec.net/cti/{{.Value}}|CrowdSec CTI>{{end}}
+            {{if not $alert.Source.Cn -}}
+            :pirate_flag: <https://www.whois.com/whois/{{.Value}}|{{.Value}}> will get {{.Type}} for next {{.Duration}} for triggering {{.Scenario}} on machine '{{$alert.MachineID}}'.  <https://app.crowdsec.net/cti/{{.Value}}|CrowdSec CTI>{{end}}
+            {{end -}}
+            {{end -}}
+          {% endraw %}
+
+          webhook: ${SLACK_WEBHOOK}
+        dest: "{{ config_directory }}/slack.yaml"
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
+      notify: Restart
+
+    - name: Create profiles.yaml.local
+      ansible.builtin.copy:
+        content: |
+          name: default_ip_remediation
+
+          debug: false
+
+          filters:
+            - Alert.Remediation == true && Alert.GetScope() == "Ip"
+
+          decisions:
+            - type: ban
+              duration: 4h
+
+          notifications:
+            - email
+            - slack
+
+          on_success: break
+          on_failure: break
+        dest: "{{ config_directory }}/profiles.yaml.local"
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
+      notify: Restart
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: crowdsecurity/crowdsec:v1.4.4
+        env:
+          # General
+          TZ: "{{ common_timezone }}"
+
+          # Hub management
+          COLLECTIONS: |-
+            {{
+              [
+                "crowdsecurity/home-assistant",
+                "crowdsecurity/iptables",
+                "crowdsecurity/linux-lpe",
+                "crowdsecurity/linux",
+                "crowdsecurity/nextcloud",
+                "crowdsecurity/smb",
+                "crowdsecurity/sshd",
+                "crowdsecurity/traefik",
+                "crowdsecurity/vsftpd",
+                "Dominic-Wagner/vaultwarden",
+                "LePresidente/authelia",
+                "LePresidente/gitea",
+                "schiz0phr3ne/prowlarr",
+                "schiz0phr3ne/radarr"
+                "schiz0phr3ne/sonarr",
+              ] | join(' ')
+            }}
+
+          # LAPI
+          USE_WAL: "true"
+          CUSTOM_HOSTNAME: "{{ application }}.{{ docker_network.name }}"
+
+          # Custom
+          SLACK_WEBHOOK: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            35623830653133626136616530353934336561656531663234613765613535353137623430383934
+            3933643432643534643564393733666132356537373036320a613064353433346138623533643237
+            31663931356365646339653162306331646263636462623430626532353365303734326631613138
+            6334613339396161380a353232643735313862386539636366393364646134383532383835643032
+            35366562373565626133366663613363306434316535613935356162613633653036333839666339
+            37383863323935643938373162396261383833373361393165353531393239613464353335386264
+            63376361383564393136613864313166356661653935386464336361356565333465383035653234
+            35323465303734613034
+
+          # Console
+          ENROLL_KEY: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            33623339333264363037303661616536353936393965613033633732336638633137336631643762
+            3466653162323565616466303930393839346336313661330a323066303238393338626539363937
+            37333838396433303836626138383132363961343831613466343034613364356434346530336439
+            6433303533643431390a636562643163313663623238646534366635373231663961303635663363
+            35313436613133643531333431326133353133343139656563666362336464643738
+          ENROLL_INSTANCE_NAME: "{{ application }}.{{ docker_network.name }}"
+          ENROLL_TAGS: "homelab"
+
+          # Bouncers
+          BOUNCER_KEY_traefik: "{{ crowdsec_bouncer_key.traefik }}"
+        volumes:
+          - "{{ config_directory }}/acquis.yaml:/etc/crowdsec/acquis.yaml"
+
+          - "{{ config_directory }}/config.yaml.local:/etc/crowdsec/config.yaml.local"
+          - "{{ config_directory }}/profiles.yaml.local:/etc/crowdsec/profiles.yaml.local"
+
+          - "{{ config_directory }}/email.yaml:/etc/crowdsec/notifications.local/email.yaml"
+          - "{{ config_directory }}/slack.yaml:/etc/crowdsec/notifications.local/slack.yaml"
+
+          - "{{ config_directory }}/config:/etc/crowdsec"
+          - "{{ config_directory }}/data:/var/lib/crowdsec/data"
+
+          - "{{ common_directory }}/authelia/logs/authelia.log:/var/log/authelia.log:ro"
+          - "{{ common_directory }}/bitwarden/bitwarden/vaultwarden.log:/var/log/vaultwarden.log"
+          - "{{ common_directory }}/gitea/data/gitea/log/gitea.log:/var/log/gitea.log:ro"
+          - "{{ common_directory }}/home-assistant/config/home-assistant.log:/var/log/home-assistant.log:ro"
+          - "{{ common_directory }}/nextcloud/nextcloud/data/nextcloud.log:/var/log/nextcloud.log:ro"
+          - "{{ common_directory }}/prowlarr/config/logs/prowlarr.txt:/var/log/prowlarr.txt:ro"
+          - "{{ common_directory }}/radarr/config/logs/radarr.txt:/var/log/radarr.txt:ro"
+          - "{{ common_directory }}/sonarr/logs/sonarr.txt:/var/log/sonarr.txt:ro"
+          - "{{ common_directory }}/traefik/logs:/var/log/traefik:ro"
+          - /var/log/auth.log:/var/log/auth.log:ro
+          - /var/log/kern.log:/var/log/kern.log:ro
+          - /var/log/samba/:/var/log/samba/:ro
+          - /var/log/syslog:/var/log/syslog:ro
+          - /var/log/vsftpd.log:/var/log/vsftpd.log:ro
+        labels:
+          '{
+            "chadburn.enabled": "true",
+            "chadburn.job-exec.{{ application }}-hub.user": "0",
+            "chadburn.job-exec.{{ application }}-hub.schedule": "@every 1h",
+            "chadburn.job-exec.{{ application }}-hub.command": "sh -c \"cscli hub update && cscli hub upgrade\"",
+            "chadburn.job-exec.{{ application }}-hub.tty": "false",
+            "chadburn.job-exec.{{ application }}-hub.no-overlap": "true"
+          }'
+        metrics:
+          - port: 6060
+
+    - name: Create traefik bouncer container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-traefik-bouncer"
+        image: fbonalair/traefik-crowdsec-bouncer:0.1.1
+        ipv4_address: "{{ docker_network.prefix }}.5"
+        env:
+          CROWDSEC_AGENT_HOST: "{{ application }}.{{ docker_network.name }}:8080"
+          PORT: "8080"
+          CROWDSEC_BOUNCER_API_KEY: "{{ crowdsec_bouncer_key.traefik }}"
+          GIN_MODE: "release"

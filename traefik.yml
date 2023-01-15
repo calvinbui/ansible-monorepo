@@ -66,7 +66,7 @@
           - "{{ config_directory }}/acme.json:/acme.json"
           - "{{ config_directory }}/dynamic_conf.yaml:/dynamic_conf.yaml"
 
-          - /var/log/traefik:/var/log/traefik
+          - "{{ config_directory }}/logs:/var/log/traefik"
         published_ports:
           - 80:80
           - 443:443
@@ -80,7 +80,7 @@
         image: vegardit/traefik-logrotate:latest
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock # required to send USR1 signal to Traefik after log rotation
-          - /var/log/traefik:/var/log/traefik
+          - "{{ config_directory }}/logs:/var/log/traefik"
         env:
           TZ: "{{ common_timezone }}"
 

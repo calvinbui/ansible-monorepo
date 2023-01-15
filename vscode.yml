@@ -78,7 +78,7 @@
           CS_DISABLE_GETTING_STARTED_OVERRIDE: "true"
         volumes:
           - "{{ config_directory }}:/config"
-          - "/apps/home-assistant/config/:/home-assistant"
+          - "{{ common_directory }}/home-assistant/config/:/home-assistant"
           - "{{ config_directory }}/repos:/repos"
         traefik:
           - port: 8443

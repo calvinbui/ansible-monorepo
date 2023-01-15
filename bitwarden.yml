@@ -77,6 +77,8 @@
           DATABASE_URL: "{{ _postgres_url }}"
 
           ROCKET_PORT: "8080"
+
+          LOG_FILE: /data/vaultwarden.log
         volumes:
           - "{{ config_directory }}/{{ application }}:/data"
         traefik:

@@ -1,5 +1,5 @@
 ---
 
 homer_logos_local_dir: files/homer/logos
-homer_logos_remote_dir: /apps/homer/logos
+homer_logos_remote_dir: "{{ common_directory }}/homer/logos"
 homer_logos_container_dir: /logos

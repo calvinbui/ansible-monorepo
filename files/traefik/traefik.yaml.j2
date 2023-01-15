@@ -10,16 +10,22 @@ providers:
 
 entryPoints:
   web:
-    address: ':80/tcp'
+    address: '0.0.0.0:80/tcp'
+    http:
+      middlewares:
+        - crowdsec-bouncer@file
 
   web-secure:
-    address: ':443/tcp'
+    address: '0.0.0.0:443/tcp'
+    http:
+      middlewares:
+        - crowdsec-bouncer@file
 
   metrics:
-    address: ':8082/tcp'
+    address: '0.0.0.0:8082/tcp'
 
   ntp:
-    address: ':123/udp'
+    address: '0.0.0.0:123/udp'
 
 certificatesResolvers:
   letsencrypt:

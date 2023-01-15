@@ -123,6 +123,7 @@
           subtitle: "Authentication and authorization"
         volumes:
           - "{{ config_directory }}/authelia:/config"
+          - "{{ config_directory }}/logs:/var/log/authelia"
         labels:
           '{
             "traefik.http.middlewares.{{ traefik_middleware_authelia.split("@")[0] }}.forwardauth.address": "http://{{ application }}.{{ common_local_tld }}:9091/api/verify?rd=https://{{ application }}.{{ common_tld }}",
