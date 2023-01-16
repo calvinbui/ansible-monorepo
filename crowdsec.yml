@@ -225,7 +225,7 @@
                 "LePresidente/authelia",
                 "LePresidente/gitea",
                 "schiz0phr3ne/prowlarr",
-                "schiz0phr3ne/radarr"
+                "schiz0phr3ne/radarr",
                 "schiz0phr3ne/sonarr",
               ] | join(' ')
             }}
