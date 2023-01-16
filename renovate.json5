@@ -58,48 +58,47 @@
         commitMessageTopic: "version",
       },
     },
-    /* Plex */
+    /* plex */
     {
       matchPackagePatterns: [".*\\/pms-docker"],
       versioning: "loose",
       prBodyNotes: "[Release Notes](https://forums.plex.tv/t/plex-media-server/30447)",
     },
-    /* Umami */
+    /* umami */
     {
       matchPackagePatterns: [".*\\/umami"],
       versioning: "regex:^postgresql-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$",
     },
-    /* Minio */
+    /* minio */
     {
       matchPackagePatterns: [".*\\/minio"],
       versioning: "regex:^RELEASE\\.(?<major>\\d+)-(?<minor>\\d+)-(?<patch>\\d+)T(?<build>.*)Z$",
       customChangelogUrl: "https://github.com/minio/minio",
     },
-    /* Minio MC */
+    /* minio mc */
     {
       matchPackagePatterns: [".*\\/mc"],
       versioning: "regex:^RELEASE\\.(?<major>\\d+)-(?<minor>\\d+)-(?<patch>\\d+)T(?<build>.*)Z$",
       customChangelogUrl: "https://github.com/minio/mc",
     },
-    /* Minio Console */
+    /* minio console */
     {
       matchPackagePatterns: ["minio\\/console"],
       customChangelogUrl: "https://github.com/minio/console",
     },
-    /* NZBGet */
-    // automerge patch version which linuxserver.io puts as the date of the build
+    /* nzbget */
     {
       matchPackagePatterns: [".*\\/nzbget$"],
       matchUpdateTypes: ["patch"],
       automerge: true,
       ignoreTests: true,
     },
-    /* Bazarr */
+    /* bazarr */
     {
       matchPackagePatterns: [".*\\/bazarr"],
       customChangelogUrl: "https://github.com/morpheus65535/bazarr",
     },
-    /* VictoriaMetrics */
+    /* victoriametrics */
     {
       groupName: "VictoriaMetrics",
       matchPackagePatterns: [
@@ -108,19 +107,19 @@
       ],
       customChangelogUrl: "https://github.com/VictoriaMetrics/VictoriaMetrics",
     },
-    /* Homer */
+    /* homer */
     {
       matchPackagePatterns: [".*\\/homer"],
       customChangelogUrl: "https://github.com/bastienwirtz/homer",
     },
-    /* Prowlarr */
+    /* prowlarr */
     {
       matchPackagePatterns: [".*\\/prowlarr"],
       versioning: "regex:^develop-version-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)$",
       customChangelogUrl: "https://github.com/Prowlarr/Prowlarr",
       prBodyNotes: "[Releases](https://github.com/Prowlarr/Prowlarr/releases)",
     },
-    /* Renovate */
+    /* renovate */
     {
       matchPackagePatterns: [".*\\/renovate"],
       customChangelogUrl: "https://github.com/renovatebot/renovate",
@@ -128,69 +127,69 @@
       automerge: true,
       ignoreTests: true,
     },
-    /* Authelia */
+    /* authelia */
     {
       matchPackagePatterns: [".*\\/authelia"],
       customChangelogUrl: "https://github.com/authelia/authelia",
     },
-    /* qBittorrent */
+    /* qbittorrent */
     {
       matchPackagePatterns: [".*\\/qbittorrent"],
       customChangelogUrl: "https://github.com/qbittorrent/qBittorrent",
     },
-    /* Portainer */
+    /* portainer */
     {
       matchPackagePatterns: [".*\\/portainer-[c|e]e"],
       customChangelogUrl: "https://github.com/portainer/portainer",
     },
-    /* Outline */
+    /* outline */
     {
       matchPackagePatterns: ["outlinewiki\\/outline"],
       customChangelogUrl: "https://github.com/outline/outline",
     },
-    /* Tautulli */
+    /* tautulli */
     {
       matchPackagePatterns: [".*\\/tautulli"],
       customChangelogUrl: "https://github.com/Tautulli/Tautulli",
     },
-    /* Overseerr */
+    /* overseerr */
     {
       matchPackagePatterns: ["sctx\\/overseerr"],
       customChangelogUrl: "https://github.com/sct/overseerr",
     },
-    /* VS Code Server */
+    /* vscode */
     {
       matchPackagePatterns: [".*\\/code-server"],
       customChangelogUrl: "https://github.com/coder/code-server",
     },
-    /* LibreTranslate */
+    /* libretranslate */
     {
       matchPackagePatterns: [".*\\/libretranslate"],
       customChangelogUrl: "https://github.com/LibreTranslate/LibreTranslate",
     },
-    /* Nextcloud */
+    /* nextcloud */
     {
       matchPackagePatterns: ["nextcloud"],
       customChangelogUrl: "https://github.com/nextcloud/server",
       prBodyNotes: "[Changelog](https://nextcloud.com/changelog/)",
     },
-    /* Chadburn */
+    /* chadburn */
     {
       matchPackagePatterns: [".*\\/chadburn"],
       customChangelogUrl: "https://github.com/PremoWeb/Chadburn",
     },
-    /* Grafana */
+    /* grafana */
     {
       matchPackagePatterns: [".*\\/grafana"],
       customChangelogUrl: "https://github.com/grafana/grafana",
     },
-    /* Mattermost */
+    /* mattermost */
     {
       matchPackagePatterns: [".*\\/mattermost-(team|enterprise)-edition"],
       customChangelogUrl: "https://github.com/mattermost/mattermost-server",
       prBodyNotes: "[Changelog](https://docs.mattermost.com/install/self-managed-changelog.html)",
     },
-    /* OnlyOffice */
+    /* onlyoffice */
     {
       matchPackagePatterns: ["onlyoffice\\/documentserver"],
       customChangelogUrl: "https://github.com/ONLYOFFICE/DocumentServer",
