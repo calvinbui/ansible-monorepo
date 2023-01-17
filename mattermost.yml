@@ -102,6 +102,12 @@
             30656230613466323433333433363132363637653364663738336438666432343430363133633635
             31633136353764366266
 
+          # new in 7.7, not on config doc yet
+          # https://docs.mattermost.com/channels/message-priority.html
+          ServiceSettings/PostPriority: true
+          # https://docs.mattermost.com/channels/send-messages.html#draft-messages
+          ServiceSettings/AllowSyncedDrafts: true
+
           # https://docs.mattermost.com/configure/configuration-settings.html#database
           SqlSettings/DriverName: postgres
           SqlSettings/DataSource: "{{ _postgres_url }}?sslmode=disable\u0026connect_timeout=10"
