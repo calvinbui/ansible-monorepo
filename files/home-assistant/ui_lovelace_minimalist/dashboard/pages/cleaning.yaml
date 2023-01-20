@@ -154,6 +154,144 @@ cards:
               left: 200
           calibration_source:
             camera: camera.downstairs_s7_map
+          map_modes:
+            - template: vacuum_clean_segment
+              predefined_selections:
+                - id: '19'
+                  icon:
+                    name: mdi:silverware-fork-knife
+                    x: 21250
+                    y: 29450
+                  label:
+                    text: Dining Room
+                    x: 21250
+                    y: 29450
+                    offset_y: 35
+                  outline:
+                    - - 17650
+                      - 27850
+                    - - 24850
+                      - 27850
+                    - - 24850
+                      - 31050
+                    - - 17650
+                      - 31050
+                - id: '21'
+                  icon:
+                    name: mdi:sofa
+                    x: 15550
+                    y: 28275
+                  label:
+                    text: Living Room
+                    x: 15550
+                    y: 28275
+                    offset_y: 35
+                  outline:
+                    - - 13500
+                      - 25500
+                    - - 17600
+                      - 25500
+                    - - 17600
+                      - 31050
+                    - - 13500
+                      - 31050
+                - id: '22'
+                  icon:
+                    name: mdi:face-man
+                    x: 26900
+                    y: 25975
+                  label:
+                    text: Calvin's Study
+                    x: 26900
+                    y: 25975
+                    offset_y: 35
+                  outline:
+                    - - 24900
+                      - 24750
+                    - - 28900
+                      - 24750
+                    - - 28900
+                      - 27900
+                    - - 24900
+                      - 27900
+                - id: '24'
+                  icon:
+                    name: mdi:fridge
+                    x: 19350
+                    y: 26700
+                  label:
+                    text: Kitchen
+                    x: 19350
+                    y: 26700
+                    offset_y: 35
+                  outline:
+                    - - 17650
+                      - 25500
+                    - - 21050
+                      - 25500
+                    - - 21050
+                      - 27900
+                    - - 17650
+                      - 27900
+                - id: '25'
+                  icon:
+                    name: mdi:washing-machine
+                    x: 28525
+                    y: 30100
+                  label:
+                    text: Laundry
+                    x: 28525
+                    y: 30100
+                    offset_y: 35
+                  outline:
+                    - - 27650
+                      - 29200
+                    - - 29400
+                      - 29200
+                    - - 29400
+                      - 30400
+                    - - 27650
+                      - 30400
+                - id: '26'
+                  icon:
+                    name: mdi:toilet
+                    x: 26150
+                    y: 30225
+                  label:
+                    text: Bathroom
+                    x: 26150
+                    y: 30225
+                    offset_y: 35
+                  outline:
+                    - - 24800
+                      - 29200
+                    - - 27500
+                      - 29200
+                    - - 27500
+                      - 31100
+                    - - 24800
+                      - 31100
+                - id: '27'
+                  icon:
+                    name: mdi:walk
+                    x: 27100
+                    y: 28750
+                  label:
+                    text: Hallway
+                    x: 27100
+                    y: 28750
+                    offset_y: 35
+                  outline:
+                    - - 24900
+                      - 27850
+                    - - 29300
+                      - 27850
+                    - - 29300
+                      - 29200
+                    - - 24900
+                      - 29200
+            - template: vacuum_clean_zone
+            - template: vacuum_goto
           icons: &downstairs_icons
             -
               icon: mdi:play-pause
@@ -340,3 +478,103 @@ cards:
                     service_data:
                       entity_id: vacuum.upstairs_s7
                       mop_mode: ${nextMopRoute('vacuum.upstairs_s7')}
+              map_modes:
+                - template: vacuum_clean_segment
+                  predefined_selections:
+                    - id: '16'
+                      icon:
+                        name: mdi:bed
+                        x: 27500
+                        y: 29000
+                      label:
+                        text: Small Bedroom
+                        x: 27500
+                        y: 29000
+                        offset_y: 35
+                      outline:
+                        - - 25250
+                          - 27700
+                        - - 29900
+                          - 27700
+                        - - 29900
+                          - 30350
+                        - - 25250
+                          - 30350
+                    - id: '18'
+                      icon:
+                        name: mdi:faucet
+                        x: 32575
+                        y: 28450
+                      label:
+                        text: Bathroom
+                        x: 32575
+                        y: 28450
+                        offset_y: 35
+                      outline:
+                        - - 31050
+                          - 27500
+                        - - 34100
+                          - 27500
+                        - - 34100
+                          - 29400
+                        - - 31050
+                          - 29400
+                    - id: '21'
+                      icon:
+                        name: mdi:face-woman
+                        x: 36100
+                        y: 26125
+                      label:
+                        text: Tammy's Study
+                        x: 36100
+                        y: 26125
+                        offset_y: 35
+                      outline:
+                        - - 34300
+                          - 24800
+                        - - 37900
+                          - 24800
+                        - - 37900
+                          - 27450
+                        - - 34300
+                          - 27450
+                    - id: '23'
+                      icon:
+                        name: mdi:bed-double
+                        x: 40975
+                        y: 26800
+                      label:
+                        text: Master Bedroom
+                        x: 40975
+                        y: 26800
+                        offset_y: 35
+                      outline:
+                        - - 37950
+                          - 24850
+                        - - 44000
+                          - 24850
+                        - - 44000
+                          - 28750
+                        - - 37950
+                          - 28750
+                    - id: '25'
+                      icon:
+                        name: mdi:bed
+                        x: 26500
+                        y: 26500
+                      label:
+                        text: Large Bedroom
+                        x: 26500
+                        y: 26500
+                        offset_y: 35
+                      outline:
+                        - - 25200
+                          - 24850
+                        - - 30950
+                          - 24850
+                        - - 30950
+                          - 27700
+                        - - 25200
+                          - 27700
+                - template: vacuum_clean_zone
+                - template: vacuum_goto
