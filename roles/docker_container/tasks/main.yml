@@ -93,6 +93,7 @@
     volumes: "{{ volumes | default(omit) }}"
     keep_volumes: "{{ keep_volumes | default(false) }}"
     tmpfs: "{{ tmpfs | default(omit) }}"
+    shm_size: "{{ shm_size | default(omit) }}"
 
     hostname: "{{ name | default(omit) }}"
     networks: "{{ network }}"

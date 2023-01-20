@@ -1,0 +1,51 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: webtop
+
+    docker_network: "{{ networks.user }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: lscr.io/linuxserver/webtop:ubuntu-xfce
+        env:
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_root_group | string }}"
+          TZ: "{{ common_timezone }}"
+        volumes:
+          - /mnt:/mnt
+          - "{{ config_directory }}:/config"
+        device_requests:
+          - driver: nvidia
+            count: -1
+            device_ids: []
+            options: {}
+            capabilities:
+              - - gpu
+                - video
+                - compute
+                - utility
+        shm_size: "1GB"
+        security_opts:
+          - seccomp=unconfined
+        traefik:
+          - port: 3000
+            auth: page
+        homer:
+          name: Webtop
+          service: Tools
+          priority: 691
+          subtitle: "Ubuntu XFCE"
