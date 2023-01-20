@@ -286,27 +286,27 @@
             mode: "0771"
           notify: Restart
 
-        # - name: Create Eufy Security WS container
-        #   ansible.builtin.include_role:
-        #     name: docker_container
-        #   vars:
-        #     name: "eufy-security-ws"
-        #     image: bropat/eufy-security-ws:1.3.0
-        #     env:
-        #       USERNAME: "{{ application }}{{ common_email_to }}"
-        #       PASSWORD: !vault |
-        #         $ANSIBLE_VAULT;1.1;AES256
-        #         32663633343362623462393864346631393638613933346166653764396530316264616364613065
-        #         6339376630643833346639653530333835653037613363620a663464623137663031313931356432
-        #         64383264306365656430363137353965643963313136616637626534396362376436626466303965
-        #         3839336635646338380a386564356461393564373236333464343835646535663462303862303361
-        #         6162
-        #       LANGUAGE: "{{ common_language_iso_639 }}"
-        #       COUNTRY: "{{ common_country_iso_3166 }}"
-        #       TRUSTED_DEVICE_NAME: "{{ application }}"
-        #       ACCEPT_INVITATIONS: "true"
-        #     volumes:
-        #       - "{{ home_assistant_addons_dir }}/eufy-security-ws:/data"
+        - name: Create Eufy Security WS container
+          ansible.builtin.include_role:
+            name: docker_container
+          vars:
+            name: "eufy-security-ws"
+            image: bropat/eufy-security-ws:1.3.0
+            env:
+              USERNAME: "{{ application }}{{ common_email_to }}"
+              PASSWORD: !vault |
+                $ANSIBLE_VAULT;1.1;AES256
+                32663633343362623462393864346631393638613933346166653764396530316264616364613065
+                6339376630643833346639653530333835653037613363620a663464623137663031313931356432
+                64383264306365656430363137353965643963313136616637626534396362376436626466303965
+                3839336635646338380a386564356461393564373236333464343835646535663462303862303361
+                6162
+              LANGUAGE: "{{ common_language_iso_639 }}"
+              COUNTRY: "{{ common_country_iso_3166 }}"
+              TRUSTED_DEVICE_NAME: "{{ application }}"
+              ACCEPT_INVITATIONS: "true"
+            volumes:
+              - "{{ home_assistant_addons_dir }}/eufy-security-ws:/data"
 
     - name: Configure Automations
       tags:
