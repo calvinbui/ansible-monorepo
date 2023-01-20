@@ -352,6 +352,7 @@
         delete: true
         owner: false
         group: false
+        perms: false
 
     - name: Install HACS
       community.docker.docker_container_exec:

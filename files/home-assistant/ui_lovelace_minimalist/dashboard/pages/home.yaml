@@ -6,7 +6,7 @@ icon: mdi:home
 
 type: custom:grid-layout
 layout:
-  grid-column-columns: 1fr 5fr 5fr 1fr
+  grid-template-columns: 1fr 5fr 5fr 1fr
   grid-column-gap: 20px
   grid-template-areas: |
     ". calendar weather ."

@@ -6,7 +6,7 @@ icon: mdi:camera-wireless
 
 type: custom:grid-layout
 layout:
-  grid-column-columns: 10% repeat(auto-fill) 10%
+  grid-template-columns: 10% repeat(auto-fill) 10%
   grid-template-areas: |
     ". bigcamera1   bigcamera1   bigcamera1   bigcamera2   bigcamera2   bigcamera2   ."
     ". smallcamera1 smallcamera1 smallcamera2 smallcamera2 smallcamera3 smallcamera3 ."

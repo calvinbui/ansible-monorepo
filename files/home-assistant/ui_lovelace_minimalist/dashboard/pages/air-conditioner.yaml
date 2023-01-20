@@ -7,7 +7,7 @@ icon: mdi:air-conditioner
 
 type: custom:grid-layout
 layout:
-  grid-column-columns: 1fr 40% 40% 1fr
+  grid-template-columns: 1fr 40% 40% 1fr
   grid-template-areas: |
     ". controls rooms   ."
   mediaquery:

@@ -6,7 +6,7 @@ icon: mdi:lightbulb-on
 
 type: custom:grid-layout
 layout:
-  grid-column-columns: 10% repeat(auto-fill) 10%
+  grid-template-columns: 10% repeat(auto-fill) 10%
   grid-template-areas: |
     ". room1   room2    room3    room4    ."
     ". room5   room6    room7    room8    ."
