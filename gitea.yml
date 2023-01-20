@@ -51,7 +51,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: gitea/gitea:1.18.1
+        image: gitea/gitea:1.18.2
         volumes:
           - "{{ config_directory }}/data:/data"
           - /etc/timezone:/etc/timezone:ro
