@@ -6,7 +6,7 @@ icon: mdi:broom
 
 type: custom:grid-layout
 layout:
-  grid-column-columns: 1fr 1fr 5fr 1fr
+  grid-template-columns: "1fr 20% 60% 1fr"
   grid-column-gap: 20px
   grid-template-areas: |
     ". bins vacuum ."
@@ -96,52 +96,247 @@ cards:
         template: card_title
         name: 🤖 Vacuum
       -
-        type: custom:xiaomi-vacuum-map-card
-        preset_name: Downstairs
-        activate_on_switch: true
-        activate:
-          service: roborock.camera_load_multi_map
-          service_data:
-            map_flag: 0
-          target:
-            entity_id: camera.downstairs_s7_map
-        entity: vacuum.downstairs_s7
-        map_source:
-          camera: camera.downstairs_s7_map
-          crop:
-            top: 55
-            bottom: 45
-        calibration_source:
-          camera: camera.downstairs_s7_map
-        additional_presets:
-          -
-            preset_name: Foyer
-            activate_on_switch: true
-            activate:
-              service: roborock.camera_load_multi_map
-              service_data:
-                map_flag: 1
-              target:
-                entity_id: camera.downstairs_s7_map
-            entity: vacuum.downstairs_s7
-            map_source:
-              camera: camera.downstairs_s7_map
-              crop:
-                top: 200
-                bottom: 200
-                left: 200
-                right: 200
-            calibration_source:
-              camera: camera.downstairs_s7_map
-          -
-            preset_name: Upstairs
-            entity: vacuum.upstairs_s7
-            map_source:
-              camera: camera.upstairs_s7_map
-              crop:
-                top: 55
-                bottom: 45
-                left: 40
-                right: 50
-            calibration_source:
-              camera: camera.upstairs_s7_map
+        type: 'custom:config-template-card'
+        variables:
+          nextFanSpeed: |
+            vacuum => {
+              const fan_speed_list = states[vacuum].attributes.fan_speed_list
+              const fan_speed = states[vacuum].attributes.fan_speed
+
+              if (fan_speed_list.indexOf(fan_speed) != fan_speed_list.length - 1) {
+                return fan_speed_list[fan_speed_list.indexOf(fan_speed)+1]
+              }
+
+              return fan_speed_list[0]
+            }
+          nextScrubIntensity: |
+            vacuum => {
+              const mop_intensity_list = states[vacuum].attributes.mop_intensity_list
+              const mop_intensity = states[vacuum].attributes.mop_intensity
+
+              if (mop_intensity_list.indexOf(mop_intensity) != mop_intensity_list.length - 1) {
+                return mop_intensity_list[mop_intensity_list.indexOf(mop_intensity)+1]
+              }
+
+              return mop_intensity_list[0]
+            }
+          nextMopRoute: |
+            vacuum => {
+              const mop_mode_list = states[vacuum].attributes.mop_mode_list
+              const mop_mode = states[vacuum].attributes.mop_mode
+
+              if (mop_mode_list.indexOf(mop_mode) != mop_mode_list.length - 1) {
+                return mop_mode_list[mop_mode_list.indexOf(mop_mode)+1]
+              }
+
+              return mop_mode_list[0]
+            }
+        entities:
+          - vacuum.downstairs_s7
+          - vacuum.upstairs_s7
+        card:
+          type: custom:xiaomi-vacuum-map-card
+          preset_name: Downstairs
+          activate_on_switch: true
+          activate:
+            service: roborock.camera_load_multi_map
+            service_data:
+              map_flag: 0
+            target:
+              entity_id: camera.downstairs_s7_map
+          entity: vacuum.downstairs_s7
+          map_source:
+            camera: camera.downstairs_s7_map
+            crop:
+              top: 200
+              bottom: 200
+              right: 200
+              left: 200
+          calibration_source:
+            camera: camera.downstairs_s7_map
+          icons: &downstairs_icons
+            -
+              icon: mdi:play-pause
+              tooltip: "Start/Pause"
+              tap_action:
+                action: call-service
+                service: vacuum.start_pause
+                service_data:
+                  entity_id: vacuum.downstairs_s7
+            -
+              icon: mdi:stop
+              tooltip: "Stop"
+              tap_action:
+                action: call-service
+                service: vacuum.stop
+                service_data:
+                  entity_id: vacuum.downstairs_s7
+            -
+              icon: mdi:home
+              tooltip: "Stop"
+              tap_action:
+                action: call-service
+                service: vacuum.return_to_base
+                service_data:
+                  entity_id: vacuum.downstairs_s7
+            -
+              icon: mdi:map-marker
+              tooltip: "Locate"
+              tap_action:
+                action: call-service
+                service: vacuum.locate
+                service_data:
+                  entity_id: vacuum.downstairs_s7
+            -
+              icon: mdi:delete-restore
+              tooltip: "Stop"
+              tap_action:
+                action: call-service
+                service: vacuum.send_command
+                service_data:
+                  command: app_start_collect_dust
+                  entity_id: vacuum.downstairs_s7
+          tiles: &downstairs_tiles
+            -
+              label: Suction Power
+              icon: mdi:fan
+              attribute: fan_speed
+              entity: vacuum.downstairs_s7
+              tap_action:
+                action: call-service
+                service: roborock.vacuum_set_fan_speed
+                service_data:
+                  entity_id: vacuum.downstairs_s7
+                  fan_speed: ${nextFanSpeed('vacuum.downstairs_s7')}
+            -
+              label: Scrub Intensity
+              icon: mdi:waves-arrow-up
+              attribute: mop_intensity
+              entity: vacuum.downstairs_s7
+              tap_action:
+                action: call-service
+                service: roborock.vacuum_set_mop_intensity
+                service_data:
+                  entity_id: vacuum.downstairs_s7
+                  mop_intensity: ${nextScrubIntensity('vacuum.downstairs_s7')}
+            -
+              label: Mop Route
+              icon: mdi:routes
+              attribute: mop_mode
+              entity: vacuum.downstairs_s7
+              tap_action:
+                action: call-service
+                service: roborock.vacuum_set_mop_mode
+                service_data:
+                  entity_id: vacuum.downstairs_s7
+                  mop_mode: ${nextMopRoute('vacuum.downstairs_s7')}
+          additional_presets:
+            -
+              preset_name: Foyer
+              activate_on_switch: true
+              activate:
+                service: roborock.camera_load_multi_map
+                service_data:
+                  map_flag: 1
+                target:
+                  entity_id: camera.downstairs_s7_map
+              entity: vacuum.downstairs_s7
+              map_source:
+                camera: camera.downstairs_s7_map
+                crop:
+                  top: 500
+                  bottom: 500
+                  left: 500
+                  right: 500
+              calibration_source:
+                camera: camera.downstairs_s7_map
+              icons: *downstairs_icons
+              tiles: *downstairs_tiles
+            -
+              preset_name: Upstairs
+              entity: vacuum.upstairs_s7
+              map_source:
+                camera: camera.upstairs_s7_map
+                crop:
+                  top: 180
+                  bottom: 150
+                  left: 180
+                  right: 180
+              calibration_source:
+                camera: camera.upstairs_s7_map
+              icons:
+                -
+                  icon: mdi:play-pause
+                  tooltip: "Start/Pause"
+                  tap_action:
+                    action: call-service
+                    service: vacuum.start_pause
+                    service_data:
+                      entity_id: vacuum.upstairs_s7
+                -
+                  icon: mdi:stop
+                  tooltip: "Stop"
+                  tap_action:
+                    action: call-service
+                    service: vacuum.stop
+                    service_data:
+                      entity_id: vacuum.upstairs_s7
+                -
+                  icon: mdi:home
+                  tooltip: "Stop"
+                  tap_action:
+                    action: call-service
+                    service: vacuum.return_to_base
+                    service_data:
+                      entity_id: vacuum.upstairs_s7
+                -
+                  icon: mdi:map-marker
+                  tooltip: "Locate"
+                  tap_action:
+                    action: call-service
+                    service: vacuum.locate
+                    service_data:
+                      entity_id: vacuum.upstairs_s7
+                -
+                  icon: mdi:delete-restore
+                  tooltip: "Stop"
+                  tap_action:
+                    action: call-service
+                    service: vacuum.send_command
+                    service_data:
+                      command: app_start_collect_dust
+                      entity_id: vacuum.upstairs_s7
+              tiles:
+                -
+                  label: Suction Power
+                  icon: mdi:fan
+                  attribute: fan_speed
+                  entity: vacuum.upstairs_s7
+                  tap_action:
+                    action: call-service
+                    service: roborock.vacuum_set_fan_speed
+                    service_data:
+                      entity_id: vacuum.upstairs_s7
+                      fan_speed: ${nextFanSpeed('vacuum.upstairs_s7')}
+                -
+                  label: Scrub Intensity
+                  icon: mdi:waves-arrow-up
+                  attribute: mop_intensity
+                  entity: vacuum.upstairs_s7
+                  tap_action:
+                    action: call-service
+                    service: roborock.vacuum_set_mop_intensity
+                    service_data:
+                      entity_id: vacuum.upstairs_s7
+                      mop_intensity: ${nextScrubIntensity('vacuum.upstairs_s7')}
+                -
+                  label: Mop Route
+                  icon: mdi:routes
+                  attribute: mop_mode
+                  entity: vacuum.upstairs_s7
+                  tap_action:
+                    action: call-service
+                    service: roborock.vacuum_set_mop_mode
+                    service_data:
+                      entity_id: vacuum.upstairs_s7
+                      mop_mode: ${nextMopRoute('vacuum.upstairs_s7')}
