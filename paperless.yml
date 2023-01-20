@@ -128,8 +128,8 @@
           - port: 8000
         homer:
           name: Paperless-ngx
-          service: Tools
-          priority: 490
+          service: Home
+          priority: 880
           subtitle: "Document management system"
 
     - name: Wait for paperless to be ready
