@@ -9,13 +9,13 @@ layout:
   grid-template-columns: 1fr 5fr 5fr 1fr
   grid-column-gap: 20px
   grid-template-areas: |
-    ". calendar weather ."
+    ". calendar weather-travel ."
   mediaquery:
     "(max-width: 800px)":
       grid-template-columns: 100%
       grid-template-areas: |
         "calendar"
-        "weather"
+        "weather-travel"
 
 cards:
   - type: vertical-stack
@@ -66,12 +66,31 @@ cards:
 
   - type: vertical-stack
     view_layout:
-      grid-area: weather
+      grid-area: weather-travel
     cards:
       -
         type: custom:button-card
         template: card_title
-        name: Weather
+        name: 🚆 Travel
+      -
+        type: horizontal-stack
+        cards:
+          -
+            type: 'custom:button-card'
+            template: card_generic_swap
+            entity: sensor.train_to_central
+            variables:
+              ulm_card_generic_swap_name: Next Train to Central
+          -
+            type: 'custom:button-card'
+            template: card_generic_swap
+            entity: sensor.train_to_epping
+            variables:
+              ulm_card_generic_swap_name: Next Train to Epping
+      -
+        type: custom:button-card
+        template: card_title
+        name: ☁️ Weather
       -
         type: custom:hourly-weather
         entity: weather.north_strathfield_hourly
