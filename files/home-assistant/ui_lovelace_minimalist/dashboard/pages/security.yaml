@@ -19,19 +19,18 @@ cards:
           template: card_title
       -
         type: custom:button-card
-        template: custom_card_calvin_door
-        entity: lock.front_door
-        variables:
-          ulm_custom_card_entity_1_name: Front Door
-          ulm_custom_card_entity_1_lock: lock.front_door
-      -
-        type: custom:button-card
         template: custom_card_calvin_cover
         entity: cover.garage_door_garage
         variables:
           ulm_card_cover_garage: true
           ulm_card_cover_enable_controls: true
-
+      -
+        type: custom:button-card
+        template: custom_card_calvin_door
+        entity: lock.front_door
+        variables:
+          ulm_custom_card_entity_1_name: Front Door
+          ulm_custom_card_entity_1_lock: lock.front_door
   - type: vertical-stack
     cards:
       -
