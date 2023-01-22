@@ -53,27 +53,34 @@
       ansible.builtin.copy:
         content: |
           ---
-          filenames: [/var/log/traefik/*]
+          filenames:
+            - /var/log/traefik/access.log
+            - /var/log/traefik/traefik.log
           labels:
             type: traefik
           ---
-          filenames: [/var/log/authelia.log]
+          filenames:
+            - /var/log/authelia.log
           labels:
             type: authelia
           ---
-          filenames: [/var/log/gitea.log]
+          filenames:
+            - /var/log/gitea.log
           labels:
             type: gitea
           ---
-          filenames: [/var/log/home-assistant.log]
+          filenames:
+            - /var/log/home-assistant.log
           labels:
             type: home-assistant
           ---
-          filenames: [/var/log/nextcloud.log]
+          filenames:
+            - /var/log/nextcloud.log
           labels:
             type: nextcloud
           ---
-          filenames: [/var/log/samba/log.*]
+          filenames:
+            - /var/log/samba/log.*
           labels:
             type: smb
           ---
@@ -84,23 +91,28 @@
           labels:
             type: syslog
           ---
-          filenames: [/var/log/vsftpd.log]
+          filenames:
+            - /var/log/vsftpd.log
           labels:
             type: vsftpd
           ---
-          filenames: [/var/log/prowlarr.txt]
+          filenames:
+            - /var/log/prowlarr.txt
           labels:
             type: Prowlarr
           ---
-          filenames: [/var/log/sonarr.txt]
+          filenames:
+            - /var/log/sonarr.txt
           labels:
             type: Sonarr
           ---
-          filenames: [/var/log/radarr.txt]
+          filenames:
+            - /var/log/radarr.txt
           labels:
             type: Radarr
           ---
-          filenames: [/var/log/vaultwarden.log]
+          filenames:
+            - /var/log/vaultwarden.log
           labels:
             type: Vaultwarden
         dest: "{{ config_directory }}/acquis.yaml"
