@@ -290,8 +290,18 @@ cards:
                       - 29200
                     - - 24900
                       - 29200
+              service_call_schema:
+                service: roborock.vacuum_clean_segment
+                service_data:
+                  entity_id: '[[entity_id]]'
+                  segments: '[[selection]]'
             - template: vacuum_clean_zone
-            - template: vacuum_goto
+              service_call_schema:
+                service: roborock.vacuum_clean_zone
+                service_data:
+                  entity_id: '[[entity_id]]'
+                  zone: '[[selection]]'
+                  repeats: '[[repeats]]'
           icons: &downstairs_icons
             -
               icon: mdi:play-pause
@@ -390,6 +400,25 @@ cards:
                 camera: camera.downstairs_s7_map
               icons: *downstairs_icons
               tiles: *downstairs_tiles
+              map_modes:
+                - template: vacuum_clean_zone_predefined
+                  predefined_selections:
+                    - zones: [[19025, 23045, 26250, 26268]]
+                      icon:
+                        name: mdi:shoe-sneaker
+                        x: 22575
+                        y: 24575
+                      label:
+                        text: Foyer
+                        x: 22575
+                        y: 24575
+                        offset_y: 35
+                  service_call_schema:
+                    service: roborock.vacuum_clean_zone
+                    service_data:
+                      entity_id: '[[entity_id]]'
+                      zone: '[[selection]]'
+                      repeats: '[[repeats]]'
             -
               preset_name: Upstairs
               entity: vacuum.upstairs_s7
@@ -577,4 +606,9 @@ cards:
                         - - 25200
                           - 27700
                 - template: vacuum_clean_zone
-                - template: vacuum_goto
+                  service_call_schema:
+                    service: roborock.vacuum_clean_zone
+                    service_data:
+                      entity_id: '[[entity_id]]'
+                      zone: '[[selection]]'
+                      repeats: '[[repeats]]'
