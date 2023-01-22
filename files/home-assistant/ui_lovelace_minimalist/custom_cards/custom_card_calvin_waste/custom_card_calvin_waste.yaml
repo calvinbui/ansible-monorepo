@@ -74,17 +74,13 @@ custom_card_calvin_waste:
                 - operator: "template"
                   value: "[[[ return states[entity.entity_id].attributes.daysTo == 0; ]]]"
                   styles:
-                    img_cell:
-                      - background-color: "rgba(var(--color-red),0.5)"
                     icon:
-                      - color: "rgba(var(--color-red),1)"
+                      - animation: blink 1s ease infinite
                 - operator: "template"
                   value: "[[[ return states[entity.entity_id].attributes.daysTo == 1; ]]]"
                   styles:
-                    img_cell:
-                      - background-color: "rgba(var(--color-red),0.05)"
                     icon:
-                      - color: "rgba(var(--color-red),1)"
+                      - animation: blink 1.75s ease infinite
           item2:
             card:
               type: "custom:button-card"
