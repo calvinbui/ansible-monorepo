@@ -211,6 +211,21 @@
         mode: "0644"
       notify: Restart
 
+    - name: Create my-whitelists.yaml
+      ansible.builtin.copy:
+        content: |
+          name: crowdsecurity/my-whitelists
+          description: "Custom Whitelist"
+          whitelist:
+            reason: "my custom whitelists"
+            expression:
+              - evt.Meta.http_status == '403' && evt.Parsed.traefik_router_name contains 'mattermost' && evt.Meta.http_path contains '/api/v4/'
+        dest: "{{ config_directory }}/my-whitelists.yaml"
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
+      notify: Restart
+
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
@@ -282,6 +297,8 @@
 
           - "{{ config_directory }}/config:/etc/crowdsec"
           - "{{ config_directory }}/data:/var/lib/crowdsec/data"
+
+          - "{{ config_directory }}/my-whitelists.yaml:/etc/crowdsec/parsers/s02-enrich/my-whitelists.yaml"
 
           - "{{ common_directory }}/authelia/logs/authelia.log:/var/log/authelia.log:ro"
           - "{{ common_directory }}/bitwarden/bitwarden/vaultwarden.log:/var/log/vaultwarden.log"
