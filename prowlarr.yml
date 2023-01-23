@@ -109,3 +109,4 @@
           PostgresLogDb: "{{ application }}-log"
           PostgresUser: "{{ _postgres_username }}"
           PostgresPassword: "{{ _postgres_password }}"
+          AuthenticationMethod: "External"
