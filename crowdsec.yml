@@ -131,12 +131,20 @@
 
           {% raw %}
           format: |
-            {{range . -}}
-              {{$alert := . -}}
-              {{range .Decisions -}}
-                <a href=https://www.whois.com/whois/{{.Value}}>{{.Value}}</a> will get <b>{{.Type}}</b> for next <b>{{.Duration}}</b> for triggering <b>{{.Scenario}}</b>. <a href=https://www.shodan.io/host/{{.Value}}>Shodan</a>
-              {{end -}}
-            {{end -}}
+            {{ range . -}}
+            {{ $alert := . -}}
+
+            {{ range .Decisions -}}
+            <p><a href=https://www.shodan.io/host/{{ .Value}}>{{ .Value}}</a> will get <b>{{ .Type}}</b> for next <b>{{ .Duration}}</b> for triggering <b>{{ .Scenario}}</b>.</p>
+            {{ end -}}
+
+            <ul>
+            {{ range .Events -}}
+            {{ range .Meta }}{{ if eq .Key "traefik_router_name"}}<li>{{ .Value}}: {{ end }}{{ end }}{{ range .Meta }}{{ if eq .Key "http_path" }}{{ .Value }}{{ end }}{{ end }}</li>
+            {{ end -}}
+            </ul>
+
+            {{ end -}}
           {% endraw %}
 
           smtp_host: {{ common_email_server }}
@@ -167,15 +175,18 @@
 
           {% raw %}
           format: |
-            {{range . -}}
-            {{$alert := . -}}
-            {{range .Decisions -}}
-            {{if $alert.Source.Cn -}}
-            :flag-{{$alert.Source.Cn}}: <https://www.whois.com/whois/{{.Value}}|{{.Value}}> will get {{.Type}} for next {{.Duration}} for triggering {{.Scenario}} on machine '{{$alert.MachineID}}'. <https://app.crowdsec.net/cti/{{.Value}}|CrowdSec CTI>{{end}}
-            {{if not $alert.Source.Cn -}}
-            :pirate_flag: <https://www.whois.com/whois/{{.Value}}|{{.Value}}> will get {{.Type}} for next {{.Duration}} for triggering {{.Scenario}} on machine '{{$alert.MachineID}}'.  <https://app.crowdsec.net/cti/{{.Value}}|CrowdSec CTI>{{end}}
-            {{end -}}
-            {{end -}}
+            {{ range . -}}
+            {{ $alert := . -}}
+
+            {{ range .Decisions -}}
+            <https://www.shodan.io/host/{{ .Value }}|{{ .Value }}> will get {{ .Type }} for next {{ .Duration }} for triggering {{ .Scenario }} on machine '{{ $alert.MachineID }}'.
+            {{ end -}}
+
+            {{ range .Events -}}
+            {{ range .Meta }}{{ if eq .Key "traefik_router_name" }}- {{ .Value }}: {{ end }}{{ end }}{{ range .Meta }}{{ if eq .Key "http_path" }}{{ .Value }}{{ end }}{{ end }}
+            {{ end -}}
+
+            {{ end -}}
           {% endraw %}
 
           webhook: ${SLACK_WEBHOOK}
