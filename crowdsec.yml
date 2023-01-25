@@ -208,7 +208,7 @@
 
           decisions:
             - type: ban
-              duration: 4h
+              duration: 8766h
 
           notifications:
             - email
