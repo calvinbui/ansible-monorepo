@@ -44,7 +44,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/umami-software/umami:postgresql-v1.39.5
+        image: ghcr.io/umami-software/umami:postgresql-v1.40.0
         env:
           DATABASE_URL: "{{ _postgres_url }}"
           DATABASE_TYPE: postgresql
