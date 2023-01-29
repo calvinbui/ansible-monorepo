@@ -191,3 +191,24 @@
       loop:
         - name: fs.inotify.max_user_instances
           value: 256
+
+    - name: Ubuntu Pro subscription
+      block:
+        - name: Attach machine to Ubuntu Pro
+          ansible.builtin.command: "pro attach {{ token }}"
+          register: result
+          failed_when: false
+          changed_when: "'This machine is already attached to' not in result.stderr"
+          vars:
+            token: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              30656566336466653261343630336261326162356435393565306331636164653331323766356563
+              3062653162613339323438363236316330656131653232310a356265313464336166636438646336
+              36663934323536363162636238386265623331646636343163646534323130343462633237353861
+              3334653765646636620a323863626239373036306439663162346463383533333064383331626364
+              33336637373665353830623637383064616635303435663433386564336565646236
+
+        - name: Install ubuntu-advantage-tools
+          ansible.builtin.apt:
+            name: ubuntu-advantage-tools
+            state: latest # noqa package-latest
