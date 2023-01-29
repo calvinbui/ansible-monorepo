@@ -42,10 +42,16 @@ services:
         priority: 300
         monitor: false
 
-
   - group: Sharing
     homer_icon: fas fa-people-arrows
-    items: []
+    items:
+      -
+        name: PHPinfoil
+        logo: tinfoil.png
+        subtitle: Nintendo Switch Games
+        url: http://tinfoil.{{ common_local_tld }}/index.php
+        priority: 10
+        monitor: true
 
   - group: Tools
     homer_icon: fas fa-tools
