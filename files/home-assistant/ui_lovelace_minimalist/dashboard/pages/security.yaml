@@ -31,6 +31,7 @@ cards:
         variables:
           ulm_custom_card_entity_1_name: Front Door
           ulm_custom_card_entity_1_lock: lock.front_door
+          ulm_custom_card_entity_1_lock_battery: sensor.front_door_battery_percentage
   - type: vertical-stack
     cards:
       -

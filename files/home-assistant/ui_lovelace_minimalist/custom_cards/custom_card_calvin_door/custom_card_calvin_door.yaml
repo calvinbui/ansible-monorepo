@@ -5,6 +5,7 @@ custom_card_calvin_door:
   variables:
     ulm_custom_card_entity_1_name: "[[[ return variables.ulm_custom_card_entity_1_name ]]]"
     ulm_custom_card_entity_1_lock: "[[[ return variables.ulm_custom_card_entity_1_lock ]]]"
+    ulm_custom_card_entity_1_lock_battery: "[[[ return variables.ulm_custom_card_entity_1_lock_battery ]]]"
   show_icon: false
   show_name: false
   show_label: false
@@ -58,11 +59,18 @@ custom_card_calvin_door:
                 action: "none"
               label: >
                 [[[
+                  var door_status;
                   if (entity.state == "locked") {
-                    return "Locked"
+                    door_status = "Locked"
+                  } else if (entity.status == "unlocked") {
+                    door_status = "Unlocked"
+                  } else if (entity.status == "unavailable") {
+                    door_status = "Unavailable"
                   } else {
-                    return "Unlocked"
+                    door_status = "Unknown"
                   }
+
+                  return `${door_status} (${states[variables.ulm_custom_card_entity_1_lock_battery].state}%)`;
                 ]]]
     item2:
       card:
