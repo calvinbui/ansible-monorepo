@@ -303,6 +303,11 @@
       customChangelogUrl: "https://github.com/jgraph/drawio",
       prBodyNotes: "[ChangeLog](https://github.com/jgraph/drawio/blob/dev/ChangeLog)",
     },
+    /* omada */
+    {
+      matchPackagePatterns: ["mbentley\\/omada-controller"],
+      prBodyNotes: "[TP-Link Business Community Thread](https://community.tp-link.com/en/business/forum/topic/245226)",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
