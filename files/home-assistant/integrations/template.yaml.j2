@@ -226,7 +226,7 @@
   # Add off-peak, peak and shoulder periods together.
   -
     name: Electricity Usage Today - Solar
-    state_class: measurement
+    state_class: total_increasing
     unit_of_measurement: kWh
     device_class: energy
     state: >
@@ -238,7 +238,7 @@
 
   -
     name: Electricity Usage Today - Grid
-    state_class: measurement
+    state_class: total_increasing
     unit_of_measurement: kWh
     device_class: energy
     state: >
@@ -250,7 +250,7 @@
 
   -
     name: Electricity Usage Today - Total
-    state_class: measurement
+    state_class: total_increasing
     unit_of_measurement: kWh
     device_class: energy
     state: >
@@ -263,7 +263,7 @@
   # Add off-peak, peak and shoulder periods together.
   -
     name: Electricity Usage Yesterday - Solar
-    state_class: measurement
+    state_class: total_increasing
     unit_of_measurement: kWh
     device_class: energy
     state: >
@@ -275,7 +275,7 @@
 
   -
     name: Electricity Usage Yesterday - Grid
-    state_class: measurement
+    state_class: total_increasing
     unit_of_measurement: kWh
     device_class: energy
     state: >
@@ -287,7 +287,7 @@
 
   -
     name: Electricity Usage Yesterday - Total
-    state_class: measurement
+    state_class: total_increasing
     unit_of_measurement: kWh
     device_class: energy
     state: >
@@ -300,7 +300,7 @@
   # Add off-peak, peak and shoulder periods together.
   -
     name: Electricity Usage Month - Solar
-    state_class: measurement
+    state_class: total_increasing
     unit_of_measurement: kWh
     device_class: energy
     state: >
@@ -312,7 +312,7 @@
 
   -
     name: Electricity Usage Month - Grid
-    state_class: measurement
+    state_class: total_increasing
     unit_of_measurement: kWh
     device_class: energy
     state: >
@@ -324,7 +324,7 @@
 
   -
     name: Electricity Usage Month - Total
-    state_class: measurement
+    state_class: total_increasing
     unit_of_measurement: kWh
     device_class: energy
     state: >
@@ -337,7 +337,7 @@
   # Calculate solar yield by adding the how much solar was exported + how much was self-consumed on a day/month basis
   -
     name: Solar Generated - Today
-    state_class: measurement
+    state_class: total_increasing
     unit_of_measurement: kWh
     device_class: energy
     state: >
@@ -347,7 +347,7 @@
       }}
   -
     name: Solar Generated - Yesterday
-    state_class: measurement
+    state_class: total_increasing
     unit_of_measurement: kWh
     device_class: energy
     state: >
@@ -357,7 +357,7 @@
       }}
   -
     name: Solar Generated - Month
-    state_class: measurement
+    state_class: total_increasing
     unit_of_measurement: kWh
     device_class: energy
     state: >
@@ -372,31 +372,31 @@
   -
     name: Electricity Costs Today - Peak
     device_class: monetary
-    state_class: measurement
+    state_class: total
     unit_of_measurement: AUD
     state: "{{ states('sensor.grid_power_import_daily_peak') | float * states('sensor.electricity_peak_cost') | float(0) }}"
   -
     name: Electricity Costs Today - Offpeak
     device_class: monetary
-    state_class: measurement
+    state_class: total
     unit_of_measurement: AUD
     state: "{{ states('sensor.grid_power_import_daily_offpeak') | float * states('sensor.electricity_offpeak_cost') | float(0) }}"
   -
     name: Electricity Costs Today - Shoulder
     device_class: monetary
-    state_class: measurement
+    state_class: total
     unit_of_measurement: AUD
     state: "{{ states('sensor.grid_power_import_daily_shoulder') | float * states('sensor.electricity_shoulder_cost') | float(0) }}"
   -
     name: Electricity Costs Today - Export
     device_class: monetary
-    state_class: measurement
+    state_class: total
     unit_of_measurement: AUD
     state: "{{ states('sensor.grid_power_export_daily_anytime') | float * states('sensor.solar_feed_in') | float(0) }}"
   -
     name: Electricity Costs Today - Import
     device_class: monetary
-    state_class: measurement
+    state_class: total
     unit_of_measurement: AUD
     state: >
       {{
@@ -408,7 +408,7 @@
   -
     name: Electricity Costs Today - Total
     device_class: monetary
-    state_class: measurement
+    state_class: total
     unit_of_measurement: AUD
     state: >
       {{
@@ -421,31 +421,31 @@
   -
     name: Electricity Costs Yesterday - Peak
     device_class: monetary
-    state_class: measurement
+    state_class: total
     unit_of_measurement: AUD
     state: "{{ state_attr('sensor.grid_power_import_daily_peak', 'last_period') | float * states('sensor.electricity_peak_cost') | float(0) }}"
   -
     name: Electricity Costs Yesterday - Offpeak
     device_class: monetary
-    state_class: measurement
+    state_class: total
     unit_of_measurement: AUD
     state: "{{ state_attr('sensor.grid_power_import_daily_offpeak', 'last_period') | float * states('sensor.electricity_offpeak_cost') | float(0) }}"
   -
     name: Electricity Costs Yesterday - Shoulder
     device_class: monetary
-    state_class: measurement
+    state_class: total
     unit_of_measurement: AUD
     state: "{{ state_attr('sensor.grid_power_import_daily_shoulder', 'last_period') | float * states('sensor.electricity_shoulder_cost') | float(0) }}"
   -
     name: Electricity Costs Yesterday - Export
     device_class: monetary
-    state_class: measurement
+    state_class: total
     unit_of_measurement: AUD
     state: "{{ state_attr('sensor.grid_power_export_daily_anytime', 'last_period') | float * states('sensor.solar_feed_in') | float(0) }}"
   -
     name: Electricity Costs Yesterday - Import
     device_class: monetary
-    state_class: measurement
+    state_class: total
     unit_of_measurement: AUD
     state: >
       {{
@@ -457,7 +457,7 @@
   -
     name: Electricity Costs Yesterday - Total
     device_class: monetary
-    state_class: measurement
+    state_class: total
     unit_of_measurement: AUD
     state: >
       {{
@@ -470,38 +470,38 @@
   -
     name: Electricity Costs Month - Peak
     device_class: monetary
-    state_class: measurement
+    state_class: total
     unit_of_measurement: AUD
     state: "{{ states('sensor.grid_power_import_monthly_peak') | float * states('sensor.electricity_peak_cost') | float(0) }}"
   -
     name: Electricity Costs Month - Offpeak
     device_class: monetary
-    state_class: measurement
+    state_class: total
     unit_of_measurement: AUD
     state: "{{ states('sensor.grid_power_import_monthly_offpeak') | float * states('sensor.electricity_offpeak_cost') | float(0) }}"
   -
     name: Electricity Costs Month - Shoulder
     device_class: monetary
-    state_class: measurement
+    state_class: total
     unit_of_measurement: AUD
     state: "{{ states('sensor.grid_power_import_monthly_shoulder') | float * states('sensor.electricity_shoulder_cost') | float(0) }}"
   -
     name: Electricity Costs Month - Export
     device_class: monetary
-    state_class: measurement
+    state_class: total
     unit_of_measurement: AUD
     state: "{{ states('sensor.grid_power_export_monthly_anytime') | float * states('sensor.solar_feed_in') | float(0) }}"
 
   -
     name: Electricity Costs Month - Supply
     device_class: monetary
-    state_class: measurement
+    state_class: total
     unit_of_measurement: AUD
     state: "{{ (states('sensor.electricity_supply_cost') | float) * (( now() | as_timestamp | int - state_attr('sensor.grid_power_import_monthly_offpeak','last_reset') | as_timestamp | int) / 86400 | int ) }}"
   -
     name: Electricity Costs Month - Import
     device_class: monetary
-    state_class: measurement
+    state_class: total
     unit_of_measurement: AUD
     state: >
       {{
@@ -513,7 +513,7 @@
   -
     name: Electricity Costs Month - Total
     device_class: monetary
-    state_class: measurement
+    state_class: total
     unit_of_measurement: AUD
     state: >
       {{
@@ -525,7 +525,7 @@
   # (daily supply cost / 24) + (current feed-in OR import * rate)
   -
     name: Electricity Costs Currently
-    state_class: measurement
+    state_class: total
     unit_of_measurement: AUD
     device_class: monetary
     state: >
@@ -542,7 +542,7 @@
   # Divides the cost for the month by the amount of days
   -
     name: Electricity Costs Average Per Day
-    state_class: measurement
+    state_class: total
     unit_of_measurement: AUD
     device_class: monetary
     state: >
@@ -551,7 +551,7 @@
   # Forecast how much the next bill be based on the daily average
   -
     name: Electricity Costs Bill Forecast
-    state_class: measurement
+    state_class: total
     unit_of_measurement: AUD
     device_class: monetary
     state: >
@@ -560,7 +560,7 @@
   # How much we would be paying if we were on the non-solar (alternative) plan for yesterday
   -
     name: Electricity Costs Alternative Plan
-    state_class: measurement
+    state_class: total
     unit_of_measurement: AUD
     device_class: monetary
     state: >
@@ -603,6 +603,8 @@
     name: Solar Initial Cost
     unit_of_measurement: AUD
     state: "13010"
+    state_class: total
+    device_class: monetary
 
   # Time until solar breakeven
   -
