@@ -251,7 +251,7 @@
     {
       matchPackagePatterns: ["jlongster\\/actual-server"],
       customChangelogUrl: "https://github.com/actualbudget/actual-server",
-      prBodyNotes: "[Release-Notes.md](https://github.com/actualbudget/docs/blob/master/docs/Release-Notes/Release-Notes.md)",
+      prBodyNotes: "[Release-Notes.md](https://github.com/actualbudget/docs/blob/master/docs/Release-Notes.md)",
     },
     /* borgmatic */
     {
