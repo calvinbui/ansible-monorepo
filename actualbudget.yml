@@ -20,7 +20,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: jlongster/actual-server:23.2.5-alpine
+        image: jlongster/actual-server:23.2.6-alpine
         volumes:
           - "{{ config_directory }}:/data"
         traefik:
