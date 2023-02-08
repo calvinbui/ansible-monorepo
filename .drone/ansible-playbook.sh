@@ -2,6 +2,8 @@
 
 set -eo pipefail
 
+git config --global --add safe.directory /drone/src
+
 if [[ -z $playbooks ]]; then
   mapfile -t allplaybooks < <(git show --name-only --diff-filter=ACMRTU HEAD | grep -E "^(\w|-|_)+.y*ml")
 else
