@@ -102,3 +102,16 @@
   stop_id: "213710"
   destination: "Hornsby via Eastwood"
   api_key: "{{ home_assistant_integrations.transport_nsw_api_key }}"
+
+# https://github.com/mark1foley/ha-gtfs-rt-v2
+-
+  platform: gtfs_rt
+  trip_update_url: https://api.transport.nsw.gov.au/v2/gtfs/realtime/sydneytrains
+  vehicle_position_url: https://api.transport.nsw.gov.au/v2/gtfs/vehiclepos/sydneytrains
+  api_key: "apikey {{ home_assistant_integrations.transport_nsw_api_key }}"
+  departures:
+    - name: Train To Central Station
+      stopid: 2137171
+      route: NTH_2a
+      icon: mdi:train
+      service_type: Train
