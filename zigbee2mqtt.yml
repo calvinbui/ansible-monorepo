@@ -1,0 +1,77 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: zigbee2mqtt
+
+    docker_network: "{{ networks.iot }}"
+
+  handlers:
+    - name: Restart
+      community.docker.docker_container:
+        name: "{{ application }}"
+        restart: true
+        comparisons:
+          '*': ignore
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}/data"
+        state: directory
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+
+    - name: Create config file
+      ansible.builtin.copy:
+        content: |
+          homeassistant: true
+
+          mqtt:
+            server: mqtt://mosquitto.{{ docker_network.name }}:1883
+            user: "{{ application }}"
+            password: "{{ _zigbee2mqtt_mqtt_password }}"
+
+          serial:
+            port: /dev/ttyACM0
+
+          frontend:
+            url: https://zigbee2mqtt.{{ common_tld }}
+
+          availability: true
+        dest: "{{ config_directory }}/data/configuration.yaml"
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+      notify: Restart
+      vars:
+        _zigbee2mqtt_mqtt_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          62336330623330613736323339623766663231306533336336313465333539333935316164666566
+          3564323236323038353163306562383930636231373062310a333433323761343139383939333036
+          35353931363933333431336434383433316439616662383766663532653266653435613862303836
+          6265343730356137310a323064313136393734363466303633653939646430313638663830626163
+          32323634346365306536393530333963643830333339396135623639666638373266
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: koenkk/zigbee2mqtt:1.30.1
+        devices:
+          - /dev/serial/by-id/usb-Silicon_Labs_Sonoff_Zigbee_3.0_USB_Dongle_Plus_0001-if00-port0:/dev/ttyACM0
+        env:
+          TZ: "{{ common_timezone }}"
+        volumes:
+          - "{{ config_directory }}/data:/app/data"
+          - /run/udev:/run/udev:ro
+        traefik:
+          - port: 8080
+            auth: page
+        homer:
+          name: Zigbee2MQTT
+          service: Home
+          priority: 99
+          subtitle: "Zigbee to MQTT bridge"
