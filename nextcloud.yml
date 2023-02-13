@@ -66,7 +66,7 @@
             64663865643961313431333430373362353366323836386238623831646139356537
 
           # these values need to be updated manually afterwards in config.php
-          NEXTCLOUD_TRUSTED_DOMAINS: "{{ application }}.{{ docker_network.name }} {{ application }}.{{ common_local_tld }} {{ application }}.{{ common_tld }}"
+          NEXTCLOUD_TRUSTED_DOMAINS: "{{ application }} {{ application }}.{{ docker_network.name }} {{ application }}.{{ common_local_tld }} {{ application }}.{{ common_tld }}"
           TRUSTED_PROXIES: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] | string }}"
           OVERWRITEPROTOCOL: "https"
 
