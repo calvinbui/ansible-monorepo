@@ -65,7 +65,10 @@
             3138613230353462620a383130653733326661386336393737643233396464353061386431316264
             64663865643961313431333430373362353366323836386238623831646139356537
 
+          # these values need to be updated manually afterwards in config.php
           NEXTCLOUD_TRUSTED_DOMAINS: "{{ application }}.{{ docker_network.name }} {{ application }}.{{ common_local_tld }} {{ application }}.{{ common_tld }}"
+          TRUSTED_PROXIES: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] | string }}"
+          OVERWRITEPROTOCOL: "https"
 
           REDIS_HOST: "{{ _redis_hostname }}"
           REDIS_HOST_PORT: "{{ _redis_port | string }}"
@@ -102,15 +105,3 @@
             "chadburn.job-exec.{{ application }}-cron.tty": "false",
             "chadburn.job-exec.{{ application }}-cron.no-overlap": "true"
           }'
-
-    - name: Overwrite Nextcloud protocol to HTTPS within config
-      community.docker.docker_container_exec:
-        container: "{{ application }}"
-        user: www-data
-        command: /usr/local/bin/php occ config:system:set overwriteprotocol --value='https'
-      register: _command_result
-      failed_when: "'System config value overwriteprotocol set to string https' not in _command_result.stdout"
-      changed_when: false
-      until: _command_result is success
-      retries: 3
-      delay: 2
