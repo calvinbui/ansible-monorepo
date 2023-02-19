@@ -310,6 +310,7 @@
     },
     /* guacamole */
     {
+      groupName: "Guacamole",
       matchPackagePatterns: [
         ".*\\/guacamole",
         ".*\\/guacd",
