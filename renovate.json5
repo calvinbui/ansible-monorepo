@@ -105,7 +105,7 @@
       groupName: "VictoriaMetrics",
       matchPackagePatterns: [
         ".*\\/vmalert",
-        ".*\\/victoria-metrics"
+        ".*\\/victoria-metrics",
       ],
       customChangelogUrl: "https://github.com/VictoriaMetrics/VictoriaMetrics",
     },
@@ -307,6 +307,14 @@
     {
       matchPackagePatterns: ["mbentley\\/omada-controller"],
       prBodyNotes: "[TP-Link Business Community Thread](https://community.tp-link.com/en/business/forum/topic/245226)",
+    },
+    /* guacamole */
+    {
+      matchPackagePatterns: [
+        ".*\\/guacamole",
+        ".*\\/guacd",
+      ],
+      prBodyNotes: "[{{newVersion}} Release Notes](https://guacamole.apache.org/releases/{{newVersion}})",
     },
   ],
 
