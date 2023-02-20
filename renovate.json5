@@ -322,6 +322,7 @@
       matchPackagePatterns: [".*\\/dcgm-exporter"],
       versioning: "loose",
       customChangelogUrl: "https://github.com/NVIDIA/dcgm-exporter",
+      prBodyNotes: "[Releases](https://github.com/NVIDIA/dcgm-exporter/releases)",
     },
   ],
 
