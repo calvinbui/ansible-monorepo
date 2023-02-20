@@ -55,6 +55,8 @@
           - pkg-config
           - xorg-dev
           - libglvnd-dev
+          - dkms
+          - libvulkan1
         state: present
       register: __install_nvidia_prerequisites
       until: __install_nvidia_prerequisites is success
