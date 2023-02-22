@@ -43,7 +43,7 @@ cards:
         showNoEventsForToday: false
         showRelativeTime: true
         showPrivate: true
-        showMultiDay: true
+        showMultiDay: false
 
         hideDuplicates: true
 
