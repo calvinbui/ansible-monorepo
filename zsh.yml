@@ -8,7 +8,7 @@
     zsh_theme:
       name: powerlevel10k/powerlevel10k
       repo: https://github.com/romkatv/powerlevel10k
-      version: v1.16.1
+      version: v1.17.0
 
     zsh_plugins:
       - name: autojump
