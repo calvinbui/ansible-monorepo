@@ -20,7 +20,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: portainer/portainer-ee:2.17.0-alpine
+        image: portainer/portainer-ee:2.17.1-alpine
         traefik:
           - port: 9000
         homer:
