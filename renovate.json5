@@ -138,6 +138,7 @@
     {
       matchPackagePatterns: [".*\\/qbittorrent"],
       customChangelogUrl: "https://github.com/qbittorrent/qBittorrent",
+      prBodyNotes: "[Changelog](https://github.com/qbittorrent/qBittorrent/blob/v{{newMajor}}_{{newMinor}}_x/Changelog)",
     },
     /* portainer */
     {
