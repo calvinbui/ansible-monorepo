@@ -324,6 +324,11 @@
       customChangelogUrl: "https://github.com/NVIDIA/dcgm-exporter",
       prBodyNotes: "[Releases](https://github.com/NVIDIA/dcgm-exporter/releases)",
     },
+    /* zigbee2mqtt */
+    {
+      matchPackagePatterns: [".*\\/zigbee2mqtt"],
+      customChangelogUrl: "https://github.com/Koenkk/zigbee2mqtt",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
