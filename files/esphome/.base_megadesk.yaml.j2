@@ -1,0 +1,186 @@
+---
+# modified from https://github.com/gcormier/megadesk/blob/master/esphome.md
+
+# https://esphome.io/components/esphome.html
+esphome:
+  name: $name
+  friendly_name: $friendly_name
+  includes:
+    - .code_megadesk.h
+  comment: ESPHome Device controlling Megadesk controller
+  on_boot:
+    priority: -100
+    then:
+      - delay: 1s
+      - uart.write: "<C0.0." # reports current position
+      - delay: 1s
+      - uart.write: "<R0.11." # read eeprom slot 11 - lowest position
+      - delay: 1s
+      - uart.write: "<R0.12." # read eeprom slot 11 - highest position
+
+# https://esphome.io/components/logger.html
+logger:
+  baud_rate: 0 # disables
+  level: DEBUG
+
+# https://esphome.io/components/ota.html
+ota:
+  password: "" # no password
+
+# https://esphome.io/components/captive_portal.html
+captive_portal:
+
+# https://esphome.io/components/web_server.html
+web_server:
+  port: 80
+  local: true
+
+# https://esphome.io/components/sensor/index.html
+sensor:
+  - platform: custom
+    lambda: |-
+      auto megadesk = new Megadesk(id(uart_desk));
+      App.register_component(megadesk);
+      return { megadesk->raw_height, megadesk->min_height, megadesk->max_height };
+    sensors:
+    - id: megadesk_raw
+      internal: true
+      on_value:
+        then:
+          - component.update: megadesk_height_inches
+          - component.update: megadesk_height_cm
+          - component.update: megadesk_height_raw
+    - name: "Megadesk Minimum Height"
+    - name: "Megadesk Maximum Height"
+
+# https://esphome.io/components/number/index.html
+number:
+  - platform: template
+    name: "Megadesk Height (inches)"
+    id: megadesk_height_inches
+    min_value: 23
+    max_value: 47
+    step: 0.53
+    mode: slider
+    update_interval: never
+    unit_of_measurement: 'inches'
+    #NewValue = (((OldValue - OldMin) * (NewMax - NewMin)) / (OldMax - OldMin)) + NewMin
+    lambda: |-
+      return ((((id(megadesk_raw).state - 299) * (47 - 23)) / (6914 - 299)) + 23);
+    set_action:
+      - number.set:
+          id: megadesk_height_raw
+          value: !lambda "return int((((x - 23) * (6914 - 299)) / (47 - 23)) + 299);"
+  - platform: template
+    name: "Megadesk Height (cm)"
+    id: megadesk_height_cm
+    min_value: 58.42
+    max_value: 118.745
+    step: 0.53
+    mode: slider
+    update_interval: never
+    unit_of_measurement: 'cm'
+    #NewValue = (((OldValue - OldMin) * (NewMax - NewMin)) / (OldMax - OldMin)) + NewMin
+    lambda: |-
+      return ((((id(megadesk_raw).state - 299) * (119.38 - 58.42)) / (6914 - 299)) + 58.42);
+    set_action:
+      - number.set:
+          id: megadesk_height_raw
+          value: !lambda "return int((((x - 58.42) * (6640 - 299)) / (119.38 - 58.42)) + 299);"
+  - platform: template
+    name: "Megadesk Height (raw)"
+    id: megadesk_height_raw
+    # internal: true
+    min_value: 299
+    max_value: 6640
+    step: 1
+    mode: slider
+    update_interval: never
+    lambda: |-
+      return id(megadesk_raw).state;
+    set_action:
+      - uart.write: !lambda |-
+          char buf[20];
+          sprintf(buf, "<=%i,.", int(x));
+          std::string s = buf;
+          return std::vector<unsigned char>( s.begin(), s.end() );
+
+# https://esphome.io/components/select/template.html
+# https://esphome.io/components/select/index.html
+select:
+  - platform: template
+    name: Desk Memory Position
+    options:
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      - "6"
+      - "7"
+      - "8"
+      - "9"
+      - "10"
+    set_action:
+      then:
+        - uart.write: !lambda |-
+            std::string str = "<L0," + x + ".";
+            return std::vector<unsigned char>(str.begin(), str.end());
+
+  - platform: template
+    name: Desk Memory Position (Down button)
+    options:
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      - "6"
+      - "7"
+      - "8"
+      - "9"
+      - "10"
+    set_action:
+      then:
+        - uart.write: !lambda |-
+            std::string str = "<l0," + x + ".";
+            return std::vector<unsigned char>(str.begin(), str.end());
+
+# https://esphome.io/components/button/index.html
+button:
+  - platform: template
+    name: "Toggle Minimum Desk Height"
+    on_press:
+      then:
+        - uart.write: "<L0,11."
+        - uart.write: "<R0,11."
+  - platform: template
+    name: "Toggle Maximum Desk Height"
+    on_press:
+      then:
+        - uart.write: "<L0,12."
+        - uart.write: "<R0,12."
+  - platform: template
+    name: "Recalibrate Desk"
+    on_press:
+      then:
+        - uart.write: "<L0,14."
+  - platform: template
+    name: "Reboot Megadesk"
+    on_press:
+      then:
+        - uart.write: "<L0,15."
+  - platform: template
+    name: "Toggle Audio feedback"
+    on_press:
+      then:
+        - uart.write: "<L0,17."
+  - platform: template
+    name: "Toggle both-button mode"
+    on_press:
+      then:
+        - uart.write: "<L0,18."
+
+# https://esphome.io/guides/automations.html#interval-component
+interval:
+  - interval: 300s
+    then:
+      - uart.write: "<C0.0."

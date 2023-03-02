@@ -1,0 +1,13 @@
+---
+
+# https://esphome.io/guides/configuration-types.html#substitutions
+substitutions:
+  name: megadesk-tammy
+  friendly_name: Tammy's Megadesk
+
+# https://esphome.io/guides/configuration-types.html#packages
+packages:
+  d1mini: !include .common_d1mini.yaml
+  wifi: !include .common_wifi.yaml
+  api: !include .common_api.yaml
+  device_base: !include .base_megadesk.yaml

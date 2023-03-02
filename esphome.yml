@@ -1,0 +1,67 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: esphome
+
+    # the key is a 32-byte base64 encoded string. provide the base64 encoded value when authenticating
+    esphome_password: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      39303363653265306461386262303334616636653234623764616465303437653236386466663562
+      3362643130303635633134313630666436353234393362620a623661636134633236383039303535
+      37363462666637643065353535363238616532363866613865616565663333646566303739373638
+      6631303231646635350a363730626262626336386638383266613065353461616362633063353037
+      39636332366333306563646138613934386338653366343963613231303162663838303332653236
+      6235383039663730666262393961303832653539616363633630
+
+    docker_network: "{{ networks.iot }}"
+
+  handlers:
+    - name: Restart
+      community.docker.docker_container:
+        name: "{{ application }}"
+        restart: true
+        comparisons:
+          '*': ignore
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Create configs
+      ansible.builtin.template:
+        src: "{{ item }}"
+        dest: "{{ config_directory }}/{{ item | basename | regex_replace('\\.j2$', '') }}"
+        mode: "0755"
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+      with_fileglob:
+        - "{{ files_directory }}/*"
+        - "{{ files_directory }}/.*" # dotfiles are hidden from the dashboard
+      notify: Restart
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: ghcr.io/esphome/esphome:2023.2.4
+        env:
+        volumes:
+          - "{{ config_directory }}:/config"
+          - /etc/localtime:/etc/localtime:ro
+        privileged: true
+        network_mode: "host"
+        traefik:
+          - port: 6052
+            auth: page
+        homer:
+          name: ESPHome
+          service: Home
+          priority: 98
+          subtitle: "Control ESP8266/ESP32"
