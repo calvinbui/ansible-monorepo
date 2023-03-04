@@ -21,7 +21,6 @@
       - name: "{{ docker_network.name | default('bridge') }}"
     network_mode: "{{ docker_network.name | default('omit') }}"
     networks_cli_compatible: "{{ postgres_networks_cli_compatible | default(true) }}"
-    purge_networks: "{{ postgres_purge_networks | default(true) }}"
 
     command: "{{ postgres_command | default(omit) }}"
 
@@ -48,6 +47,7 @@
     comparisons:
       env: allow_more_present
       labels: strict
+      networks: strict
 
   register: postgres_container
 

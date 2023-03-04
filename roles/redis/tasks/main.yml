@@ -21,7 +21,6 @@
       - name: "{{ docker_network.name | default('bridge') }}"
     network_mode: "{{ docker_network.name | default('omit') }}"
     networks_cli_compatible: "{{ redis_networks_cli_compatible | default(true) }}"
-    purge_networks: "{{ redis_purge_networks | default(true) }}"
 
     command: "redis-server --requirepass {{ redis_password }} {{ redis_command }}"
 
@@ -37,6 +36,8 @@
 
     container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
 
+    comparisons:
+      networks: strict
   register: redis
 
 - name: Set variables

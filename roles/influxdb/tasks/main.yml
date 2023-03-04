@@ -21,7 +21,6 @@
       - name: "{{ docker_network.name | default('bridge') }}"
     network_mode: "{{ docker_network.name | default('omit') }}"
     networks_cli_compatible: "{{ influxdb_networks_cli_compatible | default(true) }}"
-    purge_networks: "{{ influxdb_purge_networks | default(true) }}"
 
     command: "{{ influxdb_command | default(omit) }}"
 
@@ -62,6 +61,9 @@
     restart_policy: unless-stopped
 
     container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
+
+    comparisons:
+      networks: strict
 
 - name: Set variables
   ansible.builtin.set_fact:

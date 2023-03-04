@@ -103,7 +103,6 @@
     published_ports: "{{ published_ports | default(omit) }}"
     exposed_ports: "{{ exposed_ports | default(omit) }}"
     networks_cli_compatible: "{{ networks_cli_compatible | default(true) }}"
-    purge_networks: "{{ purge_networks | default(true) }}"
 
     security_opts: "{{ security_opts | default(omit) }}"
     capabilities: "{{ capabilities | default(omit) }}"
@@ -125,4 +124,4 @@
 
     labels: "{{ combined_labels }}"
 
-    comparisons: "{{ {'volumes': 'strict'} | combine(comparisons | default({})) }}"
+    comparisons: "{{ {'volumes': 'strict', 'networks': 'strict'} | combine(comparisons | default({})) }}"

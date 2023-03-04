@@ -21,7 +21,6 @@
       - name: "{{ docker_network.name | default('bridge') }}"
     network_mode: "{{ docker_network.name | default('omit') }}"
     networks_cli_compatible: "{{ mariadb_networks_cli_compatible | default(true) }}"
-    purge_networks: "{{ mariadb_purge_networks | default(true) }}"
 
     command: "{{ mariadb_command | default(omit) }}"
 
@@ -41,6 +40,8 @@
 
     container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
 
+    comparisons:
+      networks: strict
   register: mariadb
 
 - name: Set variables
