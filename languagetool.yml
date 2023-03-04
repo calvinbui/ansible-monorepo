@@ -117,8 +117,16 @@
           make
 
     - name: Compile FastText in alpine
-      ansible.builtin.command: "docker run --rm -v {{ config_directory }}/fasttext:/fasttext alpine:3.15.0 /fasttext/build.sh"
-      when: __clone_fasttext.changed or __download_fasttext.changed
+      community.docker.docker_container:
+        name: "{{ application }}-fasttext-compiler"
+        image: alpine:3.17.2
+        command: /fasttext/build.sh
+        volumes:
+          - "{{ config_directory }}/fasttext:/fasttext"
+        auto_remove: true
+        cleanup: true
+        detach: false
+      # when: __clone_fasttext.changed or __download_fasttext.changed
 
     - name: Set FastText permissions
       ansible.builtin.file:

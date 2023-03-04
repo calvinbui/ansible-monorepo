@@ -42,6 +42,7 @@
 
     - name: Regenerate the kernel initramfs
       ansible.builtin.command: update-initramfs -u
+      changed_when: true
       when: __disable_nouveau.changed
 
     - name: Reboot to disable nouveau
@@ -96,6 +97,7 @@
 
     - name: Install NVIDIA driver
       ansible.builtin.command: "{{ config_directory }}/{{ nvidia_driver_version }}.run --silent"
+      changed_when: true
       register: __install_nvidia_drivers
       when: _nvidia_installed_version.stdout != nvidia_driver_version
 

@@ -155,28 +155,28 @@
         _lynis_file_permissions:
           # https://cisofy.com/lynis/controls/FILE-7524/
           - path: /etc/at.deny
-            permissions: 0600
+            permissions: "0600"
           - path: /etc/crontab
-            permissions: 0600
+            permissions: "0600"
           - path: /etc/ssh/sshd_config
-            permissions: 0600
+            permissions: "0600"
           - path: /etc/cron.d
-            permissions: 0700
+            permissions: "0700"
           - path: /etc/cron.daily
-            permissions: 0700
+            permissions: "0700"
           - path: /etc/cron.hourly
-            permissions: 0700
+            permissions: "0700"
           - path: /etc/cron.monthly
-            permissions: 0700
+            permissions: "0700"
           - path: /etc/cron.weekly
-            permissions: 0700
+            permissions: "0700"
           # https://cisofy.com/lynis/controls/HRDN-7222/
           - path: /usr/bin/as
-            permissions: 0750
+            permissions: "0750"
           - path: /usr/bin/gcc
-            permissions: 0750
+            permissions: "0750"
           - path: /usr/bin/cc
-            permissions: 0750
+            permissions: "0750"
 
     # https://cisofy.com/lynis/controls/BANN-7126/
     # https://cisofy.com/lynis/controls/BANN-7130/

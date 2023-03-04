@@ -138,6 +138,7 @@
           ansible.builtin.command: sudo ./install.sh
           args:
             chdir: /root/hyperpixel4
+          changed_when: true
           notify: Reboot
           register: _hyperpixel_driver_install
           when: "'hyperpixel4-init.service' not in ansible_facts.services"
