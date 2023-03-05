@@ -5,6 +5,14 @@
   vars:
     application: changedetection
 
+    changedetection_browserless_token: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      65663961663733333833633562643435316565303839646638343835393364393632353665323636
+      6530343163323232626665343130346264346130306437340a333132336262613562626562323866
+      32386234623861396664643230343563356161353434663964383363366436623761613432306261
+      3931346438636162610a363965363661636635303530636164336366363664633661333439393637
+      65336234623537353366633338386366336432656632336461306164663466393335
+
     docker_network: "{{ networks.pub }}"
 
   tasks:
@@ -17,6 +25,7 @@
         shm_size: "2g"
         env:
           DEFAULT_LAUNCH_ARGS: '["--window-size=1920,1080"]'
+          TOKEN: "{{ changedetection_browserless_token }}"
 
     - name: Create "{{ application }}" container
       ansible.builtin.include_role:
@@ -28,7 +37,12 @@
         env:
           BASE_URL: "https://{{ application }}.{{ common_tld }}"
 
-          PLAYWRIGHT_DRIVER_URL: "ws://{{ application }}-playwright-chrome:3000/?stealth=1&--disable-web-security=true"
+          PLAYWRIGHT_DRIVER_URL:
+            "ws://{{ application }}-playwright-chrome:3000/\
+            ?token={{ changedetection_browserless_token }}\
+            &stealth=1\
+            &--disable-web-security=true\
+            &--proxy-server=socks5://10.8.0.1"
 
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_group_id | string }}"
