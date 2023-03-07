@@ -330,6 +330,11 @@
       matchPackagePatterns: [".*\\/zigbee2mqtt"],
       customChangelogUrl: "https://github.com/Koenkk/zigbee2mqtt",
     },
+    /* sonarr */
+    {
+      matchPackagePatterns: [".*\\/sonarr"],
+      prBodyNotes: "[Changes](https://services.sonarr.tv/v1/update/main/changes)",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
