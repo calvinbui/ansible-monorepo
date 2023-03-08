@@ -9,7 +9,7 @@
 # $ borg key export /mnt/destination
 #
 # Start a backup with:
-# $ borgmatic --stats --files --progress
+# $ borgmatic --stats --list
 #
 # Restore a backup with:
 # $ borgmatic extract
@@ -133,7 +133,7 @@
 
     - name: "Template crontab"
       ansible.builtin.copy:
-        content: "{{ item.crontab }} /usr/local/bin/borgmatic --stats --files --progress -v 0 2>&1"
+        content: "{{ item.crontab }} /usr/local/bin/borgmatic --stats --list -v 0 2>&1"
         dest: "{{ config_directory }}/{{ item.name }}/borgmatic.d/crontab.txt"
         owner: root
         group: root
