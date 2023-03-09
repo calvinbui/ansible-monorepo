@@ -335,6 +335,11 @@
       matchPackagePatterns: [".*\\/sonarr"],
       prBodyNotes: "[Changes](https://services.sonarr.tv/v1/update/main/changes)",
     },
+    /* pairdrop */
+    {
+      matchPackagePatterns: [".*\\/pairdrop"],
+      customChangelogUrl: "https://github.com/schlagmichdoch/PairDrop",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",

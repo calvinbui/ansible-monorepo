@@ -3,34 +3,25 @@
 - hosts: homelab
 
   vars:
-    application: snapdrop
+    application: pairdrop
 
     docker_network: "{{ networks.pub }}"
 
   tasks:
-    - name: Create config folder
-      ansible.builtin.file:
-        path: "{{ config_directory }}"
-        state: directory
-        owner: "{{ common_user }}"
-        group: "{{ common_group }}"
-        mode: "0771"
-
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: lscr.io/linuxserver/snapdrop:latest
+        image: lscr.io/linuxserver/pairdrop:1.4.4
         env:
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_group_id | string }}"
           TZ: "{{ common_timezone }}"
-        volumes:
-          - "{{ config_directory }}:/config"
+          RATE_LIMIT: "true"
         traefik:
-          - port: 80
+          - port: 3000
         homer:
-          name: SnapDrop
+          name: PairDrop
           service: Tools
           priority: 550
           subtitle: "Local file sharing"
