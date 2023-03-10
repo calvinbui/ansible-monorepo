@@ -1,0 +1,25 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: sponsorblockcast
+
+    docker_network: "{{ networks.iot }}"
+
+  tasks:
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: ghcr.io/nichobi/sponsorblockcast:latest
+        env:
+          SBCCATEGORIES: "sponsor selfpromo exclusive_access interaction intro outro preview filler"
+          SBCYOUTUBEAPIKEY: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            31646566376132326264656533623235656661646132643432313630653838613866613333333230
+            3832313363353266643964646334343432383662326164660a643539313733343339356336393933
+            31336331333735396234353038346535383831646439616237366339383531373533356365663230
+            3162613634373665340a323733333933383061373537393430333036376633386438343763616636
+            31316235343861343530316233356438623533316362366535623735626232663065646535363562
+            6134656631616666386633633366623362376334663138326133
