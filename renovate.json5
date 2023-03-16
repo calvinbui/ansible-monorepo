@@ -340,6 +340,16 @@
       matchPackagePatterns: [".*\\/pairdrop"],
       customChangelogUrl: "https://github.com/schlagmichdoch/PairDrop",
     },
+    /* esphome */
+    {
+      matchPackagePatterns: [".*\\/esphome"],
+      customChangelogUrl: "https://github.com/esphome/esphome",
+    },
+    /* browserless */
+    {
+      matchPackagePatterns: ["browserless\\/chrome"],
+      prBodyNotes: "[CHANGELOG.md](https://github.com/browserless/chrome/blob/master/CHANGELOG.md)",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
