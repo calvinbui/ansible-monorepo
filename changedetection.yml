@@ -25,6 +25,7 @@
         shm_size: "2g"
         env:
           DEFAULT_LAUNCH_ARGS: '["--window-size=1920,1080"]'
+          DEFAULT_HEADLESS: "new"
           TOKEN: "{{ changedetection_browserless_token }}"
 
     - name: Create "{{ application }}" container
