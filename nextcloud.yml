@@ -89,14 +89,10 @@
         labels:
           # 33 is www-data
           '{
-            "traefik.http.routers.{{ application }}-secure.middlewares": "{{ application }}-dav,{{ application }}-hsts",
+            "traefik.http.routers.{{ application }}-secure.middlewares": "{{ application }}-dav",
             "traefik.http.middlewares.{{ application }}-dav.redirectregex.permanent": "true",
             "traefik.http.middlewares.{{ application }}-dav.redirectregex.regex": "https://(.*)/.well-known/(card|cal)dav",
             "traefik.http.middlewares.{{ application }}-dav.redirectregex.replacement": "https://${1}/remote.php/dav/",
-
-            "traefik.http.middlewares.{{ application }}-hsts.headers.STSSeconds": "31536000",
-            "traefik.http.middlewares.{{ application }}-hsts.headers.STSIncludeSubdomains": "true",
-            "traefik.http.middlewares.{{ application }}-hsts.headers.STSPreload": "true",
 
             "chadburn.enabled": "true",
             "chadburn.job-exec.{{ application }}-cron.user": "33",

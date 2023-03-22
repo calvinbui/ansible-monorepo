@@ -16,6 +16,11 @@ http:
     redirect:
       redirectScheme:
         scheme: https
+    security-headers:
+      headers:
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 31536000
 
     myAuth:
       basicAuth:
@@ -32,3 +37,9 @@ tls:
     default:
       sniStrict: true
       minVersion: VersionTLS12
+      cipherSuites:
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+    mintls13:
+      sniStrict: true
+      minVersion: VersionTLS13
