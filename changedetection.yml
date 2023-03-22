@@ -24,8 +24,15 @@
         image: browserless/chrome:1.58-chrome-stable
         shm_size: "2g"
         env:
-          DEFAULT_LAUNCH_ARGS: '["--window-size=1920,1080"]'
-          DEFAULT_HEADLESS: "new"
+          DEFAULT_LAUNCH_ARGS: '["--window-size=1920,1080", "--disable-web-security=true", "--proxy-server=socks5://10.8.0.1", "stealth=1"]'
+
+          MAX_CONCURRENT_SESSIONS: "5"
+          PREBOOT_CHROME: "true"
+          SINGLE_RUN: "false"
+          KEEP_ALIVE: "false"
+
+          EXIT_ON_HEALTH_FAILURE: "true"
+
           TOKEN: "{{ changedetection_browserless_token }}"
 
     - name: Create "{{ application }}" container
@@ -38,12 +45,7 @@
         env:
           BASE_URL: "https://{{ application }}.{{ common_tld }}"
 
-          PLAYWRIGHT_DRIVER_URL:
-            "ws://{{ application }}-playwright-chrome:3000/\
-            ?token={{ changedetection_browserless_token }}\
-            &stealth=1\
-            &--disable-web-security=true\
-            &--proxy-server=socks5://10.8.0.1"
+          PLAYWRIGHT_DRIVER_URL: "ws://{{ application }}-playwright-chrome:3000?token={{ changedetection_browserless_token }}"
 
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_group_id | string }}"
