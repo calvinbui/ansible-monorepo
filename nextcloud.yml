@@ -91,7 +91,6 @@
         labels:
           # 33 is www-data
           '{
-            "traefik.http.routers.{{ application }}-secure.middlewares": "{{ application }}-dav",
             "traefik.http.middlewares.{{ application }}-dav.redirectregex.permanent": "true",
             "traefik.http.middlewares.{{ application }}-dav.redirectregex.regex": "https://(.*)/.well-known/(card|cal)dav",
             "traefik.http.middlewares.{{ application }}-dav.redirectregex.replacement": "https://${1}/remote.php/dav/",

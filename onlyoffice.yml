@@ -41,8 +41,9 @@
           USE_UNAUTHORIZED_STORAGE: "true"
         traefik:
           - port: 80
+            middlewares:
+              - "{{ application }}-sslheaders"
         labels:
           '{
-            "traefik.http.routers.{{ application }}-secure.middlewares": "{{ application }}-sslheaders",
             "traefik.http.middlewares.{{ application }}-sslheaders.headers.customrequestheaders.X-Forwarded-Proto": "https"
           }'
