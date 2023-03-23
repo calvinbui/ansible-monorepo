@@ -69,6 +69,8 @@
           POSTGRES_PASSWORD: "{{ _postgres_password }}"
         traefik:
           - port: 8080
+            middlewares:
+              - "{{ application }}-addprefix"
         homer:
           name: Guacamole
           service: Infrastructure
@@ -76,6 +78,5 @@
           subtitle: "Remote access"
         labels:
           '{
-            "traefik.http.routers.{{ application }}-secure.middlewares": "{{ application }}-addprefix",
             "traefik.http.middlewares.{{ application }}-addprefix.addprefix.prefix": "/guacamole"
           }'

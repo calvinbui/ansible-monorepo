@@ -20,6 +20,7 @@ entryPoints:
     http:
       middlewares:
         - crowdsec-bouncer@file
+        - security-headers@file
 
   metrics:
     address: '0.0.0.0:8082/tcp'

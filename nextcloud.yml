@@ -81,6 +81,8 @@
           SMTP_SECURE: "tls"
         traefik:
           - port: 80
+            middlewares:
+              - "{{ application }}-dav"
         homer:
           name: Nextcloud
           service: Collaboration

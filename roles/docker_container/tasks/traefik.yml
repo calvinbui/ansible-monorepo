@@ -1,5 +1,27 @@
 ---
 
+- name: "Create HTTPS middlewares list"
+  ansible.builtin.set_fact:
+    route_middlewares: []
+
+- name: "Add additional HTTPS middlewares"
+  ansible.builtin.set_fact:
+    route_middlewares: "{{ route_middlewares + route.middlewares|default([]) }}"
+
+- name: Add Authelia basic auth
+  when:
+    - route.auth is defined
+    - route.auth == "basic"
+  ansible.builtin.set_fact:
+    route_middlewares: "{{ route_middlewares + [traefik_middleware_authelia_basic] }}"
+
+- name: Add Authelia login page
+  when:
+    - route.auth is defined
+    - route.auth == "page"
+  ansible.builtin.set_fact:
+    route_middlewares: "{{ route_middlewares + [traefik_middleware_authelia] }}"
+
 - name: "Generating Traefik labels for {{ route_name }}"
   when: traefik
   ansible.builtin.set_fact:
@@ -31,18 +53,4 @@
     - key: "traefik.{{ route.type | default('http') }}.routers.{{ route_name }}-secure.tls.certresolver"
       value: "{{ route.tls.certresolver | default(traefik_certresolver) }}"
     - key: "traefik.{{ route.type | default('http') }}.routers.{{ route_name }}-secure.middlewares"
-      value: "{{ route.http.middlewares | default('security-headers@file') }}"
-
-- name: Add Authelia basic auth
-  when:
-    - route.auth is defined
-    - route.auth == "basic"
-  ansible.builtin.set_fact:
-    traefik_labels: "{{ {'traefik.http.routers.' + route_name + '-secure.middlewares': 'security-headers@file,' + traefik_middleware_authelia_basic} | combine(traefik_labels) }}"
-
-- name: Add Authelia login page
-  when:
-    - route.auth is defined
-    - route.auth == "page"
-  ansible.builtin.set_fact:
-    traefik_labels: "{{ {'traefik.http.routers.' + route_name + '-secure.middlewares': 'security-headers@file,' + traefik_middleware_authelia} | combine(traefik_labels) }}"
+      value: "{{ ','.join(route_middlewares) }}"
