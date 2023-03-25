@@ -236,6 +236,8 @@
                 evt.Meta.http_status == '403' && evt.Parsed.traefik_router_name contains 'home-assistant' && (evt.Meta.http_path contains '/api/calendars/' || evt.Meta.http_path contains '/api/camera_proxy_stream/')
               -
                 evt.Meta.http_status == '403' && evt.Parsed.traefik_router_name contains 'qbittorrent' && (evt.Meta.http_path contains '/favicon.ico' || evt.Meta.http_path contains '/api/v2/')
+              -
+                evt.Parsed.traefik_router_name contains 'actual-budget' && evt.Meta.http_path contains '/data/migrations/'
         dest: "{{ config_directory }}/my-whitelists.yaml"
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
