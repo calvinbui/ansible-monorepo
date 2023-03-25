@@ -38,6 +38,7 @@ certificatesResolvers:
     acme:
       email: '{{ common_email_username }}'
       storage: acme.json
+      keyType: 'EC384'
       dnsChallenge:
         provider: cloudflare
         resolvers:
