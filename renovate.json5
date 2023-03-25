@@ -212,7 +212,7 @@
     /* changedetection.io */
     {
       matchPackagePatterns: [".*\\/changedetection.io"],
-      versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.?(?<build>\\d+)?$",
+      versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.?(?<patch>\\d+)?\\.?(?<build>\\d+)?$",
       customChangelogUrl: "https://github.com/dgtlmoon/changedetection.io",
     },
     /* watchtower */
