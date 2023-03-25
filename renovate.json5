@@ -356,7 +356,7 @@
     {
       matchPackagePatterns: ["collabora\\/code"],
       versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)\\.1$",
-      prBodyNotes: "[Release Notes](https://www.collaboraoffice.com/code-{{major}}-{{minor}}-release-notes/#:~:text={{major}}.{{minor}}.{{patch}})",
+      prBodyNotes: "[Release Notes](https://www.collaboraoffice.com/code-{{newMajor}}-{{newMinor}}-release-notes/)",
     },
     /* bing-rewards */
     {
