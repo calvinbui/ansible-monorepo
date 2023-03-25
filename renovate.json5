@@ -352,6 +352,17 @@
       matchPackagePatterns: ["browserless\\/chrome"],
       prBodyNotes: "[CHANGELOG.md](https://github.com/browserless/chrome/blob/master/CHANGELOG.md)",
     },
+    /* collabora */
+    {
+      matchPackagePatterns: ["collabora\\/code"],
+      versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<fix>\\d+)\\.(?<build>\\d+)$",
+      prBodyNotes: "[Release Notes](https://www.collaboraoffice.com/code-{{major}}-{{minor}}-release-notes/#:~:text={{major}}.{{minor}}.{{patch}})",
+    },
+    /* bing-rewards */
+    {
+      matchPackagePatterns: [".*\\/bing-rewards"],
+      prBodyNotes: "[CHANGELOG.md](https://bitbucket.org/bing-rewards/bing-rewards/src/master/CHANGELOG.md#:~:text={{prettyNewVersion}})",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
