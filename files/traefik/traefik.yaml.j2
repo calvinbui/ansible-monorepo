@@ -29,11 +29,15 @@ entryPoints:
     address: '0.0.0.0:123/udp'
 
 certificatesResolvers:
-  letsencrypt:
+  {{ traefik_certresolver }}:
     acme:
       email: '{{ common_email_username }}'
       storage: acme.json
-      tlsChallenge: {}
+      dnsChallenge:
+        provider: cloudflare
+        resolvers:
+          - 1.1.1.1:53
+          - 1.0.0.1:53
 
 api: {}
 
