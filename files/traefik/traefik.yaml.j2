@@ -8,6 +8,9 @@ providers:
   file:
     filename: /dynamic_conf.yaml
 
+experimental:
+  http3: true
+
 entryPoints:
   web:
     address: '0.0.0.0:80/tcp'
@@ -16,7 +19,9 @@ entryPoints:
         - crowdsec-bouncer@file
 
   web-secure:
-    address: '0.0.0.0:443/tcp'
+    address: ':443'
+    http3:
+      advertisedPort: 443
     http:
       middlewares:
         - crowdsec-bouncer@file
