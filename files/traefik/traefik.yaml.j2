@@ -13,7 +13,7 @@ experimental:
 
 entryPoints:
   web:
-    address: '0.0.0.0:80/tcp'
+    address: ':80/tcp'
     http:
       middlewares:
         - crowdsec-bouncer@file
@@ -28,10 +28,10 @@ entryPoints:
         - security-headers@file
 
   metrics:
-    address: '0.0.0.0:8082/tcp'
+    address: ':8082/tcp'
 
   ntp:
-    address: '0.0.0.0:123/udp'
+    address: ':123/udp'
 
 certificatesResolvers:
   {{ traefik_certresolver }}:
@@ -50,8 +50,8 @@ certificatesResolvers:
 api: {}
 
 log:
-  level: "INFO"
-  filePath: "/var/log/traefik/traefik.log"
+  level: 'INFO'
+  filePath: '/var/log/traefik/traefik.log'
 
 accessLog:
-  filePath: "/var/log/traefik/access.log"
+  filePath: '/var/log/traefik/access.log'
