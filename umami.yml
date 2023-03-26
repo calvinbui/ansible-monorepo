@@ -59,14 +59,14 @@
           - name: "umami-private"
             port: 3000
             rule: "Host(`{{ application }}.{{ common_tld }}`)"
-            middlewares:
-              - "{{ application }}-script-path"
           - name: "umami-public"
             port: 3000
             rule: "Host(`umami.calvin.me`)"
           - name: "umami-scripts"
             port: 3000
             rule: "Host(`u.calvin.me`)"
+            middlewares:
+              - "{{ application }}-script-path"
         homer:
           name: umami
           service: Monitoring
@@ -74,6 +74,6 @@
           subtitle: "Web analytics"
         labels:
           '{
-            "traefik.http.middlewares.{{ application }}-script-path.replacepathregex.regex": "^/script.js",
+            "traefik.http.middlewares.{{ application }}-script-path.replacepathregex.regex": "^/{{ application | b64encode }}.js",
             "traefik.http.middlewares.{{ application }}-script-path.replacepathregex.replacement": "/umami.js"
           }'
