@@ -94,16 +94,16 @@
         # https://bitbucket.org/bing-rewards/bing-rewards
         image: jwong235/bing-rewards:v2.2
         command:
-          - python
-          - setup.py
-          - -e
-          - "{{ bing_rewards_username }}"
-          - -p
-          - "{{ bing_rewards_password }}"
-          # - --google_sheets_sheet_id
-          # - "{{ bing_rewards_google_sheets.id }}"
-          # - --google_sheets_tab_name
-          # - "{{ bing_rewards_google_sheets.tab }}"
+          - bash
+          - -c
+          - |
+            /usr/local/bin/python3 /bing-rewards/BingRewards/setup.py \
+            --email "{{ bing_rewards_username }}" \
+            --password "{{ bing_rewards_password }}" \
+            --google_sheets_sheet_id "{{ bing_rewards_google_sheets.id }}" \
+            --google_sheets_tab_name "{{ bing_rewards_google_sheets.tab }}";
+
+            /bin/sed -i 's|-nsb$|-nsb -gs|' /bing-rewards/script.sh;
         env:
           TZ: "{{ common_timezone }}"
         volumes:
