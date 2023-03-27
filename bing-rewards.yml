@@ -92,7 +92,7 @@
         name: docker_container
       vars:
         # https://bitbucket.org/bing-rewards/bing-rewards
-        image: jwong235/bing-rewards:v2.0
+        image: jwong235/bing-rewards:v2.2
         command:
           - python
           - setup.py
