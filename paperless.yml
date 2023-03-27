@@ -29,7 +29,7 @@
         name: "{{ application }}"
         create_home: false
         home: "{{ config_directory }}/consume"
-        password: "$6$GbBqXO8BE$3gAl2uWHvBWdSUYl1EpTCYjJuGzi4HnlQlTmmbyOpbw6jNwZRwiDZ8.ADiyO9j/i2HyknE6jh3PYIlg7DrD.i/"
+        password: "$6$kmVZak.N77fAA.op$p84WnShU1IZhSZzAEsfecN4e3COs5N4Pp.tR8XtDVjAIOQHNabFjSbbBzSjx3oim/efOEW20bueoQcKYFTf.D1"
       register: _paperless_user
 
     - name: Create config directory
