@@ -28,42 +28,31 @@ cards:
   -
     view_layout:
       grid-area: flow
-    type: custom:power-flow-card
-    kw_decimals: 3
+    type: custom:power-flow-card-plus
+    clickable_entities: true
+    kw_decimals: 2
     entities:
-      solar: sensor.total_solar_generation
-      grid: sensor.power_meter_active_power
-    inverted_entities: grid
-    card_mod:
-      style: |
-        ha-card {
-          --energy-grid-consumption-color: #f76354;
-          --energy-grid-return-color: #18cf87;
-          --energy-solar-color: #f76354;
-        }
-
-        .home {
-          color: #f76354 !important;
-        }
-
-        .solar {
-          color: #E3C729 !important;
-        }
-
-        .solar .circle {
-          color: #E3C729 !important;
-          border-color: #E3C729 !important;
-        }
-
-        .grid .circle {
-          color: #3798fe !important;
-          border-color: #3798fe !important;
-        }
-
-        .home .circle {
-          border-color: #f76354 !important;
-          color: #f76354 !important;
-        }
+      home:
+        entity: sensor.home_power_consumption
+        color_icon: true
+      grid:
+        entity:
+          consumption: sensor.grid_power_consumption
+          production: sensor.grid_power_export
+        color_icon: true
+        display_state: two_way
+        color:
+          production: '#18cf87'
+          consumption: '#f76354'
+      solar:
+        entity: sensor.total_solar_generation
+        color_icon: true
+    # card_mod:
+    #   style: |
+    #     .grid .circle {
+    #       color: #3798fe !important;
+    #       border-color: #3798fe !important;
+    #     }
 
   -
     view_layout:
