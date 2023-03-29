@@ -363,6 +363,11 @@
       matchPackagePatterns: [".*\\/bing-rewards"],
       prBodyNotes: "[CHANGELOG.md](https://bitbucket.org/bing-rewards/bing-rewards/src/master/CHANGELOG.md#:~:text={{prettyNewVersion}})",
     },
+    /* apache tika */
+    {
+      matchPackagePatterns: [".*\\/tika"],
+      prBodyNotes: "[Docker Image Changes](https://github.com/apache/tika-docker/blob/master/CHANGES.md)\n[Tika Changes](https://github.com/apache/tika/blob/main/CHANGES.txt)",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",

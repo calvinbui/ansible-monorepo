@@ -71,7 +71,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-tika"
-        image: ghcr.io/paperless-ngx/tika:2.5.0-minimal
+        image: apache/tika:2.7.0.1
 
     - name: Create gotenberg container
       ansible.builtin.include_role:
