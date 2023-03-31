@@ -193,7 +193,7 @@
         name: docker_container
       vars:
         name: nvidia-dcgm-exporter
-        image: nvcr.io/nvidia/k8s/dcgm-exporter:3.1.6-3.1.3-ubuntu20.04
+        image: nvcr.io/nvidia/k8s/dcgm-exporter:3.1.7-3.1.4-ubuntu20.04
         capabilities:
           - sys_admin
         device_requests:
