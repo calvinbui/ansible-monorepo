@@ -325,7 +325,7 @@
       matchPackagePatterns: [".*\\/dcgm-exporter"],
       versioning: "loose",
       customChangelogUrl: "https://github.com/NVIDIA/dcgm-exporter",
-      prBodyNotes: "[Releases](https://github.com/NVIDIA/dcgm-exporter/releases)",
+      prBodyNotes: "[GitHub Releases](https://github.com/NVIDIA/dcgm-exporter/releases)\n[DCGM Changelog](https://docs.nvidia.com/datacenter/dcgm/latest/release-notes/changelog.html)",
     },
     /* zigbee2mqtt */
     {
