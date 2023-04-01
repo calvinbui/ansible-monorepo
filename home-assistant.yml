@@ -31,6 +31,7 @@
         35323663306661363036393732363765313338663432356665363230323837643734336564616234
         3338
       ics_calendar:
+        # https://www.industrialrelations.nsw.gov.au/public-holidays/public-holidays-in-nsw/
         - name: NSW Public Holidays 2021-2023
           url: https://staticontent.dpc.nsw.gov.au/ir/calendar/NSW-Public-Holidays-dates-2021-2023.ics
           user_agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36
