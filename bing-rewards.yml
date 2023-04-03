@@ -103,7 +103,7 @@
             --google_sheets_sheet_id "{{ bing_rewards_google_sheets.id }}" \
             --google_sheets_tab_name "{{ bing_rewards_google_sheets.tab }}";
 
-            /bin/sed -i 's|-nsb$|-nsb -gs|' /bing-rewards/script.sh;
+            /bin/sed -i 's|-nsb$|-nsb -gs|' /bing-rewards/scripts/script.sh;
         env:
           TZ: "{{ common_timezone }}"
         volumes:
