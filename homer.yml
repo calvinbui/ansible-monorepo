@@ -55,7 +55,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-service-discovery"
-        image: ghcr.io/calvinbui/homer-service-discovery:v1.8.0
+        image: ghcr.io/calvinbui/homer-service-discovery:v1.9.1
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock:ro  # docker socket
           - "{{ config_directory }}/config.yml:/config.yml"  # homer final config
