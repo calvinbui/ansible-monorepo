@@ -60,7 +60,6 @@ cards:
                 ha-card {
                   --card-background-color: #fcd6631a !important;
                   background-color: #fcd6631a !important;
-                  --primary-text-color: #253e5c;
                 }
               {% endif %}
       -
