@@ -54,3 +54,12 @@
       value: "{{ route.tls.certresolver | default(traefik_certresolver) }}"
     - key: "traefik.{{ route.type | default('http') }}.routers.{{ route_name }}-secure.middlewares"
       value: "{{ ','.join(route_middlewares) }}"
+
+- name: Add {{ route_name }} priority
+  when:
+    - route.priority is defined
+  ansible.builtin.set_fact:
+    traefik_labels: "{{ traefik_labels | default({}) | combine({item.key: item.value}) }}"
+  loop:
+    - key: "traefik.{{ route.type | default('http') }}.routers.{{ route_name }}-secure.priority"
+      value: "{{ route.priority | string }}"
