@@ -11,7 +11,7 @@
 - name: Create InfluxDB container
   community.docker.docker_container:
     name: "{{ influxdb_name }}"
-    image: "influxdb:{{ influxdb_version }}-alpine"
+    image: "influxdb:{{ influxdb_version }}"
 
     state: started
 

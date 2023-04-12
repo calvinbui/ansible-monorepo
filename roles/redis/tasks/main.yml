@@ -11,7 +11,7 @@
 - name: Create Redis container
   community.docker.docker_container:
     name: "{{ redis_name }}"
-    image: "redis:{{ redis_version }}-alpine"
+    image: "redis:{{ redis_version }}"
 
     state: started
 
