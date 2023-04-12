@@ -39,7 +39,7 @@
           MAILER_ENABLED: "true"
           MAILER_HOST: "{{ common_email_server }}"
           MAILER_PORT: "{{ common_email_port | string }}"
-          MAILER_SECURITY: "{{ common_email_protocol }}"
+          MAILER_SECURITY: "{{ 'starttls' if common_email_protocol == 'tls' }}"
           MAILER_AUTH_USER: "{{ common_email_username }}"
           MAILER_AUTH_PASSWORD: "{{ common_email_password }}"
           MAILER_NOREPLY_NAME: "{{ application }}"
