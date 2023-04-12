@@ -163,8 +163,8 @@
         name: "borgmatic-{{ item.name }}"
         image: b3vis/borgmatic:1.7.11
         volumes:
-          # data to backup. dont mount as ro when a restore is needed
-          - "{{ item.source }}:/mnt/source:rw"
+          # data to backup. mount as rw when a restore is needed
+          - "{{ item.source }}:/mnt/source:ro"
 
           - "{{ config_directory }}/borgbackup:/mnt/borg-repository"
 
