@@ -209,6 +209,13 @@
         metrics:
           - port: 9400
 
+    - name: Automatically restart containers when driver is not found
+      ansible.builtin.cron:
+        name: "docker driver check {{ item }}"
+        minute: "*/1"
+        job: "if ! docker exec {{ item }} nvidia-smi > /dev/null; then docker restart {{ item }} > /dev/null; fi"
+      loop: "{{ nvidia_driver_containers }}"
+
 # The NVIDIA driver install can mess with the Docker daemon settings.
 # Rerun docker again to be safe.
 - ansible.builtin.import_playbook: docker.yml
