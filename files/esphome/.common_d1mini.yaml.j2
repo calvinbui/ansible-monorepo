@@ -1,12 +1,9 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
 ---
 
 # https://esphome.io/components/esp8266.html
 esp8266:
   board: d1_mini
-
-# https://esphome.io/components/uart.html
-uart:
-  id: uart_desk
-  baud_rate: 115200
-  tx_pin: TX
-  rx_pin: RX
+  framework:
+    version: recommended
+  early_pin_init: false

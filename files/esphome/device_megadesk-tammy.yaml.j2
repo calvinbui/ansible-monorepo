@@ -1,3 +1,4 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
 ---
 
 # https://esphome.io/guides/configuration-types.html#substitutions
@@ -9,5 +10,20 @@ substitutions:
 packages:
   d1mini: !include .common_d1mini.yaml
   wifi: !include .common_wifi.yaml
+  ota: !include .common_ota.yaml
+  web_server: !include .common_web_server.yaml
   api: !include .common_api.yaml
   device_base: !include .base_megadesk.yaml
+
+# https://esphome.io/components/uart.html
+uart:
+  id: uart_desk
+  baud_rate: 115200
+  tx_pin: GPIO1
+  rx_pin: GPIO3
+
+# https://esphome.io/components/logger.html
+logger:
+  baud_rate: 0 # disables logging over serial port
+  hardware_uart: UART0 # TX:GPIO1, RX:GPIO3
+  level: DEBUG

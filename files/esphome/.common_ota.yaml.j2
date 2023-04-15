@@ -1,0 +1,9 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
+---
+
+# https://esphome.io/components/ota.html
+ota:
+  password: "{{ esphome_ota_password }}"
+
+web_server:
+  ota: true

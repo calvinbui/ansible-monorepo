@@ -1,12 +1,11 @@
 #include "esphome.h"
 
-class Megadesk : public Component, public Sensor, public UARTDevice {
- public:
-  Megadesk(UARTComponent *parent) : UARTDevice(parent) {}
+class Megadesk: public Component, public Sensor, public UARTDevice {
+  public: Megadesk(UARTComponent * parent): UARTDevice(parent) {}
 
-  Sensor *raw_height = new Sensor();
-  Sensor *min_height = new Sensor();
-  Sensor *max_height = new Sensor();
+  Sensor * raw_height = new Sensor();
+  Sensor * min_height = new Sensor();
+  Sensor * max_height = new Sensor();
 
   void setup() override {}
 
@@ -33,7 +32,7 @@ class Megadesk : public Component, public Sensor, public UARTDevice {
     // static variables allows segmented/char-at-a-time decodes
     static uint16_t receivedBytes[numFields];
     static uint8_t ndx = 0;
-    int r;  // read char/digit
+    int r; // read char/digit
 
     // read 2 chars
     while ((ndx < numChars) && ((r = read()) != -1)) {
@@ -47,7 +46,7 @@ class Megadesk : public Component, public Sensor, public UARTDevice {
     // read ascii digits
     while ((ndx >= numChars) && ((r = readdigits()) != -1)) {
       receivedBytes[ndx] = r;
-      digits = 0;  // clear
+      digits = 0; // clear
       if (++ndx == numFields) {
         parseData(receivedBytes[1], receivedBytes[2], receivedBytes[3]);
         ndx = 0;
@@ -58,12 +57,12 @@ class Megadesk : public Component, public Sensor, public UARTDevice {
 
   void parseData(byte command, uint16_t position, uint8_t push_addr) {
     if (command == '=') {
-      raw_height->publish_state(position);
+      raw_height -> publish_state(position);
     } else if (command == 'R') {
       if (push_addr == 11) {
-        min_height->publish_state(position);
+        min_height -> publish_state(position);
       } else if (push_addr == 12) {
-        max_height->publish_state(position);
+        max_height -> publish_state(position);
       }
     }
   }

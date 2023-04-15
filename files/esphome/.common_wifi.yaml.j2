@@ -1,3 +1,4 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
 ---
 
 # https://esphome.io/components/wifi.html
@@ -5,3 +6,7 @@ wifi:
   ssid: "{{ networks.iot.wifi.ssid }} 2.4G"
   password: {{ networks.iot.wifi.password }}
   domain: .{{ common_local_tld }}
+  fast_connect: true
+
+# https://esphome.io/components/captive_portal.html
+captive_portal:
