@@ -168,7 +168,7 @@ cards:
           type: custom:button-card
           template: card_input_boolean
       -
-        entity: input_boolean.alfresco_motion_detection_automations
+        entity: automation.lights_alfresco_downlights_motion_detection_on_off
         variables:
           ulm_card_input_boolean_name: Alfresco
         <<: *input_boolean_card
