@@ -1,3 +1,5 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
+
 #include "esphome.h"
 
 class Megadesk: public Component, public Sensor, public UARTDevice {
@@ -6,6 +8,10 @@ class Megadesk: public Component, public Sensor, public UARTDevice {
   Sensor * raw_height = new Sensor();
   Sensor * min_height = new Sensor();
   Sensor * max_height = new Sensor();
+
+  {% for i in range(2, 11) %}
+  Sensor * position_{{ i }} = new Sensor();
+  {% endfor %}
 
   void setup() override {}
 
@@ -59,10 +65,18 @@ class Megadesk: public Component, public Sensor, public UARTDevice {
     if (command == '=') {
       raw_height -> publish_state(position);
     } else if (command == 'R') {
-      if (push_addr == 11) {
-        min_height -> publish_state(position);
-      } else if (push_addr == 12) {
-        max_height -> publish_state(position);
+      switch(push_addr) {
+        {% for i in range(2, 11) %}
+        case {{ i }}:
+          position_{{ i }} -> publish_state(position);
+          break;
+        {% endfor %}
+        case 11:
+          min_height -> publish_state(position);;
+          break;
+        case 12:
+          max_height -> publish_state(position);;
+          break;
       }
     }
   }

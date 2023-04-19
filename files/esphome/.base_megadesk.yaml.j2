@@ -14,19 +14,35 @@ esphome:
     then:
       - delay: 1s
       - uart.write: "<C0.0." # reports current position
+
+      {% for i in range(2, 11) %}
+      - delay: 1s
+      - uart.write: "<R0.{{ i }}." # read eeprom slot {{ i }} - position {{ i }}
+      {% endfor %}
+
       - delay: 1s
       - uart.write: "<R0.11." # read eeprom slot 11 - lowest position
       - delay: 1s
-      - uart.write: "<R0.12." # read eeprom slot 11 - highest position
+      - uart.write: "<R0.12." # read eeprom slot 12 - highest position
 
 # https://esphome.io/components/sensor/index.html
 sensor:
   -
+    # these values are set by the .h file
     platform: custom
     lambda: |-
       auto megadesk = new Megadesk(id(uart_desk));
       App.register_component(megadesk);
-      return { megadesk->raw_height, megadesk->min_height, megadesk->max_height };
+      return {
+        megadesk->raw_height,
+
+        {% for i in range(2, 11) %}
+        megadesk->position_{{ i }},
+        {% endfor %}
+
+        megadesk->min_height,
+        megadesk->max_height,
+      };
     sensors:
       -
         id: megadesk_raw
@@ -35,6 +51,10 @@ sensor:
           then:
             - component.update: megadesk_height_cm
             - component.update: megadesk_height_raw
+      {% for i in range(2, 11) %}
+      -
+        name: "Height - Position {{ '%02d' % i }}"
+      {% endfor %}
       -
         name: "Megadesk Minimum Height"
         internal: true
@@ -47,7 +67,7 @@ sensor:
 number:
   -
     platform: template
-    name: "Megadesk Height (cm)"
+    name: "Height"
     id: megadesk_height_cm
     min_value: 58.42
     max_value: 118.745
@@ -64,7 +84,7 @@ number:
           value: !lambda "return int((((x - 58.42) * (6640 - 299)) / (119.38 - 58.42)) + 299);"
   -
     platform: template
-    name: "Megadesk Height (raw)"
+    name: "Height (raw)"
     id: megadesk_height_raw
     internal: true
     min_value: 299
@@ -85,16 +105,21 @@ number:
 # https://esphome.io/components/button/template.html
 button:
   {% for button in [
-    { "name": "Desk Position 2", "serial": ["<L0,2."] },
-    { "name": "Desk Position 3", "serial": ["<L0,3."] },
-    { "name": "Desk Position 4", "serial": ["<L0,4."] },
-    { "name": "Desk Position 5", "serial": ["<L0,5."] },
+    { "name": "Position - 02", "serial": ["<L0,2."] },
+    { "name": "Position - 03", "serial": ["<L0,3."] },
+    { "name": "Position - 04", "serial": ["<L0,4."] },
+    { "name": "Position - 05", "serial": ["<L0,5."] },
+    { "name": "Position - 06", "serial": ["<L0,6."] },
+    { "name": "Position - 07", "serial": ["<L0,7."] },
+    { "name": "Position - 08", "serial": ["<L0,8."] },
+    { "name": "Position - 09", "serial": ["<L0,9."] },
+    { "name": "Position - 10", "serial": ["<L0,10."] },
     { "name": "Toggle Minimum Desk Height", "serial": ["<L0,11.", "<R0,11."] },
     { "name": "Toggle Maximum Desk Height", "serial": ["<L0,12.", "<R0,12."] },
     { "name": "Recalibrate Desk", "serial": ["<L0,14."] },
-    { "name": "Reboot Megadesk", "serial": ["<L0,15."] },
-    { "name": "Toggle Audio feedback", "serial": ["<L0,17."] },
-    { "name": "Toggle both-button mode", "serial": ["<L0,18."] }
+    { "name": "Reboot", "serial": ["<L0,15."] },
+    { "name": "Toggle audio-feedback mode", "serial": ["<L0,17."] },
+    { "name": "Toggle both-button mode", "serial": ["<L0,18."] },
   ] %}
   -
     platform: template
@@ -111,4 +136,4 @@ interval:
   -
     interval: 300s
     then:
-      - uart.write: "<C0.0."
+      - uart.write: "<C0.0." # reports current position
