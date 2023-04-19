@@ -45,6 +45,7 @@ sensor:
       };
     sensors:
       -
+        name: "Megadesk Raw Height"
         id: megadesk_raw
         internal: true
         on_value:
@@ -53,7 +54,13 @@ sensor:
             - component.update: megadesk_height_raw
       {% for i in range(2, 11) %}
       -
-        name: "Height - Position {{ '%02d' % i }}"
+        name: "Megadesk Raw Height {{ '%02d' % i }}"
+        id: megadesk_raw_{{ i }}
+        internal: true
+        on_value:
+          then:
+            - component.update: megadesk_height_cm_{{ i }}
+            - component.update: megadesk_height_raw_{{ i }}
       {% endfor %}
       -
         name: "Megadesk Minimum Height"
@@ -69,7 +76,7 @@ number:
     platform: template
     name: "Height"
     id: megadesk_height_cm
-    min_value: 58.42
+    min_value: 58.54
     max_value: 118.745
     step: 0.53
     mode: slider
@@ -77,17 +84,17 @@ number:
     unit_of_measurement: 'cm'
     #NewValue = (((OldValue - OldMin) * (NewMax - NewMin)) / (OldMax - OldMin)) + NewMin
     lambda: |-
-      return ((((id(megadesk_raw).state - 299) * (119.38 - 58.42)) / (6914 - 299)) + 58.42);
+      return ((((id(megadesk_raw).state - 300) * (119.38 - 58.54)) / (6914 - 300)) + 58.54);
     set_action:
       - number.set:
           id: megadesk_height_raw
-          value: !lambda "return int((((x - 58.42) * (6640 - 299)) / (119.38 - 58.42)) + 299);"
+          value: !lambda "return int((((x - 58.54) * (6640 - 300)) / (119.38 - 58.54)) + 300);"
   -
     platform: template
     name: "Height (raw)"
     id: megadesk_height_raw
     internal: true
-    min_value: 299
+    min_value: 300
     max_value: 6640
     step: 1
     mode: slider
@@ -100,6 +107,42 @@ number:
           sprintf(buf, "<=%i,.", int(x));
           std::string s = buf;
           return std::vector<unsigned char>( s.begin(), s.end() );
+
+  {% for i in range(2, 11) %}
+  -
+    platform: template
+    name: "Height - {{ '%02d' % i }}"
+    id: megadesk_height_cm_{{ i }}
+    min_value: 58.54
+    max_value: 118.745
+    step: 0.53
+    update_interval: never
+    unit_of_measurement: 'cm'
+    lambda: |-
+      return ((((id(megadesk_raw_{{ i }}).state - 300) * (119.38 - 58.54)) / (6914 - 300)) + 58.54);
+    set_action:
+      - number.set:
+          id: megadesk_height_raw_{{ i }}
+          value: !lambda "return int((((x - 58.54) * (6640 - 300)) / (119.38 - 58.54)) + 300);"
+  -
+    platform: template
+    name: "Height - Position {{ '%02d' % i }} (raw)"
+    id: megadesk_height_raw_{{ i }}
+    internal: true
+    min_value: 300
+    max_value: 6640
+    step: 1
+    mode: slider
+    update_interval: never
+    lambda: |-
+      return id(megadesk_raw_{{ i }}).state;
+    set_action:
+      - uart.write: !lambda |-
+          char buf[20];
+          sprintf(buf, "<S%i,{{ i }}.", int(x));
+          std::string s = buf;
+          return std::vector<unsigned char>( s.begin(), s.end() );
+  {% endfor %}
 
 # https://esphome.io/components/button/index.html
 # https://esphome.io/components/button/template.html

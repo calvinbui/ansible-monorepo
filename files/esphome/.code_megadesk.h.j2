@@ -64,7 +64,7 @@ class Megadesk: public Component, public Sensor, public UARTDevice {
   void parseData(byte command, uint16_t position, uint8_t push_addr) {
     if (command == '=') {
       raw_height -> publish_state(position);
-    } else if (command == 'R') {
+    } else if (command == 'R' || command == 'S') {
       switch(push_addr) {
         {% for i in range(2, 11) %}
         case {{ i }}:
