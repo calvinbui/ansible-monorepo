@@ -74,7 +74,7 @@ sensor:
 number:
   -
     platform: template
-    name: "Height"
+    name: "Current Height"
     id: megadesk_height_cm
     min_value: 58.54
     max_value: 118.745
@@ -91,13 +91,12 @@ number:
           value: !lambda "return int((((x - 58.54) * (6640 - 300)) / (119.38 - 58.54)) + 300);"
   -
     platform: template
-    name: "Height (raw)"
+    name: "Current Height (raw)"
     id: megadesk_height_raw
     internal: true
     min_value: 300
     max_value: 6640
     step: 1
-    mode: slider
     update_interval: never
     lambda: |-
       return id(megadesk_raw).state;
@@ -111,11 +110,12 @@ number:
   {% for i in range(2, 11) %}
   -
     platform: template
-    name: "Height - {{ '%02d' % i }}"
+    name: "Memory Position Height {{ '%02d' % i }}"
     id: megadesk_height_cm_{{ i }}
     min_value: 58.54
     max_value: 118.745
     step: 0.53
+    mode: box
     update_interval: never
     unit_of_measurement: 'cm'
     lambda: |-
@@ -126,13 +126,12 @@ number:
           value: !lambda "return int((((x - 58.54) * (6640 - 300)) / (119.38 - 58.54)) + 300);"
   -
     platform: template
-    name: "Height - Position {{ '%02d' % i }} (raw)"
+    name: "Memory Position Height {{ '%02d' % i }} (raw)"
     id: megadesk_height_raw_{{ i }}
     internal: true
     min_value: 300
     max_value: 6640
     step: 1
-    mode: slider
     update_interval: never
     lambda: |-
       return id(megadesk_raw_{{ i }}).state;
@@ -148,15 +147,15 @@ number:
 # https://esphome.io/components/button/template.html
 button:
   {% for button in [
-    { "name": "Position - 02", "serial": ["<L0,2."] },
-    { "name": "Position - 03", "serial": ["<L0,3."] },
-    { "name": "Position - 04", "serial": ["<L0,4."] },
-    { "name": "Position - 05", "serial": ["<L0,5."] },
-    { "name": "Position - 06", "serial": ["<L0,6."] },
-    { "name": "Position - 07", "serial": ["<L0,7."] },
-    { "name": "Position - 08", "serial": ["<L0,8."] },
-    { "name": "Position - 09", "serial": ["<L0,9."] },
-    { "name": "Position - 10", "serial": ["<L0,10."] },
+    { "name": "Memory Position 02", "serial": ["<L0,2."] },
+    { "name": "Memory Position 03", "serial": ["<L0,3."] },
+    { "name": "Memory Position 04", "serial": ["<L0,4."] },
+    { "name": "Memory Position 05", "serial": ["<L0,5."] },
+    { "name": "Memory Position 06", "serial": ["<L0,6."] },
+    { "name": "Memory Position 07", "serial": ["<L0,7."] },
+    { "name": "Memory Position 08", "serial": ["<L0,8."] },
+    { "name": "Memory Position 09", "serial": ["<L0,9."] },
+    { "name": "Memory Position 10", "serial": ["<L0,10."] },
     { "name": "Toggle Minimum Desk Height", "serial": ["<L0,11.", "<R0,11."] },
     { "name": "Toggle Maximum Desk Height", "serial": ["<L0,12.", "<R0,12."] },
     { "name": "Recalibrate Desk", "serial": ["<L0,14."] },
