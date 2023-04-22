@@ -26,6 +26,7 @@ esphome:
       - uart.write: "<R0.12." # read eeprom slot 12 - highest position
 
 # https://esphome.io/components/sensor/index.html
+# https://esphome.io/components/sensor/custom.html
 sensor:
   -
     # these values are set by the .h file
@@ -45,16 +46,21 @@ sensor:
       };
     sensors:
       -
-        name: "Megadesk Raw Height"
-        id: megadesk_raw
+        name: "Height (Raw)"
+        id: megadesk_raw_height
         internal: true
         on_value:
           then:
             - component.update: megadesk_height_cm
             - component.update: megadesk_height_raw
+            - component.update: megadesk_height_slider_cm
+            - binary_sensor.template.publish:
+                id: megadesk_moving
+                state: OFF
+
       {% for i in range(2, 11) %}
       -
-        name: "Megadesk Raw Height {{ '%02d' % i }}"
+        name: "Height (Raw) Memory Position {{ '%02d' % i }}"
         id: megadesk_raw_{{ i }}
         internal: true
         on_value:
@@ -63,19 +69,112 @@ sensor:
             - component.update: megadesk_height_raw_{{ i }}
       {% endfor %}
       -
-        name: "Megadesk Minimum Height"
+        name: "Minimum Height (Raw)"
+        id: megadesk_raw_min
         internal: true
+        on_value:
+          then:
+            - component.update: megadesk_height_min_cm
       -
-        name: "Megadesk Maximum Height"
+        name: "Maximum Height (Raw)"
+        id: megadesk_raw_max
         internal: true
+        on_value:
+          then:
+            - component.update: megadesk_height_max_cm
+  -
+    name: "Current Height"
+    id: megadesk_height_cm
+    icon: "mdi:human-male-height"
+    platform: template
+    lambda: |-
+      return ((((id(megadesk_raw_height).state - 300) * (119.38 - 58.54)) / (6914 - 300)) + 58.54);
+    unit_of_measurement: 'cm'
+  -
+    name: "Minimum Height"
+    id: megadesk_height_min_cm
+    icon: "mdi:human-male-height-variant"
+    platform: template
+    lambda: |-
+      return ((((id(megadesk_raw_min).state - 300) * (119.38 - 58.54)) / (6914 - 300)) + 58.54);
+    unit_of_measurement: 'cm'
+  -
+    name: "Maximum Height"
+    id: megadesk_height_max_cm
+    icon: "mdi:human-male-height-variant"
+    platform: template
+    lambda: |-
+      return ((((id(megadesk_raw_max).state - 300) * (119.38 - 58.54)) / (6914 - 300)) + 58.54);
+    unit_of_measurement: 'cm'
+
+# https://esphome.io/components/binary_sensor/status.html
+binary_sensor:
+  -
+    platform: template
+    id: megadesk_moving
+    icon: "mdi:motion"
+    device_class: moving
+    name: "Moving"
+
+# https://esphome.io/components/cover/template.html
+cover:
+  - platform: template
+    id: megadesk_controls
+    icon: "mdi:gamepad"
+    name: "Controls"
+    assumed_state: true
+    open_action:
+      - uart.write: "<+300,0."
+      - binary_sensor.template.publish:
+          id: megadesk_moving
+          state: ON
+    close_action:
+      - uart.write: "<-300,0."
+      - binary_sensor.template.publish:
+          id: megadesk_moving
+          state: ON
+    stop_action:
+      - uart.write: "<+0,0."
+
+    # not ready
+    {# !lambda |-
+      return ( id(megadesk_height_max_cm).state - id(megadesk_height_cm).state )/ ( id(megadesk_height_max_cm).state - id(megadesk_height_min_cm).state) );"
+    has_position: true
+    position_action:
+      - uart.write: !lambda |-
+          char buf[20];
+          sprintf(buf, "<=%i,.", int(pos * id(megadesk_raw_max).state));
+          std::string s = buf;
+          return std::vector<unsigned char>( s.begin(), s.end() );
+      - binary_sensor.template.publish:
+          id: megadesk_moving
+          state: ON
+      - while:
+          condition:
+            lambda: |-
+              return (pos * id(megadesk_raw_max).state + 1) > id(megadesk_raw_height).state && id(megadesk_raw_height).state > (pos * id(megadesk_raw_max).state - 1);
+          then:
+            - cover.template.publish:
+                id: megadesk_controls
+                current_operation: !lambda |-
+                  if(pos > id(megadesk_raw_height).state) {
+                    return COVER_OPERATION_OPENING;
+                  } else {
+                    return COVER_OPERATION_CLOSING;
+                  }
+            - delay: 2s
+      - cover.template.publish:
+          id: megadesk_controls
+          position: !lambda "return pos;" #}
 
 # https://esphome.io/components/number/index.html
 # https://esphome.io/components/number/template.html
 number:
   -
     platform: template
-    name: "Current Height"
-    id: megadesk_height_cm
+    name: "Height Adjustment Slider"
+    id: megadesk_height_slider_cm
+    icon: "mdi:gamepad"
     min_value: 58.54
     max_value: 118.745
     step: 0.53
@@ -84,7 +183,7 @@ number:
     unit_of_measurement: 'cm'
     #NewValue = (((OldValue - OldMin) * (NewMax - NewMin)) / (OldMax - OldMin)) + NewMin
     lambda: |-
-      return ((((id(megadesk_raw).state - 300) * (119.38 - 58.54)) / (6914 - 300)) + 58.54);
+      return ((((id(megadesk_raw_height).state - 300) * (119.38 - 58.54)) / (6914 - 300)) + 58.54);
     set_action:
       - number.set:
           id: megadesk_height_raw
@@ -99,7 +198,7 @@ number:
     step: 1
     update_interval: never
     lambda: |-
-      return id(megadesk_raw).state;
+      return id(megadesk_raw_height).state;
     set_action:
       - uart.write: !lambda |-
           char buf[20];
@@ -112,6 +211,7 @@ number:
     platform: template
     name: "Memory Position Height {{ '%02d' % i }}"
     id: megadesk_height_cm_{{ i }}
+    icon: "mdi:numeric-{{ i }}"
     min_value: 58.54
     max_value: 118.745
     step: 0.53
@@ -146,36 +246,34 @@ number:
 # https://esphome.io/components/button/index.html
 # https://esphome.io/components/button/template.html
 button:
+  {% for i in range(2, 11) %}
+  -
+    platform: template
+    name: "Memory Position {{ '%02d' % i }}"
+    icon: "mdi:numeric-{{ i }}-circle"
+    on_press:
+      then:
+        - uart.write: "<L0,{{ i }}."
+        - binary_sensor.template.publish:
+            id: megadesk_moving
+            state: ON
+  {% endfor %}
+
   {% for button in [
-    { "name": "Memory Position 02", "serial": ["<L0,2."] },
-    { "name": "Memory Position 03", "serial": ["<L0,3."] },
-    { "name": "Memory Position 04", "serial": ["<L0,4."] },
-    { "name": "Memory Position 05", "serial": ["<L0,5."] },
-    { "name": "Memory Position 06", "serial": ["<L0,6."] },
-    { "name": "Memory Position 07", "serial": ["<L0,7."] },
-    { "name": "Memory Position 08", "serial": ["<L0,8."] },
-    { "name": "Memory Position 09", "serial": ["<L0,9."] },
-    { "name": "Memory Position 10", "serial": ["<L0,10."] },
-    { "name": "Toggle Minimum Desk Height", "serial": ["<L0,11.", "<R0,11."] },
-    { "name": "Toggle Maximum Desk Height", "serial": ["<L0,12.", "<R0,12."] },
-    { "name": "Recalibrate Desk", "serial": ["<L0,14."] },
-    { "name": "Reboot", "serial": ["<L0,15."] },
-    { "name": "Toggle audio-feedback mode", "serial": ["<L0,17."] },
-    { "name": "Toggle both-button mode", "serial": ["<L0,18."] },
+    { "name": "Toggle Minimum Desk Height", "icon": "toggle-switch", "serial": ["<L0,11.", "<R0,11."] },
+    { "name": "Toggle Maximum Desk Height", "icon": "toggle-switch-off", "serial": ["<L0,12.", "<R0,12."] },
+    { "name": "Recalibrate Desk", "icon": "crosshairs-gps", "serial": ["<L0,14."] },
+    { "name": "Reboot", "icon": "restart", "serial": ["<L0,15."] },
+    { "name": "Toggle audio-feedback mode", "icon": "volume-high", "serial": ["<L0,17."] },
+    { "name": "Toggle both-button mode", "icon": "radiobox-indeterminate-variant", "serial": ["<L0,18."] },
   ] %}
   -
     platform: template
     name: "{{ button['name'] }}"
+    icon: "mdi:{{ button['icon'] }}"
     on_press:
       then:
         {% for c in button['serial'] %}
         - uart.write: "{{ c }}"
         {% endfor %}
   {% endfor %}
-
-# https://esphome.io/guides/automations.html#interval-component
-interval:
-  -
-    interval: 300s
-    then:
-      - uart.write: "<C0.0." # reports current position
