@@ -12,7 +12,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: amir20/dozzle:v4.9.4
+        image: amir20/dozzle:v4.10.0
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock:ro
         env:
