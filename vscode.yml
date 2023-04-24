@@ -87,6 +87,8 @@
           service: Tools
           priority: 295
           subtitle: "VS Code in the browser"
+        blackbox:
+          path: /healthz
 
     # follows https://github.com/hassio-addons/addon-vscode/blob/main/vscode/Dockerfile
     - name: Install Home Assistant extensions

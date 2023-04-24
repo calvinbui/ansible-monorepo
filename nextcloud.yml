@@ -88,6 +88,8 @@
           service: Collaboration
           priority: 990
           subtitle: "Productivity platform"
+        blackbox:
+          path: /status.php
         labels:
           # 33 is www-data
           '{

@@ -31,3 +31,5 @@
         volumes:
           - "{{ config_directory }}/work:/opt/adguardhome/work"
           - "{{ config_directory }}/conf:/opt/adguardhome/conf"
+        blackbox:
+          path: /login.html

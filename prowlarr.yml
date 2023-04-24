@@ -79,6 +79,8 @@
           start_period: 5s
           interval: 5s
           retries: 3
+        blackbox:
+          path: /ping
         labels:
           autoheal: "true"
 

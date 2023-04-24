@@ -69,6 +69,8 @@
           service: Tools
           priority: 790
           subtitle: "Photo management"
+        blackbox:
+          path: /api/v1/status
         labels:
           chadburn.enabled: "true"
 

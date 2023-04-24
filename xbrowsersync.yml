@@ -68,3 +68,5 @@
           - "{{ config_directory }}/settings.json:/usr/src/api/config/settings.json"
         traefik:
           - port: 8080
+        blackbox:
+          path: /info

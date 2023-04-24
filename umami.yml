@@ -63,6 +63,8 @@
           service: Monitoring
           priority: 790
           subtitle: "Web analytics"
+        blackbox:
+          path: /api/heartbeat
         labels:
           '{
             "traefik.http.middlewares.{{ application }}-script-path.replacepathregex.regex": "^/{{ application | b64encode }}.js",

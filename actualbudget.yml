@@ -30,3 +30,5 @@
           service: Home
           priority: 900
           subtitle: "Budgeting"
+        blackbox:
+          path: /health

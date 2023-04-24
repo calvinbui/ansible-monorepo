@@ -108,6 +108,8 @@
           priority: 390
           subtitle: "3D printing failure detection"
           url: "https://{{ application }}.{{ common_tld }}"
+        blackbox:
+          path: /hc/
         volumes: &web_volumes
           - "{{ config_directory }}/repo/backend:/app"
           - "{{ config_directory }}/repo/frontend:/frontend"

@@ -44,6 +44,8 @@
           service: Download
           priority: 790
           subtitle: "Manage and download TV shows"
+        blackbox:
+          path: /ping
 
     - name: Wait for config
       ansible.builtin.wait_for:

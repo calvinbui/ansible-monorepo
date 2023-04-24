@@ -42,3 +42,5 @@
           service: Monitoring
           priority: 690
           subtitle: "Plex monitoring and tracking"
+        blackbox:
+          path: /status

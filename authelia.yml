@@ -121,6 +121,8 @@
           service: Infrastructure
           priority: 380
           subtitle: "Authentication and authorization"
+        blackbox:
+          path: /api/health
         volumes:
           - "{{ config_directory }}/authelia:/config"
           - "{{ config_directory }}/logs:/var/log/authelia"

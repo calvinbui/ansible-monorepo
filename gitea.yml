@@ -115,3 +115,5 @@
           service: Collaboration
           priority: 100
           subtitle: "Git service"
+        blackbox:
+          path: /api/healthz

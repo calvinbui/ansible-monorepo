@@ -63,3 +63,5 @@
           service: Monitoring
           priority: 970
           subtitle: "Dashboards"
+        blackbox:
+          path: /api/health

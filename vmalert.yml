@@ -69,5 +69,7 @@
           service: Monitoring
           priority: 990
           subtitle: "VictoriaMetrics alerting"
+        blackbox:
+          path: /-/healthy
         metrics:
           - port: 8880

@@ -33,6 +33,8 @@
           service: Download
           priority: 991
           subtitle: "Request and discover media"
+        blackbox:
+          path: /api/v1/status
 
     - name: Configure
       json_patch: # noqa fqcn[action]

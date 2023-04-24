@@ -81,3 +81,5 @@
           - port: 9093
         comparisons:
           labels: allow_more_present
+        blackbox:
+          path: /-/ready

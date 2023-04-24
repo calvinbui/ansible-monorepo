@@ -136,3 +136,5 @@
           service: Collaboration
           priority: 850
           subtitle: "Wiki"
+        blackbox:
+          path: /_health

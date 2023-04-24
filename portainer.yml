@@ -28,6 +28,8 @@
           service: Infrastructure
           priority: 790
           subtitle: "Container management"
+        blackbox:
+          path: /api/status
         volumes:
           - "{{ config_directory }}:/data"
           - /var/run/docker.sock:/var/run/docker.sock

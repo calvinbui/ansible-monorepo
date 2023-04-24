@@ -66,3 +66,5 @@
           service: Monitoring
           priority: 780
           subtitle: "S.M.A.R.T. monitoring"
+        blackbox:
+          path: /api/status
