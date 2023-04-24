@@ -12,17 +12,17 @@ esphome:
   on_boot:
     priority: -100
     then:
-      - delay: 1s
+      - delay: 1000ms
       - uart.write: "<C0.0." # reports current position
 
       {% for i in range(2, 11) %}
-      - delay: 1s
+      - delay: 1000ms
       - uart.write: "<R0.{{ i }}." # read eeprom slot {{ i }} - position {{ i }}
       {% endfor %}
 
-      - delay: 1s
+      - delay: 1000ms
       - uart.write: "<R0.11." # read eeprom slot 11 - lowest position
-      - delay: 1s
+      - delay: 1000ms
       - uart.write: "<R0.12." # read eeprom slot 12 - highest position
 
 # https://esphome.io/components/sensor/index.html
@@ -35,28 +35,33 @@ sensor:
       auto megadesk = new Megadesk(id(uart_desk));
       App.register_component(megadesk);
       return {
-        megadesk->raw_height,
-
+        megadesk->height_raw,
         {% for i in range(2, 11) %}
-        megadesk->position_{{ i }},
+        megadesk->height_{{ i }},
         {% endfor %}
-
-        megadesk->min_height,
-        megadesk->max_height,
+        megadesk->height_min,
+        megadesk->height_max,
       };
     sensors:
       -
         name: "Height (Raw)"
         id: megadesk_raw_height
-        internal: true
+        internal: false
         on_value:
           then:
+            # update height sensors
             - component.update: megadesk_height_cm
             - component.update: megadesk_height_raw
             - component.update: megadesk_height_slider_cm
+            - component.update: megadesk_height_from_min_cm
+
+            # update sensors that the table is idle
             - binary_sensor.template.publish:
                 id: megadesk_moving
                 state: OFF
+            - cover.template.publish:
+                id: megadesk_controls
+                current_operation: IDLE
 
       {% for i in range(2, 11) %}
       -
@@ -71,14 +76,14 @@ sensor:
       -
         name: "Minimum Height (Raw)"
         id: megadesk_raw_min
-        internal: true
+        internal: false
         on_value:
           then:
             - component.update: megadesk_height_min_cm
       -
         name: "Maximum Height (Raw)"
         id: megadesk_raw_max
-        internal: true
+        internal: false
         on_value:
           then:
             - component.update: megadesk_height_max_cm
@@ -98,6 +103,9 @@ sensor:
     lambda: |-
       return ((((id(megadesk_raw_min).state - 300) * (119.38 - 58.54)) / (6914 - 300)) + 58.54);
     unit_of_measurement: 'cm'
+    on_value:
+      then:
+        - component.update: megadesk_height_from_min_cm
   -
     name: "Maximum Height"
     id: megadesk_height_max_cm
@@ -105,6 +113,14 @@ sensor:
     platform: template
     lambda: |-
       return ((((id(megadesk_raw_max).state - 300) * (119.38 - 58.54)) / (6914 - 300)) + 58.54);
+    unit_of_measurement: 'cm'
+  -
+    name: "Height from Minimum"
+    id: megadesk_height_from_min_cm
+    icon: "mdi:stairs-up"
+    platform: template
+    lambda: |-
+      return id(megadesk_height_cm).state - id(megadesk_height_min_cm).state;
     unit_of_measurement: 'cm'
 
 # https://esphome.io/components/binary_sensor/status.html
@@ -122,25 +138,43 @@ cover:
     id: megadesk_controls
     icon: "mdi:gamepad"
     name: "Controls"
+    lambda: |-
+      // heaps of spam on boot since these don't have values yet
+      if (id(megadesk_raw_height).state > 0 && id(megadesk_raw_min).state > 0 && id(megadesk_raw_max).state > 0) {
+        return ( id(megadesk_raw_height).state - id(megadesk_raw_min).state ) / ( id(megadesk_raw_max).state - id(megadesk_raw_min).state );
+      }
+      return 0.0;
     assumed_state: true
+    optimistic: false
     open_action:
-      - uart.write: "<+300,0."
+      - cover.template.publish:
+          id: megadesk_controls
+          current_operation: OPENING
+      - uart.write: "<+308,0." # i find it raises -8 more than expected
       - binary_sensor.template.publish:
           id: megadesk_moving
           state: ON
     close_action:
-      - uart.write: "<-300,0."
+      - cover.template.publish:
+          id: megadesk_controls
+          current_operation: CLOSING
+      - uart.write: "<-295,0." # i find it lowers +5 more than expected
       - binary_sensor.template.publish:
           id: megadesk_moving
           state: ON
     stop_action:
       - uart.write: "<+0,0."
-
-    # not ready
-    {# !lambda |-
-      return ( id(megadesk_height_max_cm).state - id(megadesk_height_cm).state )/ ( id(megadesk_height_max_cm).state - id(megadesk_height_min_cm).state) );"
     has_position: true
     position_action:
+      - cover.template.publish:
+          id: megadesk_controls
+          current_operation: !lambda |-
+            if (pos > id(megadesk_controls).position) {
+              return COVER_OPERATION_OPENING;
+            } else if (pos < id(megadesk_controls).position) {
+              return COVER_OPERATION_CLOSING;
+            }
+            return COVER_OPERATION_IDLE;
       - uart.write: !lambda |-
           char buf[20];
           sprintf(buf, "<=%i,.", int(pos * id(megadesk_raw_max).state));
@@ -149,23 +183,6 @@ cover:
       - binary_sensor.template.publish:
           id: megadesk_moving
           state: ON
-      - while:
-          condition:
-            lambda: |-
-              return (pos * id(megadesk_raw_max).state + 1) > id(megadesk_raw_height).state && id(megadesk_raw_height).state > (pos * id(megadesk_raw_max).state - 1);
-          then:
-            - cover.template.publish:
-                id: megadesk_controls
-                current_operation: !lambda |-
-                  if(pos > id(megadesk_raw_height).state) {
-                    return COVER_OPERATION_OPENING;
-                  } else {
-                    return COVER_OPERATION_CLOSING;
-                  }
-            - delay: 2s
-      - cover.template.publish:
-          id: megadesk_controls
-          position: !lambda "return pos;" #}
 
 # https://esphome.io/components/number/index.html
 # https://esphome.io/components/number/template.html
@@ -253,6 +270,15 @@ button:
     icon: "mdi:numeric-{{ i }}-circle"
     on_press:
       then:
+        - cover.template.publish:
+            id: megadesk_controls
+            current_operation: !lambda |-
+              if (id(megadesk_raw_{{ i }}).state > id(megadesk_raw_height).state) {
+                return COVER_OPERATION_OPENING;
+              } else if (id(megadesk_raw_{{ i }}).state < id(megadesk_raw_height).state) {
+                return COVER_OPERATION_CLOSING;
+              }
+              return COVER_OPERATION_IDLE;
         - uart.write: "<L0,{{ i }}."
         - binary_sensor.template.publish:
             id: megadesk_moving

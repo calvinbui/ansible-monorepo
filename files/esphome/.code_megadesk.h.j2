@@ -2,37 +2,56 @@
 
 #include "esphome.h"
 
-class Megadesk: public Component, public Sensor, public UARTDevice {
+class Megadesk: public Component, public UARTDevice {
   public: Megadesk(UARTComponent * parent): UARTDevice(parent) {}
 
-  Sensor * raw_height = new Sensor();
-  Sensor * min_height = new Sensor();
-  Sensor * max_height = new Sensor();
+  Sensor *height_raw = new Sensor();
+  Sensor *height_min = new Sensor();
+  Sensor *height_max = new Sensor();
 
   {% for i in range(2, 11) %}
-  Sensor * position_{{ i }} = new Sensor();
+  Sensor *height_{{ i }} = new Sensor();
   {% endfor %}
 
-  void setup() override {}
+  float get_setup_priority() const override { return esphome::setup_priority::DATA; }
+
+  void setup() override {
+    // This will be called by App.setup()
+  }
+
+  // This will be called every "update_interval" milliseconds.
+  void loop() override {
+    // available() checks if there's any messages sent to us
+    // messages are received after the megadesk completes whatever it's doing
+    while (available()) {
+      ESP_LOGV("custom", "We got a message");
+      recvData();
+    }
+  }
 
   int digits = 0;
 
+  // each iteration, uart returns 1 char.
+  // the response will contain a number, and we have to check how many digits it has
   int readdigits() {
     int r;
     while ((r = read()) > 0) {
+      // non-digit found, return what we have
       if ((r < 0x30) || (r > 0x39)) {
-        // non-digit we're done, return what we have
         return digits;
       }
+
       // it's a digit, add with base10 shift
       digits = 10 * digits + (r - 0x30);
+
       // keep reading...
     }
     return -1;
   }
 
   void recvData() {
-    const int numChars = 2;
+    // process the message (https://github.com/gcormier/megadesk/blob/master/code/serial_tests.txt)
+    const int numMarkerCommandLength = 2;
     // read/store all 4 fields for simplicity, use only the last 3.
     const int numFields = 4;
     // static variables allows segmented/char-at-a-time decodes
@@ -40,17 +59,21 @@ class Megadesk: public Component, public Sensor, public UARTDevice {
     static uint8_t ndx = 0;
     int r; // read char/digit
 
-    // read 2 chars
-    while ((ndx < numChars) && ((r = read()) != -1)) {
+    // read first 2 chars, looking for responses (>) followed by (R, E, W, L, or =)
+    while ((ndx < numMarkerCommandLength) && ((r = read()) != -1)) {
       if ((ndx == 0) && (r != '>')) {
         // first char is not Tx, keep reading...
         continue;
       }
+
+      ESP_LOGVV("custom", "Storing %c in position %i", r, ndx);
       receivedBytes[ndx] = r;
       ++ndx;
     }
-    // read ascii digits
-    while ((ndx >= numChars) && ((r = readdigits()) != -1)) {
+
+    // read remaining chars, ascii digits
+    while ((ndx >= numMarkerCommandLength) && ((r = readdigits()) != -1)) {
+      ESP_LOGV("custom", "Storing %d in position %i", r, ndx);
       receivedBytes[ndx] = r;
       digits = 0; // clear
       if (++ndx == numFields) {
@@ -62,28 +85,24 @@ class Megadesk: public Component, public Sensor, public UARTDevice {
   }
 
   void parseData(byte command, uint16_t position, uint8_t push_addr) {
+    ESP_LOGD("custom", "Parsing command %c, push_addr %d, position %d", command, push_addr, position);
+
     if (command == '=') {
-      raw_height -> publish_state(position);
+      height_raw -> publish_state(position);
     } else if (command == 'R' || command == 'S') {
       switch(push_addr) {
         {% for i in range(2, 11) %}
         case {{ i }}:
-          position_{{ i }} -> publish_state(position);
+          height_{{ i }} -> publish_state(position);
           break;
         {% endfor %}
         case 11:
-          min_height -> publish_state(position);;
+          height_min -> publish_state(position);;
           break;
         case 12:
-          max_height -> publish_state(position);;
+          height_max -> publish_state(position);;
           break;
       }
-    }
-  }
-
-  void loop() override {
-    while (available()) {
-      recvData();
     }
   }
 };
