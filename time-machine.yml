@@ -1,0 +1,101 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: time-machine
+
+    docker_network: "{{ networks.user }}"
+
+  handlers:
+    - name: Restart
+      community.docker.docker_container:
+        name: "{{ application }}"
+        restart: true
+        comparisons:
+          '*': ignore
+
+  tasks:
+    - name: Create users folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}/users"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+
+    - name: Configure users
+      ansible.builtin.copy:
+        dest: "{{ config_directory }}/users/{{ item.name | lower }}.conf"
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "600"
+        content: |
+          TM_USERNAME={{ item.name | lower }}
+          TM_GROUPNAME={{ item.name | lower }}
+          PASSWORD={{ item.password }}
+          SHARE_NAME={{ item.share }}
+          VOLUME_SIZE_LIMIT="{{ item.limit }}"
+          TM_UID=1000
+          TM_GID=1000
+      loop:
+        -
+          name: calvin
+          password: &_time_machine_password !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            66313365336139376338616435316366353261316261346339646466356463363931386462646565
+            3031613732616161386638363862653964643034313438350a663362396631356639626339353162
+            33386262356435356238653363356366633333373530336337373964386433653730363230663236
+            6161386163666236660a303435306562333762326366366235363039333131316639343431346232
+            36653338396363313838373930653334306532363530663035313665346134386234
+          share: "Ortto"
+          limit: "1 T"
+        -
+          name: tammy
+          password: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            36376534396236353763303064626637623763346661373566653835393839616435633830613630
+            3263636437326462636339623333653961366166393066390a643535666561383135326435356137
+            31643532616332366137393730353063616563333065663463613031623662653037643330646439
+            3435373231386133370a633932356333306561663965396466356131373337343161666162366162
+            66323364656633626334666132353361323632373137376162353261356463323231
+          share: "Tammy"
+          limit: "1 T"
+      notify: Restart
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: mbentley/timemachine:smb
+        env:
+          ADVERTISED_HOSTNAME: "{{ application }}"
+          CUSTOM_SMB_CONF: "false"
+          CUSTOM_USER: "false"
+          DEBUG_LEVEL: "1"
+          MIMIC_MODEL: "TimeCapsule8,119"
+          EXTERNAL_CONF: "/users"
+          HIDE_SHARES: "no"
+          TM_USERNAME: "timemachine"
+          TM_GROUPNAME: "timemachine"
+          TM_UID: "1000"
+          TM_GID: "1000"
+          PASSWORD: *_time_machine_password
+          SET_PERMISSIONS: "false"
+          SHARE_NAME: "TimeMachine"
+          SMB_INHERIT_PERMISSIONS: "no"
+          SMB_NFS_ACES: "yes"
+          SMB_METADATA: "stream"
+          SMB_PORT: "445"
+          SMB_VFS_OBJECTS: "acl_xattr fruit streams_xattr"
+          VOLUME_SIZE_LIMIT: "1 T"
+          WORKGROUP: "WORKGROUP"
+        volumes:
+          - "{{ common_directory_backup }}/Time Machine:/opt"
+          - "{{ config_directory }}/users:/users"
+          - "{{ config_directory }}/var-lib-samba:/var/lib/samba"
+          - "{{ config_directory }}/var-cache-samba:/var/cache/samba"
+          - "{{ config_directory }}/run-samba:/run/samba"
+        network:
+          - name: "{{ docker_network.name }}"
+            ipv4_address: "{{ networks.user.prefix }}.20"

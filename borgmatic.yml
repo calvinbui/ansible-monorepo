@@ -26,6 +26,8 @@
         source: "{{ common_directory_backup }}"
         crontab: "30 1 * * *"
         repository: azy1uocs@azy1uocs.repo.borgbase.com
+        exclude_patterns:
+          - "/mnt/source/Time Machine" # too big
 
       - name: misc
         source: "{{ common_directory_misc }}"
