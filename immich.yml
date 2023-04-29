@@ -1,0 +1,146 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: immich
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Create redis container
+      ansible.builtin.include_role:
+        name: redis
+      vars:
+        redis_version: 7
+        redis_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          35623530313433376535366161386234616565376361306239316436623034636432613436336137
+          3961346334623632333534353038616339383730333635650a303336386631356464353234356562
+          36393965326635353238323365393865326439363830383733663162663162326238383532313438
+          6362343564346366350a353861373539636438323231386333326466353364316662353430383730
+          66623361316230663431303761663530383034633533323363333866643166623632
+
+    - name: Create postgres container
+      ansible.builtin.import_role:
+        name: postgres
+      vars:
+        postgres_version: 15
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          39386239373632396266303736376262626638666636666637643566653161633361376138626637
+          6536643137316363373433326530373531323532653461390a643931366661383563343636363638
+          66383837613864643134316230353764323965313833666632356330313161383630306636613064
+          6237663938316164370a343734613964356231636462623536323066616138363532373265336439
+          63366338393162616361346139303364643263663261346266393435313165343834
+
+    - name: Create typesense container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-typesense"
+        image: typesense/typesense:0.24.1
+        env:
+          # self-generated random key
+          TYPESENSE_API_KEY: &immich_typesense_api_key !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            39323263663861653733363465623564393431343738333263663331396536363565393539633834
+            6536666263636330383961323862346136393161363764660a656335633666336638363865326366
+            64396661393832313535383638356230613639623263346465376238333764306538643137353839
+            3333396561333738340a376138613162653062656262316464383833313334343130636530626338
+            65326438346433663834356461623632326431366632373331386564373962356534
+
+          TYPESENSE_DATA_DIR: "/data"
+        volumes:
+          - "{{ config_directory }}/typesense:/data"
+
+    - name: Create server container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-server"
+        image: ghcr.io/immich-app/immich-server:v1.54.1
+        entrypoint: ["/bin/sh", "./start-server.sh"]
+        env: &immich_shared_env
+          DB_HOSTNAME: "{{ _postgres_hostname }}"
+          DB_PORT: "{{ _postgres_port | string }}"
+          DB_USERNAME: "{{ _postgres_username }}"
+          DB_PASSWORD: "{{ _postgres_password }}"
+          DB_DATABASE_NAME: "{{ _postgres_database }}"
+
+          REDIS_HOSTNAME: "{{ _redis_hostname }}"
+          REDIS_PORT: "{{ _redis_port | string }}"
+          REDIS_PASSWORD: "{{ _redis_password }}"
+
+          UPLOAD_LOCATION: "/usr/src/app/upload"
+
+          LOG_LEVEL: "simple"
+
+          TYPESENSE_ENABLED: "true"
+          TYPESENSE_API_KEY: *immich_typesense_api_key
+          TYPESENSE_PROTOCOL: "http"
+          TYPESENSE_HOST: "{{ application }}-typesense.{{ docker_network.name }}"
+          TYPESENSE_PORT: "8108"
+
+          DISABLE_REVERSE_GEOCODING: "false"
+          REVERSE_GEOCODING_PRECISION: "3"
+
+          IMMICH_WEB_URL: &immich_web_url "http://{{ application }}-web:3000"
+          IMMICH_SERVER_URL: &immich_server_url "http://{{ application }}-server:3001"
+          IMMICH_MACHINE_LEARNING_URL: "http://{{ application }}-machine-learning:3003"
+
+          IMMICH_API_URL_EXTERNAL: "https://{{ application }}.{{ common_tld }}"
+        volumes:
+          - &immich_upload_volume "{{ common_directory_photos }}/Immich:/usr/src/app/upload"
+
+    - name: Create microservices container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-microservices"
+        image: ghcr.io/immich-app/immich-server:v1.54.1
+        entrypoint: ["/bin/sh", "./start-microservices.sh"]
+        env: *immich_shared_env
+        volumes:
+          - *immich_upload_volume
+
+    - name: Create machine-learning container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-machine-learning"
+        image: ghcr.io/immich-app/immich-machine-learning:v1.54.1
+        env: *immich_shared_env
+        volumes:
+          - *immich_upload_volume
+          - "{{ config_directory }}/ml-cache:/cache"
+
+    - name: Create web container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-web"
+        image: ghcr.io/immich-app/immich-web:v1.54.1
+        entrypoint: ["/bin/sh", "./entrypoint.sh"]
+        env: *immich_shared_env
+
+    - name: Create proxy container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-proxy"
+        image: ghcr.io/immich-app/immich-proxy:v1.54.1
+        env:
+          IMMICH_WEB_URL: *immich_web_url
+          IMMICH_SERVER_URL: *immich_server_url
+        traefik:
+          - port: 8080
+            rule: Host(`{{ application }}.{{ common_tld }}`)
