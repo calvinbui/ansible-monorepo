@@ -4,8 +4,8 @@
   ansible.builtin.file:
     path: "{{ mariadb_directory }}"
     state: directory
-    owner: "999"
-    group: "999"
+    owner: 999
+    group: 999
     mode: "0775"
 
 - name: Create MariaDB container

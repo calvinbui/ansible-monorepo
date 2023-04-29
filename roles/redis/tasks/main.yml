@@ -4,8 +4,8 @@
   ansible.builtin.file:
     path: "{{ redis_directory }}"
     state: directory
-    owner: "999"
-    group: "0"
+    owner: 999
+    group: 0
     mode: "0771"
 
 - name: Create Redis container

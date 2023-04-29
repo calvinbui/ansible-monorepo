@@ -4,9 +4,9 @@
   ansible.builtin.file:
     path: "{{ mongo_directory }}"
     state: directory
-    owner: "999"
-    group: "999"
-    mode: "700"
+    owner: 999
+    group: 999
+    mode: "0700"
 
 - name: Create MongoDB container
   community.docker.docker_container:
