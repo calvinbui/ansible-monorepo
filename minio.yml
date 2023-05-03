@@ -74,7 +74,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-console"
-        image: minio/console:v0.26.3
+        image: minio/console:v0.26.4
         command:
           - server
         env:
