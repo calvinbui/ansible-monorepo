@@ -30,29 +30,31 @@ cards:
       grid-area: flow
     type: custom:power-flow-card-plus
     clickable_entities: true
+    min_expected_power: 500
+    max_expected_power: 10000
+    min_flow_rate: 1
+    max_flow_rate: 4
+    use_new_flow_rate_model: true
     kw_decimals: 2
     entities:
       home:
         entity: sensor.home_power_consumption
         color_icon: true
+        color_value: true
       grid:
         entity:
           consumption: sensor.grid_power_consumption
           production: sensor.grid_power_export
         color_icon: true
         display_state: two_way
+        color_circle: true
         color:
           production: '#18cf87'
           consumption: '#f76354'
       solar:
         entity: sensor.total_solar_generation
         color_icon: true
-    # card_mod:
-    #   style: |
-    #     .grid .circle {
-    #       color: #3798fe !important;
-    #       border-color: #3798fe !important;
-    #     }
+        color_value: true
 
   -
     view_layout:
