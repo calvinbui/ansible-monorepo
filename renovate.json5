@@ -373,6 +373,12 @@
       matchPackagePatterns: [".*\\/homer-service-discovery"],
       customChangelogUrl: "https://github.com/calvinbui/homer-service-discovery",
     },
+    /* immich */
+    {
+      groupName: "Immich",
+      matchPackagePatterns: [".*\\/immich-.*"],
+      customChangelogUrl: "https://github.com/immich-app/immich",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
