@@ -12,7 +12,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: lscr.io/linuxserver/pairdrop:1.6.3
+        image: lscr.io/linuxserver/pairdrop:1.7.1
         env:
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_group_id | string }}"
