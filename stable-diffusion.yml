@@ -1,0 +1,57 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: stable-diffusion
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Clone repo
+      ansible.builtin.git:
+        repo: https://github.com/emsi/stable-diffusion-webui
+        dest: "{{ config_directory }}/repo"
+        update: true
+      register: _stable_diffusion_repo_updated
+
+    - name: Build image
+      community.docker.docker_image:
+        name: "{{ application }}"
+        build:
+          path: "{{ config_directory }}/repo"
+          dockerfile: "{{ config_directory }}/repo/docker/Dockerfile"
+          pull: true
+        source: build
+        state: present
+        force_source: "{{ true if _stable_diffusion_repo_updated.changed else false }}"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: "{{ application }}"
+        command: python3 launch.py --listen
+        env:
+          NVIDIA_VISIBLE_DEVICES=all
+        volumes:
+          - "{{ config_directory }}/repo/embeddings:/stable-diffusion-webui/embeddings"
+          - "{{ config_directory }}/repo/extensions:/stable-diffusion-webui/extensions"
+          - "{{ config_directory }}/repo/interrogate:/stable-diffusion-webui/interrogate"
+          - "{{ config_directory }}/repo/models:/stable-diffusion-webui/models"
+          - "{{ config_directory }}/repo/outputs:/stable-diffusion-webui/outputs"
+          - "{{ config_directory }}/repo/repositories:/stable-diffusion-webui/repositories"
+          - "{{ config_directory }}/cache:/root"
+        device_requests:
+          - driver: nvidia
+            count: -1
+            device_ids: []
+            options: {}
+            capabilities:
+              - - gpu
+                - video
+                - compute
+                - utility
+        traefik:
+          - port: 7860
+            auth: page
