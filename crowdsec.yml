@@ -237,7 +237,7 @@
               -
                 evt.Meta.http_status == '403' && evt.Parsed.traefik_router_name contains 'qbittorrent' && (evt.Meta.http_path contains '/favicon.ico' || evt.Meta.http_path contains '/api/v2/')
               -
-                evt.Parsed.traefik_router_name contains 'actual-budget' && (evt.Meta.http_path contains '/data/migrations/' || evt.Meta.http_path == '/sync/sync')
+                evt.Parsed.traefik_router_name contains 'actualbudget' && (evt.Meta.http_path contains '/data/migrations/' || evt.Meta.http_path == '/sync/sync')
               -
                 evt.Parsed.traefik_router_name contains 'immich-proxy' && (evt.Meta.http_path contains '/api/asset/thumbnail/')
         dest: "{{ config_directory }}/my-whitelists.yaml"
@@ -294,13 +294,13 @@
             35323465303734613034
 
           # Console
-          ENROLL_KEY: !vault |
-            $ANSIBLE_VAULT;1.1;AES256
-            33623339333264363037303661616536353936393965613033633732336638633137336631643762
-            3466653162323565616466303930393839346336313661330a323066303238393338626539363937
-            37333838396433303836626138383132363961343831613466343034613364356434346530336439
-            6433303533643431390a636562643163313663623238646534366635373231663961303635663363
-            35313436613133643531333431326133353133343139656563666362336464643738
+          # ENROLL_KEY: !vault |
+          #   $ANSIBLE_VAULT;1.1;AES256
+          #   33623339333264363037303661616536353936393965613033633732336638633137336631643762
+          #   3466653162323565616466303930393839346336313661330a323066303238393338626539363937
+          #   37333838396433303836626138383132363961343831613466343034613364356434346530336439
+          #   6433303533643431390a636562643163313663623238646534366635373231663961303635663363
+          #   35313436613133643531333431326133353133343139656563666362336464643738
           ENROLL_INSTANCE_NAME: "{{ application }}.{{ docker_network.name }}"
           ENROLL_TAGS: "homelab"
 
