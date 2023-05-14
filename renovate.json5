@@ -379,6 +379,11 @@
       matchPackagePatterns: [".*\\/immich-.*"],
       customChangelogUrl: "https://github.com/immich-app/immich",
     },
+    /* wizarr */
+    {
+      matchPackagePatterns: [".*\\/wizarr"],
+      customChangelogUrl: "https://github.com/Wizarrrr/wizarr",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
