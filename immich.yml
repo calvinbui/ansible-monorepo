@@ -137,7 +137,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-proxy"
-        image: ghcr.io/immich-app/immich-proxy:v1.55.1
+        image: ghcr.io/immich-app/immich-proxy:v1.57.1
         env:
           IMMICH_WEB_URL: *immich_web_url
           IMMICH_SERVER_URL: *immich_server_url
