@@ -55,7 +55,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: mattermost/mattermost-team-edition:7.10.0
+        image: mattermost/mattermost-team-edition:7.10.2
         volumes:
           - "{{ config_directory }}/mattermost/config:/mattermost/config"
           - "{{ config_directory }}/mattermost/data:/mattermost/data"
