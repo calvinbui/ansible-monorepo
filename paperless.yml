@@ -78,7 +78,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-gotenberg"
-        image: gotenberg/gotenberg:7.8.2
+        image: gotenberg/gotenberg:7.8.3
 
     - name: Create webserver container
       ansible.builtin.include_role:
