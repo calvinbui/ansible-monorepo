@@ -68,7 +68,7 @@
       vars:
         name: "{{ application }}-server"
         image: &_immich_image ghcr.io/immich-app/immich-server:v1.59.1
-        entrypoint: ["start-server.sh"]
+        command: ["start-server.sh"]
         env: &immich_shared_env
           DB_HOSTNAME: "{{ _postgres_hostname }}"
           DB_PORT: "{{ _postgres_port | string }}"
@@ -107,7 +107,7 @@
       vars:
         name: "{{ application }}-microservices"
         image: *_immich_image
-        entrypoint: ["start-microservices.sh"]
+        command: ["start-microservices.sh"]
         env: *immich_shared_env
         volumes:
           - *immich_upload_volume
