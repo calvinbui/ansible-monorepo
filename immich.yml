@@ -67,8 +67,8 @@
         name: docker_container
       vars:
         name: "{{ application }}-server"
-        image: ghcr.io/immich-app/immich-server:v1.57.1
-        entrypoint: ["/bin/sh", "./start-server.sh"]
+        image: &_immich_image ghcr.io/immich-app/immich-server:v1.59.1
+        entrypoint: ["start-server.sh"]
         env: &immich_shared_env
           DB_HOSTNAME: "{{ _postgres_hostname }}"
           DB_PORT: "{{ _postgres_port | string }}"
@@ -106,8 +106,8 @@
         name: docker_container
       vars:
         name: "{{ application }}-microservices"
-        image: ghcr.io/immich-app/immich-server:v1.57.1
-        entrypoint: ["/bin/sh", "./start-microservices.sh"]
+        image: *_immich_image
+        entrypoint: ["start-microservices.sh"]
         env: *immich_shared_env
         volumes:
           - *immich_upload_volume
@@ -117,7 +117,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-machine-learning"
-        image: ghcr.io/immich-app/immich-machine-learning:v1.57.1
+        image: ghcr.io/immich-app/immich-machine-learning:v1.59.1
         env: *immich_shared_env
         volumes:
           - *immich_upload_volume
@@ -128,8 +128,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-web"
-        image: ghcr.io/immich-app/immich-web:v1.57.1
-        entrypoint: ["/bin/sh", "./entrypoint.sh"]
+        image: ghcr.io/immich-app/immich-web:v1.59.1
         env: *immich_shared_env
 
     - name: Create proxy container
@@ -137,7 +136,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-proxy"
-        image: ghcr.io/immich-app/immich-proxy:v1.57.1
+        image: ghcr.io/immich-app/immich-proxy:v1.59.1
         env:
           IMMICH_WEB_URL: *immich_web_url
           IMMICH_SERVER_URL: *immich_server_url
