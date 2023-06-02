@@ -46,7 +46,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: nextcloud:26.0.1
+        image: nextcloud:26.0.2
         volumes:
           - "{{ config_directory }}/nextcloud:/var/www/html"
           - "{{ common_directory_storage }}:/mnt/zfs_files"
