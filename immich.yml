@@ -117,7 +117,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-machine-learning"
-        image: ghcr.io/immich-app/immich-machine-learning:v1.59.1
+        image: ghcr.io/immich-app/immich-machine-learning:v1.60.0
         env: *immich_shared_env
         volumes:
           - *immich_upload_volume
@@ -128,7 +128,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-web"
-        image: ghcr.io/immich-app/immich-web:v1.59.1
+        image: ghcr.io/immich-app/immich-web:v1.60.0
         env: *immich_shared_env
 
     - name: Create proxy container
@@ -136,7 +136,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-proxy"
-        image: ghcr.io/immich-app/immich-proxy:v1.59.1
+        image: ghcr.io/immich-app/immich-proxy:v1.60.0
         env:
           IMMICH_WEB_URL: *immich_web_url
           IMMICH_SERVER_URL: *immich_server_url
