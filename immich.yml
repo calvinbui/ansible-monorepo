@@ -67,7 +67,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-server"
-        image: &_immich_image ghcr.io/immich-app/immich-server:v1.59.1
+        image: ghcr.io/immich-app/immich-server:v1.60.0
         command: ["start-server.sh"]
         env: &immich_shared_env
           DB_HOSTNAME: "{{ _postgres_hostname }}"
@@ -106,7 +106,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-microservices"
-        image: *_immich_image
+        image: ghcr.io/immich-app/immich-server:v1.60.0
         command: ["start-microservices.sh"]
         env: *immich_shared_env
         volumes:
