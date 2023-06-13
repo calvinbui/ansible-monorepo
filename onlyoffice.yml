@@ -39,6 +39,10 @@
             33356564396233646537353237663533646133386534663166633664343966306464
 
           USE_UNAUTHORIZED_STORAGE: "true"
+
+          ALLOW_META_IP_ADDRESS: "tru"
+          ALLOW_PRIVATE_IP_ADDRESS: "true"
+
         traefik:
           - port: 80
             middlewares:
