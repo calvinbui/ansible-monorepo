@@ -12,7 +12,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: collabora/code:22.05.14.3.1
+        image: collabora/code:23.05.0.5.1
         capabilities:
           - MKNOD
         env:
