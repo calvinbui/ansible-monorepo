@@ -227,7 +227,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/recyclarr/recyclarr:4.4.1
+        image: ghcr.io/recyclarr/recyclarr:5.0.3
         volumes:
           - "{{ config_directory }}:/config"
         env:
