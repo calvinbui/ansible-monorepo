@@ -12,7 +12,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/nichobi/sponsorblockcast:latest
+        image: ghcr.io/bruvv/sponsorblockcast:latest
         env:
           SBCCATEGORIES: "sponsor selfpromo exclusive_access interaction intro outro preview filler"
           SBCYOUTUBEAPIKEY: !vault |
