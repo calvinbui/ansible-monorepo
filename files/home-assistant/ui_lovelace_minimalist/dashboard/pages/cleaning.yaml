@@ -96,519 +96,352 @@ cards:
         template: card_title
         name: 🤖 Vacuum
       -
-        type: 'custom:config-template-card'
-        variables:
-          nextFanSpeed: |
-            vacuum => {
-              const fan_speed_list = states[vacuum].attributes.fan_speed_list
-              const fan_speed = states[vacuum].attributes.fan_speed
-
-              if (fan_speed_list.indexOf(fan_speed) != fan_speed_list.length - 1) {
-                return fan_speed_list[fan_speed_list.indexOf(fan_speed)+1]
-              }
-
-              return fan_speed_list[0]
-            }
-          nextScrubIntensity: |
-            vacuum => {
-              const mop_intensity_list = states[vacuum].attributes.mop_intensity_list
-              const mop_intensity = states[vacuum].attributes.mop_intensity
-
-              if (mop_intensity_list.indexOf(mop_intensity) != mop_intensity_list.length - 1) {
-                return mop_intensity_list[mop_intensity_list.indexOf(mop_intensity)+1]
-              }
-
-              return mop_intensity_list[0]
-            }
-          nextMopRoute: |
-            vacuum => {
-              const mop_mode_list = states[vacuum].attributes.mop_mode_list
-              const mop_mode = states[vacuum].attributes.mop_mode
-
-              if (mop_mode_list.indexOf(mop_mode) != mop_mode_list.length - 1) {
-                return mop_mode_list[mop_mode_list.indexOf(mop_mode)+1]
-              }
-
-              return mop_mode_list[0]
-            }
-        entities:
-          - vacuum.downstairs_s7
-          - vacuum.upstairs_s7
-        card:
-          type: custom:xiaomi-vacuum-map-card
-          preset_name: Downstairs
-          activate_on_switch: true
-          activate:
-            service: roborock.camera_load_multi_map
-            service_data:
-              map_flag: 0
-            target:
-              entity_id: camera.downstairs_s7_map
-          entity: vacuum.downstairs_s7
-          map_source:
-            camera: camera.downstairs_s7_map
-            crop:
-              top: 200
-              bottom: 200
-              right: 200
-              left: 200
-          calibration_source:
-            camera: camera.downstairs_s7_map
-          map_modes:
-            - template: vacuum_clean_segment
-              predefined_selections:
-                - id: '19'
-                  icon:
-                    name: mdi:silverware-fork-knife
-                    x: 21250
-                    y: 29450
-                  label:
-                    text: Dining Room
-                    x: 21250
-                    y: 29450
-                    offset_y: 35
-                  outline:
-                    - - 17650
-                      - 27850
-                    - - 24850
-                      - 27850
-                    - - 24850
-                      - 31050
-                    - - 17650
-                      - 31050
-                - id: '21'
-                  icon:
-                    name: mdi:sofa
-                    x: 15550
-                    y: 28275
-                  label:
-                    text: Living Room
-                    x: 15550
-                    y: 28275
-                    offset_y: 35
-                  outline:
-                    - - 13500
-                      - 25500
-                    - - 17600
-                      - 25500
-                    - - 17600
-                      - 31050
-                    - - 13500
-                      - 31050
-                - id: '22'
-                  icon:
-                    name: mdi:face-man
-                    x: 26900
-                    y: 25975
-                  label:
-                    text: Calvin's Study
-                    x: 26900
-                    y: 25975
-                    offset_y: 35
-                  outline:
-                    - - 24900
-                      - 24750
-                    - - 28900
-                      - 24750
-                    - - 28900
-                      - 27900
-                    - - 24900
-                      - 27900
-                - id: '24'
-                  icon:
-                    name: mdi:fridge
-                    x: 19350
-                    y: 26700
-                  label:
-                    text: Kitchen
-                    x: 19350
-                    y: 26700
-                    offset_y: 35
-                  outline:
-                    - - 17650
-                      - 25500
-                    - - 21050
-                      - 25500
-                    - - 21050
-                      - 27900
-                    - - 17650
-                      - 27900
-                - id: '25'
-                  icon:
-                    name: mdi:washing-machine
-                    x: 28525
-                    y: 30100
-                  label:
-                    text: Laundry
-                    x: 28525
-                    y: 30100
-                    offset_y: 35
-                  outline:
-                    - - 27650
-                      - 29200
-                    - - 29400
-                      - 29200
-                    - - 29400
-                      - 30400
-                    - - 27650
-                      - 30400
-                - id: '26'
-                  icon:
-                    name: mdi:toilet
-                    x: 26150
-                    y: 30225
-                  label:
-                    text: Bathroom
-                    x: 26150
-                    y: 30225
-                    offset_y: 35
-                  outline:
-                    - - 24800
-                      - 29200
-                    - - 27500
-                      - 29200
-                    - - 27500
-                      - 31100
-                    - - 24800
-                      - 31100
-                - id: '27'
-                  icon:
-                    name: mdi:walk
-                    x: 27100
-                    y: 28750
-                  label:
-                    text: Hallway
-                    x: 27100
-                    y: 28750
-                    offset_y: 35
-                  outline:
-                    - - 24900
-                      - 27850
-                    - - 29300
-                      - 27850
-                    - - 29300
-                      - 29200
-                    - - 24900
-                      - 29200
-              service_call_schema:
-                service: roborock.vacuum_clean_segment
-                service_data:
-                  entity_id: '[[entity_id]]'
-                  segments: '[[selection]]'
-            - template: vacuum_clean_zone
-              service_call_schema:
-                service: roborock.vacuum_clean_zone
-                service_data:
-                  entity_id: '[[entity_id]]'
-                  zone: '[[selection]]'
-                  repeats: '[[repeats]]'
-          icons: &downstairs_icons
-            -
-              icon: mdi:play-pause
-              tooltip: "Start/Pause"
-              tap_action:
-                action: call-service
-                service: vacuum.start_pause
-                service_data:
-                  entity_id: vacuum.downstairs_s7
-            -
-              icon: mdi:stop
-              tooltip: "Stop"
-              tap_action:
-                action: call-service
-                service: vacuum.stop
-                service_data:
-                  entity_id: vacuum.downstairs_s7
-            -
-              icon: mdi:home
-              tooltip: "Stop"
-              tap_action:
-                action: call-service
-                service: vacuum.return_to_base
-                service_data:
-                  entity_id: vacuum.downstairs_s7
-            -
-              icon: mdi:map-marker
-              tooltip: "Locate"
-              tap_action:
-                action: call-service
-                service: vacuum.locate
-                service_data:
-                  entity_id: vacuum.downstairs_s7
-            -
-              icon: mdi:delete-restore
-              tooltip: "Stop"
-              tap_action:
-                action: call-service
-                service: vacuum.send_command
-                service_data:
-                  command: app_start_collect_dust
-                  entity_id: vacuum.downstairs_s7
-          tiles: &downstairs_tiles
-            -
-              label: Suction Power
-              icon: mdi:fan
-              attribute: fan_speed
-              entity: vacuum.downstairs_s7
-              tap_action:
-                action: call-service
-                service: roborock.vacuum_set_fan_speed
-                service_data:
-                  entity_id: vacuum.downstairs_s7
-                  fan_speed: ${nextFanSpeed('vacuum.downstairs_s7')}
-            -
-              label: Scrub Intensity
-              icon: mdi:waves-arrow-up
-              attribute: mop_intensity
-              entity: vacuum.downstairs_s7
-              tap_action:
-                action: call-service
-                service: roborock.vacuum_set_mop_intensity
-                service_data:
-                  entity_id: vacuum.downstairs_s7
-                  mop_intensity: ${nextScrubIntensity('vacuum.downstairs_s7')}
-            -
-              label: Mop Route
-              icon: mdi:routes
-              attribute: mop_mode
-              entity: vacuum.downstairs_s7
-              tap_action:
-                action: call-service
-                service: roborock.vacuum_set_mop_mode
-                service_data:
-                  entity_id: vacuum.downstairs_s7
-                  mop_mode: ${nextMopRoute('vacuum.downstairs_s7')}
-          additional_presets:
-            -
-              preset_name: Foyer
-              activate_on_switch: true
-              activate:
-                service: roborock.camera_load_multi_map
-                service_data:
-                  map_flag: 1
-                target:
-                  entity_id: camera.downstairs_s7_map
-              entity: vacuum.downstairs_s7
-              map_source:
-                camera: camera.downstairs_s7_map
-                crop:
-                  top: 500
-                  bottom: 500
-                  left: 500
-                  right: 500
-              calibration_source:
-                camera: camera.downstairs_s7_map
-              icons: *downstairs_icons
-              tiles: *downstairs_tiles
-              map_modes:
-                - template: vacuum_clean_zone_predefined
-                  predefined_selections:
-                    - zones: [[19025, 23045, 26250, 26268]]
-                      icon:
-                        name: mdi:shoe-sneaker
-                        x: 22575
-                        y: 24575
-                      label:
-                        text: Foyer
-                        x: 22575
-                        y: 24575
-                        offset_y: 35
-                  service_call_schema:
-                    service: roborock.vacuum_clean_zone
-                    service_data:
-                      entity_id: '[[entity_id]]'
-                      zone: '[[selection]]'
-                      repeats: '[[repeats]]'
-            -
-              preset_name: Upstairs
-              entity: vacuum.upstairs_s7
-              map_source:
-                camera: camera.upstairs_s7_map
-                crop:
-                  top: 180
-                  bottom: 150
-                  left: 180
-                  right: 180
-              calibration_source:
-                camera: camera.upstairs_s7_map
-              icons:
-                -
-                  icon: mdi:play-pause
-                  tooltip: "Start/Pause"
-                  tap_action:
-                    action: call-service
-                    service: vacuum.start_pause
-                    service_data:
-                      entity_id: vacuum.upstairs_s7
-                -
-                  icon: mdi:stop
-                  tooltip: "Stop"
-                  tap_action:
-                    action: call-service
-                    service: vacuum.stop
-                    service_data:
-                      entity_id: vacuum.upstairs_s7
-                -
-                  icon: mdi:home
-                  tooltip: "Stop"
-                  tap_action:
-                    action: call-service
-                    service: vacuum.return_to_base
-                    service_data:
-                      entity_id: vacuum.upstairs_s7
-                -
-                  icon: mdi:map-marker
-                  tooltip: "Locate"
-                  tap_action:
-                    action: call-service
-                    service: vacuum.locate
-                    service_data:
-                      entity_id: vacuum.upstairs_s7
-                -
-                  icon: mdi:delete-restore
-                  tooltip: "Stop"
-                  tap_action:
-                    action: call-service
-                    service: vacuum.send_command
-                    service_data:
-                      command: app_start_collect_dust
-                      entity_id: vacuum.upstairs_s7
-              tiles:
-                -
-                  label: Suction Power
-                  icon: mdi:fan
-                  attribute: fan_speed
-                  entity: vacuum.upstairs_s7
-                  tap_action:
-                    action: call-service
-                    service: roborock.vacuum_set_fan_speed
-                    service_data:
-                      entity_id: vacuum.upstairs_s7
-                      fan_speed: ${nextFanSpeed('vacuum.upstairs_s7')}
-                -
-                  label: Scrub Intensity
-                  icon: mdi:waves-arrow-up
-                  attribute: mop_intensity
-                  entity: vacuum.upstairs_s7
-                  tap_action:
-                    action: call-service
-                    service: roborock.vacuum_set_mop_intensity
-                    service_data:
-                      entity_id: vacuum.upstairs_s7
-                      mop_intensity: ${nextScrubIntensity('vacuum.upstairs_s7')}
-                -
-                  label: Mop Route
-                  icon: mdi:routes
-                  attribute: mop_mode
-                  entity: vacuum.upstairs_s7
-                  tap_action:
-                    action: call-service
-                    service: roborock.vacuum_set_mop_mode
-                    service_data:
-                      entity_id: vacuum.upstairs_s7
-                      mop_mode: ${nextMopRoute('vacuum.upstairs_s7')}
-              map_modes:
-                - template: vacuum_clean_segment
-                  predefined_selections:
-                    - id: '16'
-                      icon:
-                        name: mdi:bed
-                        x: 27500
-                        y: 29000
-                      label:
-                        text: Small Bedroom
-                        x: 27500
-                        y: 29000
-                        offset_y: 35
-                      outline:
-                        - - 25250
-                          - 27700
-                        - - 29900
-                          - 27700
-                        - - 29900
-                          - 30350
-                        - - 25250
-                          - 30350
-                    - id: '18'
-                      icon:
-                        name: mdi:faucet
-                        x: 32575
-                        y: 28450
-                      label:
-                        text: Bathroom
-                        x: 32575
-                        y: 28450
-                        offset_y: 35
-                      outline:
-                        - - 31050
-                          - 27500
-                        - - 34100
-                          - 27500
-                        - - 34100
-                          - 29400
-                        - - 31050
-                          - 29400
-                    - id: '21'
-                      icon:
-                        name: mdi:face-woman
-                        x: 36100
-                        y: 26125
-                      label:
-                        text: Tammy's Study
-                        x: 36100
-                        y: 26125
-                        offset_y: 35
-                      outline:
-                        - - 34300
-                          - 24800
-                        - - 37900
-                          - 24800
-                        - - 37900
-                          - 27450
-                        - - 34300
-                          - 27450
-                    - id: '23'
-                      icon:
-                        name: mdi:bed-double
-                        x: 40975
-                        y: 26800
-                      label:
-                        text: Master Bedroom
-                        x: 40975
-                        y: 26800
-                        offset_y: 35
-                      outline:
-                        - - 37950
-                          - 24850
-                        - - 44000
-                          - 24850
-                        - - 44000
-                          - 28750
-                        - - 37950
-                          - 28750
-                    - id: '25'
-                      icon:
-                        name: mdi:bed
-                        x: 26500
-                        y: 26500
-                      label:
-                        text: Large Bedroom
-                        x: 26500
-                        y: 26500
-                        offset_y: 35
-                      outline:
-                        - - 25200
-                          - 24850
-                        - - 30950
-                          - 24850
-                        - - 30950
-                          - 27700
-                        - - 25200
-                          - 27700
-                - template: vacuum_clean_zone
-                  service_call_schema:
-                    service: roborock.vacuum_clean_zone
-                    service_data:
-                      entity_id: '[[entity_id]]'
-                      zone: '[[selection]]'
-                      repeats: '[[repeats]]'
+        type: custom:xiaomi-vacuum-map-card
+        preset_name: Downstairs
+        vacuum_platform: humbertogontijo/homeassistant-roborock
+        activate_on_switch: true
+        activate:
+          service: roborock.vacuum_load_multi_map
+          service_data:
+            map_flag: 0
+          target:
+            entity_id: camera.downstairs_s7_map
+        entity: vacuum.downstairs_s7
+        map_source:
+          camera: camera.downstairs_s7_map
+          crop:
+            top: 200
+            bottom: 200
+            right: 200
+            left: 200
+        calibration_source:
+          camera: camera.downstairs_s7_map
+        map_modes:
+          - template: vacuum_clean_segment
+            predefined_selections:
+              - id: '19'
+                icon:
+                  name: mdi:silverware-fork-knife
+                  x: 21250
+                  y: 29450
+                label:
+                  text: Dining Room
+                  x: 21250
+                  y: 29450
+                  offset_y: 35
+                outline:
+                  - - 17650
+                    - 27850
+                  - - 24850
+                    - 27850
+                  - - 24850
+                    - 31050
+                  - - 17650
+                    - 31050
+              - id: '21'
+                icon:
+                  name: mdi:sofa
+                  x: 15550
+                  y: 28275
+                label:
+                  text: Living Room
+                  x: 15550
+                  y: 28275
+                  offset_y: 35
+                outline:
+                  - - 13500
+                    - 25500
+                  - - 17600
+                    - 25500
+                  - - 17600
+                    - 31050
+                  - - 13500
+                    - 31050
+              - id: '22'
+                icon:
+                  name: mdi:face-man
+                  x: 26900
+                  y: 25975
+                label:
+                  text: Calvin's Study
+                  x: 26900
+                  y: 25975
+                  offset_y: 35
+                outline:
+                  - - 24900
+                    - 24750
+                  - - 28900
+                    - 24750
+                  - - 28900
+                    - 27900
+                  - - 24900
+                    - 27900
+              - id: '24'
+                icon:
+                  name: mdi:fridge
+                  x: 19350
+                  y: 26700
+                label:
+                  text: Kitchen
+                  x: 19350
+                  y: 26700
+                  offset_y: 35
+                outline:
+                  - - 17650
+                    - 25500
+                  - - 21050
+                    - 25500
+                  - - 21050
+                    - 27900
+                  - - 17650
+                    - 27900
+              - id: '25'
+                icon:
+                  name: mdi:washing-machine
+                  x: 28525
+                  y: 30100
+                label:
+                  text: Laundry
+                  x: 28525
+                  y: 30100
+                  offset_y: 35
+                outline:
+                  - - 27650
+                    - 29200
+                  - - 29400
+                    - 29200
+                  - - 29400
+                    - 30400
+                  - - 27650
+                    - 30400
+              - id: '26'
+                icon:
+                  name: mdi:toilet
+                  x: 26150
+                  y: 30225
+                label:
+                  text: Bathroom
+                  x: 26150
+                  y: 30225
+                  offset_y: 35
+                outline:
+                  - - 24800
+                    - 29200
+                  - - 27500
+                    - 29200
+                  - - 27500
+                    - 31100
+                  - - 24800
+                    - 31100
+              - id: '27'
+                icon:
+                  name: mdi:walk
+                  x: 27100
+                  y: 28750
+                label:
+                  text: Hallway
+                  x: 27100
+                  y: 28750
+                  offset_y: 35
+                outline:
+                  - - 24900
+                    - 27850
+                  - - 29300
+                    - 27850
+                  - - 29300
+                    - 29200
+                  - - 24900
+                    - 29200
+            service_call_schema:
+              service: roborock.vacuum_clean_segment
+              service_data:
+                entity_id: '[[entity_id]]'
+                segments: '[[selection]]'
+          - template: vacuum_clean_zone
+            service_call_schema:
+              service: roborock.vacuum_clean_zone
+              service_data:
+                entity_id: '[[entity_id]]'
+                zone: '[[selection]]'
+                repeats: '[[repeats]]'
+        append_icons: true
+        icons: &extra_icons
+          -
+            icon: mdi:home
+            tooltip: "Return To Base"
+            tap_action:
+              action: call-service
+              service: vacuum.return_to_base
+              service_data:
+                entity_id: '[[entity_id]]'
+          -
+            icon: mdi:delete-restore
+            tooltip: "Empty Dustbin"
+            tap_action:
+              action: call-service
+              service: vacuum.send_command
+              service_data:
+                command: app_start_collect_dust
+                entity_id: '[[entity_id]]'
+        additional_presets:
+          -
+            preset_name: Foyer
+            vacuum_platform: humbertogontijo/homeassistant-roborock
+            activate_on_switch: true
+            activate:
+              service: roborock.vacuum_load_multi_map
+              service_data:
+                map_flag: 1
+              target:
+                entity_id: camera.downstairs_s7_map
+            entity: '[[entity_id]]'
+            map_source:
+              camera: camera.downstairs_s7_map
+              crop:
+                top: 500
+                bottom: 500
+                left: 500
+                right: 500
+            calibration_source:
+              camera: camera.downstairs_s7_map
+            append_icons: true
+            icons: *extra_icons
+            map_modes:
+              - template: vacuum_clean_zone_predefined
+                predefined_selections:
+                  - zones: [[19025, 23045, 26250, 26268]]
+                    icon:
+                      name: mdi:shoe-sneaker
+                      x: 22575
+                      y: 24575
+                    label:
+                      text: Foyer
+                      x: 22575
+                      y: 24575
+                      offset_y: 35
+                service_call_schema:
+                  service: roborock.vacuum_clean_zone
+                  service_data:
+                    entity_id: '[[entity_id]]'
+                    zone: '[[selection]]'
+                    repeats: '[[repeats]]'
+          -
+            preset_name: Upstairs
+            vacuum_platform: humbertogontijo/homeassistant-roborock
+            entity: vacuum.upstairs_s7
+            map_source:
+              camera: camera.upstairs_s7_map
+              crop:
+                top: 180
+                bottom: 150
+                left: 180
+                right: 180
+            calibration_source:
+              camera: camera.upstairs_s7_map
+            append_icons: true
+            icons: *extra_icons
+            map_modes:
+              - template: vacuum_clean_segment
+                predefined_selections:
+                  - id: '16'
+                    icon:
+                      name: mdi:bed
+                      x: 27500
+                      y: 29000
+                    label:
+                      text: Small Bedroom
+                      x: 27500
+                      y: 29000
+                      offset_y: 35
+                    outline:
+                      - - 25250
+                        - 27700
+                      - - 29900
+                        - 27700
+                      - - 29900
+                        - 30350
+                      - - 25250
+                        - 30350
+                  - id: '18'
+                    icon:
+                      name: mdi:faucet
+                      x: 32575
+                      y: 28450
+                    label:
+                      text: Bathroom
+                      x: 32575
+                      y: 28450
+                      offset_y: 35
+                    outline:
+                      - - 31050
+                        - 27500
+                      - - 34100
+                        - 27500
+                      - - 34100
+                        - 29400
+                      - - 31050
+                        - 29400
+                  - id: '21'
+                    icon:
+                      name: mdi:face-woman
+                      x: 36100
+                      y: 26125
+                    label:
+                      text: Tammy's Study
+                      x: 36100
+                      y: 26125
+                      offset_y: 35
+                    outline:
+                      - - 34300
+                        - 24800
+                      - - 37900
+                        - 24800
+                      - - 37900
+                        - 27450
+                      - - 34300
+                        - 27450
+                  - id: '23'
+                    icon:
+                      name: mdi:bed-double
+                      x: 40975
+                      y: 26800
+                    label:
+                      text: Master Bedroom
+                      x: 40975
+                      y: 26800
+                      offset_y: 35
+                    outline:
+                      - - 37950
+                        - 24850
+                      - - 44000
+                        - 24850
+                      - - 44000
+                        - 28750
+                      - - 37950
+                        - 28750
+                  - id: '25'
+                    icon:
+                      name: mdi:bed
+                      x: 26500
+                      y: 26500
+                    label:
+                      text: Large Bedroom
+                      x: 26500
+                      y: 26500
+                      offset_y: 35
+                    outline:
+                      - - 25200
+                        - 24850
+                      - - 30950
+                        - 24850
+                      - - 30950
+                        - 27700
+                      - - 25200
+                        - 27700
+              - template: vacuum_clean_zone
+                service_call_schema:
+                  service: roborock.vacuum_clean_zone
+                  service_data:
+                    entity_id: '[[entity_id]]'
+                    zone: '[[selection]]'
+                    repeats: '[[repeats]]'
