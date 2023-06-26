@@ -105,7 +105,7 @@ cards:
           service_data:
             map_flag: 0
           target:
-            entity_id: camera.downstairs_s7_map
+            entity_id: vacuum.downstairs_s7
         entity: vacuum.downstairs_s7
         map_source:
           camera: camera.downstairs_s7_map
@@ -293,7 +293,7 @@ cards:
               service_data:
                 map_flag: 1
               target:
-                entity_id: camera.downstairs_s7_map
+                entity_id: vacuum.downstairs_s7
             entity: '[[entity_id]]'
             map_source:
               camera: camera.downstairs_s7_map
