@@ -1,5 +1,5 @@
-ansible-lint==6.15.0
-ansible==7.5.0
+ansible-lint==6.17.2
+ansible==8.1.0
 ncclient==0.6.13
-paramiko==3.1.0
+paramiko==3.2.0
 xmltodict==0.13.0

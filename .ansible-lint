@@ -8,6 +8,8 @@ skip_list:
   - no-handler
   - no-tabs
   - template-instead-of-copy
+  - var-naming[no-reserved]
+  - var-naming[no-role-prefix]
   - yaml[line-length]
 
 exclude_paths:
