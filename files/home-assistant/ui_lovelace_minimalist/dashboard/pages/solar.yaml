@@ -36,6 +36,7 @@ cards:
     max_flow_rate: 4
     use_new_flow_rate_model: true
     kw_decimals: 2
+    watt_threshold: 0
     entities:
       home:
         entity: sensor.home_power_consumption
