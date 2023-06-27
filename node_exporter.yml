@@ -25,6 +25,11 @@
         mode: "0775"
       register: _scripts_dir
 
+    - name: Install prometheus_client python package
+      ansible.builtin.pip:
+        name: prometheus_client
+        executable: pip3
+
     - name: Clone node-exporter-textfile-collector-scripts repo
       ansible.builtin.git:
         repo: https://github.com/prometheus-community/node-exporter-textfile-collector-scripts.git
