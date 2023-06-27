@@ -7,12 +7,7 @@
 
     # https://www.nvidia.com/en-us/drivers/unix/
     # check compatibility table https://github.com/keylase/nvidia-patch
-    nvidia_driver_version: "525.116.03"
-
-    nvidia_driver_containers:
-      - obico-ml_api
-      - plex
-      - nvidia-dcgm-exporter
+    nvidia_driver_version: "535.54.03"
 
     docker_network: "{{ networks.pub }}"
 
@@ -24,6 +19,41 @@
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
+
+    - name: Copy Docker driver check and restart script
+      ansible.builtin.copy:
+        content: |
+          #!/usr/bin/env bash
+
+          FUNCTION=$1
+
+          if [ "$FUNCTION" == "STOP" ]; then
+            for i in $(docker ps -q); do
+              if docker inspect "$i" | jq -re '.[].HostConfig.DeviceRequests?' > /dev/null; then
+                docker stop "$i" > /dev/null;
+              fi
+            done
+          fi
+
+          if [ "$FUNCTION" == "START" ]; then
+            for i in $(docker ps -a -q); do
+              if docker inspect "$i" | jq -re '.[].HostConfig.DeviceRequests?' > /dev/null; then
+                docker start "$i" > /dev/null;
+              fi
+            done
+          fi
+
+          if [ "$FUNCTION" == "MONITOR" ]; then
+            for i in $(docker ps -q); do
+              if docker inspect "$i" | jq -re '.[].HostConfig.DeviceRequests?' > /dev/null; then
+                if ! docker exec "$i" nvidia-smi > /dev/null; then
+                  docker restart "$i" > /dev/null;
+                fi
+              fi
+            done
+          fi
+        dest: "{{ config_directory }}/docker-container-check-restart.sh"
+        mode: '0755'
 
     - name: Update apt cache
       ansible.builtin.apt:
@@ -88,12 +118,9 @@
       when: _nvidia_installed_version.stdout != nvidia_driver_version
 
     - name: Stop containers using NVIDIA GPU
-      community.docker.docker_container:
-        name: "{{ item }}"
-        state: stopped
-      loop: "{{ nvidia_driver_containers }}"
-      register: _nvidia_stopped_containers
+      ansible.builtin.command: "{{ config_directory }}/docker-container-check-restart.sh STOP"
       when: _nvidia_installed_version.stdout != nvidia_driver_version
+      changed_when: true
 
     - name: Install NVIDIA driver
       ansible.builtin.command: "{{ config_directory }}/{{ nvidia_driver_version }}.run --silent"
@@ -183,10 +210,9 @@
       changed_when: "'Patched!' in _nvidia_patch_nvfbc_unlock.stdout"
 
     - name: Start containers using NVIDIA GPU
-      community.docker.docker_container:
-        name: "{{ item }}"
-        state: started
-      loop: "{{ nvidia_driver_containers }}"
+      ansible.builtin.command: "{{ config_directory }}/docker-container-check-restart.sh START"
+      when: _nvidia_installed_version.stdout != nvidia_driver_version
+      changed_when: true
 
     - name: Create dcgm-exporter container
       ansible.builtin.include_role:
@@ -209,24 +235,11 @@
         metrics:
           - port: 9400
 
-    - name: Copy Docker driver check and restart script
-      ansible.builtin.copy:
-        content: |
-          #!/usr/bin/env bash
-          if docker ps | grep -q "$1"; then
-            if ! docker exec "$1" nvidia-smi > /dev/null; then
-              docker restart "$1" > /dev/null;
-            fi
-          fi
-        dest: "{{ config_directory }}/docker-container-check-restart.sh"
-        mode: '0755'
-
     - name: Automatically restart containers when driver is not found
       ansible.builtin.cron:
-        name: "docker driver check {{ item }}"
+        name: "nvidia gpu driver docker check"
         minute: "*/1"
-        job: "{{ config_directory }}/docker-container-check-restart.sh {{ item }}"
-      loop: "{{ nvidia_driver_containers }}"
+        job: "{{ config_directory }}/docker-container-check-restart.sh MONITOR"
 
 # The NVIDIA driver install can mess with the Docker daemon settings.
 # Rerun docker again to be safe.
