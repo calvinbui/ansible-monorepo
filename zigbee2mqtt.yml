@@ -43,6 +43,15 @@
           availability: true
 
           devices:
+            "0xf082c0fffeff36d8":
+              friendly_name: "IKEA TRADFRI Control Outlet - Fridge"
+            "0xf082c0fffeff2db9":
+              friendly_name: "IKEA TRADFRI Control Outlet - Upstairs Bathroom"
+            "0x3425b4fffef75348":
+              friendly_name: "IKEA TRADFRI Control Outlet - Master Bedroom"
+            "0x2c1165fffec421d2":
+              friendly_name: "IKEA TRADFRI Signal Repeater - Large Rear Bedroom"
+
             "0x00158d0008e0193f":
               friendly_name: "Aqara Water Leak Sensor - Ensuite Sink"
             "0x00158d0008dff09e":
@@ -51,12 +60,6 @@
               friendly_name: "Aqara Water Leak Sensor - Downstairs Bathroom Sink"
             "0x00158d0008e017e4":
               friendly_name: "Aqara Water Leak Sensor - Kitchen Sink"
-            "0xf082c0fffeff36d8":
-              friendly_name: "IKEA TRADFRI Control Outlet - Fridge"
-            "0xf082c0fffeff2db9":
-              friendly_name: "IKEA TRADFRI Control Outlet - Large Rear Bedroom"
-            "0x3425b4fffef75348":
-              friendly_name: "IKEA TRADFRI Control Outlet - Master Bedroom"
             "0x00158d0008dfc9c4":
               friendly_name: "Aqara Water Leak Sensor - Upstairs Bathroom Sink"
             "0x00158d0008dfe057":
