@@ -42,6 +42,9 @@
 
           availability: true
 
+          advanced:
+            last_seen: ISO_8601_local
+
           devices:
             "0xf082c0fffeff36d8":
               friendly_name: "IKEA TRADFRI Control Outlet - Fridge"
