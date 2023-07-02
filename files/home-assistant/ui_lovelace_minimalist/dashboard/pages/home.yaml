@@ -107,3 +107,9 @@ cards:
         show_current: true
         show_forecast: true
         entity: weather.north_strathfield
+      -
+        type: custom:horizon-card
+        fields:
+          dawn: false
+          noon: false
+          dusk: false
