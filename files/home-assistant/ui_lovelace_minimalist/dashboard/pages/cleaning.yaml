@@ -265,24 +265,24 @@ cards:
                 zone: '[[selection]]'
                 repeats: '[[repeats]]'
         append_icons: true
-        icons: &extra_icons
+        icons: &downstairs_icons
           -
             icon: mdi:home
-            tooltip: "Return To Base"
+            tooltip: "Stop"
             tap_action:
               action: call-service
               service: vacuum.return_to_base
               service_data:
-                entity_id: '[[entity_id]]'
+                entity_id: vacuum.downstairs_s7
           -
             icon: mdi:delete-restore
-            tooltip: "Empty Dustbin"
+            tooltip: "Stop"
             tap_action:
               action: call-service
               service: vacuum.send_command
               service_data:
                 command: app_start_collect_dust
-                entity_id: '[[entity_id]]'
+                entity_id: vacuum.downstairs_s7
         additional_presets:
           -
             preset_name: Foyer
@@ -294,7 +294,7 @@ cards:
                 map_flag: 1
               target:
                 entity_id: vacuum.downstairs_s7
-            entity: '[[entity_id]]'
+            entity: vacuum.downstairs_s7
             map_source:
               camera: camera.downstairs_s7_map
               crop:
@@ -305,7 +305,7 @@ cards:
             calibration_source:
               camera: camera.downstairs_s7_map
             append_icons: true
-            icons: *extra_icons
+            icons: *downstairs_icons
             map_modes:
               - template: vacuum_clean_zone_predefined
                 predefined_selections:
@@ -339,7 +339,24 @@ cards:
             calibration_source:
               camera: camera.upstairs_s7_map
             append_icons: true
-            icons: *extra_icons
+            icons:
+              -
+                icon: mdi:home
+                tooltip: "Stop"
+                tap_action:
+                  action: call-service
+                  service: vacuum.return_to_base
+                  service_data:
+                    entity_id: vacuum.upstairs_s7
+              -
+                icon: mdi:delete-restore
+                tooltip: "Stop"
+                tap_action:
+                  action: call-service
+                  service: vacuum.send_command
+                  service_data:
+                    command: app_start_collect_dust
+                    entity_id: vacuum.upstairs_s7
             map_modes:
               - template: vacuum_clean_segment
                 predefined_selections:
