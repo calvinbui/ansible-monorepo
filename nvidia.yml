@@ -45,7 +45,7 @@
 
           if [ "$FUNCTION" == "MONITOR" ]; then
             for i in $(docker ps -q); do
-              if docker inspect "$i" | jq -re '.[].HostConfig.DeviceRequests?' > /dev/null; then
+              if docker inspect "$i" | jq -e '.[].State.Status == "running" and .[].HostConfig.DeviceRequests?' > /dev/null; then
                 if ! docker exec "$i" nvidia-smi > /dev/null; then
                   docker restart "$i" > /dev/null;
                 fi
