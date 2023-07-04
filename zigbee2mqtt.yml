@@ -92,7 +92,6 @@
               friendly_name: "Aqara Temperature & Humidity Sensor - Small Rear Bedroom"
             "0x00158d0009775449":
               friendly_name: "Aqara Temperature & Humidity Sensor - Large Rear Bedroom"
-
         dest: "{{ config_directory }}/data/configuration.yaml"
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
