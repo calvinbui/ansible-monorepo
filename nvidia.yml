@@ -238,7 +238,7 @@
     - name: Automatically restart containers when driver is not found
       ansible.builtin.cron:
         name: "nvidia gpu driver docker check"
-        minute: "*/1"
+        minute: "*/5"
         job: "{{ config_directory }}/docker-container-check-restart.sh MONITOR"
 
 # The NVIDIA driver install can mess with the Docker daemon settings.
