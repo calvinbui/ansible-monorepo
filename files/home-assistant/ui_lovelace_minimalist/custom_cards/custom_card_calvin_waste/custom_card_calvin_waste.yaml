@@ -88,6 +88,6 @@ custom_card_calvin_waste:
     notification: >
       [[[
         if (entity.state == 'unavailable' || states[entity.entity_id].attributes.daysTo == 0 || states[entity.entity_id].attributes.daysTo == 1){
-          return '<ha-icon icon="mdi:exclamation" style="width: 12px; height: 12px; color: var(--primary-background-color);"></ha-icon>'
+          return '<ha-state-icon icon="mdi:exclamation" style="width: 12px; height: 12px; color: var(--primary-background-color);"></ha-state-icon>'
         }
       ]]]
