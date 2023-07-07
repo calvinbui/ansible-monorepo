@@ -26,9 +26,10 @@
     - name: Uninstall old versions
       ansible.builtin.apt:
         name:
-          - docker
-          - docker-engine
           - docker.io
+          - docker-compose
+          - docker-doc
+          - podman-docker
           - containerd
           - runc
         state: absent
@@ -79,6 +80,8 @@
           - docker-ce
           - docker-ce-cli
           - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
         state: present
       register: result
       until: result is success
