@@ -49,13 +49,9 @@ cards:
         header: false
         card_mod:
           style: |
-            /* put temperatures into a column */
-            .body {
-              grid-auto-flow: row !important;
-            }
+            /* hide temperatures */
             .sensors {
-              margin-top: 0.5em;
-              order: 1
+              display: none !important;
             }
 
             /* hide headings */
@@ -116,6 +112,8 @@ cards:
         cards:
           -
             primary: Living Room
+            secondary: |
+              {{ states('sensor.aqara_temperature_humidity_sensor_living_room_temperature') | int }}°C
             icon: mdi:theater
             entity: switch.daikin_ac_living
             <<: &air_conditioning_room
@@ -128,10 +126,13 @@ cards:
                     ha-card {
                       --card-background-color: #8fb3f4;
                       --primary-text-color: #253e5c;
+                      --secondary-text-color: #253e5c;
                     }
                   {% endif %}
           -
             primary: Master Bedroom
+            secondary: |
+              {{ states('sensor.aqara_temperature_humidity_sensor_master_bedroom_temperature') | int }}°C
             icon: mdi:bed-king
             entity: switch.daikin_ac_master
             <<: *air_conditioning_room
@@ -140,11 +141,15 @@ cards:
         cards:
           -
             primary: Tammy's Study
+            secondary: |
+              {{ states('sensor.aqara_temperature_humidity_sensor_tammys_study_temperature') | int }}°C
             icon: mdi:face-woman
             entity: switch.daikin_ac_tammy_study
             <<: *air_conditioning_room
           -
             primary: Small Bedroom
+            secondary: |
+              {{ states('sensor.aqara_temperature_humidity_sensor_small_rear_bedroom_temperature') | int }}°C
             icon: mdi:bed-outline
             entity: switch.daikin_ac_small_bed
             <<: *air_conditioning_room
@@ -153,11 +158,15 @@ cards:
         cards:
           -
             primary: Large Bedroom
+            secondary: |
+              {{ states('sensor.aqara_temperature_humidity_sensor_large_rear_bedroom_temperature') | int }}°C
             icon: mdi:bed
             entity: switch.daikin_ac_large_bed
             <<: *air_conditioning_room
           -
             primary: Calvin's Study
+            secondary: |
+              {{ states('sensor.aqara_temperature_humidity_sensor_calvins_study_temperature') | int }}°C
             icon: mdi:face-man
             entity: switch.daikin_ac_calvin_study
             <<: *air_conditioning_room
