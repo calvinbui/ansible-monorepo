@@ -567,36 +567,38 @@
     state: >
       {{
         (
-          (states('sensor.alternative_electricity_offpeak_cost')|float(0)) * (
-            (state_attr('sensor.solar_self_consumption_daily_offpeak', 'last_period')|float(0))
-            +
-            (state_attr('sensor.grid_power_import_daily_offpeak', 'last_period')|float(0))
+          (
+            (states('sensor.alternative_electricity_offpeak_cost')|float(0)) * (
+              (state_attr('sensor.solar_self_consumption_daily_offpeak', 'last_period')|float(0))
+              +
+              (state_attr('sensor.grid_power_import_daily_offpeak', 'last_period')|float(0))
+            )
           )
-        )
 
-        +
+          +
 
-        (
-          (states('sensor.alternative_electricity_peak_cost')|float(0)) * (
-            (state_attr('sensor.solar_self_consumption_daily_peak', 'last_period')|float(0))
-            +
-            (state_attr('sensor.grid_power_import_daily_peak', 'last_period')|float(0))
+          (
+            (states('sensor.alternative_electricity_peak_cost')|float(0)) * (
+              (state_attr('sensor.solar_self_consumption_daily_peak', 'last_period')|float(0))
+              +
+              (state_attr('sensor.grid_power_import_daily_peak', 'last_period')|float(0))
+            )
           )
-        )
 
-        +
+          +
 
-        (
-          (states('sensor.alternative_electricity_shoulder_cost')|float(0)) * (
-            (state_attr('sensor.solar_self_consumption_daily_shoulder', 'last_period')|float(0))
-            +
-            (state_attr('sensor.grid_power_import_daily_shoulder', 'last_period')|float(0))
+          (
+            (states('sensor.alternative_electricity_shoulder_cost')|float(0)) * (
+              (state_attr('sensor.solar_self_consumption_daily_shoulder', 'last_period')|float(0))
+              +
+              (state_attr('sensor.grid_power_import_daily_shoulder', 'last_period')|float(0))
+            )
           )
-        )
 
-        +
+          +
 
-        (states('sensor.alternative_electricity_supply_cost')|float(0))
+          (states('sensor.alternative_electricity_supply_cost')|float(0))
+        ) | round(2)
       }}
 
   # Solar Initial Cost

@@ -354,7 +354,7 @@
 
     - name: Copy dashboard
       tags:
-        - theme
+        - dashboard
       ansible.posix.synchronize:
         src: "{{ files_directory }}/ui_lovelace_minimalist/"
         dest: "{{ config_directory }}/config/ui_lovelace_minimalist/"

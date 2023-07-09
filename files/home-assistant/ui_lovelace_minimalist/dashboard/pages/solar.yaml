@@ -326,7 +326,6 @@ cards:
         type: custom:multiple-entity-row
         entity: sensor.tou_period
         name: Current Period
-        show_state: true
         style: *row_style
       -
         type: custom:multiple-entity-row
@@ -334,7 +333,6 @@ cards:
         name: Current Cost ($/Hour)
         icon: mdi:currency-usd
         unit: USD
-        show_state: true
         style: *row_style
       -
         type: custom:multiple-entity-row
@@ -342,7 +340,6 @@ cards:
         name: Cost Per Day ($)
         icon: mdi:currency-usd
         unit: USD
-        show_state: true
         style: *row_style
       -
         type: custom:multiple-entity-row
@@ -350,7 +347,13 @@ cards:
         name: Forecasted Bill ($)
         icon: mdi:chart-line
         unit: USD
-        show_state: true
+        style: *row_style
+      -
+        type: custom:multiple-entity-row
+        entity: sensor.electricity_costs_alternative_plan
+        name: Solar Saving (Today)
+        icon: mdi:weather-sunny-off
+        unit: USD
         style: *row_style
 
   # Usage
