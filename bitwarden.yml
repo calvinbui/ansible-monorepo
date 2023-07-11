@@ -62,10 +62,26 @@
             62316531396634366439383362356264623537366534323264313133386236326138633431326637
             6433333139653666383131656339313338653361333961343430
 
-          WEBSOCKET_ENABLED: "true"
-
           SIGNUPS_ALLOWED: "false"
           INVITATIONS_ALLOWED: "true"
+
+          # get keys from https://bitwarden.com/host/
+          PUSH_ENABLED: "true"
+          PUSH_INSTALLATION_ID: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            65333739666139393363376537316532616362636430636632313834393636653835363263666236
+            3238393430373962336466646636346539333739363661620a623262623730303763326331626135
+            64343633633066376133373031616335636236646465303662653439346139366662323137366337
+            3339643337353239640a313230613332656231333563663937363264393139306537373333373834
+            36343165383464663831353336373762303631626162653839346665663031316566663737393466
+            3963366636396463386130303663623230353564313532303362
+          PUSH_INSTALLATION_KEY: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            66346138353766393264643562386664383862306365303633323664366434353834376130663630
+            6435633336383734323536383539613239313338323233380a396130656362313732653735306666
+            66643165396130636139383439313930653435323366393139663532316463363261656266643165
+            3336393862333433360a373037383031336636373632646163346466633561353832393837626632
+            32663939616332613233626462663034646330633930623631616231386337326532
 
           ORG_EVENTS_ENABLED: "true"
           EVENTS_DAYS_RETAIN: "14"
@@ -79,21 +95,11 @@
 
           DATABASE_URL: "{{ _postgres_url }}"
 
-          ROCKET_PORT: "8080"
-
           LOG_FILE: /data/vaultwarden.log
         volumes:
           - "{{ config_directory }}/{{ application }}:/data"
         traefik:
-          # https://github.com/dani-garcia/vaultwarden/wiki/Proxy-examples#traefik-v2-docker-compose-example-by-hwwilliams
-          # ui routing
-          - name: "{{ application }}-ui"
-            port: 8080
-            rule: Host(`{{ application }}.{{ common_tld }}`)
-          # websocket for syncing
-          - name: "{{ application }}-websocket"
-            port: 3012
-            rule: Host(`{{ application }}.{{ common_tld }}`) && Path(`/notifications/hub`)
+          - port: 80
         homer:
           name: Bitwarden
           service: Tools
