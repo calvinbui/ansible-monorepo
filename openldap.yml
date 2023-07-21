@@ -44,7 +44,7 @@
         name: docker_container
       vars:
         name: lum
-        image: wheelybird/ldap-user-manager:v1.10
+        image: wheelybird/ldap-user-manager:v1.11
         env:
           SERVER_HOSTNAME: "lum.{{ common_tld }}"
 
