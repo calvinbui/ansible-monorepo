@@ -143,3 +143,8 @@
         traefik:
           - port: 8080
             rule: Host(`{{ application }}.{{ common_tld }}`)
+        homer:
+          name: Immich
+          service: Collaboration
+          priority: 860
+          subtitle: "Photo & Video Backup"
