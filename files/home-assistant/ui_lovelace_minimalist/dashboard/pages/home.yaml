@@ -109,6 +109,8 @@ cards:
         entity: weather.north_strathfield
       -
         type: custom:horizon-card
+        moon: false
+        southern_flip: false
         fields:
           dawn: false
           noon: false
