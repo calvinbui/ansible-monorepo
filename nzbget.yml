@@ -24,6 +24,15 @@
         group: "{{ common_root_group }}"
         mode: "0771"
 
+    - name: Create unpack pass file
+      ansible.builtin.copy:
+        content: |
+          404
+        dest: "{{ config_directory }}/unpackpassfile.txt"
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
+
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
@@ -246,6 +255,7 @@
           UnpackPauseQueue: 'no'
           UnrarCmd: '${AppDir}/unrar'
           SevenZipCmd: '${AppDir}/7za'
+          UnpackPassFile: '/config/unpackpassfile.txt'
 
           # EXTENSION SCRIPTS
           ScriptPauseQueue: 'yes'
