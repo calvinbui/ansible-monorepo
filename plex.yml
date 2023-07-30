@@ -44,7 +44,7 @@
           - "{{ common_directory_movies }}:/data/movies"
           - "{{ common_directory_tv }}:/data/tv"
         tmpfs:
-          - /transcode:rw,mode=1777
+          - /transcode:rw,mode=01777
         device_requests:
           - driver: nvidia
             count: -1
