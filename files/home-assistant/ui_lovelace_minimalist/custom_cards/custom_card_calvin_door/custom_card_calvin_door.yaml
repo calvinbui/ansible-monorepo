@@ -95,7 +95,7 @@ custom_card_calvin_door:
                       return "lock.unlock";
                     }
                   ]]]
-                service_data:
+                data:
                   entity_id: "[[[ return entity.entity_id ]]]"
               state:
                 - value: "unlocked"
@@ -122,7 +122,7 @@ custom_card_calvin_door:
                       return "lock.lock";
                     }
                   ]]]
-                service_data:
+                data:
                   entity_id: |
                     [[[ return entity.entity_id ]]]
               state:

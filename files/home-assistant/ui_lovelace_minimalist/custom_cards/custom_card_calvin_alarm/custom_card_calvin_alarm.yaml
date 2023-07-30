@@ -118,7 +118,7 @@ custom_card_calvin_alarm:
           #     tap_action:
           #       action: call-service
           #       service: alarm_control_panel.alarm_disarm
-          #       service_data:
+          #       data:
           #         entity_id: '[[[ return variables.ulm_custom_alarm_grid_state ]]]'
           #       haptic: success
 
@@ -171,7 +171,7 @@ custom_card_calvin_alarm:
                     }
                   ]]]
                 service: alarm_control_panel.alarm_arm_away
-                service_data:
+                data:
                   entity_id: '[[[ return variables.ulm_custom_alarm_grid_state ]]]'
                 haptic: success
 
@@ -192,7 +192,7 @@ custom_card_calvin_alarm:
           #     tap_action:
           #       action: call-service
           #       service: alarm_control_panel.alarm_arm_home
-          #       service_data:
+          #       data:
           #         entity_id: '[[[ return variables.ulm_custom_alarm_grid_state ]]]'
           #       haptic: success
 

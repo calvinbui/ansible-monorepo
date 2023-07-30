@@ -261,7 +261,7 @@ custom_card_calvin_cover:
               tap_action:
                 action: "call-service"
                 service: "cover.close_cover"
-                service_data:
+                data:
                   entity_id: "[[[ return entity.entity_id ]]]"
               icon: >-
                 [[[
@@ -309,7 +309,7 @@ custom_card_calvin_cover:
               tap_action:
                 action: "call-service"
                 service: "cover.open_cover"
-                service_data:
+                data:
                   entity_id: "[[[ return entity.entity_id ]]]"
               icon: >-
                 [[[
