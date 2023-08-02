@@ -1,0 +1,23 @@
+{
+  "server": {
+    "debug": false,
+    "http_debug": false,
+    "http_demo": true,
+    "log_level": "info",
+    "http_port": ":8083",
+    "http_dir": "site"
+  },
+  "streams": {
+    "driveway": {
+      "name": "driveway",
+      "channels": {
+        "0": {
+          "name": "driveway",
+          "url": "rtsp://192.168.3.3:7447/SiIzjZyICCOaM23e",
+          "on_demand": false,
+          "audio": false
+        }
+      }
+    }
+  }
+}

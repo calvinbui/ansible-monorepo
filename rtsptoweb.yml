@@ -1,0 +1,46 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: rtsptoweb
+
+    docker_network: "{{ networks.iot }}"
+
+  handlers:
+    - name: Restart
+      community.docker.docker_container:
+        name: "{{ application }}"
+        restart: true
+        comparisons:
+          '*': ignore
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Copy files
+      ansible.posix.synchronize:
+        src: "{{ files_directory }}/"
+        dest: "{{ config_directory }}/"
+        delete: true
+        owner: false
+        group: false
+        perms: false
+      notify: Restart
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: ghcr.io/deepch/rtsptoweb:v2.4.3
+        volumes:
+          - "{{ config_directory }}/config.json:/config/config.json"
+          - "{{ config_directory }}/site:/app/site"
+        traefik:
+          - port: 8083
