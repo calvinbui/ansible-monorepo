@@ -338,7 +338,7 @@
     /* sonarr */
     {
       matchPackagePatterns: [".*\\/sonarr"],
-      prBodyNotes: "[Changes](https://services.sonarr.tv/v1/update/main/changes)",
+      prBodyNotes: "[Changes](https://services.sonarr.tv/v1/update/develop/changes?version=4)",
     },
     /* pairdrop */
     {
