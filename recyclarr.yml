@@ -7,14 +7,6 @@
 
     docker_network: "{{ networks.pub }}"
 
-  handlers:
-    - name: Restart
-      community.docker.docker_container:
-        name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
-
   tasks:
     - name: Create config folder
       ansible.builtin.file:
@@ -246,8 +238,6 @@
 
                     # Optional/Additional
                     - 839bea857ed2c0a8e084f3cbdbd65ecb # x265 (no HDR/DV)
-
-      notify: Restart
 
     - name: Create container
       ansible.builtin.include_role:
