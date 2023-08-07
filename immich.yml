@@ -108,6 +108,16 @@
         name: "{{ application }}-microservices"
         image: ghcr.io/immich-app/immich-server:v1.72.1
         command: ["start-microservices.sh"]
+        device_requests:
+          - driver: nvidia
+            count: -1
+            device_ids: []
+            options: {}
+            capabilities:
+              - - gpu
+                - video
+                - compute
+                - utility
         env: *immich_shared_env
         volumes:
           - *immich_upload_volume
