@@ -96,10 +96,9 @@ cards:
         entity: weather.north_strathfield_hourly
         icons: true
         offset: '0'
-        num_segments: '14'
+        num_segments: '24'
         name: ' '
         label_spacing: '2'
-        show_wind: true
         show_precipitation_amounts: true
         show_precipitation_probability: true
       -
@@ -107,11 +106,3 @@ cards:
         show_current: true
         show_forecast: true
         entity: weather.north_strathfield
-      -
-        type: custom:horizon-card
-        moon: false
-        southern_flip: false
-        fields:
-          dawn: false
-          noon: false
-          dusk: false
