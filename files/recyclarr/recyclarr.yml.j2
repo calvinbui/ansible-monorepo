@@ -56,12 +56,12 @@ sonarr:
         min_format_score: 100
         upgrade:
           allowed: true
-          until_quality: Bluray 1080p
+          until_quality: Bluray-1080p
           until_score: 10000
         quality_sort: top
         qualities:
           -
-            name: Bluray 1080p
+            name: Bluray-1080p
             qualities:
               - Bluray-1080p Remux
               - Bluray-1080p
@@ -86,7 +86,6 @@ sonarr:
             qualities:
               - WEBDL-480p
               - WEBRip-480p
-              - HDTV-480p
           -
             name: DVD
           -
@@ -251,7 +250,7 @@ sonarr:
       - quality_profiles:
           - name: Anime
             score: -10000
-        trash_ids: [8a1d0c3d7497e741736761a1da866a2e] # VOSTFR
+        trash_ids: [07a32f77690263bb9fda1842db7e273f] # VOSTFR
       -
         # Anime Streaming Services
         quality_profiles:
@@ -317,12 +316,12 @@ radarr:
         min_format_score: 100
         upgrade:
           allowed: true
-          until_quality: Remux 1080p
+          until_quality: Remux-1080p
           until_score: 10000
         quality_sort: top
         qualities:
           -
-            name: Remux 1080p
+            name: Remux-1080p
             qualities:
               - Bluray-1080p
               - Remux-1080p
