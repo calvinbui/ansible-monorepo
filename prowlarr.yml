@@ -59,7 +59,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: lscr.io/linuxserver/prowlarr:develop-version-1.8.1.3837
+        image: lscr.io/linuxserver/prowlarr:develop-version-1.8.2.3860
         volumes:
           - "{{ config_directory }}/config:/config"
         env:
