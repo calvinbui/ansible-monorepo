@@ -1,0 +1,11 @@
+---
+
+alias: Solcast - Update Forecast
+description: New API call Solcast
+trigger:
+  - platform: time_pattern
+    minutes: /30
+action:
+  - service: solcast_solar.update_forecasts
+    data: {}
+mode: single
