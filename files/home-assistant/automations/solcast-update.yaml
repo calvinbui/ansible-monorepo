@@ -1,11 +1,13 @@
 ---
 
-alias: Solcast - Update Forecast
-description: New API call Solcast
-trigger:
-  - platform: time_pattern
-    minutes: /30
-action:
-  - service: solcast_solar.update_forecasts
-    data: {}
-mode: single
+# https://github.com/oziee/ha-solcast-solar#basic-ha-automation-to-manual-poll-solcast-api-data
+- id: solcast_update_forecast
+  alias: Solar - Update Forecast
+  description: New API call Solcast
+  trigger:
+    - platform: time_pattern
+      minutes: /30
+  action:
+    - service: solcast_solar.update_forecasts
+      data: {}
+  mode: single
