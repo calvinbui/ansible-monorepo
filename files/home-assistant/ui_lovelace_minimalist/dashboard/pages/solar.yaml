@@ -208,7 +208,10 @@ cards:
             return entity.attributes.detailedForecast.map((entry) => {
               var date_period = new Date(entry.period_start);
 
-              return [date_period, Math.min(entry.pv_estimate, 10)];
+              // inverter is only 10kW but estimate can be higher
+              // pv_estimate is in kWh and we want kW. there are data points
+              // every 0.5 hours, so kW = kWh * 2.
+              return [date_period, Math.min(entry.pv_estimate * 2, 10)];
             });
 
   # Costs
