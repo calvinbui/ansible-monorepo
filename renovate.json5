@@ -389,7 +389,7 @@
     },
     /* mosquitto */
     {
-      matchPackagePatterns: [".*\\/eclipse-mosquitto"],
+      matchPackagePatterns: ["eclipse-mosquitto"],
       prBodyNotes: "[ChangeLog.txt](https://github.com/eclipse/mosquitto/blob/master/ChangeLog.txt)",
     },
     /* typesense */
