@@ -28,6 +28,8 @@
       ansible.builtin.copy:
         content: |
           #!/usr/bin/env bash
+          set -euo pipefail
+
           sleep_hours=2
           last_run_file=/base/lastrun.txt
 
