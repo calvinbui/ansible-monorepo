@@ -7,7 +7,7 @@
 
     # https://www.nvidia.com/en-us/drivers/unix/
     # check compatibility table https://github.com/keylase/nvidia-patch
-    nvidia_driver_version: "535.54.03"
+    nvidia_driver_version: "535.86.05"
 
     docker_network: "{{ networks.pub }}"
 
