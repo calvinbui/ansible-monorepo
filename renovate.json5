@@ -387,6 +387,16 @@
       matchPackagePatterns: [".*\\/wizarr"],
       customChangelogUrl: "https://github.com/Wizarrrr/wizarr",
     },
+    /* mosquitto */
+    {
+      matchPackagePatterns: [".*\\/mosquitto"],
+      prBodyNotes: "[ChangeLog.txt](https://github.com/eclipse/mosquitto/blob/master/ChangeLog.txt)",
+    },
+    /* typesense */
+    {
+      matchPackagePatterns: [".*\\/typesense"],
+      customChangelogUrl: "https://github.com/typesense/typesense",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
