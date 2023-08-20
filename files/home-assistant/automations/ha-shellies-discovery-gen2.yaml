@@ -10,7 +10,7 @@
     device_info_payload: '{{ {''id'': 1, ''src'':''shellies_discovery'', ''method'':''Shelly.GetConfig''}
       | to_json }}'
     device_ids:
-    - shellyplus1pm-441793942e24 # Garage
+    - shellyplus1pm-garage # Garage
     - shellyplus1pm-7c87ce65d8a0 # Alfresco
     - shellyplus1pm-441793d4646c # Upstairs Hallway
     - shellyplus1pm-441793943264 # Master Bedroom
