@@ -20,7 +20,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: lscr.io/linuxserver/webtop:ubuntu-xfce
+        image: lscr.io/linuxserver/webtop:ubuntu-mate
         env:
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_root_group | string }}"
@@ -48,4 +48,4 @@
           name: Webtop
           service: Tools
           priority: 691
-          subtitle: "Ubuntu XFCE"
+          subtitle: "Ubuntu"
