@@ -38,6 +38,12 @@
       LC_CTYPE: "{{ lc_ctype | default(omit) }}"
       POSTGRES_HOST_AUTH_METHOD: "{{ postgres_host_auth_method | default(omit) }}"
 
+    healthcheck:
+      test: "pg_isready"
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
     labels:
       traefik.enable: "false"
 
