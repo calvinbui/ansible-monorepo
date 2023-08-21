@@ -72,7 +72,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-server"
-        image: drone/drone:2.19.0
+        image: drone/drone:2.20.0
         volumes:
           - "{{ config_directory }}/data:/data"
         env:
