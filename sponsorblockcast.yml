@@ -12,10 +12,10 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/bruvv/sponsorblockcast:latest
+        image: ghcr.io/gabe565/castsponsorskip:0.1.3
         env:
-          SBCCATEGORIES: "sponsor selfpromo exclusive_access interaction intro outro preview filler"
-          SBCYOUTUBEAPIKEY: !vault |
+          CSS_CATEGORIES: "sponsor selfpromo exclusive_access interaction intro outro preview filler"
+          CSS_YOUTUBE_API_KEY: !vault |
             $ANSIBLE_VAULT;1.1;AES256
             31646566376132326264656533623235656661646132643432313630653838613866613333333230
             3832313363353266643964646334343432383662326164660a643539313733343339356336393933
