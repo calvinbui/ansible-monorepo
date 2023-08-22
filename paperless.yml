@@ -15,14 +15,6 @@
 
     docker_network: "{{ networks.iot }}"
 
-  handlers:
-    - name: Restart
-      community.docker.docker_container:
-        name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
-
   tasks:
     - name: Create FTP user
       ansible.builtin.user:
