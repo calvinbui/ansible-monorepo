@@ -10,7 +10,9 @@ sonarr:
     quality_profiles:
       -
         name: 1080p
-        reset_unmatched_scores: true
+        reset_unmatched_scores:
+          enabled: true
+        score_set: default
         min_format_score: 0
         upgrade:
           allowed: true
@@ -37,7 +39,9 @@ sonarr:
               - WEBRip-1080p
       -
         name: 4K
-        reset_unmatched_scores: true
+        reset_unmatched_scores:
+          enabled: true
+        score_set: default
         min_format_score: 0
         upgrade:
           allowed: true
@@ -52,7 +56,9 @@ sonarr:
               - WEBRip-2160p
       -
         name: Anime
-        reset_unmatched_scores: true
+        reset_unmatched_scores:
+          enabled: true
+        score_set: anime-sonarr
         min_format_score: 100
         upgrade:
           allowed: true
@@ -205,12 +211,12 @@ sonarr:
           - c81bbfb47fed3d5a3ad027d077f889de # Anime BD Tier 08 (Mini Encodes)
           - e0014372773c8f0e1bef8824f00c7dc4 # Anime Web Tier 01 (Muxers)
           - 19180499de5ef2b84b6ec59aae444696 # Anime Web Tier 02 (Top FanSubs)
-          # - e6258996055b9fbab7e9cb2f75819294 # WEB Tier 01
-          # - 58790d4e2fdcd9733aa7ae68ba2bb503 # WEB Tier 02
+          - e6258996055b9fbab7e9cb2f75819294 # WEB Tier 01
+          - 58790d4e2fdcd9733aa7ae68ba2bb503 # WEB Tier 02
           - c27f2ae6a4e82373b0f1da094e2489ad # Anime Web Tier 03 (Official Subs)
-          # - d84935abd3f8556dcd51d4f27e22d0a6 # WEB Tier 03
-          # - 9965a052eb87b0d10313b1cea89eb451 # Remux Tier 01
-          # - 8a1d0c3d7497e741736761a1da866a2e # Remux Tier 02
+          - d84935abd3f8556dcd51d4f27e22d0a6 # WEB Tier 03
+          - 9965a052eb87b0d10313b1cea89eb451 # Remux Tier 01
+          - 8a1d0c3d7497e741736761a1da866a2e # Remux Tier 02
           - 4fd5528a3a8024e6b49f9c67053ea5f3 # Anime Web Tier 04 (Official Subs)
           - 29c2a13d091144f63307e4a8ce963a39 # Anime Web Tier 05 (FanSubs)
           - dc262f88d74c651b12e9d90b39f6c753 # Anime Web Tier 06 (FanSubs)
@@ -226,31 +232,7 @@ sonarr:
           - b2550eb333d27b75833e25b8c2557b38 # 10bit
           - 418f50b10f1907201b6cfdf881f467b7 # Anime Dual Audio
           - 9c14d194486c4014d422adc64092d794 # Dubs Only
-          # - 07a32f77690263bb9fda1842db7e273f # VOSTFR
-      - quality_profiles:
-          - name: Anime
-            score: 350
-        trash_ids: [e6258996055b9fbab7e9cb2f75819294] # WEB Tier 01
-      - quality_profiles:
-          - name: Anime
-            score: 300
-        trash_ids: [58790d4e2fdcd9733aa7ae68ba2bb503] # WEB Tier 02
-      - quality_profiles:
-          - name: Anime
-            score: 250
-        trash_ids: [d84935abd3f8556dcd51d4f27e22d0a6] # WEB Tier 03
-      - quality_profiles:
-          - name: Anime
-            score: 1050
-        trash_ids: [9965a052eb87b0d10313b1cea89eb451] # Remux Tier 01
-      - quality_profiles:
-          - name: Anime
-            score: 1000
-        trash_ids: [8a1d0c3d7497e741736761a1da866a2e] # Remux Tier 02
-      - quality_profiles:
-          - name: Anime
-            score: -10000
-        trash_ids: [07a32f77690263bb9fda1842db7e273f] # VOSTFR
+          - 07a32f77690263bb9fda1842db7e273f # VOSTFR
       -
         # Anime Streaming Services
         quality_profiles:
@@ -278,7 +260,9 @@ radarr:
     quality_profiles:
       -
         name: 1080p
-        reset_unmatched_scores: true
+        reset_unmatched_scores:
+          enabled: true
+        score_set: default
         min_format_score: 0
         upgrade:
           allowed: true
@@ -295,7 +279,9 @@ radarr:
               - WEBDL-1080p
       -
         name: 4K
-        reset_unmatched_scores: true
+        reset_unmatched_scores:
+          enabled: true
+        score_set: default
         min_format_score: 0
         upgrade:
           allowed: true
@@ -312,7 +298,9 @@ radarr:
               - WEBDL-2160p
       -
         name: Anime
-        reset_unmatched_scores: true
+        reset_unmatched_scores:
+          enabled: true
+        score_set: anime-radarr
         min_format_score: 100
         upgrade:
           allowed: true
@@ -502,12 +490,12 @@ radarr:
           - 9edaeee9ea3bcd585da9b7c0ac3fc54f # Anime Web Tier 04 (Official Subs)
           - 22d953bbe897857b517928f3652b8dd3 # Anime Web Tier 05 (FanSubs)
           - a786fbc0eae05afe3bb51aee3c83a9d4 # Anime Web Tier 06 (FanSubs)
-          # - 3a3ff47579026e76d6504ebea39390de # Remux Tier 01
-          # - 9f98181fe5a3fbeb0cc29340da2a468a # Remux Tier 02
-          # - 8baaf0b3142bf4d94c42a724f034e27a # Remux Tier 03
-          # - c20f169ef63c5f40c2def54abaf4438e # WEB Tier 01
-          # - 403816d65392c79236dcb6dd591aeda4 # WEB Tier 02
-          # - af94e0fe497124d1f9ce732069ec8c3b # WEB Tier 03
+          - 3a3ff47579026e76d6504ebea39390de # Remux Tier 01
+          - 9f98181fe5a3fbeb0cc29340da2a468a # Remux Tier 02
+          - 8baaf0b3142bf4d94c42a724f034e27a # Remux Tier 03
+          - c20f169ef63c5f40c2def54abaf4438e # WEB Tier 01
+          - 403816d65392c79236dcb6dd591aeda4 # WEB Tier 02
+          - af94e0fe497124d1f9ce732069ec8c3b # WEB Tier 03
           - 06b6542a47037d1e33b15aa3677c2365 # Anime Raws
           - b0fdc5897f68c9a68c70c25169f77447 # Anime LQ Groups
           - 064af5f084a0a24458cc8ecd3220f93f # Uncensored
@@ -520,31 +508,8 @@ radarr:
           - a5d148168c4506b55cf53984107c396e # 10bit
           - 4a3b087eea2ce012fcc1ce319259a3be # Anime Dual Audio
           - b23eae459cc960816f2d6ba84af45055 # Dubs Only
+      # pending PR https://github.com/TRaSH-Guides/Guides/pull/1520
           # - 9172b2f683f6223e3a1846427b417a3d # VOSTFR
-      - quality_profiles:
-          - name: Anime
-            score: 1050
-        trash_ids: [3a3ff47579026e76d6504ebea39390de] # Remux Tier 01
-      - quality_profiles:
-          - name: Anime
-            score: 1000
-        trash_ids: [9f98181fe5a3fbeb0cc29340da2a468a] # Remux Tier 02
-      - quality_profiles:
-          - name: Anime
-            score: 950
-        trash_ids: [8baaf0b3142bf4d94c42a724f034e27a] # Remux Tier 03
-      - quality_profiles:
-          - name: Anime
-            score: 350
-        trash_ids: [c20f169ef63c5f40c2def54abaf4438e] # WEB Tier 01
-      - quality_profiles:
-          - name: Anime
-            score: 300
-        trash_ids: [403816d65392c79236dcb6dd591aeda4] # WEB Tier 02
-      - quality_profiles:
-          - name: Anime
-            score: 250
-        trash_ids: [af94e0fe497124d1f9ce732069ec8c3b] # WEB Tier 03
       - quality_profiles:
           - name: Anime
             score: -10000
