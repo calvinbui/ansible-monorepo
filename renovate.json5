@@ -397,6 +397,11 @@
       matchPackagePatterns: [".*\\/typesense"],
       customChangelogUrl: "https://github.com/typesense/typesense",
     },
+    /* castsponsorskip */
+    {
+      matchPackagePatterns: [".*\\/castsponsorskip"],
+      customChangelogUrl: "https://github.com/gabe565/CastSponsorSkip",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
