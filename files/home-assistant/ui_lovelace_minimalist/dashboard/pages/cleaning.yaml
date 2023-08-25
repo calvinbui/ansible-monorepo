@@ -285,47 +285,6 @@ cards:
                 entity_id: vacuum.downstairs_s7
         additional_presets:
           -
-            preset_name: Foyer
-            vacuum_platform: humbertogontijo/homeassistant-roborock
-            activate_on_switch: true
-            activate:
-              service: roborock.vacuum_load_multi_map
-              service_data:
-                map_flag: 1
-              target:
-                entity_id: vacuum.downstairs_s7
-            entity: vacuum.downstairs_s7
-            map_source:
-              camera: camera.downstairs_s7_map
-              crop:
-                top: 500
-                bottom: 500
-                left: 500
-                right: 500
-            calibration_source:
-              camera: camera.downstairs_s7_map
-            append_icons: true
-            icons: *downstairs_icons
-            map_modes:
-              - template: vacuum_clean_zone_predefined
-                predefined_selections:
-                  - zones: [[19025, 23045, 26250, 26268]]
-                    icon:
-                      name: mdi:shoe-sneaker
-                      x: 22575
-                      y: 24575
-                    label:
-                      text: Foyer
-                      x: 22575
-                      y: 24575
-                      offset_y: 35
-                service_call_schema:
-                  service: roborock.vacuum_clean_zone
-                  service_data:
-                    entity_id: '[[entity_id]]'
-                    zone: '[[selection]]'
-                    repeats: '[[repeats]]'
-          -
             preset_name: Upstairs
             vacuum_platform: humbertogontijo/homeassistant-roborock
             entity: vacuum.upstairs_s7
@@ -456,6 +415,47 @@ cards:
                       - - 25200
                         - 27700
               - template: vacuum_clean_zone
+                service_call_schema:
+                  service: roborock.vacuum_clean_zone
+                  service_data:
+                    entity_id: '[[entity_id]]'
+                    zone: '[[selection]]'
+                    repeats: '[[repeats]]'
+          -
+            preset_name: Foyer
+            vacuum_platform: humbertogontijo/homeassistant-roborock
+            activate_on_switch: true
+            activate:
+              service: roborock.vacuum_load_multi_map
+              service_data:
+                map_flag: 1
+              target:
+                entity_id: vacuum.downstairs_s7
+            entity: vacuum.downstairs_s7
+            map_source:
+              camera: camera.downstairs_s7_map
+              crop:
+                top: 500
+                bottom: 500
+                left: 500
+                right: 500
+            calibration_source:
+              camera: camera.downstairs_s7_map
+            append_icons: true
+            icons: *downstairs_icons
+            map_modes:
+              - template: vacuum_clean_zone_predefined
+                predefined_selections:
+                  - zones: [[19025, 23045, 26250, 26268]]
+                    icon:
+                      name: mdi:shoe-sneaker
+                      x: 22575
+                      y: 24575
+                    label:
+                      text: Foyer
+                      x: 22575
+                      y: 24575
+                      offset_y: 35
                 service_call_schema:
                   service: roborock.vacuum_clean_zone
                   service_data:
