@@ -67,7 +67,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-server"
-        image: ghcr.io/immich-app/immich-server:v1.75.0
+        image: ghcr.io/immich-app/immich-server:v1.75.2
         command: ["start-server.sh"]
         env: &immich_shared_env
           DB_HOSTNAME: "{{ _postgres_hostname }}"
@@ -106,7 +106,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-microservices"
-        image: ghcr.io/immich-app/immich-server:v1.75.0
+        image: ghcr.io/immich-app/immich-server:v1.75.2
         command: ["start-microservices.sh"]
         device_requests:
           - driver: nvidia
@@ -127,7 +127,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-machine-learning"
-        image: ghcr.io/immich-app/immich-machine-learning:v1.75.0
+        image: ghcr.io/immich-app/immich-machine-learning:v1.75.2
         env: *immich_shared_env
         volumes:
           - *immich_upload_volume
@@ -138,7 +138,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-web"
-        image: ghcr.io/immich-app/immich-web:v1.75.0
+        image: ghcr.io/immich-app/immich-web:v1.75.2
         env: *immich_shared_env
 
     - name: Create proxy container
@@ -146,7 +146,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-proxy"
-        image: ghcr.io/immich-app/immich-proxy:v1.75.0
+        image: ghcr.io/immich-app/immich-proxy:v1.75.2
         env:
           IMMICH_WEB_URL: *immich_web_url
           IMMICH_SERVER_URL: *immich_server_url
