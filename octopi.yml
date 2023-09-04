@@ -247,3 +247,13 @@
             group: "{{ common_user }}"
             mode: "0740"
           notify: Reboot
+
+    # webcam configuration
+    - name: Disable webcam autofocus and set manual focus
+      ansible.builtin.lineinfile:
+        path: /etc/rc.local
+        insertbefore: exit 0
+        line: "{{ item }}"
+      loop:
+        - v4l2-ctl --set-ctrl=focus_auto=0
+        - v4l2-ctl --set-ctrl=focus_absolute=4
