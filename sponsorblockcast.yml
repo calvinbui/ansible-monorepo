@@ -12,7 +12,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/gabe565/castsponsorskip:0.4.0
+        image: ghcr.io/gabe565/castsponsorskip:0.4.1
         env:
           CSS_CATEGORIES: "sponsor selfpromo exclusive_access interaction intro outro preview filler"
           CSS_YOUTUBE_API_KEY: !vault |
