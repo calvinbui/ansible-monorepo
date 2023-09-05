@@ -77,8 +77,8 @@
         traefik:
           - port: 6052
             auth: page
-        homer:
+        homepage:
           name: ESPHome
-          service: Home
-          priority: 98
-          subtitle: "Control ESP8266/ESP32 devices"
+          group: Home Automation
+          weight: 150
+          description: "Control ESP8266/ESP32 devices"

@@ -133,10 +133,10 @@
           RATE_LIMITER_ENABLED: "false"
         traefik:
           - port: 443
-        homer:
+        homepage:
           name: Outline
-          service: Collaboration
-          priority: 850
-          subtitle: "Wiki"
+          group: Documents
+          weight: 150
+          description: "Wiki"
         blackbox:
           path: /_health

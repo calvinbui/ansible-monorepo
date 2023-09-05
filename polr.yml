@@ -86,9 +86,9 @@
           }'
         blackbox:
           path: /about-polr
-        homer:
+        homepage:
           name: Polr
-          service: Sharing
-          priority: 690
-          subtitle: "URL shortener"
-          url: "https://{{ common_short_tld }}"
+          group: Sharing
+          weight: 690
+          description: "URL shortener"
+          href: "https://{{ common_short_tld }}"

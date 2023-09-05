@@ -74,8 +74,8 @@
           - "{{ config_directory }}/cfg:/srv/cfg"
         traefik:
           - port: 8080
-        homer:
+        homepage:
           name: PrivateBin
-          service: Sharing
-          priority: 790
-          subtitle: "Zero knowledge pastebin"
+          group: Sharing
+          weight: 790
+          description: "Zero knowledge pastebin"

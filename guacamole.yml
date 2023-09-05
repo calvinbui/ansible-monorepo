@@ -71,11 +71,11 @@
           - port: 8080
             middlewares:
               - "{{ application }}-addprefix"
-        homer:
+        homepage:
           name: Guacamole
-          service: Infrastructure
-          priority: 890
-          subtitle: "Remote access"
+          group: Remote Access
+          weight: 100
+          description: "Remote access"
         labels:
           '{
             "traefik.http.middlewares.{{ application }}-addprefix.addprefix.prefix": "/guacamole"

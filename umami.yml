@@ -58,11 +58,11 @@
             rule: "Host(`u.calvin.me`)"
             middlewares:
               - "{{ application }}-script-path"
-        homer:
+        homepage:
           name: umami
-          service: Monitoring
-          priority: 790
-          subtitle: "Web analytics"
+          group: Monitoring
+          weight: 300
+          description: "Web analytics"
         blackbox:
           path: /api/heartbeat
         labels:

@@ -44,8 +44,8 @@
         traefik:
           - port: 3000
             auth: page
-        homer:
+        homepage:
           name: Webtop
-          service: Tools
-          priority: 691
-          subtitle: "Ubuntu"
+          group: Remote Access
+          weight: 300
+          description: "Ubuntu"

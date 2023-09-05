@@ -5,7 +5,7 @@
     combined_labels: {}
     metrics_labels: {}
     traefik_labels: {}
-    homer_labels: {}
+    homepage_labels: {}
     blackbox_labels: {}
 
 # User-provided labels
@@ -46,17 +46,17 @@
     combined_labels: "{{ {'traefik.enable': 'false'} | combine(combined_labels) }}"
   when: traefik is undefined
 
-# homer-service-discovery labels and icon
-- name: Generate homer-service-discovery
-  ansible.builtin.include_tasks: homer.yml
-  when: homer is defined
+# homepage labels
+- name: Generate homepage-service-discovery
+  ansible.builtin.include_tasks: homepage.yml
+  when: homepage is defined
   vars:
     app_name: "{{ name | default(application) }}"
 
-- name: Merge generated Homer and Docker labels
+- name: Merge generated Homepage and Docker labels
   ansible.builtin.set_fact:
-    combined_labels: "{{ combined_labels | combine(homer_labels, recursive=True) }}"
-  when: homer is defined
+    combined_labels: "{{ combined_labels | combine(homepage_labels, recursive=True) }}"
+  when: homepage is defined
 
 # Prometheus Blackbox service discovery using Traefik
 - name: Generate blackbox service discovery labels via Traefik

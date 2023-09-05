@@ -49,11 +49,14 @@
         traefik:
           - port: 6789
             auth: basic
-        homer:
+        homepage:
           name: NZBGet
-          service: Download
-          priority: 990
-          subtitle: "Download files from Usenet"
+          group: Favourites
+          weight: 200
+          description: "Download files from Usenet"
+          widget:
+            username: ""
+            password: ""
 
     - name: Wait for config
       ansible.builtin.wait_for:

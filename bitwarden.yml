@@ -100,9 +100,9 @@
           - "{{ config_directory }}/{{ application }}:/data"
         traefik:
           - port: 80
-        homer:
+        homepage:
           name: Bitwarden
-          service: Tools
-          priority: 590
-          subtitle: "Password manager (Vaultwarden)"
-          url: "https://{{ application }}.{{ common_tld }}"
+          group: Tools
+          weight: 200
+          description: "Password manager (Vaultwarden)"
+          href: "https://{{ application }}.{{ common_tld }}"

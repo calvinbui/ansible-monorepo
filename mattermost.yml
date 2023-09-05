@@ -67,11 +67,11 @@
           TZ: "{{ common_timezone }}"
         traefik:
           - port: 8065
-        homer:
+        homepage:
           name: Mattermost
-          service: Collaboration
-          priority: 500
-          subtitle: "Online chat"
+          group: Collaboration
+          weight: 500
+          description: "Online chat"
         blackbox:
           path: /api/v4/system/ping
 

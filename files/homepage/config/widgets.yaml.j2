@@ -1,0 +1,15 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/en/configs/widgets
+
+- resources:
+    uptime: true
+    disk: {{ common_directory_storage }}
+
+- datetime:
+    text_size: md
+    format:
+      dateStyle: full
+      timeStyle: medium
+      hour12: true

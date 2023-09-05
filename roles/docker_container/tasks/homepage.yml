@@ -1,0 +1,63 @@
+---
+
+# fails if more than 1 result
+- name: Find icon file extension
+  ansible.builtin.find:
+    path: "files/homepage/icons"
+    patterns: "^{{ application }}.(png|svg|jpg|jpeg)"
+    file_type: file
+    use_regex: true
+  register: _homepage_icons_local
+  when:
+    - homepage['icon'] is not defined
+  failed_when: _homepage_icons_local.files | length != 1
+  become: false
+  delegate_to: localhost
+
+- name: Upload icons to homepage
+  ansible.builtin.copy:
+    src: "{{ _homepage_icons_local.files.0.path }}"
+    dest: "{{ homepage_icons_remote_dir }}"
+    owner: "{{ common_user_id }}"
+    group: "{{ common_group_id }}"
+    mode: "0775"
+  failed_when: false
+  when:
+    - homepage['icon'] is not defined
+  notify:
+    - Restart homepage
+
+- name: Add homepage labels
+  when: (homepage[item.label] is defined) or (item.default is defined)
+  ansible.builtin.set_fact:
+    homepage_labels: "{{ homepage_labels | default({}) | combine({'homepage.' + item.label : (homepage[item.label] | default(item.default) | string)}) }}"
+  loop: "{{ _labels }}"
+  vars:
+    _labels:
+      - label: name
+        default: "{{ app_name }}"
+      - label: group
+      - label: icon
+        default: "{{ '/icons/' + _homepage_icons_local.files.0.path.split('/')|last if homepage['icon'] is not defined else omit }}"
+      - label: description
+      - label: href
+        default: "https://{{ app_name + '.' + common_tld }}"
+      - label: weight
+
+- name: Add homepage default widget labels
+  when: homepage['widget'] is defined
+  ansible.builtin.set_fact:
+    homepage_labels: "{{ homepage_labels | default({}) | combine({'homepage.widget.' + item.label : (homepage[item.label] | default(item.default) | string)}) }}"
+  loop: "{{ _labels }}"
+  vars:
+    _labels:
+      - label: type
+        default: "{{ application }}"
+      - label: url
+        default: "{{ 'http://' + app_name + '.' + docker_network.name + ':' + traefik[0].port|string if traefik is defined else homepage_labels['homepage.href'] }}"
+
+- name: Add homepage additional widget labels
+  when: homepage['widget'] is defined
+  ansible.builtin.set_fact:
+    homepage_labels: "{{ homepage_labels | default({}) | combine({'homepage.widget.' + item.key : item.value | string}) }}"
+  loop: "{{ homepage['widget'] | dict2items }}"

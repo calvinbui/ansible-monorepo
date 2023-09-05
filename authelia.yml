@@ -116,11 +116,11 @@
           TZ: "{{ common_timezone }}"
         traefik:
           - port: 9091
-        homer:
+        homepage:
           name: Authelia
-          service: Infrastructure
-          priority: 380
-          subtitle: "Authentication and authorization"
+          group: Management
+          weight: 400
+          description: "Authentication and authorization"
         blackbox:
           path: /api/health
         volumes:

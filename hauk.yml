@@ -44,8 +44,8 @@
           - "{{ config_directory }}:/etc/hauk"
         traefik:
           - port: 80
-        homer:
+        homepage:
           name: Hauk
-          service: Sharing
-          priority: 490
-          subtitle: "Location sharing"
+          group: Sharing
+          weight: 490
+          description: "Location sharing"

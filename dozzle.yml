@@ -20,8 +20,8 @@
         traefik:
           - port: 8080
             auth: page
-        homer:
+        homepage:
           name: Dozzle
-          service: Monitoring
-          priority: 960
-          subtitle: "Logs for docker containers"
+          group: Monitoring
+          weight: 200
+          description: "Logs for docker containers"

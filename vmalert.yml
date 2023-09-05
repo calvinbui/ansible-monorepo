@@ -64,11 +64,11 @@
         traefik:
           - port: 8880
             auth: page
-        homer:
+        homepage:
           name: vmalert
-          service: Monitoring
-          priority: 990
-          subtitle: "VictoriaMetrics alerting"
+          group: Monitoring
+          weight: 401
+          description: "VictoriaMetrics alerting"
         blackbox:
           path: /-/healthy
         metrics:

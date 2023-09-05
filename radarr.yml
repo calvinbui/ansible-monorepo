@@ -70,11 +70,15 @@
         traefik:
           - port: 7878
             auth: basic
-        homer:
+        homepage:
           name: Radarr
-          service: Download
-          priority: 780
-          subtitle: "Manage and download movies"
+          group: Favourites
+          weight: 410
+          description: "Manage and download movies"
+          widget:
+            key: "{{ radarr_api_key }}"
+            enableQueue: "true"
+            fields: '["wanted", "movies"]'
         healthcheck:
           test: "curl -f http://localhost:7878/ || exit 1"
           start_period: 5s

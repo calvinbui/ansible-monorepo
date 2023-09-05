@@ -1,0 +1,88 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: homepage
+
+    docker_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart
+      community.docker.docker_container:
+        name: "{{ application }}"
+        restart: true
+        comparisons:
+          '*': ignore
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      tags:
+        - config
+
+    - name: Create icons folder
+      ansible.builtin.file:
+        path: "{{ homepage_icons_remote_dir }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Synchronise config
+      ansible.builtin.template:
+        src: "{{ item }}"
+        dest: "{{ config_directory }}/config/{{ item | basename | regex_replace('\\.j2$', '') }}"
+        mode: "0664"
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+      with_fileglob:
+        - "{{ files_directory }}/config/*"
+      tags:
+        - config
+
+    - name: Copy icons
+      ansible.builtin.copy:
+        src: "{{ files_directory }}/icons/"
+        dest: "{{ homepage_icons_remote_dir }}/"
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0775"
+      notify: Restart
+
+    - name: Create docker socket proxy container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-docker-socket-proxy"
+        image: tecnativa/docker-socket-proxy:0.1.1
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+        env:
+          CONTAINERS: "1" # Allow access to viewing containers
+          SERVICES: "1" # Allow access to viewing services (necessary when using Docker Swarm)
+          TASKS: "1" # Allow access to viewing tasks (necessary when using Docker Swarm)
+          POST: "0" # Disallow any POST operations (effectively read-only)
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: ghcr.io/benphelps/homepage:v0.6.29
+        ipv4_address: "{{ docker_network.prefix }}.6"
+        volumes:
+          - "{{ config_directory }}/config:/app/config"
+          - "{{ homepage_icons_remote_dir }}:/app/public/icons"
+
+          - "{{ common_directory_storage }}:{{ common_directory_storage }}:ro"
+        env:
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_group_id | string }}"
+        traefik:
+          - port: 3000
+            rule: "Host(`{{ common_tld }}`)"

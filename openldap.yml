@@ -72,10 +72,9 @@
           EMAIL_FROM_NAME: "ldap-user-manager"
         traefik:
           - port: 80
-        homer:
+        homepage:
           name: LDAP User Manager
-          icon: fas fa-address-book
-          service: Infrastructure
-          priority: 390
-          subtitle: "LDAP"
-          url: "https://lum.{{ common_tld }}/log_in/"
+          group: Management
+          weight: 400
+          description: "LDAP"
+          href: "https://lum.{{ common_tld }}/log_in/"

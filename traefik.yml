@@ -61,11 +61,14 @@
           CF_API_KEY: "{{ cloudflare_api }}"
 
           TZ: "{{ common_timezone }}"
-        homer:
+        homepage:
           name: Traefik
-          service: Infrastructure
-          priority: 690
-          subtitle: "Reverse proxy"
+          group: Networking
+          weight: 300
+          description: "Reverse proxy"
+          widget:
+            username: "{{ htpasswd.username }}"
+            password: "{{ htpasswd.password }}"
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock
 

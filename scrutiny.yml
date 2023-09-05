@@ -61,10 +61,11 @@
         traefik:
           - port: 8080
             auth: page
-        homer:
+        homepage:
           name: scrutiny
-          service: Monitoring
-          priority: 780
-          subtitle: "S.M.A.R.T. monitoring"
+          group: Storage
+          weight: 250
+          description: "S.M.A.R.T. monitoring"
+          widget: {}
         blackbox:
           path: /api/status

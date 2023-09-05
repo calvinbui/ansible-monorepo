@@ -59,12 +59,20 @@
           - port: 32400
         blackbox:
           path: /identity
-        homer:
+        homepage:
           name: Plex
-          service: Home
-          priority: 500
-          subtitle: "Media server"
-
+          group: Media
+          weight: 500
+          description: "Media server"
+          widget:
+            key: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              39373662383734393165326335343063383131653137386633646337346564323966613138643561
+              3666306534613463306166393734313930653532616236360a373738376331653131633534633038
+              32306233373330633664363164313564306634343431633432306562333439623063626464653262
+              3838363234373566370a653935646435313764393762656136623630633336633364663362343638
+              65393766623837356533333539623166306334636636663133623364643432613232
+            fields: '["streams", "movies", "tv"]'
 
     - name: Install Absolute Series Scanner
       block:

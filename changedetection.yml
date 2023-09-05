@@ -54,10 +54,20 @@
           PGID: "{{ common_group_id | string }}"
         traefik:
           - port: 5000
-        homer:
+        homepage:
           name: Change Detection
-          service: Tools
-          priority: 690
-          subtitle: "Website change detection"
+          group: Tools
+          weight: 100
+          description: "Website change detection"
+          widget:
+            type: changedetectionio
+            key: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              32383631616238623937663766393861623062373133356434333061333133393037313937353735
+              3134323437363630666430366466636338376134363663640a643232323338343261303036386135
+              34353337643539636238633966306131663733343738383964653961653430666164313232333531
+              3438333933326136660a636333383633613733343930396231623634363430373838356638663634
+              64393965306338613135343035353232393132316564336239376361376161653138323936343061
+              3633353965653062316564376436373732316237623633343232
         comparisons:
           env: strict

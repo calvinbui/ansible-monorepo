@@ -1,0 +1,45 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/en/configs/settings
+
+title: "Services | {{ common_tld }}"
+
+base: "{{ common_tld }}"
+
+headerStyle: "boxed"
+
+language: "en"
+
+target: "_self"
+
+quicklaunch:
+  searchDescriptions: true
+  hideInternetSearch: true
+  hideVisitURL: true
+
+hideVersion: true
+
+disableCollapse: true
+
+fiveColumns: true
+
+layout:
+  - Favourites:
+      style: row
+      columns: 3
+  - Documents:
+  - Home:
+  - Media:
+  - Sharing:
+  - Home Automation:
+  - Monitoring:
+  - Management:
+  - Tools:
+  - Networking:
+  - Storage:
+  - Programming:
+  - Remote Access:
+  - 3D Printing:
+  - Collaboration:
+  - Gaming:

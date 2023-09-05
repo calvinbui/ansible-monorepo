@@ -89,12 +89,12 @@
           - "{{ _data_dir.path }}:/data"
         traefik:
           - port: 3735
-        homer:
+        homepage:
           name: EteSync Admin
-          service: Tools
-          priority: 170
-          subtitle: "Contacts, calendars, tasks & notes"
-          url: "https://{{ application }}.{{ common_tld }}/admin"
+          group: Tools
+          weight: 900
+          description: "Contacts, calendars, tasks & notes"
+          href: "https://{{ application }}.{{ common_tld }}/admin"
 
     - name: Create dav directory
       ansible.builtin.file:
@@ -116,12 +116,12 @@
         traefik:
           - port: 37358
             rule: Host(`{{ application }}-dav.{{ common_tld }}`)
-        homer:
+        homepage:
           name: EteSync DAV
-          service: Tools
-          priority: 180
-          subtitle: "CalDAV & CardDAV adapter"
-          url: "https://{{ application }}-dav.{{ common_tld }}"
+          group: Tools
+          weight: 900
+          description: "CalDAV & CardDAV adapter"
+          href: "https://{{ application }}-dav.{{ common_tld }}"
 
     - name: Create web directory
       ansible.builtin.file:
@@ -152,9 +152,9 @@
         traefik:
           - port: 80
             rule: Host(`{{ application }}-web.{{ common_tld }}`)
-        homer:
+        homepage:
           name: EteSync Web
-          service: Tools
-          priority: 190
-          subtitle: "The EteSync Web App Client"
-          url: "https://{{ application }}-web.{{ common_tld }}"
+          group: Tools
+          weight: 900
+          description: "The EteSync Web App Client"
+          href: "https://{{ application }}-web.{{ common_tld }}"

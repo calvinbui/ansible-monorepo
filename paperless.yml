@@ -118,11 +118,22 @@
           PAPERLESS_LOGROTATE_MAX_BACKUPS: "0"
         traefik:
           - port: 8000
-        homer:
+        homepage:
           name: Paperless-ngx
-          service: Home
-          priority: 880
-          subtitle: "Document management system"
+          group: Favourites
+          weight: 130
+          description: "Scan, index and archive all physical documents"
+          widget:
+            type: paperlessngx
+            url: "https://{{ application }}.{{ common_tld }}"
+            key: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              30393937366134366631613137373364316563343438323539343236316433313264663130306339
+              3738396362303837666166363433303163636234373463380a366238623832383931643665636334
+              34663330346234373132666266616266376537353834616539663132396334363236643738623138
+              3538323264623430650a623131333664626437613366383335313336653738393532613034636439
+              34383066643739636430333836616661306636656436613939353539363332333033313364393930
+              3032326362396363333032616432633063393162323466316430
 
     - name: Wait for paperless to be ready
       ansible.builtin.wait_for:

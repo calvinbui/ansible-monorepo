@@ -114,11 +114,6 @@
       ],
       customChangelogUrl: "https://github.com/VictoriaMetrics/VictoriaMetrics",
     },
-    /* homer */
-    {
-      matchPackagePatterns: [".*\\/homer"],
-      customChangelogUrl: "https://github.com/bastienwirtz/homer",
-    },
     /* prowlarr */
     {
       matchPackagePatterns: [".*\\/prowlarr"],
@@ -370,11 +365,6 @@
     {
       matchPackagePatterns: [".*\\/tika"],
       prBodyNotes: "[Docker Image Changes](https://github.com/apache/tika-docker/blob/master/CHANGES.md)\n[Tika Changes](https://github.com/apache/tika/blob/main/CHANGES.txt)",
-    },
-    /* homer service discovery */
-    {
-      matchPackagePatterns: [".*\\/homer-service-discovery"],
-      customChangelogUrl: "https://github.com/calvinbui/homer-service-discovery",
     },
     /* immich */
     {

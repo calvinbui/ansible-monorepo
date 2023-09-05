@@ -10,4 +10,4 @@ influxdb_org: "{{ application }}-org"
 influxdb_bucket: "{{ application }}-bucket"
 
 influxdb_traefik: {}
-influxdb_homer: {}
+influxdb_homepage: {}

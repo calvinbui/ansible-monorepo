@@ -82,11 +82,11 @@
           - "{{ config_directory }}/repos:/repos"
         traefik:
           - port: 8443
-        homer:
+        homepage:
           name: VS Code
-          service: Tools
-          priority: 295
-          subtitle: "VS Code in the browser"
+          group: Programming
+          weight: 300
+          description: "VS Code in the browser"
         blackbox:
           path: /healthz
 

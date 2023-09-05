@@ -29,8 +29,8 @@
             port: 5690
             rule: "Host(`{{ application }}.{{ common_tld }}`) && (Path(`/join`, `/setup`) || PathPrefix(`/j/`, `/setup/`, `/static/`))"
             priority: 2
-        homer:
+        homepage:
           name: Wizarr
-          service: Sharing
-          priority: 510
-          subtitle: "User invitation and management system for Plex"
+          group: Media
+          weight: 700
+          description: "User invitation and management system for Plex"

@@ -102,12 +102,12 @@
         traefik:
           - port: 80
             rule: Host(`{{ application }}.{{ common_tld }}`)
-        homer:
+        homepage:
           name: Drone
-          service: Collaboration
-          priority: 99
-          subtitle: "CI"
-          url: "https://{{ application }}.{{ common_tld }}"
+          group: Programming
+          weight: 400
+          description: "CI"
+          href: "https://{{ application }}.{{ common_tld }}"
         blackbox:
           path: /healthz
 
@@ -136,11 +136,11 @@
         traefik:
           - port: 3000
             rule: Host(`{{ application }}-runner.{{ common_tld }}`)
-        homer:
+        homepage:
           name: Drone Runner
-          service: Collaboration
-          priority: 98
-          subtitle: "CI"
+          group: Programming
+          weight: 400
+          description: "CI"
         blackbox:
           path: /healthz
 

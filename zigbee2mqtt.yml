@@ -121,8 +121,8 @@
         traefik:
           - port: 8080
             auth: page
-        homer:
+        homepage:
           name: Zigbee2MQTT
-          service: Home
-          priority: 99
-          subtitle: "Zigbee to MQTT bridge"
+          group: Home Automation
+          weight: 100
+          description: "Zigbee to MQTT bridge"

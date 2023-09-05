@@ -37,15 +37,14 @@
 
     labels:
       '{
-        "homer.enable": "{{ influxdb_homer.enable | default(false) | string }}",
-        "homer.name": "{{ influxdb_homer.name | default(omit) }}",
-        "homer.priority": "{{ influxdb_homer.priority | default(omit) | string }}",
-        "homer.service": "{{ influxdb_homer.service | default(omit) }}",
-        "homer.subtitle": "{{ influxdb_homer.subtitle | default(omit) }}",
-        "homer.url": "{{ influxdb_homer.url | default("https://" + influxdb_name + "." + common_tld) }}",
-        "homer.logo": "logos/influxdb.svg",
+        "homepage.name": "{{ influxdb_homepage.name | default(omit) }}",
+        "homepage.group": "{{ influxdb_homepage.group | default(omit) }}",
+        "homepage.description": "{{ influxdb_homepage.description | default(omit) }}",
+        "homepage.href": "{{ influxdb_homepage.href | default("https://" + influxdb_name + "." + common_tld) }}",
+        "homepage.weight": "{{ influxdb_homepage.weight | default(omit) }}",
+        "homepage.icon": "/icons/influxdb.svg",
 
-        "traefik.enable": "{{ influxdb_homer.enable | default(false) | string }}",
+        "traefik.enable": "{{ influxdb_homepage.enable | default(false) | string }}",
         "traefik.http.routers.{{ influxdb_name }}-secure.entrypoints": "web-secure",
         "traefik.http.routers.{{ influxdb_name }}-secure.rule": "Host(`{{ influxdb_name }}.{{ common_tld }}`)",
         "traefik.http.routers.{{ influxdb_name }}-secure.service": "{{ influxdb_name }}",

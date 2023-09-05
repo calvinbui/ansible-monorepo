@@ -181,12 +181,12 @@
           37333531656136633639373735616532663264633030373365623030336239666262
         influxdb_traefik:
           enable: "true"
-        influxdb_homer:
+        influxdb_homepage:
           enable: "true"
           name: "Home Assistant InfluxDB"
-          subtitle: "Long term data from devices"
-          service: Monitoring
-          priority: 250
+          description: "Long term data from devices"
+          group: Home Automation
+          weight: 300
 
     - name: Create container
       ansible.builtin.include_role:
@@ -205,12 +205,12 @@
             rule: Host(`home.{{ common_tld }}`)
           - port: 8123
             rule: Host(`{{ application }}.{{ common_tld }}`)
-        homer:
+        homepage:
           name: Home Assistant
-          service: Home
-          priority: 950
-          subtitle: "Home automation"
-          url: "https://home.{{ common_tld }}"
+          group: Home Automation
+          weight: 50
+          description: "Home automation"
+          href: "https://home.{{ common_tld }}"
         network_mode: "host"
         privileged: true
 

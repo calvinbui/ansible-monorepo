@@ -86,12 +86,12 @@
             rule: Host(`{{ application }}-console.{{ common_tld }}`)
         blackbox:
           path: /login
-        homer:
+        homepage:
           name: MinIO
-          service: Sharing
-          priority: 590
-          subtitle: "Object storage"
-          url: "https://{{ application }}-console.{{ common_tld }}"
+          group: Storage
+          weight: 400
+          description: "Object storage"
+          href: "https://{{ application }}-console.{{ common_tld }}"
 
     - name: Create {{ application }}-mc config
       notify: Restart minio-mc

@@ -48,10 +48,10 @@
           - "{{ config_directory }}/cache:/root/.local/cache"
         traefik:
           - port: 5000
-        homer:
+        homepage:
           name: LibreTranslate
-          service: Tools
-          priority: 500
-          subtitle: "Translations"
+          group: Tools
+          weight: 500
+          description: "Translations"
         comparisons:
           env: strict

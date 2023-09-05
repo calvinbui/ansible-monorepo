@@ -102,12 +102,12 @@
         traefik:
           - port: 3334
             rule: Host(`{{ application }}.{{ common_tld }}`)
-        homer:
+        homepage:
           name: Obico
-          service: Tools
-          priority: 390
-          subtitle: "3D printing failure detection"
-          url: "https://{{ application }}.{{ common_tld }}"
+          group: 3D Printing
+          weight: 600
+          description: "3D printing failure detection"
+          href: "https://{{ application }}.{{ common_tld }}"
         blackbox:
           path: /hc/
         volumes: &web_volumes

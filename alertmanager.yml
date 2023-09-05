@@ -72,11 +72,11 @@
         traefik:
           - port: 9093
             auth: page
-        homer:
+        homepage:
           name: Alertmanager
-          service: Monitoring
-          priority: 980
-          subtitle: "Alerting"
+          group: Monitoring
+          weight: 500
+          description: "Alerting"
         metrics:
           - port: 9093
         comparisons:

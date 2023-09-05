@@ -20,8 +20,8 @@
           RATE_LIMIT: "true"
         traefik:
           - port: 3000
-        homer:
+        homepage:
           name: PairDrop
-          service: Tools
-          priority: 550
-          subtitle: "Local file sharing"
+          group: Sharing
+          weight: 450
+          description: "Local file sharing"

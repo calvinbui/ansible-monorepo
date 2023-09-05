@@ -40,11 +40,20 @@
         traefik:
           - port: 6767
             auth: basic
-        homer:
+        homepage:
           name: Bazarr
-          service: Download
-          priority: 690
-          subtitle: "Manage and download subtitles"
+          group: Media
+          weight: 800
+          description: "Manage and download subtitles"
+          widget:
+            key: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              64346232316266653530363061613932353163386261343830323233616236643062386661313561
+              3364376164643634376131396438636232653538353831340a643531346462663030393632386139
+              32663336343237363637373366636432343732356561346462623635656266393262323838346630
+              3233376237346532640a633630336334663530613438633161363561396365636332633037663964
+              30643339663364333964396361353130346639323436373765376661356462333338363362643665
+              6237633964316239356138663838643332626334646537393763
 
     - name: If "{{ application }}" has not been configured, go through the initial setup to generate a configuration file.
       ansible.builtin.wait_for:

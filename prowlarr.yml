@@ -69,11 +69,13 @@
         traefik:
           - port: 9696
             auth: basic
-        homer:
+        homepage:
           name: Prowlarr
-          service: Download
-          priority: 890
-          subtitle: "Index manager"
+          group: Favourites
+          weight: 350
+          description: "Index manager"
+          widget:
+            key: "{{ prowlarr_api_key }}"
         healthcheck:
           test: "curl -f http://localhost:9696/ || exit 1"
           start_period: 5s

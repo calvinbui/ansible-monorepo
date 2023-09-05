@@ -25,10 +25,10 @@
           - "{{ config_directory }}:/data"
         traefik:
           - port: 5006
-        homer:
+        homepage:
           name: Actual Budget
-          service: Home
-          priority: 900
-          subtitle: "Budgeting"
+          group: Favourites
+          weight: 900
+          description: "Budgeting"
         blackbox:
           path: /health

@@ -51,6 +51,7 @@
         name: docker_container
       vars:
         image: victoriametrics/victoria-metrics:v1.93.1
+        ipv4_address: "{{ docker_network.prefix }}.21"
         command:
           - -retentionPeriod=72h
           - -selfScrapeInterval=60s
@@ -71,11 +72,15 @@
         traefik:
           - port: 8428
             auth: page
-        homer:
+        homepage:
           name: VictoriaMetrics
-          service: Monitoring
-          priority: 991
-          subtitle: "Monitoring system"
+          group: Monitoring
+          weight: 400
+          description: "Monitoring system"
+          widget:
+            type: prometheus
+            url: "http://{{ application }}.{{ common_local_tld }}:8428"
+            fields: '["targets_up", "targets_down"]'
         blackbox:
           path: /-/healthy
         comparisons:

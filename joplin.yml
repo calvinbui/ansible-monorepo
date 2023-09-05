@@ -52,8 +52,8 @@
           RUNNING_IN_DOCKER: "true"
         traefik:
           - port: 22300
-        homer:
+        homepage:
           name: Joplin
-          service: Tools
-          priority: 290
-          subtitle: "Note taking"
+          group: Documents
+          weight: 700
+          description: "Note taking"

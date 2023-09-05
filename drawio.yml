@@ -22,11 +22,11 @@
         traefik:
           - port: 8080
             auth: page
-        homer:
+        homepage:
           name: draw.io
-          service: Collaboration
-          priority: 585
-          subtitle: "Diagramming"
+          group: Documents
+          weight: 500
+          description: "Diagramming"
 
     - name: Create viewer container
       ansible.builtin.include_role:
@@ -39,5 +39,3 @@
         traefik:
           - port: 8080
             rule: Host(`{{ application }}-viewer.{{ common_tld }}`)
-        homer:
-          enabled: false

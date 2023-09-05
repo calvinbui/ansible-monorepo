@@ -1,0 +1,23 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/en/configs/services
+
+{% for service in services %}
+{% if service['items']|length == 0 %}
+- {{ service.group }}: []
+{% else %}
+- {{ service.group }}:
+  {% for item in service['items'] %}
+  - {{ item.name }}:
+      icon: {{ item.icon }}
+      href: {{ item.url }}
+      description: {{ item.description }}
+      weight: {{ item.weight }}
+      {% if 'widget' in item %}
+      widget:
+        {{ item.widget | to_json(vault_to_text=True) | from_json | to_nice_yaml | indent(8) }}
+      {% endif %}
+  {% endfor %}
+{% endif %}
+{% endfor %}

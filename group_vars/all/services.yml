@@ -1,26 +1,21 @@
 ---
 
-# for Homer/Prometheus to add non-dockerised/discovered services
+# for Homepage/Prometheus to add non-dockerised/discovered services
 
 services:
-  - group: Download
-    homer_icon: fas fa-cloud-download
-    items: []
-
   - group: Home
-    homer_icon: fas fa-home-lg-alt
     items:
       -
         name: UniFi Protect
-        logo: unifi-protect.png
-        subtitle: Home Security Cameras
+        icon: /icons/unifi-protect.png
+        description: Home Security Cameras
         url: https://nvr.{{ common_local_tld }}
-        priority: 710
+        weight: 300
         monitor: true
       -
         name: Blue Iris
-        logo: blueiris.png
-        subtitle: Grandma's Security Cameras
+        icon: /icons/blueiris.png
+        description: Grandma's Security Cameras
         url: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           65306366313434376463353439646663623532393635303337623936646334373163643030366533
@@ -28,102 +23,130 @@ services:
           32303538346462633761346238646235313763386664636133646531383865323138343064373638
           3239373139393038620a636265363765633636633130343262306132336238643266303061303165
           31646230383863376463363132623264626432343535636332363439353766303966
-        priority: 700
+        weight: 300
         monitor: true
 
   - group: Collaboration
-    homer_icon: fas fa-people-carry
     items:
       -
         name: JIRA
-        logo: jira.svg
-        subtitle: Project management
+        icon: /icons/jira.svg
+        description: Project management
         url: https://thingstodo.atlassian.net
-        priority: 300
+        weight: 700
         monitor: false
 
-  - group: Sharing
-    homer_icon: fas fa-people-arrows
+  - group: Gaming
     items:
       -
         name: PHPinfoil
-        logo: tinfoil.png
-        subtitle: Nintendo Switch Games
+        icon: /icons/tinfoil.png
+        description: Nintendo Switch Games
         url: http://tinfoil.{{ common_local_tld }}/index.php
-        priority: 10
+        weight: 900
         monitor: true
 
-  - group: Tools
-    homer_icon: fas fa-tools
+  - group: 3D Printing
     items:
       -
         name: OctoPrint
-        logo: octoprint.png
-        subtitle: 3D printing controller
+        icon: /icons/octoprint.svg
+        description: 3D printing controller
         url: https://octopi.{{ common_local_tld }}
-        priority: 890
+        weight: 100
         monitor: true
       -
         name: OctoPrint Webcam
-        icon: fas fa-camera-retro
-        subtitle: Direct link to OctoPrint webcam
+        icon: /icons/octoprint-webcam.png
+        description: Direct link to OctoPrint webcam
         url: https://octopi.{{ common_local_tld }}/webcam/?action=stream
-        priority: 880
+        weight: 110
         monitor: false
 
-  - group: Monitoring
-    homer_icon: fas fa-chart-area
-    items: []
-
-  - group: Infrastructure
-    homer_icon: fas fa-server
+  - group: Networking
     items:
       -
         name: OPNsense
-        logo: opnsense.png
-        subtitle: Firewall and router
+        icon: /icons/opnsense.svg
+        description: Firewall and router
         url: https://opnsense-web.{{ common_local_tld }}
-        priority: 990
+        weight: 10
         monitor: true
+        widget:
+          type: opnsense
+          url: https://opnsense-web.{{ common_local_tld }}
+          username: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            39333831313033393331376630316331653739323834326331313662373137303533353665396464
+            3963663761306163313765326237663638343630303632630a323538336539376264653838366132
+            32666138623936386230336437343831633532396463323038653930363536643161646133323338
+            3635383332646436650a636165386564376366666661376433313261626165663135353530613764
+            63316563323232323362396533356564343362313565653265626332323335373036343365613464
+            34663832346166373737303633643337363161383964383863633139643030663333393363633234
+            65643931343034373564333564393631626133363530656332353236633464323035303164333265
+            30363765366238633335326465653332303636313633326436663230373066323230346637633633
+            3934
+          password: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            33363633656536333933623835636335383238383161623564613237663638633037356461356262
+            6136646234326233396361633966663432636534343134350a373130623730633437643732643336
+            65343835376434356637623862326164663431303933393934376165323366333436666632336433
+            6231383662326362380a376364666330636361363736643235373830316139333231666235663935
+            36616134636561316534616264663234306464393733616136363039363164323738396431623230
+            30353934613738363238306439303434343735626563613130363636613231386334313633313761
+            31373065383161623538653635333365616462346131653433336261316135316530356437663664
+            61396363333533663366623630323838396137613132656631396633333932316237363464383366
+            3261
+          fields: '["wanUpload", "wanDownload"]'
+
       -
         name: Juniper EX3300-48P
-        logo: juniper.png
-        subtitle: Network switch
+        icon: /icons/juniper.png
+        description: Network switch
         url: http://switch.{{ common_local_tld }}
-        priority: 980
+        weight: 20
         monitor: true
+
+  - group: Remote Access
+    items:
       -
         name: Homelab IPMI
         url: https://homelab-ipmi.{{ common_local_tld }}
-        logo: ipmi.png
-        subtitle: Supermicro IPMI
-        priority: 490
+        icon: /icons/ipmi.png
+        description: Supermicro IPMI
+        weight: 500
         monitor: true
+
+  - group: Storage
+    items:
       -
         name: BorgBase
-        logo: borgmatic.svg
-        subtitle: Hosting For BorgBackup
+        icon: /icons/borgmatic.svg
+        description: Hosting For BorgBackup
         url: https://www.borgbase.com
-        priority: 290
+        weight: 400
         monitor: false
+
+  - group: Home Automation
+    items:
       -
         name: Dining Room Tablet
-        logo: fully-kiosk-browser.png
-        subtitle: Fully Kiosk Browser
+        icon: /icons/fully-kiosk-browser.png
+        description: Fully Kiosk Browser
         url: "http://wall-tablet-dining.{{ common_local_tld }}:2323"
-        priority: 303
+        weight: 700
         monitor: false
       -
         name: Foyer Tablet
-        logo: fully-kiosk-browser.png
-        subtitle: Fully Kiosk Browser
+        icon: /icons/fully-kiosk-browser.png
+        description: Fully Kiosk Browser
         url: "http://wall-tablet-foyer.{{ common_local_tld }}:2323"
-        priority: 302
+        weight: 700
         monitor: false
       -
         name: Upstairs Hallway Tablet
-        logo: fully-kiosk-browser.png
-        subtitle: Fully Kiosk Browser
+        icon: /icons/fully-kiosk-browser.png
+        description: Fully Kiosk Browser
         url: "http://wall-tablet-upstairs-hallway.{{ common_local_tld }}:2323"
-        priority: 301
+        weight: 700
         monitor: false

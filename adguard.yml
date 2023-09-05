@@ -22,12 +22,28 @@
       vars:
         image: adguard/adguardhome:v0.107.36
         ipv4_address: "{{ docker_network.prefix }}.101"
-        homer:
+        homepage:
           name: AdGuard Home
-          service: Infrastructure
-          priority: 585
-          subtitle: "Ads & tracker blocking DNS server"
-          url: http://adguard.{{ common_local_tld }}
+          group: Networking
+          weight: 585
+          description: "Ads & tracker blocking DNS server"
+          href: http://adguard.{{ common_local_tld }}
+          widget:
+            username: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              37346332373363323739336234363830663239373463343131666663336161386234376537616636
+              3831373934363232346334663933613936393739356666340a313936343862663761653233653638
+              38333131656162363162356434326537363461616163626135326562366533663732383135376136
+              6433616262323937630a633064666164343565373331616331356361613230366565633135383066
+              6563
+            password: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              36353339393935333036623832653366316134356262353337343563326663616361636564636234
+              6362333135383238633539656561396330623031613135390a373966393131383562663031353463
+              35333038343439346635383532376638623664366663346562316639656264366536646432383836
+              3635393934356431360a303337333934663963396666363032663966356662626630656432663863
+              63396466313338383366396234633638326334366636373236336265303461613735
+            fields: '["queries", "blocked", "latency"]'
         volumes:
           - "{{ config_directory }}/work:/opt/adguardhome/work"
           - "{{ config_directory }}/conf:/opt/adguardhome/conf"

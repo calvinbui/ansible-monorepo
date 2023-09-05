@@ -48,11 +48,11 @@
           - port: 8990
         blackbox:
           auth: basic
-        homer:
+        homepage:
           name: zfswatcher
-          service: Monitoring
-          priority: 890
-          subtitle: "ZFS pool monitoring"
+          group: Storage
+          weight: 300
+          description: "ZFS pool monitoring"
 
     - name: Wait for config file
       ansible.builtin.wait_for:

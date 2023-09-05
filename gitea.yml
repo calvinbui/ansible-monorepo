@@ -107,10 +107,10 @@
           GITEA__log__MODE: "console,file"
         traefik:
           - port: 3000
-        homer:
+        homepage:
           name: Gitea
-          service: Collaboration
-          priority: 100
-          subtitle: "Git service"
+          group: Programming
+          weight: 100
+          description: "Git service"
         blackbox:
           path: /api/healthz
