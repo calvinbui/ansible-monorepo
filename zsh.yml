@@ -48,7 +48,7 @@
 
     - name: Clone oh-my-zsh
       ansible.builtin.git:
-        repo: "https://github.com/robbyrussell/oh-my-zsh"
+        repo: "https://github.com/ohmyzsh/ohmyzsh"
         dest: "~/.oh-my-zsh"
       become: false
       become_user: "{{ common_user }}"
