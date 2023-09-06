@@ -10,26 +10,7 @@ radarr:
 
     quality_profiles:
       -
-        name: 1080p
-        reset_unmatched_scores:
-          enabled: true
-        score_set: default
-        min_format_score: 0
-        upgrade:
-          allowed: true
-          until_quality: Remux-1080p
-          until_score: 10000
-        quality_sort: top
-        qualities:
-          -
-            name: Remux-1080p
-          -
-            name: WEB 1080p
-            qualities:
-              - WEBRip-1080p
-              - WEBDL-1080p
-      -
-        name: 4K
+        name: Best
         reset_unmatched_scores:
           enabled: true
         score_set: default
@@ -47,6 +28,13 @@ radarr:
             qualities:
               - WEBRip-2160p
               - WEBDL-2160p
+          -
+            name: Remux-1080p
+          -
+            name: WEB 1080p
+            qualities:
+              - WEBRip-1080p
+              - WEBDL-1080p
       -
         name: Anime
         reset_unmatched_scores:
@@ -102,8 +90,7 @@ radarr:
       -
         # Audio
         quality_profiles:
-          - name: 1080p
-          - name: 4K
+          - name: Best
         trash_ids:
           - 496f355514737f7d83bf7aa4d24f8169 # TrueHD ATMOS
           - 2f22d89048b01681dde8afe203bf2e95 # DTS X
@@ -122,8 +109,7 @@ radarr:
       -
         # HDR Formats
         quality_profiles:
-          - name: 1080p
-          - name: 4K
+          - name: Best
         trash_ids:
           - e23edd2482476e595fb990b12e7c609c # DV HDR10
           - 58d6a88f13e2db7f5059c41047876f00 # DV
@@ -138,8 +124,7 @@ radarr:
       -
         # Movie Versions
         quality_profiles:
-          - name: 1080p
-          - name: 4K
+          - name: Best
         trash_ids:
           - 0f12c086e289cf966fa5948eac571f44 # Hybrid
           - 570bc9ebecd92723d2d21500f4be314c # Remaster
@@ -153,8 +138,7 @@ radarr:
       -
         # HQ Release Groups
         quality_profiles:
-          - name: 1080p
-          - name: 4K
+          - name: Best
         trash_ids:
           - 3a3ff47579026e76d6504ebea39390de # Remux Tier 01
           - 9f98181fe5a3fbeb0cc29340da2a468a # Remux Tier 02
@@ -165,16 +149,14 @@ radarr:
       -
         # Misc
         quality_profiles:
-          - name: 1080p
-          - name: 4K
+          - name: Best
         trash_ids:
           - e7718d7a3ce595f289bfee26adc178f5 # Repack/Proper
           - ae43b294509409a6a13919dedd4764c4 # Repack2
       -
         # Unwanted
         quality_profiles:
-          - name: 1080p
-          - name: 4K
+          - name: Best
         trash_ids:
           - ed38b889b31be83fda192888e2286d83 # BR-DISK
           - 90a6f9a284dff5103f6346090e6280c8 # LQ
@@ -183,7 +165,7 @@ radarr:
       -
         # Unwanted
         quality_profiles:
-          - name: 4K
+          - name: Best
         trash_ids:
           - bfd8eb01832d646a0a89c4deb46f8564 # Upscaled
       # -
@@ -195,8 +177,7 @@ radarr:
       -
         # Streaming Services
         quality_profiles:
-          - name: 1080p
-          - name: 4K
+          - name: Best
         trash_ids:
           - b3b3a6ac74ecbd56bcdbefa4799fb9df # AMZN
           - 40e9380490e748672c2522eaaeb692f7 # ATVP
@@ -218,8 +199,7 @@ radarr:
       -
         # Ignore 720p/1080p x265 unless they have HDR/DV. Wanted for HDR/DV on NF
         quality_profiles:
-          - name: 1080p
-          - name: 4K
+          - name: Best
         trash_ids:
           - 839bea857ed2c0a8e084f3cbdbd65ecb # x265 (no HDR/DV)
       -
