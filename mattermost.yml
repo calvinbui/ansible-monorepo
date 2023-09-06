@@ -39,7 +39,7 @@
 
     - name: Create app directories
       ansible.builtin.file:
-        path: "{{ config_directory }}/mattermost/{{ item }}"
+        path: "{{ config_directory }}/config/{{ item }}"
         state: directory
         recurse: true
         owner: "2000"
@@ -57,11 +57,11 @@
       vars:
         image: mattermost/mattermost-team-edition:8.1.1
         volumes:
-          - "{{ config_directory }}/mattermost/config:/mattermost/config"
-          - "{{ config_directory }}/mattermost/data:/mattermost/data"
-          - "{{ config_directory }}/mattermost/logs:/mattermost/logs"
-          - "{{ config_directory }}/mattermost/plugins:/mattermost/plugins"
-          - "{{ config_directory }}/mattermost/client-plugins:/mattermost/client/plugins"
+          - "{{ config_directory }}/config/config:/mattermost/config"
+          - "{{ config_directory }}/config/data:/mattermost/data"
+          - "{{ config_directory }}/config/logs:/mattermost/logs"
+          - "{{ config_directory }}/config/plugins:/mattermost/plugins"
+          - "{{ config_directory }}/config/client-plugins:/mattermost/client/plugins"
           - /etc/localtime:/etc/localtime:ro
         env:
           TZ: "{{ common_timezone }}"
@@ -77,7 +77,7 @@
 
     - name: Configure
       json_patch: # noqa fqcn[action]
-        src: "{{ config_directory }}/mattermost/config/config.json"
+        src: "{{ config_directory }}/config/config/config.json"
         pretty: true
         operations:
           - op: add
