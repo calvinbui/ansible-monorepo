@@ -16,12 +16,6 @@
         group: "{{ common_group }}"
         mode: "0771"
 
-    - name: Create config file
-      ansible.builtin.template:
-        src: "{{ files_directory }}/recyclarr.yml.j2"
-        dest: "{{ config_directory }}/recyclarr.yml"
-        mode: "0755"
-
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
@@ -31,3 +25,19 @@
           - "{{ config_directory }}:/config"
         env:
           TZ: "{{ common_timezone }}"
+
+    - name: Wait for config folder
+      ansible.builtin.wait_for:
+        path: "{{ config_directory }}/configs"
+
+    - name: Synchronise config
+      ansible.builtin.template:
+        src: "{{ item }}"
+        dest: "{{ config_directory }}/configs/{{ item | basename | regex_replace('\\.j2$', '') }}"
+        mode: "0640"
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+      with_fileglob:
+        - "{{ files_directory }}/*"
+      tags:
+        - config
