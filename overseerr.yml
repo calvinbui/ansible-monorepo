@@ -7,6 +7,14 @@
 
     docker_network: "{{ networks.pub }}"
 
+  handlers:
+    - name: Restart
+      community.docker.docker_container:
+        name: "{{ application }}"
+        restart: true
+        comparisons:
+          '*': ignore
+
   tasks:
     - name: Create config folder
       ansible.builtin.file:
@@ -48,6 +56,52 @@
         blackbox:
           path: /api/v1/status
 
+    - name: Wait for config
+      ansible.builtin.wait_for:
+        path: "{{ config_directory }}/settings.json"
+
+    - name: Initialise Sonarr array
+      block:
+        - name: Check Sonarr array
+          json_patch:
+            src: "{{ config_directory }}/settings.json"
+            operations:
+              - op: test
+                path: sonarr/0/id
+                value: 0
+          register: _overseer_sonarr_exists
+
+        - name: Add Sonarr array
+          json_patch:
+            src: "{{ config_directory }}/settings.json"
+            operations:
+              - op: add
+                path: sonarr/-
+                value:
+                  id: 0
+          when: not _overseer_sonarr_exists.tested
+
+    - name: Initialise Radarr array
+      block:
+        - name: Check Radarr array
+          json_patch:
+            src: "{{ config_directory }}/settings.json"
+            operations:
+              - op: test
+                path: radarr/0/id
+                value: 0
+          register: _overseer_radarr_exists
+
+        - name: Add Radarr array
+          json_patch:
+            src: "{{ config_directory }}/settings.json"
+            operations:
+              - op: add
+                path: radarr/-
+                value:
+                  id: 0
+          when: not _overseer_radarr_exists.tested
+
     - name: Configure
       json_patch: # noqa fqcn[action]
         src: "{{ config_directory }}/settings.json"
@@ -69,16 +123,33 @@
           plex/ip: plex.{{ networks.pub.name }}
           plex/webAppUrl: "https://plex.{{ common_tld }}"
 
-          # radarr/name: Radarr
-          # radarr/hostname: "radarr.{{ networks.pub.name }}"
-          # radarr/port: 7878
-          # radarr/apiKey: "{{ radarr_api_key }}"
-          # radarr/useSsl: false
-          # radarr/externalUrl: "https://radarr.{{ common_tld }}"
-          #
-          # sonarr/name: Sonarr
-          # sonarr/hostname: "sonarr.{{ networks.pub.name }}"
-          # sonarr/port: 8989
-          # sonarr/apiKey: "{{ sonarr_api_key }}"
-          # sonarr/useSsl: false
-          # sonarr/externalUrl: "https://sonarr.{{ common_tld }}"
+          tautulli/hostname: tautulli.{{ networks.pub.name }}
+          tautulli/port: 8181
+          tautulli/useSsl: false
+          tautulli/apiKey: "{{ tautulli_api_key }}"
+          tautulli/externalUrl: "https://tautulli.{{ common_tld }}"
+
+          radarr/0/isDefault: true
+          radarr/0/name: Radarr
+          radarr/0/hostname: "radarr.{{ networks.pub.name }}"
+          radarr/0/port: 7878
+          radarr/0/useSsl: false
+          radarr/0/apiKey: "{{ radarr_api_key }}"
+          radarr/0/externalUrl: "https://radarr.{{ common_tld }}"
+          radarr/0/syncEnabled: true
+          radarr/0/preventSearch: false
+
+          sonarr/0/isDefault: true
+          sonarr/0/name: Sonarr
+          sonarr/0/hostname: "sonarr.{{ networks.pub.name }}"
+          sonarr/0/port: 8989
+          sonarr/0/useSsl: false
+          sonarr/0/apiKey: "{{ sonarr_api_key }}"
+          sonarr/0/enableSeasonFolders: true
+          sonarr/0/externalUrl: "https://sonarr.{{ common_tld }}"
+          sonarr/0/syncEnabled: true
+          sonarr/0/preventSearch: false
+
+    - name: Send message
+      ansible.builtin.debug:
+        msg: More configuration may be required via the UI to set paths and quality profiles
