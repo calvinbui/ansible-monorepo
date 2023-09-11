@@ -47,7 +47,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-typesense"
-        image: typesense/typesense:0.25.0
+        image: typesense/typesense:0.25.1
         env:
           # self-generated random key
           TYPESENSE_API_KEY: &immich_typesense_api_key !vault |
