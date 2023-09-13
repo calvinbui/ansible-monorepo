@@ -127,7 +127,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-machine-learning"
-        image: ghcr.io/immich-app/immich-machine-learning:v1.77.0
+        image: ghcr.io/immich-app/immich-machine-learning:v1.78.0
         env: *immich_shared_env
         volumes:
           - *immich_upload_volume
