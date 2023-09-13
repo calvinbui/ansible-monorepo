@@ -200,17 +200,13 @@ cards:
             duration: 5m
         -
           name: Forecast
-          entity: sensor.solcast_forecast_today
+          entity: sensor.solcast_pv_forecast_forecast_today
           type: line
           color: '#3798fe' # blue
           curve: stepline
           data_generator: |
-            return entity.attributes.forecast.map((entry) => {
+            return entity.attributes.detailedForecast.map((entry) => {
               var date_period = new Date(entry.period_start);
-
-              // inverter is only 10kW but estimate can be higher
-              // pv_estimate is in kWh and we want kW. there are data points
-              // every 0.5 hours, so kW = kWh * 2.
               return [date_period, Math.min(entry.pv_estimate, 10)];
             });
 
