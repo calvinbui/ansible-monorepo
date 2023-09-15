@@ -48,7 +48,7 @@ cards:
         hideDuplicates: true
 
         startDaysAhead: 0
-        sortByStartTime: true
+        sortBy: start
 
         disableEventLink: true
         disableLocationLink: true
