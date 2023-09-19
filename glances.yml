@@ -1,0 +1,50 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: glances
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: nicolargo/glances:ubuntu-3.4.0.3-full
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+          - /etc/os-release:/etc/os-release:ro
+        env:
+          GLANCES_OPT: "-w"
+          TZ: "{{ common_timezone }}"
+        traefik:
+          - port: 61208
+            auth: page
+        pid_mode: host
+        device_requests:
+          - driver: nvidia
+            count: -1
+            device_ids: []
+            options: {}
+            capabilities:
+              - - gpu
+                - video
+                - compute
+                - utility
+        homepage:
+          name: Glances
+          group: Monitoring
+          weight: 250
+          description: "System monitoring"
+          widget:
+            metric: info
