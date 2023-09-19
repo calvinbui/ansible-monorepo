@@ -79,6 +79,10 @@
           SMTP_PORT: "{{ common_email_port | string }}"
           SMTP_HOST: "{{ common_email_server }}"
           SMTP_SECURE: "tls"
+
+          PHP_MEMORY_LIMIT: "10000M"
+          PHP_UPLOAD_LIMIT: "10000M"
+          APACHE_BODY_LIMIT: "0"
         traefik:
           - port: 80
             middlewares:
