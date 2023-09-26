@@ -392,6 +392,11 @@
       matchPackagePatterns: [".*\\/castsponsorskip"],
       customChangelogUrl: "https://github.com/gabe565/CastSponsorSkip",
     },
+    /* cloudbeaver */
+    {
+      matchPackagePatterns: ["dbeaver\\/cloudbeaver"],
+      customChangelogUrl: "https://github.com/dbeaver/dbeaver",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
