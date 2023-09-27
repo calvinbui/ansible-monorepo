@@ -178,6 +178,7 @@
         env:
           TZ: "{{ common_timezone }}"
           BORG_PASSPHRASE: "{{ borgmatic_pass }}"
+          BORG_CHECK_I_KNOW_WHAT_I_AM_DOING: "true"
         comparisons:
           env: strict
       loop: "{{ borgmatic_backups }}"

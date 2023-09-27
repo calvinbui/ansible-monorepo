@@ -3,6 +3,12 @@
 step=$1
 name=$2
 
+if /usr/local/bin/borgmatic check --repair; then
+  if /usr/local/bin/borgmatic --stats --list -v 0 2>&1; then
+    exit 0
+  fi
+fi
+
 if [ $step = "before" ]; then
   message="Starting backup :speaker:"
 elif [ $step = "after" ]; then
