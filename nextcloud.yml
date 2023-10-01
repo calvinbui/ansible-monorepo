@@ -49,7 +49,6 @@
         image: nextcloud:27.1.1
         volumes:
           - "{{ config_directory }}/nextcloud:/var/www/html"
-          - "{{ common_directory_storage }}:/mnt/zfs_files"
         env:
           POSTGRES_DB: "{{ _postgres_database }}"
           POSTGRES_USER: "{{ _postgres_username }}"
@@ -124,3 +123,39 @@
             "chadburn.job-exec.{{ application }}-cron.tty": "false",
             "chadburn.job-exec.{{ application }}-cron.no-overlap": "true"
           }'
+
+    - name: Create imaginary container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-imaginary"
+        image: h2non/imaginary:1.2.4
+        command: -enable-url-source
+
+    - name: Add imaginary url to config
+      community.docker.docker_container_exec:
+        container: "{{ application }}"
+        user: www-data
+        command: "php occ config:system:set preview_imaginary_url --value=http://{{ application }}-imaginary.{{ docker_network.name }}:9000"
+      register: _command_result
+      failed_when: "'set to string' not in _command_result.stdout"
+      changed_when: false
+      until: _command_result is success
+      retries: 3
+      delay: 2
+
+    - name: Enable preview providers
+      community.docker.docker_container_exec:
+        container: "{{ application }}"
+        user: www-data
+        command: "php occ config:system:set enabledPreviewProviders {{ ansible_loop.index0 }} --value={{ item }}"
+      register: _command_result
+      failed_when: "'set to string' not in _command_result.stdout"
+      changed_when: false
+      until: _command_result is success
+      retries: 3
+      delay: 2
+      loop_control:
+        extended: true
+      loop:
+        - 'OC\\Preview\\Imaginary'
