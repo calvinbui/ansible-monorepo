@@ -158,4 +158,16 @@
       loop_control:
         extended: true
       loop:
+        - 'OC\\Preview\\MP3'
+        - 'OC\\Preview\\TXT'
+        - 'OC\\Preview\\MarkDown'
+        - 'OC\\Preview\\OpenDocument'
+        - 'OC\\Preview\\Krita'
+        # imaginary
         - 'OC\\Preview\\Imaginary'
+        # disabled by default
+        - 'OC\\Preview\\PDF'
+        - 'OC\\Preview\\SVG'
+        - 'OC\\Preview\\Font'
+        - 'OC\\Preview\\TIFF'
+        - 'OC\\Preview\\Movie'
