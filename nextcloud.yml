@@ -42,7 +42,44 @@
           3231366665366137380a323932633634396132376331363030613835616435626332303732303731
           39396138663536663432663664386264386333623437616237643630663831353533
 
-    - name: Create container
+    - name: Create onlyoffice container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-onlyoffice"
+        image: onlyoffice/documentserver:7.4.1
+        volumes:
+          - "{{ config_directory }}/onlyoffice/logs:/var/log/onlyoffice"
+          - "{{ config_directory }}/onlyoffice/data:/var/www/onlyoffice/Data"
+          - "{{ config_directory }}/onlyoffice/lib:/var/lib/onlyoffice"
+          - "{{ config_directory }}/onlyoffice/rabbitmq:/var/lib/rabbitmq"
+          - "{{ config_directory }}/onlyoffice/redis:/var/lib/redis"
+          - "{{ config_directory }}/onlyoffice/db:/var/lib/postgresql"
+        env:
+          JWT_ENABLED: "true"
+          JWT_SECRET: &onlyoffice_jwt_secret !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            62613932646635633462646366396438636165303466366338363166323132613938336334363633
+            6465333735656137653439313233636566636330363461380a616231323438333336356233386561
+            36336638383239666262346166393839396466353833306138386636333130333131313966313666
+            6361663336343432610a333138353763353731393061613036336433613733626230396234356330
+            33356564396233646537353237663533646133386534663166633664343966306464
+
+          USE_UNAUTHORIZED_STORAGE: "true"
+
+          ALLOW_META_IP_ADDRESS: "tru"
+          ALLOW_PRIVATE_IP_ADDRESS: "true"
+
+        traefik:
+          - port: 80
+            rule: Host(`onlyoffice.{{ common_tld }}`)
+            middlewares:
+              - "{{ application }}-onlyoffice-sslheaders"
+        labels:
+          '{
+            "traefik.http.middlewares.{{ application }}-onlyoffice-sslheaders.headers.customrequestheaders.X-Forwarded-Proto": "https"
+          }'
+
       ansible.builtin.include_role:
         name: docker_container
       vars:
@@ -124,13 +161,59 @@
             "chadburn.job-exec.{{ application }}-cron.no-overlap": "true"
           }'
 
-    - name: Create imaginary container
-      ansible.builtin.include_role:
-        name: docker_container
-      vars:
-        name: "{{ application }}-imaginary"
-        image: h2non/imaginary:1.2.4
-        command: -enable-url-source
+    - name: Install onlyoffice app
+      community.docker.docker_container_exec:
+        container: "{{ application }}"
+        user: www-data
+        command: "php occ app:install onlyoffice"
+      register: _command_result
+      failed_when: "'Could not download app' in _command_result.stdout"
+      changed_when: "'already installed' not in _command_result.stdout"
+      retries: 3
+      delay: 2
+
+    - name: Configure onlyoffice app
+      community.docker.docker_container_exec:
+        container: "{{ application }}"
+        user: www-data
+        command: "php occ config:app:set onlyoffice {{ item.name }} --value={{ item.value }}"
+      register: _command_result
+      failed_when: "'for app onlyoffice set to' not in _command_result.stdout"
+      changed_when: false
+      retries: 3
+      delay: 2
+      loop:
+        -
+          name: jwt_secret
+          value: *onlyoffice_jwt_secret
+        -
+          name: DocumentServerUrl
+          value: "https://onlyoffice.{{ common_tld }}/"
+        -
+          name: DocumentServerInternalUrl
+          value: "http://{{ application }}-onlyoffice.{{ docker_network.name }}/"
+        -
+          name: StorageUrl
+          value: "http://{{ application }}.{{ docker_network.name }}/"
+        -
+          name: defFormats
+          value: '{\"csv\":\"true\",\"doc\":\"true\",\"docm\":\"true\",\"docx\":\"true\",\"docxf\":\"true\",\"oform\":\"true\",\"dotx\":\"true\",\"epub\":\"false\",\"html\":\"false\",\"odp\":\"true\",\"ods\":\"true\",\"odt\":\"true\",\"otp\":\"true\",\"ots\":\"true\",\"ott\":\"true\",\"pdf\":\"false\",\"potm\":\"true\",\"potx\":\"true\",\"ppsm\":\"true\",\"ppsx\":\"true\",\"ppt\":\"true\",\"pptm\":\"true\",\"pptx\":\"true\",\"rtf\":\"true\",\"txt\":\"true\",\"xls\":\"true\",\"xlsm\":\"true\",\"xlsx\":\"true\",\"xltm\":\"true\",\"xltx\":\"true\"}'
+        -
+          name: customizationChat
+          value: "false"
+        -
+          name: customizationFeedback
+          value: "false"
+        -
+          name: customizationHelp
+          value: "false"
+        -
+          name: customizationToolbarNoTabs
+          value: "false"
+        -
+          name: customizationTheme
+          value: "theme-light"
+
 
     - name: Add imaginary url to config
       community.docker.docker_container_exec:
