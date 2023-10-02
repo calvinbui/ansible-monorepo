@@ -80,6 +80,15 @@
             "traefik.http.middlewares.{{ application }}-onlyoffice-sslheaders.headers.customrequestheaders.X-Forwarded-Proto": "https"
           }'
 
+
+    - name: Create imaginary container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-imaginary"
+        image: h2non/imaginary:1.2.4
+        command: -enable-url-source
+
     - name: Create nextcloud container
       ansible.builtin.include_role:
         name: docker_container
@@ -214,7 +223,6 @@
         -
           name: customizationTheme
           value: "theme-light"
-
 
     - name: Add imaginary url to config
       community.docker.docker_container_exec:
