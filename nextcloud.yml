@@ -105,6 +105,17 @@
         image: h2non/imaginary:1.2.4
         command: -enable-url-source
 
+    - name: Create notify_push container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-notify-push"
+        image: icewind1991/notify_push:0.6.3
+        env:
+          NEXTCLOUD_URL: "https://{{ application }}.{{ common_tld }}"
+          DATABASE_URL: "{{ _postgres_url }}"
+          REDIS_URL: "{{ _redis_url }}"
+
     - name: Create nextcloud container
       ansible.builtin.include_role:
         name: docker_container
@@ -311,3 +322,14 @@
         - 'OC\\Preview\\Font'
         - 'OC\\Preview\\TIFF'
         - 'OC\\Preview\\Movie'
+
+    - name: Install notify_push app
+      community.docker.docker_container_exec:
+        container: "{{ application }}"
+        user: www-data
+        command: "php occ app:install notify_push"
+      register: _command_result
+      failed_when: "'Could not download app' in _command_result.stdout"
+      changed_when: "'already installed' not in _command_result.stdout"
+      retries: 3
+      delay: 2
