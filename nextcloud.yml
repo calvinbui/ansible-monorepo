@@ -80,12 +80,13 @@
             "traefik.http.middlewares.{{ application }}-onlyoffice-sslheaders.headers.customrequestheaders.X-Forwarded-Proto": "https"
           }'
 
+    - name: Create nextcloud container
       ansible.builtin.include_role:
         name: docker_container
       vars:
         image: nextcloud:27.1.1
         volumes:
-          - "{{ config_directory }}/nextcloud:/var/www/html"
+          - "{{ config_directory }}/app:/var/www/html"
         env:
           POSTGRES_DB: "{{ _postgres_database }}"
           POSTGRES_USER: "{{ _postgres_username }}"
