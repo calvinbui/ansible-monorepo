@@ -89,6 +89,9 @@
         capabilities:
           - MKNOD
         env:
+          aliasgroup1: "https://{{ application }}.{{ common_tld }}:443"
+          server_name: "collabora.{{ common_tld }}"
+          dictionaries: "en_GB en_US"
           extra_params: "--o:ssl.enable=false --o:ssl.termination=true"
         traefik:
           - port: 9980
