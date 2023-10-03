@@ -5,6 +5,12 @@ radarr:
     base_url: http://radarr.{{ docker_network.name }}:7878
     api_key: {{ radarr_api_key }}
 
+    media_naming:
+      movie:
+        rename: true
+        standard: default
+      folder: plex
+
     quality_definition:
       type: movie
 
