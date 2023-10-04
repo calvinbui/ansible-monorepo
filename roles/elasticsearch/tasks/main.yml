@@ -1,0 +1,64 @@
+---
+
+- name: Create Elasticsearch directory
+  ansible.builtin.file:
+    path: "{{ elasticsearch_directory }}"
+    state: directory
+    owner: "1000" # elasticsearch
+    group: "1000" # elasticsearch
+    mode: "0740"
+
+
+- name: Update vm.max_map_count for elasticsearch
+  ansible.posix.sysctl:
+    name: vm.max_map_count
+    value: 262144
+
+- name: Create Elasticsearch container
+  community.docker.docker_container:
+    name: "{{ elasticsearch_name }}"
+    image: "docker.elastic.co/elasticsearch/elasticsearch:{{ elasticsearch_version }}"
+
+    state: started
+
+    hostname: "{{ elasticsearch_name }}"
+    published_ports: "{{ elasticsearch_ports | default(omit) }}"
+    networks:
+      - name: "{{ docker_network.name | default('bridge') }}"
+    network_mode: "{{ docker_network.name | default('omit') }}"
+    networks_cli_compatible: "{{ elasticsearch_networks_cli_compatible | default(true) }}"
+
+    command: "{{ elasticsearch_command | default(omit) }}"
+
+    memory: "{{ elasticsearch_memory | default('1G') }}"
+
+    env:
+      ELASTIC_PASSWORD: "{{ elasticsearch_password }}"
+      ES_SETTING_CLUSTER_NAME: "{{ elasticsearch_name }}"
+      ES_SETTING_DISCOVERY_TYPE: single-node
+      ES_SETTING_XPACK_SECURITY_ENABLED: "false"
+      ES_SETTING_BOOTSTRAP_MEMORY__LOCK: "true"
+      ES_SETTING_LOGGER_ORG_ELASTICSEARCH: WARN
+
+    volumes:
+      - "{{ elasticsearch_directory }}:/usr/share/elasticsearch/data"
+
+    labels:
+      traefik.enable: "false"
+
+    restart_policy: unless-stopped
+
+    container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
+
+    comparisons:
+      networks: strict
+
+- name: Set variables
+  ansible.builtin.set_fact:
+    _elasticsearch_hostname: "{{ elasticsearch_name }}.{{ docker_network.name }}"
+    _elasticsearch_password: "{{ elasticsearch_password }}"
+    _elasticsearch_port: 9200
+
+- name: Set connection URL variable
+  ansible.builtin.set_fact:
+    _elasticsearch_url: "http://elastic:{{ _elasticsearch_password }}@{{ _elasticsearch_hostname }}:{{ _elasticsearch_port }}"
