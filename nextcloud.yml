@@ -116,6 +116,19 @@
           DATABASE_URL: "{{ _postgres_url }}"
           REDIS_URL: "{{ _redis_url }}"
 
+    - name: Create elasticsearch container
+      ansible.builtin.include_role:
+        name: elasticsearch
+      vars:
+        elasticsearch_version: 8.10.2
+        elasticsearch_password: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            62333932303063376439386235313739336262613362303033396536326233366235616563623337
+            3563386563366661623539346161623265353636376637630a356131643361383236346434616536
+            39376566333961386464383061386365386532663237656161353233343965616261663166366463
+            3030616430653433360a643763383535376230633438386461353136666365636165636334323662
+            3961
+
     - name: Create nextcloud container
       ansible.builtin.include_role:
         name: docker_container
@@ -333,3 +346,40 @@
       changed_when: "'already installed' not in _command_result.stdout"
       retries: 3
       delay: 2
+
+    - name: Install fulltextsearch app
+      community.docker.docker_container_exec:
+        container: "{{ application }}"
+        user: www-data
+        command: "php occ app:install {{ item }}"
+      register: _command_result
+      failed_when: "'Could not download app' in _command_result.stdout"
+      changed_when: "'already installed' not in _command_result.stdout"
+      retries: 3
+      delay: 2
+      loop:
+        - fulltextsearch
+        - fulltextsearch_elasticsearch
+        - files_fulltextsearch
+
+    - name: Configure fulltextsearch app
+      community.docker.docker_container_exec:
+        container: "{{ application }}"
+        user: www-data
+        command: "php occ {{ item.app }}:configure {{ item.value }}"
+      register: _command_result
+      failed_when: "'Invalid JSON' in _command_result.stdout"
+      changed_when: false
+      retries: 3
+      delay: 2
+      loop:
+        -
+          app: fulltextsearch
+          value: |
+            '{"search_platform":"OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticSearchPlatform"}'
+        -
+          app: fulltextsearch_elasticsearch
+          value: '{\"elastic_host\":\"http://elastic:{{ _elasticsearch_password }}@{{ _elasticsearch_hostname }}:{{ _elasticsearch_port }}\",\"elastic_index\":\"{{ application }}\"}'
+        -
+          app: files_fulltextsearch
+          value: '{\"files_pdf\":\"1\",\"files_office\":\"1\"}'
