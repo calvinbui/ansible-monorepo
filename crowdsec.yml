@@ -324,7 +324,7 @@
           - "{{ common_directory }}/bitwarden/bitwarden/vaultwarden.log:/var/log/vaultwarden.log"
           - "{{ common_directory }}/gitea/data/gitea/log/gitea.log:/var/log/gitea.log:ro"
           - "{{ common_directory }}/home-assistant/config/home-assistant.log:/var/log/home-assistant.log:ro"
-          - "{{ common_directory }}/nextcloud/nextcloud/data/nextcloud.log:/var/log/nextcloud.log:ro"
+          - "{{ common_directory }}/nextcloud/app/data/nextcloud.log:/var/log/nextcloud.log:ro"
           - "{{ common_directory }}/prowlarr/config/logs/prowlarr.txt:/var/log/prowlarr.txt:ro"
           - "{{ common_directory }}/radarr/config/logs/radarr.txt:/var/log/radarr.txt:ro"
           - "{{ common_directory }}/sonarr/logs/sonarr.txt:/var/log/sonarr.txt:ro"
