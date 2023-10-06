@@ -89,29 +89,26 @@
 
 {%- endraw %}
 
-# https://www.home-assistant.io/integrations/transport_nsw
+# https://github.com/CDeLeon94/GTFS-V2-Home-Assistant
 -
-  platform: transport_nsw
-  name: "Train to Central"
-  stop_id: "213710"
-  destination: "Gordon via Central"
-  api_key: "{{ home_assistant_integrations.transport_nsw_api_key }}"
--
-  platform: transport_nsw
-  name: "Train to Epping"
-  stop_id: "213710"
-  destination: "Hornsby via Eastwood"
-  api_key: "{{ home_assistant_integrations.transport_nsw_api_key }}"
-
-# https://github.com/mark1foley/ha-gtfs-rt-v2
--
-  platform: gtfs_rt
+  platform: gtfs-rt-irl
   trip_update_url: https://api.transport.nsw.gov.au/v2/gtfs/realtime/sydneytrains
   vehicle_position_url: https://api.transport.nsw.gov.au/v2/gtfs/vehiclepos/sydneytrains
   api_key: "apikey {{ home_assistant_integrations.transport_nsw_api_key }}"
+  SQL_file_name: transport_nsw_timetables_complete
   departures:
-    - name: Train To Central Station
-      stopid: 2137171
-      route: NTH_2a
-      icon: mdi:train
-      service_type: Train
+    -
+      stop_user_name: "North Strathfield Station Platform 1"
+      stop_code: "2137171"
+      route: "2-T9-sj2-1" # T9 Northern Line
+      operator: "x0001"   # Sydney Trains
+    -
+      stop_user_name: "North Strathfield Station Platform 2"
+      stop_code: "2137172"
+      route: "2-T9-sj2-1" # T9 Northern Line
+      operator: "x0001"   # Sydney Trains
+    -
+      stop_user_name: "North Strathfield Station Platform 3"
+      stop_code: "2137173"
+      route: "2-T9-sj2-1" # T9 Northern Line
+      operator: "x0001"   # Sydney Trains

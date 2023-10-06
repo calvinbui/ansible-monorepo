@@ -78,15 +78,21 @@ cards:
           -
             type: 'custom:button-card'
             template: card_generic_swap
-            entity: sensor.train_to_central
+            entity: sensor.north_strathfield_station_platform_1
             variables:
-              ulm_card_generic_swap_name: Next Train to Central
+              ulm_card_generic_swap_name: Platform 1
           -
             type: 'custom:button-card'
             template: card_generic_swap
-            entity: sensor.train_to_epping
+            entity: sensor.north_strathfield_station_platform_2
             variables:
-              ulm_card_generic_swap_name: Next Train to Epping
+              ulm_card_generic_swap_name: Platform 2
+          -
+            type: 'custom:button-card'
+            template: card_generic_swap
+            entity: sensor.north_strathfield_station_platform_3
+            variables:
+              ulm_card_generic_swap_name: Platform 3
       -
         type: custom:button-card
         template: card_title
