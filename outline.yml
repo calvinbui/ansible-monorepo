@@ -24,6 +24,14 @@
         group: "{{ common_group }}"
         mode: "0771"
 
+    - name: Create storage folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}/storage"
+        state: directory
+        owner: "1001" # nodejs
+        group: "1001" # nodejs
+        mode: "1777"
+
     - name: Create redis container
       ansible.builtin.include_role:
         name: redis
@@ -61,6 +69,8 @@
           - sh
           - -c
           - yarn db:migrate --env=production-ssl-disabled && yarn start --env=production-ssl-disabled
+        volumes:
+          - "{{ config_directory }}/storage:/var/lib/outline/data"
         env:
           # https://github.com/outline/outline/blob/main/.env.sample
           SECRET_KEY: !vault |
@@ -93,22 +103,8 @@
           URL: "https://{{ application }}.{{ common_tld }}"
           PORT: "443"
 
-          # policy, user, bucket are made manually (in that order)
-          # readonly access rules on bucket required on `public` and `avatars` prefix
-          AWS_ACCESS_KEY_ID: "{{ application }}"
-          AWS_SECRET_ACCESS_KEY: !vault |
-            $ANSIBLE_VAULT;1.1;AES256
-            36366661393334316334626264306431323738383531356261636233353462343734653565656135
-            3166646434303930393463636537373262323639623464300a346234396665323330363864356535
-            64313635303236313734343334343566363139633537333539363230323464636335643861626633
-            3735376336636538380a373936326463343363333234386134616132393966323064653165613434
-            61623737313166313630346536383933623066636632373639316134383434323762353830326331
-            3435656636646635653231316337656334636561323435643439
-          AWS_S3_UPLOAD_BUCKET_URL: "https://minio.{{ common_tld }}"
-          AWS_S3_UPLOAD_BUCKET_NAME: "{{ application }}"
-          AWS_S3_UPLOAD_MAX_SIZE: "512000000"
-          AWS_S3_FORCE_PATH_STYLE: "true"
-          AWS_S3_ACL: private
+          FILE_STORAGE: local
+          FILE_STORAGE_UPLOAD_MAX_SIZE: "512000000"
 
           OIDC_CLIENT_ID: "{{ application }}"
           OIDC_CLIENT_SECRET: "{{ ldap_oidc_secrets.outline }}"
