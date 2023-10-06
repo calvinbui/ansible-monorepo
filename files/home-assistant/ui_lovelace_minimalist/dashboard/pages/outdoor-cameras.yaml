@@ -11,7 +11,7 @@ layout:
 
 cards:
   -
-    entity: camera.driveway
+    entity: camera.driveway_low
     <<: &outdoor_camera_card
       type: custom:button-card
       template: custom_card_camera
