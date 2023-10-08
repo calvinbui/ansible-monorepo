@@ -108,6 +108,7 @@
           ApiKey: "{{ radarr_api_key }}"
           LaunchBrowser: "False"
           AnalyticsEnabled: "False"
+          AuthenticationMethod: "External"
 
           # https://wiki.servarr.com/radarr/postgres-setup
           PostgresHost: "{{ _postgres_hostname }}"
