@@ -54,7 +54,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: traefik:v2.10.4
+        image: traefik:v2.10.5
         restart_policy: always
         env:
           CF_API_EMAIL: "{{ cloudflare_email }}"
