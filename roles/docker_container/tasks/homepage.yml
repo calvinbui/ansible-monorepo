@@ -38,7 +38,7 @@
         default: "{{ app_name }}"
       - label: group
       - label: icon
-        default: "{{ '/icons/' + _homepage_icons_local.files.0.path.split('/')|last if homepage['icon'] is not defined else omit }}"
+        default: "/icons/{{ _homepage_icons_local.files.0.path.split('/')|last if homepage['icon'] is not defined else omit }}"
       - label: description
       - label: href
         default: "https://{{ app_name + '.' + common_tld }}"
