@@ -125,6 +125,7 @@
           - powertop
           - mc
           - nethogs
+          - ffmpeg
         state: present
 
     - name: Install snap packages
