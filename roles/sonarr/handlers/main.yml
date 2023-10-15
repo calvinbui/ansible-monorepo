@@ -1,0 +1,8 @@
+---
+
+- name: Restart
+  community.docker.docker_container:
+    name: "{{ application }}"
+    restart: true
+    comparisons:
+      '*': ignore

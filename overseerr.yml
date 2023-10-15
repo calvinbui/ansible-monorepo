@@ -69,6 +69,9 @@
               - op: test
                 path: sonarr/0/id
                 value: 0
+              - op: test
+                path: sonarr/1/id
+                value: 1
           register: _overseer_sonarr_exists
 
         - name: Add Sonarr array
@@ -79,6 +82,10 @@
                 path: sonarr/-
                 value:
                   id: 0
+              - op: add
+                path: sonarr/-
+                value:
+                  id: 1
           when: not _overseer_sonarr_exists.tested
 
     - name: Initialise Radarr array
@@ -145,10 +152,27 @@
           sonarr/0/port: 8989
           sonarr/0/useSsl: false
           sonarr/0/apiKey: "{{ sonarr_api_key }}"
+          sonarr/0/activeProfileName: "1080p"
+          sonarr/0/activeDirectory: "{{ common_mounted_directory_tv }}"
           sonarr/0/enableSeasonFolders: true
           sonarr/0/externalUrl: "https://sonarr.{{ common_tld }}"
           sonarr/0/syncEnabled: true
           sonarr/0/preventSearch: false
+
+          sonarr/1/isDefault: false
+          sonarr/1/name: Sonarr Anime
+          sonarr/1/hostname: "sonarr-anime.{{ networks.pub.name }}"
+          sonarr/1/port: 8989
+          sonarr/1/useSsl: false
+          sonarr/1/apiKey: "{{ sonarr_api_key }}"
+          sonarr/1/activeProfileName: "Anime"
+          sonarr/1/activeDirectory: "{{ common_mounted_directory_tv }}"
+          sonarr/1/activeAnimeProfileName: "Anime"
+          sonarr/1/activeAnimeDirectory: "{{ common_mounted_directory_tv }}"
+          sonarr/1/enableSeasonFolders: true
+          sonarr/1/externalUrl: "https://sonarr-anime.{{ common_tld }}"
+          sonarr/1/syncEnabled: true
+          sonarr/1/preventSearch: false
 
     - name: Send message
       ansible.builtin.debug:

@@ -1,0 +1,52 @@
+---
+
+- name: Create config folder
+  ansible.builtin.file:
+    path: "{{ config_directory }}"
+    state: directory
+    owner: "{{ common_user }}"
+    group: "{{ common_root_group }}"
+    mode: "0771"
+
+- name: Create container
+  ansible.builtin.include_role:
+    name: docker_container
+  vars:
+    image: lscr.io/linuxserver/sonarr:develop-version-4.0.0.697
+    volumes:
+      - "{{ config_directory }}:/config"
+      - "{{ common_directory_storage }}:{{ common_mounted_directory }}"
+    env:
+      PUID: "{{ common_user_id | string }}"
+      PGID: "{{ common_root_group | string }}"
+      TZ: "{{ common_timezone }}"
+    traefik:
+      - port: 8989
+        auth: basic
+    homepage: "{{ homepage_config }}"
+    blackbox:
+      path: /ping
+
+- name: Wait for config
+  ansible.builtin.wait_for:
+    path: "{{ config_directory }}/config.xml"
+
+- name: Install lxml
+  ansible.builtin.pip:
+    name: lxml
+    executable: pip3
+
+- name: Configure
+  community.general.xml:
+    path: "{{ config_directory }}/config.xml"
+    xpath: "/Config/{{ item.key }}"
+    value: "{{ item.value | string }}"
+  loop: "{{ _sonarr_config | dict2items }}"
+  notify: Restart
+  vars:
+    _sonarr_config:
+      ApiKey: "{{ sonarr_api_key }}"
+      LaunchBrowser: "False"
+      AnalyticsEnabled: "False"
+      AuthenticationMethod: "External"
+      InstanceName: "{{ application | replace('-', ' ') | title }}"

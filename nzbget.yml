@@ -85,6 +85,7 @@
           ConfigTemplate: '${AppDir}/webui/nzbget.conf.template'
 
           # NEWS-SERVERS
+          Server1.Active: 'yes'
           Server1.Name: 'Frugal Usenet USA'
           Server1.Level: '0'
           Server1.Optional: 'no'
@@ -113,6 +114,7 @@
           Server1.IpVersion: 'ipv4'
           Server1.Notes: 'Expires 27th November 2023'
 
+          Server2.Active: 'yes'
           Server2.Name: 'Frugal Usenet EU'
           Server2.Level: '0'
           Server2.Optional: 'no'
@@ -129,6 +131,7 @@
           Server2.IpVersion: 'ipv4'
           Server2.Notes: 'Expires 27th November 2023'
 
+          Server3.Active: 'yes'
           Server3.Name: 'Frugal Usenet Bonus'
           Server3.Level: '0'
           Server3.Optional: 'no'
@@ -145,6 +148,7 @@
           Server3.IpVersion: 'ipv4'
           Server3.Notes: 'Expires 27th November 2023'
 
+          Server4.Active: 'yes'
           Server4.Name: 'Blocknews US'
           Server4.Level: '1'
           Server4.Optional: 'no'
@@ -173,6 +177,7 @@
           Server4.IpVersion: 'ipv4'
           Server4.Notes: ''
 
+          Server5.Active: 'yes'
           Server5.Name: 'Blocknews EU'
           Server5.Level: '1'
           Server5.Optional: 'no'
@@ -189,6 +194,7 @@
           Server5.IpVersion: 'ipv4'
           Server5.Notes: ''
 
+          Server6.Active: 'yes'
           Server6.Name: 'Blocknews EU2'
           Server6.Level: '1'
           Server6.Optional: 'no'
@@ -222,12 +228,9 @@
           Category4.Name: 'Books'
           Category4.DestDir: 'Books'
           Category4.Aliases: 'Books'
-          Server1.Active: 'yes'
-          Server2.Active: 'yes'
-          Server3.Active: 'yes'
-          Server4.Active: 'yes'
-          Server5.Active: 'yes'
-          Server6.Active: 'yes'
+          Category5.Name: 'TV-Anime'
+          Category5.DestDir: 'TV-Anime'
+          Category5.Unpack: 'yes'
 
           # INCOMING NZBS
           DupeCheck: 'no'
