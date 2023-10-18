@@ -59,6 +59,8 @@
             65326438346433663834356461623632326431366632373331386564373962356534
 
           TYPESENSE_DATA_DIR: "/data"
+
+          GLOG_minloglevel: "1"
         volumes:
           - "{{ config_directory }}/typesense:/data"
 
@@ -68,7 +70,7 @@
       vars:
         name: "{{ application }}-server"
         image: ghcr.io/immich-app/immich-server:v1.82.0
-        command: ["start-server.sh"]
+        command: ["start.sh", "immich"]
         env: &immich_shared_env
           DB_HOSTNAME: "{{ _postgres_hostname }}"
           DB_PORT: "{{ _postgres_port | string }}"
@@ -100,6 +102,7 @@
           IMMICH_API_URL_EXTERNAL: "https://{{ application }}.{{ common_tld }}"
         volumes:
           - &immich_upload_volume "{{ common_directory_photos }}/Immich:/usr/src/app/upload"
+          - &immich_localtime_volume /etc/localtime:/etc/localtime:ro
 
     - name: Create microservices container
       ansible.builtin.include_role:
@@ -107,7 +110,7 @@
       vars:
         name: "{{ application }}-microservices"
         image: ghcr.io/immich-app/immich-server:v1.82.0
-        command: ["start-microservices.sh"]
+        command: ["start.sh", "microservices"]
         device_requests:
           - driver: nvidia
             count: -1
@@ -118,9 +121,12 @@
                 - video
                 - compute
                 - utility
-        env: *immich_shared_env
+        env:
+          <<: *immich_shared_env
+          NVIDIA_DRIVER_CAPABILITIES: all
         volumes:
           - *immich_upload_volume
+          - *immich_localtime_volume
 
     - name: Create machine-learning container
       ansible.builtin.include_role:
