@@ -191,11 +191,6 @@
       matchPackagePatterns: ["bropat\\/eufy-security-ws"],
       customChangelogUrl: "https://github.com/bropat/eufy-security-ws",
     },
-    /* eufy rtsp */
-    {
-      matchPackagePatterns: ["aler9\\/rtsp-simple-server"],
-      customChangelogUrl: "https://github.com/aler9/rtsp-simple-server",
-    },
     /* changedetection.io */
     {
       matchPackagePatterns: [".*\\/changedetection.io"],
