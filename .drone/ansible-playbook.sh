@@ -4,11 +4,14 @@ set -eo pipefail
 
 git config --global --add safe.directory /drone/src
 
+allplaybooks=( )
+
+# playbook updates
 if [[ -z $playbooks ]]; then
   mapfile -t allplaybooks < <(git show --name-only --diff-filter=ACMRTU HEAD | grep -E "^(\w|-|_)+.y*ml")
 else
   IFS="," read -r -a playbooks <<< "${playbooks[@]}"
-  allplaybooks=( )
+
   for playbook in "${playbooks[@]}"; do
     if [[ $playbook != *.yml ]]; then
       playbook="${playbook}.yml"
@@ -18,8 +21,23 @@ else
   done
 fi
 
+# role updates
+mapfile -t roles < <(git show --name-only --diff-filter=ACMRTU HEAD | grep -E "^roles/(\w|-|_)+/.*" | cut -d "/" -f2)
+if (( ${#roles[@]} != 0 )); then
+  for role in "${roles[@]}"; do
+    mapfile -t playbooks < <(grep "role: ${role}" ./*.yml -l)
+    if (( ${#playbooks[@]} != 0 )); then
+      for pb in "${playbooks[@]}"; do
+        if [[ ! " ${allplaybooks[*]} " =~ $pb ]]; then
+          allplaybooks+=( "$pb" )
+        fi
+      done
+    fi
+  done
+fi
+
 if [[ "${#allplaybooks[@]}" -eq 0 ]]; then
-  echo "--- No playbooks changed"
+  echo "--- No playbooks or roles changed"
   exit 0
 fi
 
