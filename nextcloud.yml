@@ -264,37 +264,37 @@
           name: customizationTheme
           value: "theme-light"
 
-    - name: Install nextcloud office app
-      community.docker.docker_container_exec:
-        container: "{{ application }}"
-        user: www-data
-        command: "php occ app:install richdocuments"
-      register: _command_result
-      failed_when: "'Could not download app' in _command_result.stdout"
-      changed_when: "'already installed' not in _command_result.stdout"
-      retries: 3
-      delay: 2
-
-    - name: Configure nextcloud office app
-      community.docker.docker_container_exec:
-        container: "{{ application }}"
-        user: www-data
-        command: "php occ config:app:set richdocuments {{ item.name }} --value={{ item.value }}"
-      register: _command_result
-      failed_when: "'for app richdocuments set to' not in _command_result.stdout"
-      changed_when: false
-      retries: 3
-      delay: 2
-      loop:
-        -
-          name: public_wopi_url
-          value: "https://collabora.{{ common_tld }}"
-        -
-          name: wopi_url
-          value: "https://collabora.{{ common_tld }}:443"
-        -
-          name: wopi_allowlist
-          value: "192.168.0.0/16"
+    # - name: Install nextcloud office app
+    #   community.docker.docker_container_exec:
+    #     container: "{{ application }}"
+    #     user: www-data
+    #     command: "php occ app:install richdocuments"
+    #   register: _command_result
+    #   failed_when: "'Could not download app' in _command_result.stdout"
+    #   changed_when: "'already installed' not in _command_result.stdout"
+    #   retries: 3
+    #   delay: 2
+    #
+    # - name: Configure nextcloud office app
+    #   community.docker.docker_container_exec:
+    #     container: "{{ application }}"
+    #     user: www-data
+    #     command: "php occ config:app:set richdocuments {{ item.name }} --value={{ item.value }}"
+    #   register: _command_result
+    #   failed_when: "'for app richdocuments set to' not in _command_result.stdout"
+    #   changed_when: false
+    #   retries: 3
+    #   delay: 2
+    #   loop:
+    #     -
+    #       name: public_wopi_url
+    #       value: "https://collabora.{{ common_tld }}"
+    #     -
+    #       name: wopi_url
+    #       value: "https://collabora.{{ common_tld }}:443"
+    #     -
+    #       name: wopi_allowlist
+    #       value: "192.168.0.0/16"
 
     - name: Add imaginary url to config
       community.docker.docker_container_exec:
