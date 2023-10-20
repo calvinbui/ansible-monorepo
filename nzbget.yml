@@ -220,7 +220,7 @@
           Category1.DestDir: 'Movies'
           Category1.Aliases: 'movies*'
           Category2.Name: 'TV'
-          Category2.DestDir: 'TV'
+          Category2.DestDir: 'TV/Sonarr'
           Category2.Unpack: 'yes'
           Category3.Name: 'Games'
           Category3.DestDir: 'Games'
@@ -229,7 +229,7 @@
           Category4.DestDir: 'Books'
           Category4.Aliases: 'Books'
           Category5.Name: 'TV-Anime'
-          Category5.DestDir: 'TV-Anime'
+          Category5.DestDir: 'TV/Sonarr-Anime'
           Category5.Unpack: 'yes'
 
           # INCOMING NZBS
