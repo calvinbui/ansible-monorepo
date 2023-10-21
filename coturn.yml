@@ -1,0 +1,71 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: coturn
+
+    docker_network:
+      name: host
+
+  handlers:
+    - name: Restart
+      community.docker.docker_container:
+        name: "{{ application }}"
+        restart: true
+        comparisons:
+          '*': ignore
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+
+    - name: Create config
+      ansible.builtin.copy:
+        content: |
+          realm={{ application }}.{{ common_tld }}
+          listening-ip=0.0.0.0
+          fingerprint
+          verbose
+          {% for users in coturn_users %}
+          user={{ users.name }}:{{ users.password }}
+          {% endfor %}
+          lt-cred-mech
+          no-cli
+          pidfile=/var/tmp/turnserver.pid
+          cert=/etc/coturn/turn_server_cert.pem
+          pkey=/etc/coturn/turn_server_pkey.pem
+        dest: "{{ config_directory }}/turnserver.conf"
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0744"
+      notify: Restart
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: ghcr.io/coturn/coturn:4.6.2
+        tmpfs:
+          - /var/lib/coturn:rw,mode=01777
+        volumes:
+          - "{{ config_directory }}/turnserver.conf:/etc/coturn/turnserver.conf"
+          - "{{ config_directory }}/turn_server_cert.pem:/etc/coturn/turn_server_cert.pem"
+          - "{{ config_directory }}/turn_server_pkey.pem:/etc/coturn/turn_server_pkey.pem"
+        # # port forward these in the router
+        # published_ports:
+        #   # STUN
+        #   - 3478:3478
+        #   - 3478:3478/udp
+
+        #   # TURN over TLS
+        #   - 5349:5349
+        #   - 5349:5349/udp
+
+        #   # P2P
+        #   - 49152-65535:49152-65535/udp

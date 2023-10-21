@@ -36,3 +36,11 @@ cert_domains:
     script_args: |
       {{ config_directory }}/certs/nvr.{{ common_local_tld }}/fullchain.cer \
       {{ config_directory }}/certs/nvr.{{ common_local_tld }}/nvr.{{ common_local_tld }}.key
+  -
+    domain: "coturn.{{ common_tld }}"
+    keylength: ec-384
+    method: --dns dns_cf
+    script: "coturn.sh"
+    script_args: |
+      {{ config_directory }}/certs/coturn.{{ common_tld }}_ecc/fullchain.cer \
+      {{ config_directory }}/certs/coturn.{{ common_tld }}_ecc/coturn.{{ common_tld }}.key
