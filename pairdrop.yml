@@ -7,17 +7,61 @@
 
     docker_network: "{{ networks.pub }}"
 
+  handlers:
+    - name: Restart
+      community.docker.docker_container:
+        name: "{{ application }}"
+        restart: true
+        comparisons:
+          '*': ignore
+
   tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+
+    - name: Create config
+      ansible.builtin.copy:
+        content: |
+          {
+            "sdpSemantics": "unified-plan",
+            "iceServers": [
+              {
+                "urls": "stun:coturn.{{ common_tld }}:5349"
+              },
+              {
+                "urls": "turn:coturn.{{ common_tld }}:5349",
+                "username": "{{ application }}",
+                "credential": "{{ coturn_users[application] }}"
+              }
+            ]
+          }
+        dest: "{{ config_directory }}/rtc_config.json"
+        owner: "{{ common_user_id }}"
+        group: "{{ common_group_id }}"
+        mode: "0740"
+      notify: Restart
+
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: lscr.io/linuxserver/pairdrop:1.9.1
+        image: ghcr.io/schlagmichdoch/pairdrop:v1.9.3
+        command: "npm run start:prod"
+        volumes:
+          - "{{ config_directory }}/rtc_config.json:/home/node/app/rtc_config.json"
         env:
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_group_id | string }}"
           TZ: "{{ common_timezone }}"
           RATE_LIMIT: "true"
+          WS_FALLBACK: "false"
+          RTC_CONFIG: "rtc_config.json"
+          DEBUG_MODE: "true"
         traefik:
           - port: 3000
         homepage:
