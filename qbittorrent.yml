@@ -89,7 +89,7 @@
           BitTorrent.Session\BTProtocol: TCP # Peer connection protocol
 
           ## Listening Port
-          BitTorrent.Session\Port: 58086 # Port used for incoming connections
+          BitTorrent.Session\Port: 34727 # Port used for incoming connections
 
           ## Connection Limits
           BitTorrent.Session\MaxConnections: -1 # Global maximum number of connections
