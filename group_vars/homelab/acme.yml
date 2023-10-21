@@ -11,16 +11,28 @@ ipmi_password: !vault |
 cert_domains:
   -
     domain: "homelab-ipmi.{{ common_local_tld }}"
+    keylength: 2048
     method: --dns dns_cf
     script: "ipmi.py"
-    script_args: "--ipmi-url=https://homelab-ipmi.{{ common_local_tld }} --username=ADMIN --password={{ ipmi_password }} --cert-file={{ config_directory }}/certs/homelab-ipmi.{{ common_local_tld }}/fullchain.cer --key-file={{ config_directory }}/certs/homelab-ipmi.{{ common_local_tld }}/homelab-ipmi.{{ common_local_tld }}.key --model=X10"
+    script_args: |
+      --ipmi-url=https://homelab-ipmi.{{ common_local_tld }} \
+      --username=ADMIN --password={{ ipmi_password }} \
+      --cert-file={{ config_directory }}/certs/homelab-ipmi.{{ common_local_tld }}/fullchain.cer \
+      --key-file={{ config_directory }}/certs/homelab-ipmi.{{ common_local_tld }}/homelab-ipmi.{{ common_local_tld }}.key \
+      --model=X10
   -
     domain: "omada.{{ common_local_tld }}"
+    keylength: ec-384
     method: --dns dns_cf
     script: "omada.sh"
-    script_args: "{{ config_directory }}/certs/omada.{{ common_local_tld }}/fullchain.cer {{ config_directory }}/certs/omada.{{ common_local_tld }}/omada.{{ common_local_tld }}.key"
+    script_args: |
+      {{ config_directory }}/certs/omada.{{ common_local_tld }}_ecc/fullchain.cer \
+      {{ config_directory }}/certs/omada.{{ common_local_tld }}_ecc/omada.{{ common_local_tld }}.key
   -
     domain: "nvr.{{ common_local_tld }}"
+    keylength: 2048
     method: --dns dns_cf
     script: "unifi-protect.sh"
-    script_args: "{{ config_directory }}/certs/nvr.{{ common_local_tld }}/fullchain.cer {{ config_directory }}/certs/nvr.{{ common_local_tld }}/nvr.{{ common_local_tld }}.key"
+    script_args: |
+      {{ config_directory }}/certs/nvr.{{ common_local_tld }}/fullchain.cer \
+      {{ config_directory }}/certs/nvr.{{ common_local_tld }}/nvr.{{ common_local_tld }}.key

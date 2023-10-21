@@ -2,6 +2,9 @@
 
 cert_domains:
   - domain: "octopi.{{ common_local_tld }}"
+    keylength: ec-384
     method: --dns dns_cf
     script: "octopi.sh"
-    script_args: "{{ config_directory }}/certs/octopi.{{ common_local_tld }}/fullchain.cer {{ config_directory }}/certs/octopi.{{ common_local_tld }}/octopi.{{ common_local_tld }}.key"
+    script_args: |
+      {{ config_directory }}/certs/octopi.{{ common_local_tld }}_ecc/fullchain.cer \
+      {{ config_directory }}/certs/octopi.{{ common_local_tld }}_ecc/octopi.{{ common_local_tld }}.key

@@ -75,7 +75,14 @@
           line: "SAVED_CF_Email='{{ cert_cloudflare_email }}'"
 
     - name: Generate certs for each domain
-      ansible.builtin.shell: /bin/bash -ic ". acme.sh.env && acme.sh --issue {{ item.method }} --domain {{ item.domain }} --post-hook '{{ config_directory }}/scripts/{{ item.script }} {{ item.script_args }}'"
+      ansible.builtin.shell: |
+        /bin/bash -ic \
+          ". acme.sh.env && acme.sh \
+          --issue \
+          {{ item.method }} \
+          --keylength {{ item.keylength }} \
+          --domain {{ item.domain }} \
+          --post-hook '{{ config_directory }}/scripts/{{ item.script }} {{ item.script_args }}'"
       args:
         chdir: "{{ config_directory }}/install"
         executable: /bin/bash
