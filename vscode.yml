@@ -57,7 +57,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: lscr.io/linuxserver/code-server:4.17.1
+        image: lscr.io/linuxserver/code-server:4.18.0
         env:
           PUID: "{{ common_root_id | string }}"
           PGID: "{{ common_root_group | string }}"
