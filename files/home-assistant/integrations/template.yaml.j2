@@ -135,31 +135,35 @@
 
       {{tou_period}}
 
-  # Current electricity plan: Powershop Super Saver - Flexible (Time of Use)
+  # Current electricity plan: Simply Energy - NSW - Simply NRMA Solar 7/10% off
   -
     # Peak
     name: Electricity Peak Cost
     icon: mdi:currency-usd
     unit_of_measurement: AUD
-    state: "0.6490"
+    state: >
+      {{ 0.7440400 * 0.93 }}
   -
     # Offpeak
     name: Electricity Offpeak Cost
     icon: mdi:currency-usd
     unit_of_measurement: AUD
-    state: "0.2750"
+    state: >
+      {{ 0.2718100 * 0.93 }}
   -
     # Shoulder
     name: Electricity Shoulder Cost
     icon: mdi:currency-usd
     unit_of_measurement: AUD
-    state: "0.3289"
+    state: >
+      {{ 0.3184500 * 0.93 }}
   -
     # Supply
     name: Electricity Supply Cost
     icon: mdi:currency-usd
     unit_of_measurement: AUD
-    state: "1.2081"
+    state: >
+      {{ 1.1691900 * 0.93 }}
   -
     # A sensor to calculate the current cost of electricity based on the TOU and price
     name: Electricity Cost
@@ -181,6 +185,7 @@
     state: "0.1200"
 
   # Alternative electricity plan: Red QANTAS Red Saver
+  #
   # The price of the plan if there was no solar
   # Non-solar plans may be cheaper than Solar plans, which is the case with us
   # We want to compare how much we would've paid if we didn't have Solar
@@ -190,25 +195,25 @@
     name: Alternative Electricity Peak Cost
     icon: mdi:currency-usd
     unit_of_measurement: AUD
-    state: "0.4125"
+    state: "0.52800"
   -
     # Offpeak
     name: Alternative Electricity Offpeak Cost
     icon: mdi:currency-usd
     unit_of_measurement: AUD
-    state: "0.16478"
+    state: "0.18953"
   -
     # Shoulder
     name: Alternative Electricity Shoulder Cost
     icon: mdi:currency-usd
     unit_of_measurement: AUD
-    state: "0.27478"
+    state: "0.32945"
   -
     # Supply
     name: Alternative Electricity Supply Cost
     icon: mdi:currency-usd
     unit_of_measurement: AUD
-    state: "0.97603"
+    state: "0.93500"
   -
     # A sensor to calculate the alternative cost of electricity based on the TOU and price
     name: Alternative Electricity Cost
