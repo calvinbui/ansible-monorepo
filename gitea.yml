@@ -52,11 +52,26 @@
           USER_UID: "{{ common_user_id | string }}"
           USER_GID: "{{ common_group_id | string }}"
 
+          GITEA__server__DOMAIN: "{{ application }}.{{ common_tld }}"
+          GITEA__server__ROOT_URL: &_gitea_root_url "https://{{ application }}.{{ common_tld }}"
+          GITEA__server__OFFLINE_MODE: "true"
+          GITEA__server__DISABLE_SSH: "true"
+          GITEA__server__LFS_START_SERVER: "false"
+
+          GITEA__repository__DEFAULT_BRANCH: "master"
+          GITEA__repository__FORCE_PRIVATE: "true"
+          GITEA__repository__DEFAULT_PRIVATE: "true"
+          GITEA__repository__DISABLED_REPO_UNITS: "repo.issues,repo.ext_issues,repo.wiki,repo.ext_wiki,repo.projects"
+          GITEA__repository__DISABLE_STARS: "true"
+
           GITEA__database__DB_TYPE: postgres
           GITEA__database__HOST: "{{ _postgres_hostname }}:{{ _postgres_port | string }}"
           GITEA__database__NAME: "{{ _postgres_database }}"
           GITEA__database__USER: "{{ _postgres_username }}"
           GITEA__database__PASSWD: "{{ _postgres_password }}"
+
+          GITEA__security__INSTALL_LOCK: "true"
+          GITEA__security__LOGIN_REMEMBER_DAYS: "180"
 
           GITEA__mailer__ENABLED: "true"
           GITEA__mailer__PROTOCOL: "smtp+starttls"
@@ -66,37 +81,43 @@
           GITEA__mailer__PASSWD: "{{ common_email_password }}"
           GITEA__mailer__FROM: "{{ application }}{{ common_email_to }}"
 
-          GITEA__server__DOMAIN: "{{ application }}.{{ common_tld }}"
-          GITEA__server__ROOT_URL: "https://{{ application }}.{{ common_tld }}"
-          GITEA__server__OFFLINE_MODE: "true"
-          GITEA__server__DISABLE_SSH: "true"
-
-          GITEA__picture__DISABLE_GRAVATAR: "true"
-          GITEA__picture__ENABLE_FEDERATED_AVATAR: "false"
+          GITEA__openid__ENABLE_OPENID_SIGNIN: "false"
+          GITEA__openid__ENABLE_OPENID_SIGNUP: "false"
 
           GITEA__service__DISABLE_REGISTRATION: "true"
           GITEA__service__REQUIRE_SIGNIN_VIEW: "true"
           GITEA__service__ENABLE_NOTIFY_MAIL: "true"
           GITEA__service__DEFAULT_KEEP_EMAIL_PRIVATE: "true"
           GITEA__service__DEFAULT_ALLOW_CREATE_ORGANIZATION: "true"
+          GITEA__service__ENABLE_USER_HEATMAP: "false"
           GITEA__service__DEFAULT_ENABLE_TIMETRACKING: "false"
+          GITEA__service__AUTO_WATCH_NEW_REPOS: "false"
+          GITEA__service__AUTO_WATCH_ON_CHANGES: "false"
           GITEA__service__DEFAULT_USER_VISIBILITY: "private"
           GITEA__service__ALLOWED_USER_VISIBILITY_MODES: "private"
           GITEA__service__DEFAULT_ORG_VISIBILITY: "private"
           GITEA__service__SHOW_MILESTONES_DASHBOARD_PAGE: "false"
 
-          GITEA__openid__ENABLE_OPENID_SIGNIN: "false"
-          GITEA__openid__ENABLE_OPENID_SIGNUP: "false"
+          GITEA__service.explore__REQUIRE_SIGNIN_VIEW: "true"
+          GITEA__service.explore__DISABLE_USERS_PAGE: "true"
 
-          GITEA__repository__DEFAULT_BRANCH: "master"
-          GITEA__repository__FORCE_PRIVATE: "true"
-          GITEA__repository__DEFAULT_PRIVATE: "true"
-          GITEA__repository__DISABLED_REPO_UNITS: "repo.issues,repo.ext_issues,repo.wiki,repo.ext_wiki,repo.projects"
-          GITEA__repository__DISABLE_STARS: "true"
+          GITEA__picture__DISABLE_GRAVATAR: "true"
+          GITEA__picture__ENABLE_FEDERATED_AVATAR: "false"
+
+          GITEA__log__MODE: "console,file"
+
+          GITEA__api__ENABLE_SWAGGER: "false"
+
+          GITEA__oauth2__ENABLE: "true" # 'false' after moving to Gitea Actions
 
           GITEA__packages__ENABLED: "false"
 
-          GITEA__log__MODE: "console,file"
+          GITEA__actions__ENABLED: "true"
+
+          GITEA__other__SHOW_FOOTER_VERSION: "false"
+          GITEA__other__SHOW_FOOTER_TEMPLATE_LOAD_TIME: "false"
+          GITEA__other__ENABLE_SITEMAP: "false"
+          GITEA__other__ENABLE_FEED: "false"
         traefik:
           - port: 3000
         homepage:
@@ -106,3 +127,23 @@
           description: "Git service"
         blackbox:
           path: /api/healthz
+
+    - name: Create runner container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-runner"
+        image: gitea/act_runner:0.2.6
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+          - "{{ config_directory }}/runner:/data"
+        env:
+          GITEA_INSTANCE_URL: *_gitea_root_url
+          GITEA_RUNNER_REGISTRATION_TOKEN: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            33343664343731353937393438343131386231356165396431616361333962383562643832373438
+            3338363737393335373839663933626466643335303761320a656137343334303266303938366434
+            64383334346432626236323833653663613330353634343132353662356532366533393933353565
+            3265613331666262300a346338643930663835653434643337303564363363306231373236666564
+            38626639303938383662313030326561366665303965626262346432643161323737363633373463
+            3363316636313531396131336161303330623063333333636536
