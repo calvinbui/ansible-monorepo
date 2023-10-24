@@ -1,0 +1,115 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: gitea-runner
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      loop:
+        - "{{ config_directory }}"
+        - /var/log/gitea
+
+    - name: Create SSH folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}/ssh"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0700"
+      tags:
+        - ssh
+
+    - name: Create SSH key
+      community.crypto.openssh_keypair:
+        path: "{{ config_directory }}/ssh/id_ed25519"
+        type: ed25519
+      register: _gitea_ssh_key
+      tags:
+        - ssh
+
+    - name: Set SSH variable
+      ansible.builtin.set_fact:
+        gitea_ssh_public_key: "{{ _gitea_ssh_key.public_key }}"
+      tags:
+        - ssh
+
+    - name: Allow SSH
+      ansible.posix.authorized_key:
+        user: "{{ common_user }}"
+        state: present
+        key: "{{ gitea_ssh_public_key }}"
+      tags:
+        - ssh
+
+    - name: Create runner container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: gitea/act_runner:0.2.6
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+          - "{{ config_directory }}/data:/data"
+          - "{{ config_directory }}/cache:/root/.cache"
+        env:
+          GITEA_INSTANCE_URL: "https://gitea.{{ common_tld }}"
+          GITEA_RUNNER_REGISTRATION_TOKEN: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            33343664343731353937393438343131386231356165396431616361333962383562643832373438
+            3338363737393335373839663933626466643335303761320a656137343334303266303938366434
+            64383334346432626236323833653663613330353634343132353662356532366533393933353565
+            3265613331666262300a346338643930663835653434643337303564363363306231373236666564
+            38626639303938383662313030326561366665303965626262346432643161323737363633373463
+            3363316636313531396131336161303330623063333333636536
+
+    - name: Copy Dockerfiles
+      ansible.builtin.copy:
+        src: "{{ files_directory }}/Dockerfiles"
+        dest: "{{ config_directory }}/"
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0751"
+      register: _gitea_dockerfiles_copy
+
+    - name: Locate all Dockerfile folders
+      ansible.builtin.find:
+        paths: "{{ config_directory }}/Dockerfiles"
+        recurse: false
+        file_type: directory
+      register: _gitea_dockerfiles_location
+
+    - name: Build local Docker images
+      community.docker.docker_image:
+        build:
+          path: "{{ item.path }}"
+        name: "calvinbui/{{ item.path.split('/') | last }}:localhost"
+        tag: latest
+        push: false
+        source: build
+        state: present
+        force_source: "{{ true if _gitea_dockerfiles_copy.changed else false }}"
+      loop: "{{ _gitea_dockerfiles_location.files }}"
+
+- hosts: nvr:octopi
+  gather_facts: false
+  vars:
+    ssh_user:
+      nvr: root
+      octopi: pi
+  tasks:
+    - name: Set authorized keys
+      ansible.posix.authorized_key:
+        user: "{{ ssh_user[inventory_hostname.split('.')[0]] }}"
+        state: present
+        key: "{{ hostvars['homelab.' + common_local_tld]['gitea_ssh_public_key'] }}"
+      tags:
+        - ssh

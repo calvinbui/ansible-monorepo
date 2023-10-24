@@ -2,27 +2,15 @@
 
 set -eo pipefail
 
-git config --global --add safe.directory /drone/src
-
 allplaybooks=( )
 
 # playbook updates
-if [[ -z $playbooks ]]; then
-  mapfile -t allplaybooks < <(git show --name-only --diff-filter=ACMRTU HEAD | grep -E "^(\w|-|_)+.y*ml")
-else
-  IFS="," read -r -a playbooks <<< "${playbooks[@]}"
-
-  for playbook in "${playbooks[@]}"; do
-    if [[ $playbook != *.yml ]]; then
-      playbook="${playbook}.yml"
-    fi
-
-    allplaybooks+=( "$playbook" )
-  done
-fi
+mapfile -t allplaybooks < <(git log -1 --name-only --oneline | grep -E "^(\w|-|_)+.y*ml")
+echo "Playbooks changed: ${playbooks[*]}"
 
 # role updates
-mapfile -t roles < <(git show --name-only --diff-filter=ACMRTU HEAD | grep -E "^roles/(\w|-|_)+/.*" | cut -d "/" -f2)
+mapfile -t roles < <(git log -1 --name-only --oneline | grep -E "^roles/(\w|-|_)+/.*" | cut -d "/" -f2)
+echo "Roles changed: ${roles[*]}"
 if (( ${#roles[@]} != 0 )); then
   for role in "${roles[@]}"; do
     mapfile -t playbooks < <(grep "role: ${role}" ./*.yml -l)
@@ -39,6 +27,8 @@ fi
 if [[ "${#allplaybooks[@]}" -eq 0 ]]; then
   echo "--- No playbooks or roles changed"
   exit 0
+else
+  echo "Playbooks to run: ${playbooks[*]}"
 fi
 
 if [ ! -f ~/.vault_pass.txt ]; then

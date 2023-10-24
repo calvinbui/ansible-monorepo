@@ -1,0 +1,55 @@
+---
+
+name: main
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    container: calvinbui/gitea-actions:localhost
+
+    steps:
+      - name: 🛎️ Checkout
+        uses: actions/checkout@v4
+        with:
+          # to be able to get files changed
+          fetch-depth: 2
+
+      - name: 🗃️ Get ansible-lint cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ansible-lint
+          key: ansible-lint
+
+      - name: 👷 Lint
+        run: scripts/ansible-lint.sh
+        env:
+          ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+
+      - name: 🔑 Setup SSH
+        if: ${{ github.ref == 'refs/heads/master' }}
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: 🚀 Deploy
+        run: scripts/ansible-playbook.sh
+        if: ${{ github.ref == 'refs/heads/master' }}
+        env:
+          ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+
+      - name: 🔊 Notification
+        uses: ravsamhq/notify-slack-action@v2
+        if: ${{ failure() }}
+        with:
+          status: ${{ job.status }}
+          notification_title: "{emoji} *<{run_url}|{workflow}>* {status_message} in <{repo_url}|{repo}> on <{commit_url}|{commit_sha}>"
+          message_format: ""
+          footer: ""
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
