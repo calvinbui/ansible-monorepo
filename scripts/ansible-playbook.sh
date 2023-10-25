@@ -6,7 +6,7 @@ allplaybooks=( )
 
 # playbook updates
 mapfile -t allplaybooks < <(git show --name-only --diff-filter=ACMRTU HEAD | grep -E "^(\w|-|_)+.y*ml")
-echo "Playbooks changed: ${playbooks[*]}"
+echo "Playbooks changed: ${allplaybooks[*]}"
 
 # role updates
 mapfile -t roles < <(git show --name-only --diff-filter=ACMRTU HEAD | grep -E "^roles/(\w|-|_)+/.*" | cut -d "/" -f2)
@@ -28,7 +28,7 @@ if [[ "${#allplaybooks[@]}" -eq 0 ]]; then
   echo "No playbooks or roles changed"
   exit 0
 else
-  echo "Playbooks to run: ${playbooks[*]}"
+  echo "Playbooks to run: ${allplaybooks[*]}"
 fi
 
 if [ ! -f ~/.vault_pass.txt ]; then
