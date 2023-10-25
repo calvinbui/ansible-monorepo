@@ -25,14 +25,14 @@ if (( ${#roles[@]} != 0 )); then
 fi
 
 if [[ "${#allplaybooks[@]}" -eq 0 ]]; then
-  echo "--- No playbooks or roles changed"
+  echo "No playbooks or roles changed"
   exit 0
 else
   echo "Playbooks to run: ${playbooks[*]}"
 fi
 
 if [ ! -f ~/.vault_pass.txt ]; then
-  echo "--- Put vault key"
+  echo "Put vault key"
   echo "$ANSIBLE_VAULT_PASSWORD" > ~/.vault_pass.txt
 fi
 

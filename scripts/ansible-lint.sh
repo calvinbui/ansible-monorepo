@@ -17,15 +17,17 @@ else
 fi
 
 if [[ "${#allplaybooks[@]}" -eq 0 ]]; then
-  echo "--- No playbooks changed"
+  echo "No playbooks changed"
   exit 0
+else
+  echo "Playbooks to lint: ${playbooks[*]}"
 fi
 
 
-echo "--- Put vault key"
+echo "Put vault key"
 echo "$ANSIBLE_VAULT_PASSWORD" > ~/.vault_pass.txt
 
-echo "--- ansible-lint"
+echo "Run ansible-lint"
 # shellcheck disable=SC2068
 # i want it to split
 ansible-lint ${allplaybooks[@]}
