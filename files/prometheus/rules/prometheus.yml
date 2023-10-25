@@ -1,0 +1,137 @@
+---
+
+groups:
+  - name: prometheus_exporters
+    rules:
+      -
+        alert: Target Missing
+        expr: up == 0
+        for: 5m
+        annotations:
+          title: Prometheus target missing
+          description: "The exporter {{ $labels.job }} for instance {{ $labels.instance }} is not responding"
+      -
+        alert: Target Empty
+        expr: prometheus_sd_discovered_targets == 0
+        for: 0m
+        annotations:
+          title: Prometheus target empty
+          description: "Prometheus has no target in service discovery"
+      -
+        alert: Target ScrapingSlow
+        expr: prometheus_target_interval_length_seconds{quantile="0.9"} > 121
+        for: 5m
+        annotations:
+          title: Prometheus target scraping slow
+          description: "Prometheus is scraping exporters slowly"
+      -
+        alert: Large Scrape
+        expr: increase(prometheus_target_scrapes_exceeded_sample_limit_total[10m]) > 10
+        for: 5m
+        annotations:
+          title: Prometheus large scrape
+          description: "Prometheus has many scrapes that exceed the sample limit"
+      -
+        alert: Target Scrape Duplicate
+        expr: increase(prometheus_target_scrapes_sample_duplicate_timestamp_total[5m]) > 0
+        for: 0m
+        annotations:
+          title: Prometheus target scrape duplicate
+          description: "Prometheus has many samples rejected due to duplicate timestamps but different values"
+
+  - name: prometheus_config_and_rules
+    rules:
+      -
+        alert: Configuration Reload Failure
+        expr: prometheus_config_last_reload_successful != 1
+        for: 0m
+        annotations:
+          title: Prometheus configuration reload failure
+          description: "Prometheus configuration reload error"
+      -
+        alert: Too Many Restarts
+        expr: changes(process_start_time_seconds{}[15m]) > 5
+        for: 0m
+        annotations:
+          title: Prometheus too many restarts
+          description: "{{ $labels.job }} has restarted more than twice in the last 15 minutes. It might be crashlooping."
+      -
+        alert: Rule Evaluation Failures
+        expr: increase(prometheus_rule_evaluation_failures_total[3m]) > 0
+        for: 0m
+        annotations:
+          title: Prometheus rule evaluation failures
+          description: "Prometheus encountered {{ $value }} rule evaluation failures, leading to potentially ignored alerts"
+      -
+        alert: Template Text Expansion Failures
+        expr: increase(prometheus_template_text_expansion_failures_total[3m]) > 0
+        for: 0m
+        annotations:
+          title: Prometheus template text expansion failures
+          description: "Prometheus encountered {{ $value }} template text expansion failures"
+      -
+        alert: Rule Evaluation Slow
+        expr: prometheus_rule_group_last_duration_seconds > prometheus_rule_group_interval_seconds
+        for: 5m
+        annotations:
+          title: Prometheus rule evaluation slow
+          description: "Prometheus rule evaluation took more time than the scheduled interval. It indicates a slower storage backend access or too complex query."
+      -
+        alert: Notifications Backlog
+        expr: min_over_time(prometheus_notifications_queue_length[10m]) > 0
+        for: 0m
+        annotations:
+          title: Prometheus notifications backlog
+          description: "The Prometheus notification queue has not been empty for 10 minutes"
+
+  - name: tsdb
+    rules:
+      -
+        alert: Checkpoint Creation Failures
+        expr: increase(prometheus_tsdb_checkpoint_creations_failed_total[1m]) > 0
+        for: 0m
+        annotations:
+          title: Prometheus TSDB checkpoint creation failures
+          description: "Prometheus encountered {{ $value }} checkpoint creation failures"
+      -
+        alert: Checkpoint Deletion Failures
+        expr: increase(prometheus_tsdb_checkpoint_deletions_failed_total[1m]) > 0
+        for: 0m
+        annotations:
+          title: Prometheus TSDB checkpoint deletion failures
+          description: "Prometheus encountered {{ $value }} checkpoint deletion failures"
+      -
+        alert: Compactions Failed
+        expr: increase(prometheus_tsdb_compactions_failed_total[1m]) > 0
+        for: 0m
+        annotations:
+          title: Prometheus TSDB compactions failed
+          description: "Prometheus encountered {{ $value }} TSDB compactions failures"
+      -
+        alert: Head Truncations Failed
+        expr: increase(prometheus_tsdb_head_truncations_failed_total[1m]) > 0
+        for: 0m
+        annotations:
+          title: Prometheus TSDB head truncations failed
+          description: "Prometheus encountered {{ $value }} TSDB head truncation failures"
+      -
+        alert: Reload Failures
+        expr: increase(prometheus_tsdb_reloads_failures_total[1m]) > 0
+        for: 0m
+        annotations:
+          title: Prometheus TSDB reload failures
+          description: "Prometheus encountered {{ $value }} TSDB reload failures"
+      -
+        alert: Wal Corruptions
+        expr: increase(prometheus_tsdb_wal_corruptions_total[1m]) > 0
+        for: 0m
+        annotations:
+          title: Prometheus TSDB WAL corruptions
+          description: "Prometheus encountered {{ $value }} TSDB WAL corruptions"
+      -
+        alert: Wal Truncations Failed
+        expr: increase(prometheus_tsdb_wal_truncations_failed_total[1m]) > 0
+        for: 0m
+        annotations:
+          title: Prometheus TSDB WAL truncations failed
+          description: "Prometheus encountered {{ $value }} TSDB WAL truncation failures"

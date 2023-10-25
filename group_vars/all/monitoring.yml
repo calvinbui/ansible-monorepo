@@ -1,5 +1,4 @@
 ---
 
-vm_scrape_directory: "{{ common_directory }}/victoriametrics/scrape_config_files"
-
-vm_network: "{{ networks.user }}"
+prometheus_scrape_directory: "{{ common_directory }}/prometheus/scrape_config_files"
+prometheus_network: "{{ networks.user }}"

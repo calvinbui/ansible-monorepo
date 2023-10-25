@@ -58,26 +58,27 @@
         volumes:
           - "{{ config_directory }}/config.yaml:/config.yaml"
 
-    - name: Create scrape config for VictoriaMetrics
+    - name: Create scrape config for Prometheus
       ansible.builtin.copy:
         content: |
-          - job_name: junos
-            scrape_interval: 120s
-            scrape_timeout: 30s
-            static_configs:
-              - targets:
-                - switch.{{ common_local_tld }}
-            params:
-              config: ['default']
-            relabel_configs:
-              - source_labels: [__address__]
-                target_label: __param_target
-              - source_labels: [__param_target]
-                target_label: instance
-              - target_label: __address__
-                replacement: junos_exporter.{{ docker_network.name }}:9347
+          scrape_configs:
+            - job_name: junos
+              scrape_interval: 120s
+              scrape_timeout: 30s
+              static_configs:
+                - targets:
+                  - switch.{{ common_local_tld }}
+              params:
+                config: ['default']
+              relabel_configs:
+                - source_labels: [__address__]
+                  target_label: __param_target
+                - source_labels: [__param_target]
+                  target_label: instance
+                - target_label: __address__
+                  replacement: {{ application }}.{{ docker_network.name }}:9347
 
-        dest: "{{ vm_scrape_directory }}/{{ application }}.yml"
+        dest: "{{ prometheus_scrape_directory }}/{{ application }}.yml"
         owner: "65534"  # nobody user
         group: "{{ common_group }}"
         mode: "0755"

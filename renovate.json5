@@ -94,14 +94,10 @@
       matchPackagePatterns: [".*\\/bazarr"],
       customChangelogUrl: "https://github.com/morpheus65535/bazarr",
     },
-    /* victoriametrics */
+    /* prometheus */
     {
-      groupName: "VictoriaMetrics",
-      matchPackagePatterns: [
-        ".*\\/vmalert",
-        ".*\\/victoria-metrics",
-      ],
-      customChangelogUrl: "https://github.com/VictoriaMetrics/VictoriaMetrics",
+      matchPackagePatterns: [".*\\/prometheus"],
+      customChangelogUrl: "https://github.com/prometheus/prometheus",
     },
     /* prowlarr */
     {
