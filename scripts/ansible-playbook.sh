@@ -5,11 +5,11 @@ set -eo pipefail
 allplaybooks=( )
 
 # playbook updates
-mapfile -t allplaybooks < <(git log -1 --name-only --oneline | grep -E "^(\w|-|_)+.y*ml")
+mapfile -t allplaybooks < <(git diff --name-only -r HEAD^1 HEAD | grep -E "^(\w|-|_)+.y*ml")
 echo "Playbooks changed: ${playbooks[*]}"
 
 # role updates
-mapfile -t roles < <(git log -1 --name-only --oneline | grep -E "^roles/(\w|-|_)+/.*" | cut -d "/" -f2)
+mapfile -t roles < <(git diff --name-only -r HEAD^1 HEAD | grep -E "^roles/(\w|-|_)+/.*" | cut -d "/" -f2)
 echo "Roles changed: ${roles[*]}"
 if (( ${#roles[@]} != 0 )); then
   for role in "${roles[@]}"; do

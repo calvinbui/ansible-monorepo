@@ -3,7 +3,7 @@
 set -eo pipefail
 
 if [[ -z $playbooks ]]; then
-  mapfile -t allplaybooks < <(git log -1 --name-only --oneline | grep -E "^(\w|-|_)+.y*ml")
+  mapfile -t allplaybooks < <(git diff --name-only -r HEAD^1 HEAD | grep -E "^(\w|-|_)+.y*ml")
 else
   IFS="," read -r -a playbooks <<< "${playbooks[@]}"
   allplaybooks=( )
