@@ -7,6 +7,14 @@
 
     docker_network: "{{ networks.pub }}"
 
+  handlers:
+    - name: Restart
+      community.docker.docker_container:
+        name: "{{ application }}"
+        restart: true
+        comparisons:
+          '*': ignore
+
   tasks:
     - name: Create config folder
       ansible.builtin.file:
@@ -18,6 +26,19 @@
       loop:
         - "{{ config_directory }}"
         - /var/log/gitea
+
+    - name: Create config
+      ansible.builtin.copy:
+        content: |
+          runner:
+            capacity: 10
+            timeout: 30m
+
+          container:
+            network: "{{ networks.user.name }}"
+        dest: "{{ config_directory }}/config.yaml"
+        mode: "0440"
+      notify: Restart
 
     - name: Create SSH folder
       ansible.builtin.file:
@@ -60,6 +81,7 @@
           - /var/run/docker.sock:/var/run/docker.sock
           - "{{ config_directory }}/data:/data"
           - "{{ config_directory }}/cache:/root/.cache"
+          - "{{ config_directory }}/config.yaml:/config.yaml"
         env:
           GITEA_INSTANCE_URL: "https://gitea.{{ common_tld }}"
           GITEA_RUNNER_REGISTRATION_TOKEN: !vault |
@@ -70,6 +92,8 @@
             3265613331666262300a346338643930663835653434643337303564363363306231373236666564
             38626639303938383662313030326561366665303965626262346432643161323737363633373463
             3363316636313531396131336161303330623063333333636536
+
+          CONFIG_FILE: /config.yaml
 
     - name: Copy Dockerfiles
       ansible.builtin.copy:
