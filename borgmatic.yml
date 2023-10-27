@@ -163,7 +163,7 @@
         name: docker_container
       vars:
         name: "borgmatic-{{ item.name }}"
-        image: b3vis/borgmatic:1.8.3
+        image: b3vis/borgmatic:1.8.4
         volumes:
           # data to backup. mount as rw when a restore is needed
           - "{{ item.source }}:/mnt/source:ro"
