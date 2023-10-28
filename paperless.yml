@@ -22,6 +22,7 @@
         create_home: false
         home: "{{ config_directory }}/consume"
         password: "$6$kmVZak.N77fAA.op$p84WnShU1IZhSZzAEsfecN4e3COs5N4Pp.tR8XtDVjAIOQHNabFjSbbBzSjx3oim/efOEW20bueoQcKYFTf.D1"
+        password_expire_max: -1
       register: _paperless_user
 
     - name: Create config directory
