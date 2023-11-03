@@ -36,7 +36,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: filebrowser/filebrowser:v2.25.0
+        image: filebrowser/filebrowser:v2.26.0
         user: "{{ common_user_id }}:{{ common_group_id }}"
         volumes:
           - "{{ common_directory_storage }}:/srv"
