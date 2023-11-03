@@ -247,7 +247,7 @@
     /* joplin */
     {
       matchPackagePatterns: ["joplin\\/server"],
-      prBodyNotes: "[changelog_server.md](https://github.com/laurent22/joplin/blob/dev/readme/changelog_server.md)",
+      prBodyNotes: "[changelog_server.md](https://github.com/laurent22/joplin/blob/dev/readme/about/changelog/server.md)",
     },
     /* alertmanager */
     {
