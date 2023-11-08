@@ -50,7 +50,7 @@ cards:
             entity: binary_sensor.alarm_motion_foyer
             variables:
               ulm_card_binary_sensor_alert_name: Foyer
-              ulm_show_last_changed: true
+              ulm_card_binary_sensor_show_last_changed: true
               ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
             <<: &alarm_sensor_status
               type: custom:button-card
@@ -59,7 +59,7 @@ cards:
             entity: binary_sensor.alarm_motion_dining
             variables:
               ulm_card_binary_sensor_alert_name: Downstairs
-              ulm_show_last_changed: true
+              ulm_card_binary_sensor_show_last_changed: true
               ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
             <<: *alarm_sensor_status
       -
@@ -69,14 +69,14 @@ cards:
             entity: binary_sensor.alarm_motion_upstairs_hallway
             variables:
               ulm_card_binary_sensor_alert_name: Upstairs
-              ulm_show_last_changed: true
+              ulm_card_binary_sensor_show_last_changed: true
               ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
             <<: *alarm_sensor_status
           -
             entity: binary_sensor.camera_backyard_motion
             variables:
               ulm_card_binary_sensor_alert_name: Backyard
-              ulm_show_last_changed: true
+              ulm_card_binary_sensor_show_last_changed: true
               ulm_card_binary_sensor_alert_icon: mdi:cctv
             <<: *alarm_sensor_status
       -
@@ -86,14 +86,14 @@ cards:
             entity: binary_sensor.camera_driveway_motion
             variables:
               ulm_card_binary_sensor_alert_name: Driveway
-              ulm_show_last_changed: true
+              ulm_card_binary_sensor_show_last_changed: true
               ulm_card_binary_sensor_alert_icon: mdi:cctv
             <<: *alarm_sensor_status
           -
             entity: binary_sensor.garage_motion
             variables:
               ulm_card_binary_sensor_alert_name: Garage
-              ulm_show_last_changed: true
+              ulm_card_binary_sensor_show_last_changed: true
               ulm_card_binary_sensor_alert_icon: mdi:cctv
             <<: *alarm_sensor_status
       -
@@ -103,13 +103,13 @@ cards:
             entity: binary_sensor.rear_balcony_motion
             variables:
               ulm_card_binary_sensor_alert_name: Rear Balcony
-              ulm_show_last_changed: true
+              ulm_card_binary_sensor_show_last_changed: true
               ulm_card_binary_sensor_alert_icon: mdi:cctv
             <<: *alarm_sensor_status
           -
             entity: binary_sensor.camera_outdoor_side_motion
             variables:
               ulm_card_binary_sensor_alert_name: Outdoor Side
-              ulm_show_last_changed: true
+              ulm_card_binary_sensor_show_last_changed: true
               ulm_card_binary_sensor_alert_icon: mdi:cctv
             <<: *alarm_sensor_status
