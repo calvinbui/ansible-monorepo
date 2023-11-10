@@ -175,7 +175,7 @@
     {
       matchPackagePatterns: [".*\\/mattermost-(team|enterprise)-edition"],
       customChangelogUrl: "https://github.com/mattermost/mattermost-server",
-      prBodyNotes: "[Changelog](https://docs.mattermost.com/install/self-managed-changelog.html)",
+      prBodyNotes: "[Mattermost changelog](https://docs.mattermost.com/deploy/mattermost-changelog.html)",
     },
     /* onlyoffice */
     {
