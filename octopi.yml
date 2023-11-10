@@ -1,5 +1,8 @@
 ---
 
+# Download and install OctoPi from https://github.com/OctoPrint/OctoPi-UpToDate
+# On the first Ansible run, use `-K`
+
 - hosts: octopi
 
   vars:
@@ -9,17 +12,22 @@
 
     octodash_api_key: !vault |
       $ANSIBLE_VAULT;1.1;AES256
-      39323665313038653735633130323237383734633061303236363562333562353565623932343834
-      6262303365353765613965663366326639353765316437620a623765633232633830363430623361
-      32663061386430343331393130373264626433663735653763376637386634333536313066636630
-      3031373933613235390a313132616136366634333866343434666661363963646531316337326162
-      36396264316634353961386538646336353530633162303363366263393332383037333263393730
-      6237646633613132633033343664376632636462633033633837
+      62636163363931333466386636393564353064313264396532303639653461373635376362383136
+      3437626433333037326563353962363561636138316334330a306537663930346230383235353762
+      33363133376365346338616633613037616564646331353230323562656439663730636561613534
+      3833633830626433320a326464323131623732396637353865366264666664396464613436383664
+      35363835313564623031393563306666303763333330343932653639316537376230633135383135
+      6230326261396163653438323762353864303933323131333637
 
   handlers:
     - name: Reboot
       ansible.builtin.reboot:
         reboot_timeout: 360
+
+    - name: Restart OctoPrint
+      ansible.builtin.service:
+        name: octoprint
+        state: restarted
 
   tasks:
     - name: Disable requiretty to enable Ansible pipelining
@@ -72,6 +80,7 @@
           - dnsutils
           - git
           - avrdude
+          - python3-yaml
         state: present
 
     - name: Remove packages
@@ -90,97 +99,10 @@
         path: /root/bin/git
         state: absent
 
-    - name: Disable Wi-Fi and Bluetooth
-      ansible.builtin.lineinfile:
-        dest: /etc/modprobe.d/blacklist-wifi-bt.conf
-        state: present
-        regex: "^blacklist {{ item }}$"
-        line: "blacklist {{ item }}"
-        mode: "0644"
-        create: true
-      loop:
-        # wifi
-        - brcmfmac
-        - brcmutil
-        # bluetooth
-        - hci_uart
-        - btbcm
-        - btintel
-        - rfcom
-        - btqca
-        - btsdio
-        - bluetooth
-      notify: Reboot
-
-    # hyperpixel installation
-    - name: HyperPixel 4 driver installation and configuration
-      block:
-        - name: Install hyperpixel dependencies
-          ansible.builtin.apt:
-            name:
-              - device-tree-compiler
-              - xinput
-            state: present
-
-        - name: Clone hyperpixel drivers repo
-          ansible.builtin.git:
-            repo: https://github.com/pimoroni/hyperpixel4.git
-            version: pi4  # update if changing devices
-            dest: /root/hyperpixel4
-            single_branch: true
-            update: true
-          notify: Reboot
-
-        - name: Check if hyperpixel drivers are installed and running
-          ansible.builtin.service_facts: ~
-
-        - name: Install hyperpixel drivers
-          ansible.builtin.command: sudo ./install.sh
-          args:
-            chdir: /root/hyperpixel4
-          changed_when: true
-          notify: Reboot
-          register: _hyperpixel_driver_install
-          when: "'hyperpixel4-init.service' not in ansible_facts.services"
-
-        - name: Print hyperpixel installation output
-          ansible.builtin.debug:
-            msg: "{{ _hyperpixel_driver_install.stdout_lines }}"
-          notify: Reboot
-          when: "'hyperpixel4-init.service' not in ansible_facts.services"
-
-        # https://github.com/pimoroni/hyperpixel4/issues/111#issuecomment-932707716
-        - name: Rotate hyperpixel display
-          community.general.ini_file:
-            path: /boot/config.txt
-            section: "{{ item.section }}"
-            option: "{{ item.option }}"
-            value: "{{ item.value | default(omit) }}"
-            state: "{{ item.state | default('present') }}"
-            no_extra_spaces: true
-            mode: "0755"
-          loop:
-            - section: pi4
-              option: "dtoverlay"
-              state: absent
-            - section: pi4
-              option: "display_lcd_rotate"
-              value: "3"
-
-        - name: Fix touchscreen input
-          ansible.builtin.lineinfile:
-            path: "/usr/share/X11/xorg.conf.d/40-libinput.conf"
-            line: '        Option "TransformationMatrix" "0 -1 1 1 0 0 0 0 1"'
-            insertafter: Identifier "libinput touchscreen catchall"
-            owner: "root"
-            group: "root"
-            mode: "0644"
-
-    # octodash installation
     - name: OctoDash installation and configuration
       block:
         # https://github.com/UnchartedBull/OctoDash/wiki/Installation#manual-installation
-        - name: Install octodash dependencies
+        - name: Install OctoDash dependencies
           ansible.builtin.apt:
             name:
               - libgtk-3-0
@@ -193,8 +115,8 @@
               - libuuid1
               - libappindicator3-1
               - libsecret-1-0
-              - gir1.2-gnomekeyring-1.0
-              # packages below needed starting octodash on boot
+
+              # packages below needed for starting octodash on boot
               - xserver-xorg
               - ratpoison
               - x11-xserver-utils
@@ -204,9 +126,7 @@
 
         - name: Install OctoDash
           ansible.builtin.apt:
-            deb: "https://github.com/UnchartedBull/OctoDash/releases/download/v{{ octodash_version }}/octodash_{{ octodash_version }}_armv7l.deb"
-          vars:
-            octodash_version: 2.3.1
+            deb: "https://github.com/UnchartedBull/OctoDash/releases/download/v2.3.1/octodash_2.3.1_armv7l.deb"
           notify: Reboot
 
         - name: Enable Console Autologin
@@ -239,16 +159,51 @@
               fi
             path: "/home/{{ common_user }}/.bashrc"
 
+        - name: Create OctoDash config directory
+          ansible.builtin.file:
+            path: "/home/pi/.config/octodash/"
+            state: directory
+            owner: "{{ common_user }}"
+            group: "{{ common_user }}"
+            mode: "0700"
+
         - name: Configure OctoDash
           ansible.builtin.template:
             src: "{{ files_directory }}/octodash/config.json.j2"
-            dest: "/home/pi/.config/octodash/config.json"
+            dest: "/home/{{ common_user }}/.config/octodash/config.json"
             owner: "{{ common_user }}"
             group: "{{ common_user }}"
             mode: "0740"
           notify: Reboot
 
-    # webcam configuration
+        - name: Rotate X11 for Octodash
+          ansible.builtin.copy:
+            content: |
+              Section "Monitor"
+                Identifier "DPI-1"
+                Option "Rotate" "left"
+              EndSection
+            dest: "/usr/share/X11/xorg.conf.d/88-dsi-1-rotate.conf"
+            mode: "0644"
+            owner: "root"
+            group: "root"
+          notify: Reboot
+
+        - name: Fix touchscreen input for rotated screen
+          ansible.builtin.copy:
+            content: |
+              Section "InputClass"
+                Identifier "HyperPixel4 Goodix Capacitive TouchScreen"
+                MatchProduct "Goodix Capacitive TouchScreen"
+                Option "CalibrationMatrix" "1 0 0 0 1 0 0 0 1"
+                Option "TransformationMatrix" "0 -1 1 1 0 0 0 0 1"
+              EndSection
+            dest: "/usr/share/X11/xorg.conf.d/88-hyperpixel4-touch.conf"
+            mode: "0644"
+            owner: "root"
+            group: "root"
+          notify: Reboot
+
     - name: Disable webcam autofocus and set manual focus
       ansible.builtin.lineinfile:
         path: /etc/rc.local
@@ -257,3 +212,177 @@
       loop:
         - v4l2-ctl --set-ctrl=focus_auto=0
         - v4l2-ctl --set-ctrl=focus_absolute=4
+
+    # https://github.com/pimoroni/hyperpixel4/issues/177
+    - name: Enable HyperPixel display
+      community.general.ini_file:
+        path: /boot/config.txt
+        section: null
+        option: dtoverlay
+        value: "{{ item }}"
+        state: present
+        no_extra_spaces: true
+        mode: "0755"
+        exclusive: false
+      loop:
+        - vc4-kms-v3d
+        - vc4-kms-dpi-hyperpixel4,rotate=270
+      notify: Reboot
+
+    - name: Install plugins
+      ansible.builtin.pip:
+        name: "{{ item }}"
+        executable: "/home/{{ common_user }}/oprint/bin/pip"
+        state: present
+      become_user: "{{ common_user }}"
+      become: false
+      loop:
+        - https://github.com/TheSpaghettiDetective/OctoPrint-Obico/archive/master.zip
+        - https://github.com/jneilliii/OctoPrint-OctoDashCompanion/archive/master.zip
+        - https://github.com/jneilliii/OctoPrint-TPLinkSmartplug/archive/master.zip
+        - https://github.com/OllisGit/OctoPrint-DisplayLayerProgress/releases/latest/download/master.zip
+        - https://github.com/marian42/octoprint-preheat/archive/master.zip
+        - https://github.com/eyal0/OctoPrint-PrintTimeGenius/archive/master.zip
+        - https://github.com/jneilliii/OctoPrint-PrusaSlicerThumbnails/archive/master.zip
+        - https://github.com/fraschetti/Octoslack/archive/master.zip
+      notify: Restart OctoPrint
+
+    - name: Check if config is ready for updating
+      yedit: # noqa fqcn[action]
+        src: "/home/{{ common_user }}/.octoprint/config.yaml"
+        key: appearance.color
+        state: list
+      register: _octoprint_config_ready
+
+    - name: Prompt to go through startup process
+      ansible.builtin.pause:
+        prompt: "Go through the setup process https://{{ application }}.{{ common_tld }} save the config first"
+      when: _octoprint_config_ready.result != "black"
+
+    - name: Configure OctoPrint
+      yedit: # noqa fqcn[action]
+        src: "/home/{{ common_user }}/.octoprint/config.yaml"
+        key: "{{ item.key }}"
+        value: "{{ item.value }}"
+      notify: Restart OctoPrint
+      loop: "{{ _octoprint_config | dict2items }}"
+      vars:
+        _octoprint_config:
+          api.allowCrossOrigin: true
+
+          appearance:
+            color: black
+            defaultLanguage: en
+            fuzzyTimes: false
+            showInternalFilename: false
+
+          feature:
+            modelSizeDetection: false
+            sdSupport: false
+
+          plugins.DisplayLayerProgress:
+            showAllPrinterMessages: false
+            showOnBrowserTitle: false
+            showOnNavBar: false
+
+          plugins.Octoslack.channel: 3d-printing
+          plugins.Octoslack.connection_method: WEBHOOK
+          plugins.Octoslack.include_raspi_temp: false
+          plugins.Octoslack.mattermost_compatability_mode: true
+          plugins.Octoslack.minio_config:
+            AccessKey: XqmnkyiQ0sy9uhMRFlQw
+            Bucket: octoprint
+            Endpoint: minio.{{ common_tld }}
+            SecretKey: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              35333065386639356632386239343435316237323832373630393464326530623235653264323634
+              3338626336656138663832616363653162636538613161390a373035653262366231616534613630
+              61613537646438643232643764623564666533316135623132663262383866353930626463353138
+              3465346465333363620a343331303438313465636639643561653063336664633564343637353035
+              62623834303638656163656466353937623131386430333364626265393830333736643866663230
+              6435653836653161626362383063396364343138653762613134
+          plugins.Octoslack.slack_webhook_config.webhook_url: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            65653933633863373061636237613163323335656264366137393234633465353734373832393731
+            3264393161383431333539383139613635633830303530620a323232343465303136616637393936
+            34323636356665623562313833303664613539613230303438343839643261393036636632333031
+            6237386531323437360a373330623239376635363839343165316263373433316265653065663563
+            33636564383636613130326539303439323464363662353963653030653630363734623662393766
+            64633634373737643636666138306236626565306365613162613664393364383234656437356161
+            36626632353731333565313565323430363431383333303733306462333539313064386237643539
+            38343534376264623764
+          plugins.Octoslack.snapshot_upload_method: MINIO
+          plugins.Octoslack.supported_events.PrintStarted.Enabled: false
+          plugins.Octoslack.supported_events.PrintFailed.Enabled: false
+          plugins.Octoslack.supported_events.PrintCancelling.Enabled: false
+          plugins.Octoslack.supported_events.PrintCancelled.Enabled: false
+          plugins.Octoslack.supported_events.PrintPaused.Enabled: false
+          plugins.Octoslack.supported_events.PrintResumed.Enabled: false
+          plugins.Octoslack.supported_events.Error.Enabled: true
+          plugins.Octoslack.supported_events.PrintDone.Enabled: true
+          plugins.Octoslack.supported_events.PrintDone.CaptureSnapshot: true
+
+          plugins._disabled:
+            - tracking
+            - logging
+            - virtual_printer
+
+          plugins.announcements.enabled_channels:
+            - _important
+            - _releases
+
+          plugins.tplinksmartplug.arrSmartplugs:
+            - autoConnect: true
+              autoConnectDelay: 10
+              autoDisconnect: true
+              autoDisconnectDelay: 0
+              automaticShutdownEnabled: true
+              btnColor: '#808080'
+              countdownOffDelay: 1
+              countdownOnDelay: '0'
+              currentState: 'off'
+              displayWarning: false
+              emeter:
+                get_realtime: {}
+              event_on_disconnect: false
+              event_on_error: false
+              event_on_shutdown: false
+              event_on_startup: false
+              event_on_upload: false
+              gcodeCmdOff: false
+              gcodeCmdOn: false
+              gcodeEnabled: false
+              gcodeOffDelay: 0
+              gcodeOnDelay: 0
+              gcodeRunCmdOff: ''
+              gcodeRunCmdOn: ''
+              icon: icon-print
+              ip: 192.168.3.23/3
+              label: Printer & Lights
+              sysCmdOff: false
+              sysCmdOffDelay: 0
+              sysCmdOn: false
+              sysCmdOnDelay: 0
+              sysRunCmdOff: ''
+              sysRunCmdOn: ''
+              thermal_runaway: false
+              useCountdownRules: true
+              warnPrinting: true
+
+          plugins.tplinksmartplug.idleTimeout: '15'
+          plugins.tplinksmartplug.powerOffWhenIdle: true
+
+          plugins.tracking.enabled: false
+
+          server.onlineCheck.enabled: false
+          server.pluginBlacklist.enabled: false
+
+          temperature.profiles:
+            - bed: 85
+              extruder: 230
+              name: PETG
+            - bed: 60
+              extruder: 210
+              name: PLA
+
+          webcam.timelapseEnabled: false
