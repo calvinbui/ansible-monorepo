@@ -6,7 +6,5 @@
 {% for i in home_assistant_integrations.caldav %}
 - platform: caldav
   url: {{ i.url }}
-  username: {{ i.username }}
-  password: {{ i.password }}
   custom_calendars: {{ i.custom_calendars }}
 {% endfor %}
