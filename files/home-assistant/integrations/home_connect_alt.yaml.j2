@@ -4,5 +4,9 @@
 
 client_id: "{{ home_assistant_integrations.home_connect_alt.client_id }}"
 client_secret: "{{ home_assistant_integrations.home_connect_alt.client_secret }}"
+
 language: "en"
-name_template: "$appliance - $name"
+
+appliance_settings:
+  bosch_wax32k41au_68a40e43fa03:
+    name_template: $name
