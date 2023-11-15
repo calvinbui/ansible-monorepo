@@ -373,7 +373,6 @@
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
         mode: "0771"
-      notify: Restart
 
     - name: Download gtfs static data
       ansible.builtin.get_url:
@@ -381,8 +380,15 @@
         dest: "{{ config_directory }}/config/gtfs/full_greater_sydney_gtfs_static_0.zip"
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
-        checksum: "sha256:d8070178d3cd3ad55333ca6d11d4c153042a9c229e758f51e1326d6ba089fb56"
         mode: "0644"
+      register: _gtfs_static_data
+
+    - name: Delete existing gtfs sqlite database
+      ansible.builtin.file:
+        path: "{{ config_directory }}/config/gtfs/transport_nsw_timetables_complete.sqlite"
+        state: absent
+      when: _gtfs_static_data.changed
+      notify: Restart
 
     - name: Install HACS
       community.docker.docker_container_exec:
