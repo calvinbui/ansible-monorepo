@@ -1,0 +1,84 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: fitbit-activity-generator
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Clone
+      ansible.builtin.git:
+        repo: "https://github.com/calvinbui/fitbit-activity-generator.git"
+        version: master
+        dest: "{{ config_directory }}/repo"
+        update: true
+      register: _fitbit_activity_generator_repo_updated
+
+    - name: Build image
+      community.docker.docker_image:
+        name: "{{ application }}"
+        build:
+          path: "{{ config_directory }}/repo"
+          dockerfile: Dockerfile
+          pull: true
+        source: build
+        state: present
+        force_source: "{{ true if _fitbit_activity_generator_repo_updated.changed else false }}"
+
+    - name: Create Calvin's container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-calvin"
+        image: "{{ application }}"
+        volumes:
+          - "{{ config_directory }}/calvin.json:/usr/src/app/token.json"
+        env:
+          CLIENT_ID: "23RFN5"
+          CLIENT_SECRET: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            39303233383734383039643464363633336332316133633363343337386366656632613863616432
+            6438376330633239353065323062303638616239653339350a663366323937303631646165636333
+            32623763326638643736353966373663636637643439626234353436653430336130663033656134
+            3366366437343432660a646330303062383831656139363363613965646433383831656166613332
+            61343465636465613864636630623338393337346231343963313136656462393238343332323631
+            3933376366373231303431363935656338313065363636623633
+
+          INTERVAL: "10"
+          TZ: "{{ common_timezone }}"
+        labels:
+          com.centurylinklabs.watchtower.enable: "false"
+
+    - name: Create Tammy's container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-tammy"
+        image: "{{ application }}"
+        env:
+          CLIENT_ID: "23RG37"
+          CLIENT_SECRET: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            61363333316335616533613766633265356435356164656561643765633638306563376462363161
+            3464333635646538323736363934656530393731656435360a343161353966623862323032343739
+            31666539393332303564336161623966343163653036393331653936623834346136623338653161
+            3231666535333938300a613261656239626263353036336631356433313563633464343035613131
+            61366537383865633630626463366261343361646665663262316266313232643032313538623738
+            6238383335396636323064353130346439616239353238346230
+
+          INTERVAL: "10"
+          TZ: "{{ common_timezone }}"
+        volumes:
+          - "{{ config_directory }}/tammy.json:/usr/src/app/token.json"
+        labels:
+          com.centurylinklabs.watchtower.enable: "false"
