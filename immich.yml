@@ -103,6 +103,25 @@
         volumes:
           - &immich_upload_volume "{{ common_directory_photos }}/Immich:/usr/src/app/upload"
           - &immich_localtime_volume /etc/localtime:/etc/localtime:ro
+        traefik:
+          - port: 3001
+            rule: Host(`{{ application }}.{{ common_tld }}`)
+        homepage:
+          name: Immich
+          href: "https://{{ application }}.{{ common_tld }}"
+          group: Favourites
+          weight: 150
+          description: "Photo & Video Backup"
+          widget:
+            key: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              35353165356338663039616161303033663337316662353462346437383838303563323433643730
+              3261306631623564386263613764323861333239643162350a663539633632353939373265666335
+              33303364343462333937323831633133623534383539656234623036323662383666323031353932
+              3931623363353562360a386164666166393035343233333838346466386639326465616261363063
+              63366336313835626133346365306236626336656132633235313365386335326533376330633865
+              6362326364633466656238633135313362303033306136336337
+            fields: '["photos", "videos", "storage"]'
 
     - name: Create microservices container
       ansible.builtin.include_role:
@@ -138,40 +157,3 @@
         volumes:
           - *immich_upload_volume
           - "{{ config_directory }}/ml-cache:/cache"
-
-    - name: Create web container
-      ansible.builtin.include_role:
-        name: docker_container
-      vars:
-        name: "{{ application }}-web"
-        image: ghcr.io/immich-app/immich-web:v1.87.0
-        env: *immich_shared_env
-
-    - name: Create proxy container
-      ansible.builtin.include_role:
-        name: docker_container
-      vars:
-        name: "{{ application }}-proxy"
-        image: ghcr.io/immich-app/immich-proxy:v1.87.0
-        env:
-          IMMICH_WEB_URL: *immich_web_url
-          IMMICH_SERVER_URL: *immich_server_url
-        traefik:
-          - port: 8080
-            rule: Host(`{{ application }}.{{ common_tld }}`)
-        homepage:
-          name: Immich
-          href: "https://{{ application }}.{{ common_tld }}"
-          group: Favourites
-          weight: 150
-          description: "Photo & Video Backup"
-          widget:
-            key: !vault |
-              $ANSIBLE_VAULT;1.1;AES256
-              35353165356338663039616161303033663337316662353462346437383838303563323433643730
-              3261306631623564386263613764323861333239643162350a663539633632353939373265666335
-              33303364343462333937323831633133623534383539656234623036323662383666323031353932
-              3931623363353562360a386164666166393035343233333838346466386639326465616261363063
-              63366336313835626133346365306236626336656132633235313365386335326533376330633865
-              6362326364633466656238633135313362303033306136336337
-            fields: '["photos", "videos", "storage"]'
