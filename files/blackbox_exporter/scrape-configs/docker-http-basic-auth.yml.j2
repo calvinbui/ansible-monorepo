@@ -19,10 +19,10 @@ scrape_configs:
         action: keep
         source_labels: [__meta_docker_container_label_blackbox_auth]
         regex: 'basic'
-      - # Only keep containers that have a `blackbox.target` label.
+      - # Only keep containers that have a https `blackbox.target` label.
         action: keep
         source_labels: [__meta_docker_container_label_blackbox_target]
-        regex: ".+"
+        regex: "https.*"
       - # Get target from `blackbox.target` label
         source_labels: [__meta_docker_container_label_blackbox_target]
         target_label: __param_target

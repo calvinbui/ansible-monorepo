@@ -14,3 +14,18 @@
     -
       key: "blackbox.target"
       value: "https://{{ (route.rule | regex_replace('^Host\\(`(.*)`\\)$', '\\1')) if route.rule is defined else (route_name + '.' + common_tld) }}{{ blackbox.path | default('') }}"
+
+- name: "Generating TCP blackbox service discovery labels"
+  when: route.type is defined and route.type == "tcp"
+  ansible.builtin.set_fact:
+    blackbox_labels: "{{ blackbox_labels | default({}) | combine({item.key: item.value}) }}"
+  loop:
+    -
+      key: "blackbox.enable"
+      value: "true"
+    -
+      key: "blackbox.probe"
+      value: "tcp"
+    -
+      key: "blackbox.target"
+      value: "{{ common_tld }}:{{ route.port }}"
