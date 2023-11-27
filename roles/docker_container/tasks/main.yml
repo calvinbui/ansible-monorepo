@@ -61,7 +61,7 @@
 # Prometheus Blackbox service discovery using Traefik
 - name: Generate blackbox service discovery labels via Traefik
   ansible.builtin.include_tasks: blackbox.yml
-  when: (traefik is defined) or (blackbox is defined)
+  when: (traefik is defined or blackbox is defined) and (blackbox.enable is true or blackbox.enable is undefined) and ((route.type is defined and route.type != "udp") or route.type is undefined)
   vars:
     route: "{{ traefik | first }}"  # only loop once on the main entrypoint
     route_name: "{{ route.name | default(name) | default(application) }}"
@@ -69,7 +69,7 @@
 - name: Merge generated Blackbox and Docker labels
   ansible.builtin.set_fact:
     combined_labels: "{{ combined_labels | combine(blackbox_labels, recursive=True) }}"
-  when: (traefik is defined) or (blackbox is defined)
+  when: blackbox_labels
 
 # Create container
 - name: "Create docker container for {{ name | default(application) }}"

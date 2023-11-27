@@ -1,7 +1,6 @@
 ---
 
 - name: "Generating blackbox service discovery labels"
-  when: traefik is defined
   ansible.builtin.set_fact:
     blackbox_labels: "{{ blackbox_labels | default({}) | combine({item.key: item.value}) }}"
   loop:

@@ -31,10 +31,6 @@
               ] | join(',')
             }}
           LOG_LEVEL: "0"
-        labels:
-          '{
-            "traefik.enable": "true",
-            "traefik.udp.routers.{{ application }}.entrypoints": "ntp",
-            "traefik.udp.routers.{{ application }}.service": "ntp",
-            "traefik.udp.services.{{ application }}.loadbalancer.server.port": "123"
-          }'
+        traefik:
+          - port: 123
+            type: udp
