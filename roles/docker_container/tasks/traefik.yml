@@ -67,6 +67,20 @@
     - key: "traefik.udp.services.{{ route_name }}.loadbalancer.server.port"
       value: "{{ route.port | string }}"
 
+- name: "Generating TCP Traefik labels for {{ route_name }}"
+  when: traefik and (route.type is defined and route.type == "tcp")
+  ansible.builtin.set_fact:
+    traefik_labels: "{{ traefik_labels | default({}) | combine({item.key: item.value}) }}"
+  loop:
+    - key: "traefik.tcp.routers.{{ route_name }}.entrypoints"
+      value: "{{ route_name }}"
+    - key: "traefik.tcp.routers.{{ route_name }}.service"
+      value: "{{ route_name }}"
+    - key: "traefik.tcp.services.{{ route_name }}.loadbalancer.server.port"
+      value: "{{ route.port | string }}"
+    - key: "traefik.tcp.routers.{{ route_name }}.rule"
+      value: "{{ route.rule | default('HostSNI(`*`)') }}"
+
 - name: Add {{ route_name }} priority
   when: route.priority is defined
   ansible.builtin.set_fact:

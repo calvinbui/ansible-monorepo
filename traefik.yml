@@ -82,6 +82,8 @@
           - 443:443/tcp
           - 443:443/udp
           - 123:123/udp
+          - 21115-21117:21115-21117/tcp
+          - 21116:21116/udp
 
     - name: Create logrotate container
       ansible.builtin.include_role:

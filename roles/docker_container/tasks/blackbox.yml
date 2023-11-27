@@ -1,6 +1,7 @@
 ---
 
-- name: "Generating blackbox service discovery labels"
+- name: "Generating HTTP blackbox service discovery labels"
+  when: route.type is undefined or (route.type is defined and route.type == "http")
   ansible.builtin.set_fact:
     blackbox_labels: "{{ blackbox_labels | default({}) | combine({item.key: item.value}) }}"
   loop:

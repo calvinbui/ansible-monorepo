@@ -33,6 +33,15 @@ entryPoints:
   ntp:
     address: ':123/udp'
 
+  rustdesk-nat-type-test:
+    address: ':21115/tcp'
+  rustdesk-tcp-hole-punching:
+    address: ':21116/tcp'
+  rustdesk-id-registration-and-heartbeat:
+    address: ':21116/udp'
+  rustdesk-relay-services:
+    address: ':21117/tcp'
+
 certificatesResolvers:
   {{ traefik_certresolver }}:
     acme:
