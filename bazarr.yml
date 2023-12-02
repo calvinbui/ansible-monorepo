@@ -77,50 +77,53 @@
 
     - name: If "{{ application }}" has not been configured, go through the initial setup to generate a configuration file.
       ansible.builtin.wait_for:
-        path: "{{ config_directory }}/config/config/config.ini"
+        path: "{{ config_directory }}/config/config/config.yaml"
         state: present
 
     - name: Configure
-      community.general.ini_file:
-        path: "{{ config_directory }}/config/config/config.ini"
-        section: "{{ item.key.split('.')[0] }}"
-        option: "{{ item.key.split('.')[1] }}"
-        value: "{{ item.value | string }}"
-        owner: "{{ common_user }}"
-        group: "{{ common_root_group }}"
-        mode: "0664"
-      loop: "{{ _bazarr_config | dict2items }}"
+      yedit: # noqa fqcn[action]
+        src: "{{ config_directory }}/config/config/config.yaml"
+        key: "{{ item.key }}"
+        value: "{{ item.value }}"
       notify: Restart
+      loop: "{{ _bazarr_config | dict2items }}"
       vars:
         _bazarr_config:
-          analytics.enabled: "False"
+          analytics.enabled: false
 
-          general.single_language: "True"
-          general.upgrade_manual: "False"
-          general.upgrade_subs: "False"
+          general.single_language: true
+          general.upgrade_manual: false
+          general.upgrade_subs: false
 
-          general.use_sonarr: "True"
+          general.use_sonarr: true
           sonarr.ip: "sonarr.{{ docker_network.name }}"
           sonarr.apikey: "{{ sonarr_api_key }}"
-          general.path_mappings: "[['/tv', '/tv'], ['', ''], ['', ''], ['', ''], ['', '']]"
-          general.serie_default_enabled: "True"
-          general.serie_default_language: "['en']"
+          general.path_mappings:
+            - - /tv
+              - /tv
+          general.serie_default_enabled: true
+          general.serie_default_language:
+            - en
 
-          general.use_radarr: "True"
+          general.use_radarr: true
           radarr.apikey: "{{ radarr_api_key }}"
           radarr.ip: "radarr.{{ docker_network.name }}"
-          general.path_mappings_movie: "[['/movies', '/movies'], ['', ''], ['', ''], ['', ''], ['', '']]"
-          general.movie_default_enabled: "True"
-          general.movie_default_language: "['en']"
+          general.path_mappings_movie:
+            - - /movies
+              - /movies
+          general.movie_default_enabled: true
+          general.movie_default_language:
+            - en
 
-          general.enabled_providers: "['opensubtitlescom']"
+          general.enabled_providers:
+            - opensubtitlescom
           opensubtitlescom.username: !vault |
             $ANSIBLE_VAULT;1.1;AES256
-            35313938306365353935653763316133393663613038303363646435333030363966636664656262
-            3162633637633737303131643438306539333234646239640a383135366532633433623561343032
-            32393232663765653264386234393838633831646465303832613935376637303438383965626365
-            3537663737656337360a643062303766316132643639366164373664313661666264643837396535
-            33363030326635666232313731343430623661656338333866653633636635666365
+            65643231396430666238363363643064303837636337663738663239393230656537626230373431
+            3237383861333661616439646564653964623530386132330a663465333562636564373436383863
+            39393733333131626533656433643931353763393034393130656136346366613538366663356664
+            3936643862373332380a356336343031346565656364326664626238633232353562626232633033
+            3538
           opensubtitlescom.password: !vault |
             $ANSIBLE_VAULT;1.1;AES256
             32306537663434656133316230383939376133613234316137306131313636643435383437396335
@@ -128,4 +131,4 @@
             64653031646462316466343235366536313537373234373038663539383762326661626133663236
             3536306464613064360a663537303961323862366339663864326139626165653432313762373562
             6533
-          opensubtitlescom.use_hash: "False"
+          opensubtitlescom.use_hash: false
