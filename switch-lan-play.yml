@@ -1,0 +1,35 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: switch-lan-play
+
+    docker_network: "{{ networks.iot }}"
+
+  tasks:
+    - name: Create server container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-server"
+        image: spacemeowx2/switch-lan-play:v0.2.3
+        traefik:
+          -
+            name: "{{ application }}-tcp"
+            port: 11451
+            type: tcp
+          -
+            name: "{{ application }}-udp"
+            port: 11451
+            type: udp
+
+    - name: Create client container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-client"
+        image: sheepgreen/switch-lan-play-client:latest
+        command:
+          - --relay-server-addr
+          - "{{ application }}-server.{{ docker_network.name }}:11451"

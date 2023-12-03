@@ -42,6 +42,11 @@ entryPoints:
   rustdesk-relay-services:
     address: ':21117/tcp'
 
+  switch-lan-play-tcp:
+    address: ':11451/tcp'
+  switch-lan-play-udp:
+    address: ':11451/udp'
+
 certificatesResolvers:
   {{ traefik_certresolver }}:
     acme:
