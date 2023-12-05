@@ -6,7 +6,7 @@
 
   rebaseWhen: "conflicted",
 
-  dependencyDashboard: true,
+  dependencyDashboard: false,
 
   ansible: {
     fileMatch: ["^.*\\.ya?ml$"],
