@@ -15,12 +15,12 @@ exclude_patterns:
   {% endfor %}
 {% endif %}
 
-compression: none
+compression: auto,zstd,1
 
 check_i_know_what_i_am_doing: true
 
-keep_daily: 7
-keep_weekly: 2
+keep_daily: 6
+keep_weekly: 3
 keep_monthly: 1
 
 on_error:
