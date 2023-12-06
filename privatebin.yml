@@ -53,7 +53,7 @@
         dest: "{{ config_directory }}/cfg/conf.php"
         mode: "0644"
         owner: nobody
-        group: "82"
+        group: "82"  # nobody in alpine
       notify: Restart
 
     - name: Create container
