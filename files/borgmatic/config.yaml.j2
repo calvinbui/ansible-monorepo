@@ -5,7 +5,7 @@ source_directories:
   - /mnt/source
 
 repositories:
-  - path: ssh://{{ item.repository }}/./repo
+  - path: {{ item.repository }}
     label: {{ item.name }}
 
 {% if item.exclude_patterns is defined %}
