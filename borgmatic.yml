@@ -27,7 +27,7 @@
         crontab: "30 1 * * *"
         repository: ssh://azy1uocs@azy1uocs.repo.borgbase.com/./repo
         exclude_patterns:
-          - "/mnt/source/Time Machine" # too big
+          - "/mnt/source/Time Machine"
 
       - name: misc
         source: "{{ common_directory_misc }}"
@@ -49,19 +49,35 @@
         crontab: "0 4 * * *"
         repository: ssh://y8p6ha46@y8p6ha46.repo.borgbase.com/./repo
         exclude_patterns:
+          - "/mnt/source/home-assistant/config/gtfs"
+
+          - "/mnt/source/nextcloud/app/data/*/cache"
+
           - "/mnt/source/languagetool"
 
-          - "/mnt/source/nextcloud/nextcloud/app/data/*/cache"
-          - "/mnt/source/nextcloud/nextcloud/build"
+          - "/mnt/source/plex/Library/Application Support/Plex Media Server/Cache"
 
-          - "/mnt/source/unifi/data/backup"
-          - "/mnt/source/unifi/data/db/diagnostic.data"
+          - "/mnt/source/renovate"
 
-          - "/mnt/source/monitoring/prometheus/data"
+          - "/mnt/source/immich/ml-cache"
 
-          - "/mnt/source/libretranslate/LibreTranslate"
-          - "/mnt/source/libretranslate/argos-translate"
-          - "/mnt/source/libretranslate/cache"
+          - "/mnt/source/nvidia"
+
+          - "/mnt/source/vscode/repos"
+
+          - "/mnt/source/obico/repo"
+
+          - "/mnt/source/esphome"
+
+          - "/mnt/source/webtop"
+
+          - "/mnt/source/recyclarr"
+
+          - "/mnt/source/prometheus"
+
+          - "/mnt/source/portainer/backups"
+
+          - "/mnt/source/*/cache"
 
           - "/mnt/source/*/*/log"
           - "/mnt/source/*/*/log.*"
