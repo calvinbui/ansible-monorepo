@@ -15,7 +15,7 @@ exclude_patterns:
   {% endfor %}
 {% endif %}
 
-compression: auto,zstd,1
+compression: {{ item.compression | default('zstd,1') }}
 
 check_i_know_what_i_am_doing: true
 
