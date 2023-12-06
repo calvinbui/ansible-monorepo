@@ -3,3 +3,4 @@ ansible==8.5.0
 ncclient==0.6.15
 paramiko==3.3.1
 xmltodict==0.13.0
+jmespath==1.0.0

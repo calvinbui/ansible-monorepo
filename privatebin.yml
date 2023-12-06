@@ -35,14 +35,6 @@
         - cfg
         - data
 
-    - name: Install jmespath locally
-      ansible.builtin.pip:
-        name: jmespath
-        executable: pip3
-      delegate_to: localhost
-      become: false
-      become_user: "{{ common_user }}"
-
     - name: Set URL shortener value
       ansible.builtin.set_fact:
         _url_shortener_value: "https://{{ common_short_tld }}/api/v2/action/shorten?key={{ _url_shortener_api_key }}&response_type=json&url="
