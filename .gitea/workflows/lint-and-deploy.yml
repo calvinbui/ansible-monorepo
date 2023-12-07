@@ -31,6 +31,11 @@ jobs:
     if: github.ref == 'refs/heads/master'
     container: calvinbui/gitea-actions:localhost
     steps:
+      - name: 🛎️ Checkout
+        uses: actions/checkout@v4
+        with:
+         fetch-depth: 2  # to be able to get files changed
+
       - name: 🔑 Setup SSH
         uses: webfactory/ssh-agent@v0.8.0
         with:
