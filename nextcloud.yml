@@ -110,7 +110,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-notify-push"
-        image: icewind1991/notify_push:0.6.3
+        image: icewind1991/notify_push:0.6.5
         env:
           NEXTCLOUD_URL: "https://{{ application }}.{{ common_tld }}"
           DATABASE_URL: "{{ _postgres_url }}"
