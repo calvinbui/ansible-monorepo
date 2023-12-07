@@ -379,6 +379,11 @@
       matchPackagePatterns: ["dbeaver\\/cloudbeaver"],
       customChangelogUrl: "https://github.com/dbeaver/dbeaver",
     },
+    /* notify_push */
+    {
+      matchPackagePatterns: [".*\\/notify_push"],
+      customChangelogUrl: "https://github.com/nextcloud/notify_push",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
