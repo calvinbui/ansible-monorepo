@@ -2,11 +2,7 @@
 
 name: lint-and-deploy
 
-on:
-  push:
-  pull_request:
-    branches: [master]
-    types: [opened, reopened]
+on: [push]
 
 jobs:
   lint:
