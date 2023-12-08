@@ -1,0 +1,22 @@
+---
+
+groups:
+  - name: systemd-exporter
+    rules:
+      -
+        alert: systemd-exporter is down
+        expr: up{job="systemd-exporter"} != 1
+        for: 5m
+        annotations:
+          title: systemd-exporter is down
+          description: "The exporter could not be reached"
+
+      -
+        alert: systemd-exporter-inactive-service
+        expr: systemd_unit_state{state="active"} != 1
+        for: 1m
+        labels:
+          severity: error
+        annotations:
+          title: "Service Not Running"
+          description: "The service {{ $labels.name }} is not active"

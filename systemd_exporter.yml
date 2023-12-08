@@ -1,0 +1,38 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: systemd-exporter
+
+    systemd_exporter_processes:
+      - nut-driver.service
+      - nut-monitor.service
+      - nut-server.service
+
+    docker_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart
+      community.docker.docker_container:
+        name: "{{ application }}"
+        restart: true
+        comparisons:
+          '*': ignore
+
+  tasks:
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: quay.io/prometheuscommunity/systemd-exporter:v0.6.0
+        command:
+          - --systemd.collector.private
+          - --systemd.collector.unit-include={{ systemd_exporter_processes | join('|') }}
+        volumes:
+          - /proc:/host/proc:ro
+          - /run/systemd:/run/systemd:ro
+        user: "{{ common_root_id }}"
+        pid_mode: host
+        metrics:
+          - port: 9558
