@@ -22,6 +22,6 @@
             auth: page
         homepage:
           name: Dozzle
-          group: Monitoring
-          weight: 200
+          group: Favourites
+          weight: 950
           description: "Logs for docker containers"
