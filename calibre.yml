@@ -77,7 +77,6 @@
         - name: kfx-input
           url: https://plugins.calibre-ebook.com/291290.zip
 
-
     - name: Download DeDRM
       block:
         - name: Create DeDRM folder
