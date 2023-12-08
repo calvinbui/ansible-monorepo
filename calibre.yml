@@ -1,0 +1,125 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: calibre
+
+    docker_network: "{{ networks.iot }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: lscr.io/linuxserver/calibre:7.1.0
+        volumes:
+          - "{{ config_directory }}:/config"
+          - "{{ common_directory_books }}:/books"
+        env:
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_root_group | string }}"
+          TZ: "{{ common_timezone }}"
+
+          TITLE: "{{ application | title }}"
+        security_opts:
+          - seccomp=unconfined
+        traefik:
+          - port: 8080
+            auth: page
+        labels:
+          # https://github.com/linuxserver/docker-baseimage-kasmvnc#lossless
+          '{
+            "traefik.http.middlewares.{{ application }}.headers.customResponseHeaders.Cross-Origin-Embedder-Policy": "require-corp",
+            "traefik.http.middlewares.{{ application }}.headers.customResponseHeaders.Cross-Origin-Opener-Policy": "same-origin",
+            "traefik.http.middlewares.{{ application }}.headers.customResponseHeaders.Cross-Origin-Resource-Policy": "same-site"
+          }'
+        homepage:
+          name: Calibre
+          group: Favourites
+          weight: 500
+          description: "eBook Manager"
+
+    - name: Copy Kindle key
+      ansible.builtin.copy:
+        src: "{{ files_directory }}/kindle.k4i"
+        dest: "{{ config_directory }}/"
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+
+    - name: Create plugins folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}/plugins"
+        state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+      register: _calibre_plugins_dir
+
+    - name: Download plugins
+      ansible.builtin.get_url:
+        url: "{{ item.url }}"
+        dest: "{{ _calibre_plugins_dir.path }}/{{ item.name }}.zip"
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
+      notify: Restart
+      loop:
+        - name: kfx-input
+          url: https://plugins.calibre-ebook.com/291290.zip
+
+
+    - name: Download DeDRM
+      block:
+        - name: Create DeDRM folder
+          ansible.builtin.file:
+            path: "{{ config_directory }}/DeDRM"
+            state: directory
+            owner: "{{ common_user_id }}"
+            group: "{{ common_root_group }}"
+            mode: "0771"
+          register: _calibre_dedrm_dir
+
+        - name: Download DeDRM_tools
+          ansible.builtin.get_url:
+            url: "https://github.com/noDRM/DeDRM_tools/releases/download/v10.0.9/DeDRM_tools_10.0.9.zip"
+            dest: "{{ _calibre_dedrm_dir.path }}/"
+            owner: "{{ common_user_id }}"
+            group: "{{ common_root_group }}"
+            mode: "0644"
+            checksum: "sha256:d46e7ff94a46dc871eb9b7e639e6da1883823cd5a9d705d53f51bd9c251aabda"
+          register: _calibre_dedrm_tools_download
+          notify: Restart
+
+        - name: Unarchive DeDRM_tools
+          ansible.builtin.unarchive:
+            src: "{{ _calibre_dedrm_tools_download.dest }}"
+            dest: "{{ _calibre_dedrm_dir.path }}"
+            remote_src: true
+          register: _calibre_dedrm_unzip
+
+        - name: Copy DeDRM to plugins folder
+          ansible.builtin.copy:
+            src: "{{ _calibre_dedrm_unzip.dest }}/DeDRM_plugin.zip"
+            dest: "{{ _calibre_plugins_dir.path }}/dedrm.zip"
+            owner: "{{ common_user_id }}"
+            group: "{{ common_root_group }}"
+            mode: "0771"
+            remote_src: true
+
+    - name: Install plugins
+      community.docker.docker_container_exec:
+        container: "{{ application }}"
+        command: bash -c "find /config/plugins -name '*.zip' | xargs -l calibre-customize --add-plugin"
+      register: _command_result
+      failed_when: ('Plugin added:' not in _command_result.stdout)
+      changed_when: false
