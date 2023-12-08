@@ -61,7 +61,7 @@
           path: /identity
         homepage:
           name: Plex
-          group: Media
+          group: Plex
           weight: 500
           description: "Media server"
           widget:

@@ -39,7 +39,7 @@
           - port: 8181
         homepage:
           name: Tautulli
-          group: Media
+          group: Plex
           weight: 690
           description: "Plex monitoring and tracking"
           widget:

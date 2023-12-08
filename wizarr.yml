@@ -31,6 +31,6 @@
             priority: 2
         homepage:
           name: Wizarr
-          group: Media
+          group: Plex
           weight: 700
           description: "User invitation and management system for Plex"
