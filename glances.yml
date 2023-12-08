@@ -8,14 +8,6 @@
     docker_network: "{{ networks.pub }}"
 
   tasks:
-    - name: Create config folder
-      ansible.builtin.file:
-        path: "{{ config_directory }}"
-        state: directory
-        owner: "{{ common_user }}"
-        group: "{{ common_group }}"
-        mode: "0771"
-
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
