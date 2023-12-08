@@ -70,4 +70,4 @@
           - /var/run/docker.sock:/var/run/docker.sock:ro
         traefik:
           - port: 3000
-            rule: "Host(`{{ common_tld }}`)"
+            rule: Host(`{{ common_tld }}`)

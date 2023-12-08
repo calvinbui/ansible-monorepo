@@ -52,7 +52,7 @@
           - "{{ config_directory }}:/data"
         traefik:
           - port: 3000
-            rule: "Host(`share.{{ common_tld }}`)"
+            rule: Host(`share.{{ common_tld }}`)
         homepage:
           name: PsiTransfer
           group: Sharing

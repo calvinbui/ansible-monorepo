@@ -76,7 +76,7 @@
           POLR_ALLOW_ACCT_CREATION: "false"
         traefik:
           - port: 8080
-            rule: "Host(`{{ common_short_tld }}`)"
+            rule: Host(`{{ common_short_tld }}`)
         # block ability to guess shortened urls
         labels:
           '{

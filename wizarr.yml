@@ -23,11 +23,11 @@
           - name: "{{ application }}-admin"
             port: 5690
             auth: page
-            rule: "Host(`{{ application }}.{{ common_tld }}`)"
+            rule: Host(`{{ application }}.{{ common_tld }}`)
             priority: 1
           - name: "{{ application }}-public"
             port: 5690
-            rule: "Host(`{{ application }}.{{ common_tld }}`) && (Path(`/join`, `/setup`) || PathPrefix(`/j/`, `/setup/`, `/static/`))"
+            rule: Host(`{{ application }}.{{ common_tld }}`) && (Path(`/join`, `/setup`) || PathPrefix(`/j/`, `/setup/`, `/static/`))
             priority: 2
         homepage:
           name: Wizarr

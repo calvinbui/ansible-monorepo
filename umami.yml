@@ -49,13 +49,13 @@
         traefik:
           - name: "umami-private"
             port: 3000
-            rule: "Host(`{{ application }}.{{ common_tld }}`)"
+            rule: Host(`{{ application }}.{{ common_tld }}`)
           - name: "umami-public"
             port: 3000
-            rule: "Host(`umami.calvin.me`)"
+            rule: Host(`umami.calvin.me`)
           - name: "umami-scripts"
             port: 3000
-            rule: "Host(`u.calvin.me`)"
+            rule: Host(`u.calvin.me`)
             middlewares:
               - "{{ application }}-script-path"
         homepage:
