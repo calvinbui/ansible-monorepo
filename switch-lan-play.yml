@@ -23,6 +23,8 @@
             name: "{{ application }}-udp"
             port: 11451
             type: udp
+        blackbox:
+          enable: false
 
     - name: Create client container
       ansible.builtin.include_role:
