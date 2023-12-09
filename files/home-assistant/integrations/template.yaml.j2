@@ -18,9 +18,9 @@
     device_class: power
     state_class: measurement
     state: >
-      {% set meter_power = states('sensor.power_meter_active_power') | float %}
-      {% set inverter_1_power = states('sensor.inverter_1_active_power') | float %}
-      {% set inverter_2_power = states('sensor.inverter_2_active_power') | float %}
+      {% set meter_power = states('sensor.power_meter_active_power') | float(0) %}
+      {% set inverter_1_power = states('sensor.inverter_1_active_power') | float(0) %}
+      {% set inverter_2_power = states('sensor.inverter_2_active_power') | float(0) %}
       {{ ((inverter_1_power + inverter_2_power) - meter_power )  | float(0) }}
   -
     # How much electricity being imported from the grid
@@ -35,7 +35,7 @@
     device_class: power
     state_class: measurement
     state: >
-      {% set meter_power = states('sensor.power_meter_active_power') | float %}
+      {% set meter_power = states('sensor.power_meter_active_power') | float(0) %}
       {% if meter_power < 0 %}
       {{ (meter_power * -1) | float(0) }}
       {% else %}
@@ -53,7 +53,7 @@
     device_class: power
     state_class: measurement
     state: >
-      {% set meter_power = states('sensor.power_meter_active_power') | float %}
+      {% set meter_power = states('sensor.power_meter_active_power') | float(0) %}
       {% if meter_power > 0 %}
       {{ meter_power | float(0) }}
       {% else %}
@@ -68,8 +68,8 @@
     device_class: power
     state_class: measurement
     state: >
-      {% set inverter_1_power = states('sensor.inverter_1_active_power') | float %}
-      {% set inverter_2_power = states('sensor.inverter_2_active_power') | float %}
+      {% set inverter_1_power = states('sensor.inverter_1_active_power') | float(0) %}
+      {% set inverter_2_power = states('sensor.inverter_2_active_power') | float(0) %}
       {{ (inverter_1_power + inverter_2_power) | float(0) }}
   -
     # How much solar is being self-consumed by the house
@@ -86,8 +86,8 @@
     device_class: power
     state_class: measurement
     state: >
-      {% set yield = states('sensor.total_solar_generation') | float %}
-      {% set export = states('sensor.grid_power_export') | float %}
+      {% set yield = states('sensor.total_solar_generation') | float(0) %}
+      {% set export = states('sensor.grid_power_export') | float(0) %}
       {% if yield > export %}
       {{ (yield - export) | float(0) }}
       {% else %}
@@ -380,25 +380,25 @@
     device_class: monetary
     state_class: total
     unit_of_measurement: AUD
-    state: "{{ states('sensor.grid_power_import_daily_peak') | float * states('sensor.electricity_peak_cost') | float(0) }}"
+    state: "{{ states('sensor.grid_power_import_daily_peak') | float(0)* states('sensor.electricity_peak_cost') | float(0) }}"
   -
     name: Electricity Costs Today - Offpeak
     device_class: monetary
     state_class: total
     unit_of_measurement: AUD
-    state: "{{ states('sensor.grid_power_import_daily_offpeak') | float * states('sensor.electricity_offpeak_cost') | float(0) }}"
+    state: "{{ states('sensor.grid_power_import_daily_offpeak') | float(0)* states('sensor.electricity_offpeak_cost') | float(0) }}"
   -
     name: Electricity Costs Today - Shoulder
     device_class: monetary
     state_class: total
     unit_of_measurement: AUD
-    state: "{{ states('sensor.grid_power_import_daily_shoulder') | float * states('sensor.electricity_shoulder_cost') | float(0) }}"
+    state: "{{ states('sensor.grid_power_import_daily_shoulder') | float(0)* states('sensor.electricity_shoulder_cost') | float(0) }}"
   -
     name: Electricity Costs Today - Export
     device_class: monetary
     state_class: total
     unit_of_measurement: AUD
-    state: "{{ states('sensor.grid_power_export_daily_anytime') | float * states('sensor.solar_feed_in') | float(0) }}"
+    state: "{{ states('sensor.grid_power_export_daily_anytime') | float(0)* states('sensor.solar_feed_in') | float(0) }}"
   -
     name: Electricity Costs Today - Import
     device_class: monetary
@@ -429,25 +429,25 @@
     device_class: monetary
     state_class: total
     unit_of_measurement: AUD
-    state: "{{ state_attr('sensor.grid_power_import_daily_peak', 'last_period') | float * states('sensor.electricity_peak_cost') | float(0) }}"
+    state: "{{ state_attr('sensor.grid_power_import_daily_peak', 'last_period') | float(0)* states('sensor.electricity_peak_cost') | float(0) }}"
   -
     name: Electricity Costs Yesterday - Offpeak
     device_class: monetary
     state_class: total
     unit_of_measurement: AUD
-    state: "{{ state_attr('sensor.grid_power_import_daily_offpeak', 'last_period') | float * states('sensor.electricity_offpeak_cost') | float(0) }}"
+    state: "{{ state_attr('sensor.grid_power_import_daily_offpeak', 'last_period') | float(0)* states('sensor.electricity_offpeak_cost') | float(0) }}"
   -
     name: Electricity Costs Yesterday - Shoulder
     device_class: monetary
     state_class: total
     unit_of_measurement: AUD
-    state: "{{ state_attr('sensor.grid_power_import_daily_shoulder', 'last_period') | float * states('sensor.electricity_shoulder_cost') | float(0) }}"
+    state: "{{ state_attr('sensor.grid_power_import_daily_shoulder', 'last_period') | float(0)* states('sensor.electricity_shoulder_cost') | float(0) }}"
   -
     name: Electricity Costs Yesterday - Export
     device_class: monetary
     state_class: total
     unit_of_measurement: AUD
-    state: "{{ state_attr('sensor.grid_power_export_daily_anytime', 'last_period') | float * states('sensor.solar_feed_in') | float(0) }}"
+    state: "{{ state_attr('sensor.grid_power_export_daily_anytime', 'last_period') | float(0)* states('sensor.solar_feed_in') | float(0) }}"
   -
     name: Electricity Costs Yesterday - Import
     device_class: monetary
@@ -478,32 +478,32 @@
     device_class: monetary
     state_class: total
     unit_of_measurement: AUD
-    state: "{{ states('sensor.grid_power_import_monthly_peak') | float * states('sensor.electricity_peak_cost') | float(0) }}"
+    state: "{{ states('sensor.grid_power_import_monthly_peak') | float(0)* states('sensor.electricity_peak_cost') | float(0) }}"
   -
     name: Electricity Costs Month - Offpeak
     device_class: monetary
     state_class: total
     unit_of_measurement: AUD
-    state: "{{ states('sensor.grid_power_import_monthly_offpeak') | float * states('sensor.electricity_offpeak_cost') | float(0) }}"
+    state: "{{ states('sensor.grid_power_import_monthly_offpeak') | float(0)* states('sensor.electricity_offpeak_cost') | float(0) }}"
   -
     name: Electricity Costs Month - Shoulder
     device_class: monetary
     state_class: total
     unit_of_measurement: AUD
-    state: "{{ states('sensor.grid_power_import_monthly_shoulder') | float * states('sensor.electricity_shoulder_cost') | float(0) }}"
+    state: "{{ states('sensor.grid_power_import_monthly_shoulder') | float(0)* states('sensor.electricity_shoulder_cost') | float(0) }}"
   -
     name: Electricity Costs Month - Export
     device_class: monetary
     state_class: total
     unit_of_measurement: AUD
-    state: "{{ states('sensor.grid_power_export_monthly_anytime') | float * states('sensor.solar_feed_in') | float(0) }}"
+    state: "{{ states('sensor.grid_power_export_monthly_anytime') | float(0)* states('sensor.solar_feed_in') | float(0) }}"
 
   -
     name: Electricity Costs Month - Supply
     device_class: monetary
     state_class: total
     unit_of_measurement: AUD
-    state: "{{ (states('sensor.electricity_supply_cost') | float) * (( now() | as_timestamp | int - state_attr('sensor.grid_power_import_monthly_offpeak','last_reset') | as_timestamp | int) / 86400 | int ) }}"
+    state: "{{ (states('sensor.electricity_supply_cost') | float(0)) * (( now() | as_timestamp | int(0) - state_attr('sensor.grid_power_import_monthly_offpeak','last_reset') | as_timestamp | int(0)) / 86400 | int(0) ) }}"
   -
     name: Electricity Costs Month - Import
     device_class: monetary
@@ -536,12 +536,12 @@
     device_class: monetary
     state: >
         {% set hourly = (states('sensor.electricity_supply_cost') | float(0)) / 24 %}
-        {% set gridout = states('sensor.grid_power_export') | int %}
-        {% set gridin = states('sensor.grid_power_consumption') | int %}
+        {% set gridout = states('sensor.grid_power_export') | int(0) %}
+        {% set gridin = states('sensor.grid_power_consumption') | int(0) %}
         {% if gridout > 0 %}
-          {{ ((gridout/1000) * (states('sensor.solar_feed_in') | float * -1) + hourly) | round(2) }}
+          {{ ((gridout/1000) * (states('sensor.solar_feed_in') | float(0) * -1) + hourly) | round(2) }}
         {% else %}
-          {{ ((gridin/1000) * states('sensor.electricity_cost') | float + hourly) | round(2) }}
+          {{ ((gridin/1000) * states('sensor.electricity_cost') | float(0) + hourly) | round(2) }}
         {% endif %}
 
   # How much we are paying for electricity per day, updated monthly using the utility meter integration
@@ -552,7 +552,7 @@
     unit_of_measurement: AUD
     device_class: monetary
     state: >
-      {{ (states('sensor.electricity_costs_month_total') | float / ((now() | as_timestamp - state_attr('sensor.grid_power_import_monthly_offpeak','last_reset') | as_timestamp) / 86400)) | round(2) }}
+      {{ (states('sensor.electricity_costs_month_total') | float(0) / ((now() | as_timestamp - state_attr('sensor.grid_power_import_monthly_offpeak','last_reset') | as_timestamp) / 86400)) | round(2) }}
 
   # Forecast how much the next bill be based on the daily average
   -
@@ -561,7 +561,7 @@
     unit_of_measurement: AUD
     device_class: monetary
     state: >
-      {{ (states('sensor.electricity_costs_average_per_day') | float) * 28 }}
+      {{ (states('sensor.electricity_costs_average_per_day') | float(0)) * 28 }}
 
   # How much we would be paying if we were on the non-solar (alternative) plan for yesterday
   -
