@@ -89,7 +89,7 @@
             "0x00158d000977539c":
               friendly_name: "Aqara Temperature & Humidity Sensor - Upstairs Bathroom"
             "0x00158d0009777cd8":
-              friendly_name: "Aqara Temperature & Humidity Sensor - Small Rear Bedroom"
+              friendly_name: "Aqara Temperature & Humidity Sensor - Garage"
             "0x00158d0009775449":
               friendly_name: "Aqara Temperature & Humidity Sensor - Large Rear Bedroom"
         dest: "{{ config_directory }}/data/configuration.yaml"
