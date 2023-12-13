@@ -1,0 +1,129 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: thanos
+
+    docker_network: "{{ networks.user }}"
+
+    thanos_objstore_config:
+      type: FILESYSTEM
+      config:
+        directory: /thanos-data
+
+  tasks:
+    - name: Create folders
+      ansible.builtin.file:
+        path: "{{ config_directory }}/{{ item }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: 1001 # docker user/group
+        mode: "0771"
+      loop:
+        - data
+        - compactor
+        - store
+
+    - name: Create sidecar container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-sidecar"
+        image: quay.io/thanos/thanos:v0.32.5
+        user: root:root
+        command:
+          - sidecar
+          - --prometheus.url=http://prometheus.{{ docker_network.name }}:9090
+          - --tsdb.path=/prometheus-data
+          - --objstore.config={{ thanos_objstore_config | to_nice_yaml }}
+        volumes:
+          - "{{ common_directory }}/prometheus/data:/prometheus-data"
+          - "{{ config_directory }}/data:/thanos-data"
+
+    - name: Create store container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-store"
+        image: quay.io/thanos/thanos:v0.32.5
+        command:
+          - store
+          - --objstore.config={{ thanos_objstore_config | to_nice_yaml }}
+        volumes:
+          - "{{ config_directory }}/store:/data"
+          - "{{ config_directory }}/data:/thanos-data"
+
+    - name: Create compactor container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-compactor"
+        image: quay.io/thanos/thanos:v0.32.5
+        user: root:root
+        command:
+          - compact
+          - --objstore.config={{ thanos_objstore_config | to_nice_yaml }}
+          - --wait
+
+          - --retention.resolution-raw=40h # when to downsample raw to 5m (min 40h)
+          - --retention.resolution-5m=10d # when to downsample 5m to 1h (min 10d)
+          - --retention.resolution-1h=30d # when to delete 1h
+        volumes:
+          - "{{ config_directory }}/compactor:/data"
+          - "{{ config_directory }}/data:/thanos-data"
+
+    - name: Create query container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-query"
+        image: quay.io/thanos/thanos:v0.32.5
+        command:
+          - query
+          - --endpoint={{ application }}-store.{{ docker_network.name }}:10901
+          - --endpoint={{ application }}-sidecar.{{ docker_network.name }}:10901
+
+    - name: Create query-frontend container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-query-frontend"
+        image: quay.io/thanos/thanos:v0.32.5
+        command:
+          - query-frontend
+          - --query-frontend.downstream-url=http://{{ application }}-query.{{ docker_network.name }}:10902
+        traefik:
+          - name: "{{ application }}"
+            port: 10902
+            auth: page
+        homepage:
+          name: Thanos
+          group: Monitoring
+          weight: 400
+          description: "Prometheus long-term storage"
+          href: "https://{{ application }}.{{ common_tld }}"
+
+    - name: Create bucket container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-bucket-web"
+        image: quay.io/thanos/thanos:v0.32.5
+        command:
+          - tools
+          - bucket
+          - web
+          - --objstore.config={{ thanos_objstore_config | to_nice_yaml }}
+        volumes:
+          - "{{ config_directory }}/data:/thanos-data"
+        traefik:
+          - name: "{{ application }}-bucket"
+            port: 10902
+            auth: page
+        homepage:
+          name: Thanos Bucket Web
+          group: Monitoring
+          weight: 401
+          description: "Web interface for remote storage bucket"
+          href: "https://{{ application }}-bucket.{{ common_tld }}"

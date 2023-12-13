@@ -66,23 +66,33 @@
         ipv4_address: "{{ docker_network.prefix }}.21"
         command:
           - --config.file=/etc/prometheus/prometheus.yml
+
           # https://prometheus.io/docs/operating/security/
           - --web.enable-admin-api  # enables administrative HTTP API
           - --web.enable-lifecycle  # enables HTTP reloads and shutdowns of Prometheus
+
           # https://prometheus.io/docs/prometheus/latest/storage/#operational-aspects
           - --storage.tsdb.path=/prometheus  # where Prometheus writes its database
-          - --storage.tsdb.retention.time=72h  # when to remove old data
+          - --storage.tsdb.retention.time=6h  # when to remove old data
+
           # https://prometheus.io/docs/prometheus/latest/configuration/template_reference/#template-type-differences
           # so they are stored here when we create them
           - --web.console.libraries=/etc/prometheus/console_libraries
           - --web.console.templates=/etc/prometheus/consoles
-          - "--web.external-url=https://{{ application }}.{{ common_tld }}"
+
           # https://prometheus.io/docs/prometheus/latest/configuration/https/
+          - "--web.external-url=https://{{ application }}.{{ common_tld }}"
+
+          # https://thanos.io/tip/components/sidecar.md/
+          - --storage.tsdb.min-block-duration=2h
+          - --storage.tsdb.max-block-duration=2h
         volumes:
           - "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}:/etc/prometheus"
           - "{{ _dir.results | selectattr('item', 'match', 'rules') | flatten | map(attribute='path') | first }}:/rules"
           - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/prometheus"
+
           - "{{ prometheus_scrape_directory }}:/scrape_config_files"
+
           - /var/run/docker.sock:/var/run/docker.sock:ro
         user: root:root
         traefik:
