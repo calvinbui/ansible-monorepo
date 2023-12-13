@@ -133,7 +133,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: nextcloud:27.1.4
+        image: nextcloud:28.0.0
         volumes:
           - "{{ config_directory }}/app:/var/www/html"
         env:
