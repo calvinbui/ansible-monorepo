@@ -170,62 +170,71 @@ cards:
             icon: mdi:bed-outline
             entity: switch.daikin_ac_small_bed
             <<: *air_conditioning_room
+
   -
-    type: vertical-stack
     view_layout:
       grid-area: temps
-    cards:
+    type: entities
+    entities:
       -
-        type: horizontal-stack
-        cards:
-          -
-            <<: &temp_humidity
-              type: custom:mushroom-template-card
-              icon: mdi:square-circle-outline
-              icon_color: white
-            primary: Garage
-            secondary: |
-              {{ states('sensor.0x00158d0009777cd8_temperature') | int }}°C / {{ states('sensor.0x00158d0009777cd8_humidity') | int }}%
-            entity_id: [
-              sensor.0x00158d0009777cd8_temperature,
-              sensor.0x00158d0009777cd8_humidity
-            ]
-          -
-            <<: *temp_humidity
-            primary: Laundry
-            secondary: |
-              {{ states('sensor.0x00158d0009777d8b_temperature') | int }}°C / {{ states('sensor.0x00158d0009777d8b_humidity') | int }}%
-            entity_id: [
-              sensor.0x00158d0009777d8b_temperature,
-              sensor.0x00158d0009777d8b_humidity
-            ]
-          -
-            <<: *temp_humidity
-            primary: Ensuite
-            secondary: |
-              {{ states('sensor.0x00158d0009775385_temperature') | int }}°C / {{ states('sensor.0x00158d0009775385_humidity') | int }}%
-            entity_id: [
-              sensor.0x00158d0009775385_temperature,
-              sensor.0x00158d0009775385_humidity
-            ]
+        <<: &temp_row
+          type: custom:multiple-entity-row
+          show_state: false
+        name: Garage
+        icon: mdi:garage
+        entity: sensor.0x00158d0009777cd8_battery
+        entities:
+          - entity: sensor.0x00158d0009777cd8_temperature
+            name: Temperature
+            format: precision0
+          - entity: sensor.0x00158d0009777cd8_humidity
+            name: Humidity
+            format: precision0
       -
-        type: horizontal-stack
-        cards:
-          -
-            <<: *temp_humidity
-            primary: Downstairs Bathroom
-            secondary: |
-              {{ states('sensor.0x00158d000977531f_temperature') | int }}°C / {{ states('sensor.0x00158d000977531f_humidity') | int }}%
-            entity_id: [
-              sensor.0x00158d000977531f_temperature,
-              sensor.0x00158d000977531f_humidity
-            ]
-          -
-            <<: *temp_humidity
-            primary: Upstairs Bathroom
-            secondary: |
-              {{ states('sensor.0x00158d000977539c_temperature') | int }}°C / {{ states('sensor.0x00158d000977539c_humidity') | int }}%
-            entity_id: [
-              sensor.0x00158d000977539c_temperature,
-              sensor.0x00158d000977539c_humidity
-            ]
+        <<: *temp_row
+        name: Laundry
+        icon: mdi:washing-machine
+        entity: sensor.0x00158d0009777d8b_battery
+        entities:
+          - entity: sensor.0x00158d0009777d8b_temperature
+            name: Temperature
+            format: precision0
+          - entity: sensor.0x00158d0009777d8b_humidity
+            name: Humidity
+            format: precision0
+      -
+        <<: *temp_row
+        name: Ensuite
+        icon: mdi:toilet
+        entity: sensor.0x00158d0009775385_battery
+        entities:
+          - entity: sensor.0x00158d0009775385_temperature
+            name: Temperature
+            format: precision0
+          - entity: sensor.0x00158d0009775385_humidity
+            name: Humidity
+            format: precision0
+      -
+        <<: *temp_row
+        name: Downstairs Bathroom
+        icon: mdi:shower-head
+        entity: sensor.0x00158d000977531f_battery
+        entities:
+          - entity: sensor.0x00158d000977531f_temperature
+            name: Temperature
+            format: precision0
+          - entity: sensor.0x00158d000977531f_humidity
+            name: Humidity
+            format: precision0
+      -
+        <<: *temp_row
+        name: Upstairs Bathroom
+        icon: mdi:shower
+        entity: sensor.0x00158d000977539c_battery
+        entities:
+          - entity: sensor.0x00158d000977539c_temperature
+            name: Temperature
+            format: precision0
+          - entity: sensor.0x00158d000977539c_humidity
+            name: Humidity
+            format: precision0
