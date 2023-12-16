@@ -36,3 +36,57 @@
         pid_mode: host
         metrics:
           - port: 9558
+
+- hosts: nvr
+
+  vars:
+    systemd_exporter_version: 0.6.0
+    systemd_exporter_install_dir: /usr/local/bin
+    systemd_exporter_processes:
+      - nut-monitor.service
+
+  handlers:
+    - name: Restart
+      ansible.builtin.systemd_service:
+        name: systemd_exporter
+        state: restarted
+
+  tasks:
+    - name: Download systemd_exporter
+      ansible.builtin.unarchive:
+        src: "https://github.com/prometheus-community/systemd_exporter/releases/download/v{{ systemd_exporter_version }}/systemd_exporter-{{ systemd_exporter_version }}.linux-arm64.tar.gz"
+        dest: "{{ systemd_exporter_install_dir }}"
+        remote_src: true
+        extra_opts:
+          --strip-components=1
+
+    - name: Copy systemd service file
+      ansible.builtin.copy:
+        content: |
+          [Unit]
+          Description=Prometheus Systemd Exporter
+          Wants=network-online.target
+          After=network-online.target
+
+          [Service]
+          Type=simple
+          User=root
+          Group=root
+          ExecStart={{ systemd_exporter_install_dir }}/systemd_exporter \
+            --web.listen-address=0.0.0.0:9558 \
+            --systemd.collector.unit-include="{{ systemd_exporter_processes | join("|") }}"
+          Restart=always
+          RestartSec=1
+
+          [Install]
+          WantedBy=multi-user.target
+        dest: /etc/systemd/system/systemd_exporter.service
+        mode: "0644"
+      notify: Restart
+
+    - name: Ensure systemd_exporter is enabled on boot
+      ansible.builtin.systemd_service:
+        name: systemd_exporter
+        enabled: true
+        state: started
+        daemon_reload: true

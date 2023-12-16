@@ -43,6 +43,11 @@ scrape_configs:
         source_labels: [__meta_docker_container_label_prometheus_path]
         target_label: __metrics_path__
 
+  - job_name: systemd_exporter
+    static_configs:
+      - targets:
+          - nvr.{{ common_local_tld }}:9558
+
 alerting:
   alertmanagers:
     - scheme: http
