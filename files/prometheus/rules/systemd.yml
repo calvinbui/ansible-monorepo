@@ -14,9 +14,19 @@ groups:
       -
         alert: systemd-exporter-inactive-service
         expr: systemd_unit_state{state="active"} != 1
-        for: 1m
+        for: 5m
         labels:
           severity: error
         annotations:
           title: "Service Not Running"
           description: "The service {{ $labels.name }} is not active"
+
+      -
+        alert: systemd-exporter-missing-service
+        expr: absent(systemd_unit_state{name="nut-monitor.service", instance=~"nvr\\..*", state="active"})
+        for: 1h
+        labels:
+          severity: error
+        annotations:
+          title: "Service Missing"
+          description: "The nut-monitor service is missing on the NVR"
