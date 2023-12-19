@@ -12,7 +12,7 @@
 - name: Create Postgres container
   community.docker.docker_container:
     name: "{{ postgres_name }}"
-    image: "postgres:{{ postgres_version }}"
+    image: "{{ postgres_image }}:{{ postgres_version }}"
 
     state: started
 

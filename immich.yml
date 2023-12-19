@@ -33,7 +33,8 @@
       ansible.builtin.import_role:
         name: postgres
       vars:
-        postgres_version: 15
+        postgres_image: tensorchord/pgvecto-rs
+        postgres_version: pg15-v0.1.11
         postgres_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           39386239373632396266303736376262626638666636666637643566653161633361376138626637
@@ -42,34 +43,12 @@
           6237663938316164370a343734613964356231636462623536323066616138363532373265336439
           63366338393162616361346139303364643263663261346266393435313165343834
 
-    - name: Create typesense container
-      ansible.builtin.include_role:
-        name: docker_container
-      vars:
-        name: "{{ application }}-typesense"
-        image: typesense/typesense:0.25.1
-        env:
-          # self-generated random key
-          TYPESENSE_API_KEY: &immich_typesense_api_key !vault |
-            $ANSIBLE_VAULT;1.1;AES256
-            39323263663861653733363465623564393431343738333263663331396536363565393539633834
-            6536666263636330383961323862346136393161363764660a656335633666336638363865326366
-            64396661393832313535383638356230613639623263346465376238333764306538643137353839
-            3333396561333738340a376138613162653062656262316464383833313334343130636530626338
-            65326438346433663834356461623632326431366632373331386564373962356534
-
-          TYPESENSE_DATA_DIR: "/data"
-
-          GLOG_minloglevel: "1"
-        volumes:
-          - "{{ config_directory }}/typesense:/data"
-
     - name: Create server container
       ansible.builtin.include_role:
         name: docker_container
       vars:
         name: "{{ application }}-server"
-        image: ghcr.io/immich-app/immich-server:v1.90.2
+        image: ghcr.io/immich-app/immich-server:v1.91.4
         command: ["start.sh", "immich"]
         env: &immich_shared_env
           DB_HOSTNAME: "{{ _postgres_hostname }}"
@@ -84,13 +63,7 @@
 
           UPLOAD_LOCATION: "/usr/src/app/upload"
 
-          LOG_LEVEL: "simple"
-
-          TYPESENSE_ENABLED: "true"
-          TYPESENSE_API_KEY: *immich_typesense_api_key
-          TYPESENSE_PROTOCOL: "http"
-          TYPESENSE_HOST: "{{ application }}-typesense.{{ docker_network.name }}"
-          TYPESENSE_PORT: "8108"
+          LOG_LEVEL: "log"
 
           DISABLE_REVERSE_GEOCODING: "false"
           REVERSE_GEOCODING_PRECISION: "3"
@@ -128,7 +101,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-microservices"
-        image: ghcr.io/immich-app/immich-server:v1.90.2
+        image: ghcr.io/immich-app/immich-server:v1.91.4
         command: ["start.sh", "microservices"]
         device_requests:
           - driver: nvidia
@@ -152,7 +125,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-machine-learning"
-        image: ghcr.io/immich-app/immich-machine-learning:v1.90.2
+        image: ghcr.io/immich-app/immich-machine-learning:v1.91.4
         env: *immich_shared_env
         volumes:
           - *immich_upload_volume
