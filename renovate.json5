@@ -384,6 +384,11 @@
       matchPackagePatterns: [".*\\/notify_push"],
       customChangelogUrl: "https://github.com/nextcloud/notify_push",
     },
+    /* thanos */
+    {
+      matchPackagePatterns: [".*\\/thanos"],
+      customChangelogUrl: "https://github.com/thanos-io/thanos",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
