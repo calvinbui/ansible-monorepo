@@ -389,6 +389,12 @@
       matchPackagePatterns: [".*\\/thanos"],
       customChangelogUrl: "https://github.com/thanos-io/thanos",
     },
+    /* calibre */
+    {
+      matchPackagePatterns: [".*\\/calibre"],
+      customChangelogUrl: "https://github.com/kovidgoyal/calibre",
+      prBodyNotes: "[What's new](https://calibre-ebook.com/whats-new)",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
