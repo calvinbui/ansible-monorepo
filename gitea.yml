@@ -118,7 +118,7 @@
 
           GITEA__api__ENABLE_SWAGGER: "false"
 
-          GITEA__oauth2__ENABLE: "false"
+          GITEA__oauth2__ENABLE: "true"
 
           GITEA__packages__ENABLED: "false"
 
