@@ -21,7 +21,7 @@ steps:
         from_secret: ansible_vault_password
     commands:
       - git config --global --add safe.directory /drone/src
-      - .drone/ansible-lint.sh
+      - scripts/ansible-lint.sh
 
   - name: ansible-playbook
     image: calvinbui/ansible-runner:localhost
@@ -33,7 +33,7 @@ steps:
         name: ssh
         path: /root/.ssh/
     commands:
-      - .drone/ansible-playbook.sh
+      - scripts/ansible-playbook.sh
 
   - name: mattermost failure notification
     image: calvinbui/drone-mattermost:localhost
