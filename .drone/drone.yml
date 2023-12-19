@@ -33,6 +33,7 @@ steps:
         name: ssh
         path: /root/.ssh/
     commands:
+      - git config --global --add safe.directory /drone/src
       - scripts/ansible-playbook.sh
 
   - name: mattermost failure notification
