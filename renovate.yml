@@ -24,49 +24,26 @@
         group: "{{ common_root_group }}"
         mode: "0771"
 
-    - name: Copy entrypoint script
-      ansible.builtin.copy:
-        content: |
-          #!/usr/bin/env bash
-          set -euo pipefail
-
-          sleep_hours=2
-          last_run_file=/base/lastrun.txt
-
-          while true; do
-            if [ -f "${last_run_file}" ]; then
-              last_run=$(cat ${last_run_file})
-              now=$(date +%s)
-              time_since_last_run=$(( now - last_run ))
-              sleep_seconds=$(( sleep_hours * 60 * 60 ))
-              next_run=$(( last_run + sleep_seconds ))
-
-              if [ "${time_since_last_run}" -lt "${sleep_seconds}" ]; then
-                sleep_seconds_until_next_run=$(( next_run - now ))
-                echo "Renovate ran earlier. Sleeping ${sleep_seconds_until_next_run} second/s until next run"
-                sleep ${sleep_seconds_until_next_run}
-              fi
-            fi
-
-            docker-entrypoint.sh renovate
-
-            date +%s > "${last_run_file}"
-
-            echo "Sleeping ${sleep_hours}h because of Docker Hub rate limits"
-            sleep "${sleep_hours}h"
-          done
-        dest: "{{ config_directory }}/entrypoint.sh"
-        mode: "0755"
-      notify: Restart
-
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/renovatebot/renovate:37.102.2
-        entrypoint: ["/base/entrypoint.sh"]
+        image: ghcr.io/renovatebot/renovate:latest
+        entrypoint:
+          - /bin/bash
+          - -c
+          - renovate --version > /tmp/renovate.log && /bin/tail -f /tmp/renovate.log
         volumes:
           - "{{ config_directory }}:/base"
+        labels:
+          '{
+            "chadburn.enabled": "true",
+            "chadburn.job-exec.{{ application }}-cron.schedule": "0 17 * * *",
+            "chadburn.job-exec.{{ application }}-cron.command": "/usr/local/bin/docker-entrypoint.sh renovate",
+            "chadburn.job-exec.{{ application }}-cron.user": "ubuntu",
+            "chadburn.job-exec.{{ application }}-cron.tty": "true",
+            "chadburn.job-exec.{{ application }}-cron.no-overlap": "true"
+          }'
         env:
           RENOVATE_BASE_DIR: "/base"
 
@@ -137,3 +114,4 @@
             6461316338386437323364323936393230333563646638666331
 
           LOG_LEVEL: debug
+          RENOVATE_LOG_FILE: /tmp/renovate.log
