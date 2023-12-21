@@ -12,7 +12,7 @@
       ansible.builtin.include_role:
         name: postgres
       vars:
-        postgres_version: 15
+        postgres_version: 16
         postgres_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           35653433323264373163316330633630656530656563383235393138656430653631393739633563
