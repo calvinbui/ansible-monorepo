@@ -12,5 +12,7 @@ for c in "${containers[@]}"; do
   docker exec -it "$c" bash -c 'psql -w -U $POSTGRES_USER postgres -c "REINDEX DATABASE postgres"'
   docker exec -it "$c" bash -c 'psql -w -U $POSTGRES_USER postgres -c "ALTER DATABASE postgres REFRESH COLLATION VERSION"'
 
+  docker exec -it "$c" bash -c 'psql -w -U $POSTGRES_USER template1 -c "REINDEX DATABASE template1"'
+  docker exec -it "$c" bash -c 'psql -w -U $POSTGRES_USER template1 -c "ALTER DATABASE template1 REFRESH COLLATION VERSION"'
   echo ""
 done
