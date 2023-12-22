@@ -7,7 +7,6 @@
     owner: 999
     group: 999
     mode: "0700"
-    recurse: true
 
 - name: Create Postgres container
   community.docker.docker_container:
