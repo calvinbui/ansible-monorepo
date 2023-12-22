@@ -7,6 +7,7 @@
     traefik_labels: {}
     homepage_labels: {}
     blackbox_labels: {}
+    watchtower_labels: {}
 
 # User-provided labels
 - name: Merge labels into combined_labels
@@ -69,7 +70,17 @@
 - name: Merge generated Blackbox and Docker labels
   ansible.builtin.set_fact:
     combined_labels: "{{ combined_labels | combine(blackbox_labels, recursive=True) }}"
-  when: blackbox_labels
+  when: blackbox_labels is defined
+
+# Watchtower labels
+- name: Generate Watchtower labels
+  ansible.builtin.include_tasks: watchtower.yml
+  when: _postgres_hostname is defined or _redis_hostname is defined or _mariadb_hostname is defined or _mongo_hostname is defined
+
+- name: Merge generated Watchtower and Docker labels
+  ansible.builtin.set_fact:
+    combined_labels: "{{ combined_labels | combine(watchtower_labels, recursive=True) }}"
+  when: watchtower_labels is defined
 
 # Create container
 - name: "Create docker container for {{ name | default(application) }}"

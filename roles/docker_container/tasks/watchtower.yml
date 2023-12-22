@@ -1,0 +1,21 @@
+---
+
+- name: Reset vars
+  ansible.builtin.set_fact:
+    watchtower_depends_on: []
+
+- name: "Generate Watchtower depends-on label"
+  ansible.builtin.set_fact:
+    watchtower_depends_on: "{{ watchtower_depends_on + [application + '-' + item] }}"
+  when:
+    - 'vars["_" + item + "_hostname"] is defined'
+    - application in vars["_" + item + "_hostname"]
+  loop:
+    - postgres
+    - redis
+    - mariadb
+    - mongo
+
+- name: "Add to Watchtower labels"
+  ansible.builtin.set_fact:
+    watchtower_labels: "{{ watchtower_labels | combine({'com.centurylinklabs.watchtower.depends-on': watchtower_depends_on|join(',')}) }}"
