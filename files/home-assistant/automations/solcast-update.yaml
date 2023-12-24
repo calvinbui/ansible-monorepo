@@ -6,7 +6,7 @@
   description: New API call Solcast
   trigger:
     - platform: time_pattern
-      minutes: /30
+      minutes: /45
   action:
     - service: solcast_solar.update_forecasts
       data: {}
