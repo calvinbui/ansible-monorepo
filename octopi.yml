@@ -204,13 +204,14 @@
             group: "root"
           notify: Reboot
 
+    # see options using `v4l2-ctl --all`
     - name: Disable webcam autofocus and set manual focus
       ansible.builtin.lineinfile:
         path: /etc/rc.local
         insertbefore: exit 0
         line: "{{ item }}"
       loop:
-        - v4l2-ctl --set-ctrl=focus_auto=0
+        - v4l2-ctl --set-ctrl=focus_automatic_continuous=0
         - v4l2-ctl --set-ctrl=focus_absolute=4
 
     # https://github.com/pimoroni/hyperpixel4/issues/177
