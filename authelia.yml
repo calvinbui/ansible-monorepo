@@ -104,6 +104,7 @@
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
         mode: "0444"
+        validate: "docker run --rm --name {{ application }}_config_check -v %s:/tmp/config.yml --entrypoint authelia ghcr.io/authelia/authelia:latest validate-config --config /tmp/config.yml"
       notify: Restart
 
     - name: Create container
