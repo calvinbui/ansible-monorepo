@@ -4,3 +4,5 @@ ncclient==0.6.15
 paramiko==3.4.0
 xmltodict==0.13.0
 jmespath==1.0.0
+passlib==1.7.4
+argon2_cffi==23.1.0
