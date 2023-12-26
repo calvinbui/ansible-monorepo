@@ -108,12 +108,12 @@
 
           OIDC_CLIENT_ID: "{{ application }}"
           OIDC_CLIENT_SECRET: "{{ ldap_oidc_secrets.outline }}"
-          OIDC_AUTH_URI: "https://dex.{{ common_tld }}/auth"
-          OIDC_TOKEN_URI: "https://dex.{{ common_tld }}/token"
-          OIDC_USERINFO_URI: "https://dex.{{ common_tld }}/userinfo"
+          OIDC_AUTH_URI: "https://authelia.{{ common_tld }}/api/oidc/authorization"
+          OIDC_TOKEN_URI: "https://authelia.{{ common_tld }}/api/oidc/token"
+          OIDC_USERINFO_URI: "https://authelia.{{ common_tld }}/api/oidc/userinfo"
           OIDC_USERNAME_CLAIM: preferred_username
-          OIDC_DISPLAY_NAME: Dex
-          OIDC_SCOPES: "openid profile email"
+          OIDC_DISPLAY_NAME: Authelia
+          OIDC_SCOPES: "openid offline_access profile email"
 
           FORCE_HTTPS: "false"
           ENABLE_UPDATES: "false"
