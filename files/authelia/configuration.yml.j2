@@ -76,3 +76,8 @@ notifier:
 
 log:
   file_path: /var/log/authelia/authelia.log
+
+identity_providers:
+  oidc:
+    issuer_private_key: |
+      {{ _authelia_private_key.privatekey | indent(6) }}

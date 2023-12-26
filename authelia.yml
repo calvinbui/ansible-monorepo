@@ -89,6 +89,22 @@
           61333835396264303136326464623766663464313535613364343335616436396535646236383963
           63303336633366386562
 
+    - name: Create keys folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}/keys"
+        state: directory
+        owner: "root"
+        group: "root"
+        mode: "0771"
+
+    - name: Generate a private key
+      community.crypto.openssl_privatekey:
+        path: "{{ config_directory }}/keys/private.pem"
+        type: RSA
+        size: 4096
+        return_content: true
+      register: _authelia_private_key
+
     - name: Create authelia folder
       ansible.builtin.file:
         path: "{{ config_directory }}/authelia"
