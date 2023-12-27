@@ -49,10 +49,11 @@
         image: quay.io/thanos/thanos:v0.33.0
         command:
           - store
+          - --data-dir=/store
           - --objstore.config={{ thanos_objstore_config | to_nice_yaml }}
         volumes:
-          - "{{ config_directory }}/store:/data"
-          - "{{ config_directory }}/data:/thanos-data"
+          - "{{ config_directory }}/store:/store"
+          - "{{ config_directory }}/data:/thanos-data:ro"
 
     - name: Create compactor container
       ansible.builtin.include_role:
@@ -63,14 +64,15 @@
         user: root:root
         command:
           - compact
+          - --data-dir=/compactor
           - --objstore.config={{ thanos_objstore_config | to_nice_yaml }}
-          - --wait
 
-          - --retention.resolution-raw=40h # when to downsample raw to 5m (min 40h)
-          - --retention.resolution-5m=10d # when to downsample 5m to 1h (min 10d)
-          - --retention.resolution-1h=30d # when to delete 1h
+          - --wait
+          - --retention.resolution-raw=7d
+          - --retention.resolution-5m=30d
+          - --retention.resolution-1h=365d
         volumes:
-          - "{{ config_directory }}/compactor:/data"
+          - "{{ config_directory }}/compactor:/compactor"
           - "{{ config_directory }}/data:/thanos-data"
 
     - name: Create query container
@@ -116,7 +118,7 @@
           - web
           - --objstore.config={{ thanos_objstore_config | to_nice_yaml }}
         volumes:
-          - "{{ config_directory }}/data:/thanos-data"
+          - "{{ config_directory }}/data:/thanos-data:ro"
         traefik:
           - name: "{{ application }}-bucket"
             port: 10902
