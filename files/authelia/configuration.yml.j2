@@ -82,7 +82,8 @@ identity_providers:
     issuer_private_key: |
       {{ _authelia_private_key.privatekey | indent(6) }}
     clients:
-      - id: outline
+      -
+        id: outline
         description: Outline
         secret: '{{ ldap_oidc_secrets.outline | string | argon2 }}'
         public: false
@@ -94,4 +95,22 @@ identity_providers:
           - offline_access
           - profile
           - email
+        userinfo_signing_algorithm: none
+      -
+        id: guacamole
+        description: Apache Guacamole
+        secret: '{{ ldap_oidc_secrets.guacamole | string | argon2 }}'
+        public: false
+        authorization_policy: one_factor
+        redirect_uris:
+          - https://guacamole.{{ common_tld }}
+        scopes:
+          - openid
+          - profile
+          - groups
+          - email
+        response_types:
+          - id_token
+        grant_types:
+          - implicit
         userinfo_signing_algorithm: none
