@@ -233,3 +233,12 @@
       junipernetworks.junos.junos_interfaces:
         config: "{{ juniper_l2_interfaces | to_juniper_interface_config }}"
         state: merged
+
+    - name: Disable 'Management Ethernet Link Down' alarm
+      junipernetworks.junos.junos_command:
+        commands:
+          - configure
+          - set chassis alarm management-ethernet link-down ignore
+          - commit and-quit
+        display: text
+      connection: ansible.netcommon.network_cli
