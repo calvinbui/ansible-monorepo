@@ -134,7 +134,7 @@ cards:
         name: ☁️ Weather
       -
         type: custom:hourly-weather
-        entity: weather.north_strathfield_hourly
+        entity: weather.forecast_home
         icons: true
         offset: '0'
         num_segments: '24'
@@ -146,4 +146,4 @@ cards:
         type: weather-forecast
         show_current: true
         show_forecast: true
-        entity: weather.north_strathfield
+        entity: weather.forecast_home
