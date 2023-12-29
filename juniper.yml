@@ -115,6 +115,10 @@
         description: "eufy-homebase-lan"
         access: "{{ networks.iot.vlan }}"
       -
+        port: "31"
+        description: "linktap-gateway-1"
+        access: "{{ networks.iot.vlan }}"
+      -
         port: "36"
         description: "3d-printer"
         access: "{{ networks.iot.vlan }}"
