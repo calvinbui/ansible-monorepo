@@ -59,6 +59,7 @@
           GITEA__server__DISABLE_SSH: "true"
           GITEA__server__LFS_START_SERVER: "false"
           GITEA__server__MINIMUM_KEY_SIZE_CHECK: "true"
+          GITEA__server__LANDING_PAGE: "/user/login"
 
           GITEA__repository__DEFAULT_BRANCH: "master"
           GITEA__repository__FORCE_PRIVATE: "true"
@@ -75,6 +76,7 @@
 
           GITEA__security__INSTALL_LOCK: "true"
           GITEA__security__LOGIN_REMEMBER_DAYS: "180"
+          GITEA__security__DISABLE_QUERY_AUTH_TOKEN: "true"
 
           GITEA__mailer__ENABLED: "true"
           GITEA__mailer__PROTOCOL: "smtp+starttls"
@@ -85,11 +87,16 @@
           GITEA__mailer__FROM: "{{ application }}{{ common_email_to }}"
 
           GITEA__openid__ENABLE_OPENID_SIGNIN: "false"
-          GITEA__openid__ENABLE_OPENID_SIGNUP: "false"
+          GITEA__openid__ENABLE_OPENID_SIGNUP: "true"
+          GITEA__openid__WHITELISTED_URIS: "authelia.{{ common_tld }}"
+          GITEA__service__DISABLE_REGISTRATION: "true"
+          GITEA__service__ALLOW_ONLY_EXTERNAL_REGISTRATION: "true"
+          GITEA__service__SHOW_REGISTRATION_BUTTON: "false"
+          GITEA__oauth2_client__ENABLE_AUTO_REGISTRATION: "true"
+          GITEA__oauth2_client__OPENID_CONNECT_SCOPES: "email profile"
 
           GITEA__service__ACTIVE_CODE_LIVE_MINUTES: "5"
           GITEA__service__RESET_PASSWD_CODE_LIVE_MINUTES: "5"
-          GITEA__service__DISABLE_REGISTRATION: "true"
           GITEA__service__REQUIRE_SIGNIN_VIEW: "true"
           GITEA__service__ENABLE_NOTIFY_MAIL: "true"
           GITEA__service__DEFAULT_KEEP_EMAIL_PRIVATE: "true"
@@ -137,3 +144,49 @@
           description: "Git service"
         blackbox:
           path: /api/healthz
+
+    - name: Add authelia source
+      community.docker.docker_container_exec:
+        container: "{{ application }}"
+        user: 1000
+        command: >-
+          gitea admin auth add-oauth
+            --name authelia
+            --provider openidConnect
+            --key {{ application }}
+            --secret {{ ldap_oidc_secrets.gitea }}
+            --auto-discover-url https://authelia.{{ common_tld }}/.well-known/openid-configuration
+      register: _command_result
+      failed_when:
+        - ('Command error' in _command_result.stderr)
+        - ('login source already exists' not in _command_result.stderr)
+      changed_when: ('login source already exists' not in _command_result.stderr)
+
+    - name: Get authelia source ID
+      community.docker.docker_container_exec:
+        container: "{{ application }}"
+        user: 1000
+        command: gitea admin auth list
+      register: _gitea_auth_sources
+      failed_when: ('Command error' in _gitea_auth_sources.stderr)
+      changed_when: false
+
+    - name: Set source id
+      ansible.builtin.set_fact:
+        _gitea_auth_id: "{{ _gitea_auth_sources.stdout_lines[1] | split('\t') | first }}"
+
+    - name: Update authelia source
+      community.docker.docker_container_exec:
+        container: "{{ application }}"
+        user: 1000
+        command: >-
+          gitea admin auth update-oauth
+            --id {{ _gitea_auth_id }}
+            --name authelia
+            --provider openidConnect
+            --key {{ application }}
+            --secret {{ ldap_oidc_secrets.gitea }}
+            --auto-discover-url https://authelia.{{ common_tld }}/.well-known/openid-configuration
+      register: _command_result
+      failed_when: ('Command error' in _command_result.stderr)
+      changed_when: true # nothing is returned so we'll always assume changed
