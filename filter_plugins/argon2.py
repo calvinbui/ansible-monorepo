@@ -1,7 +1,7 @@
 from ansible.errors import AnsibleError
 
 
-def argon2(passwd):
+def argon2(value, salt):
     try:
         from passlib.hash import argon2
     except Exception as e:
@@ -9,10 +9,11 @@ def argon2(passwd):
 
     digest = argon2.using(
         type="ID",
+        salt=salt.encode("utf-8"),
         memory_cost=65536,
         time_cost=3,
         parallelism=4,
-    ).hash(passwd)
+    ).hash(value)
 
     return digest
 

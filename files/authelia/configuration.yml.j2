@@ -85,7 +85,7 @@ identity_providers:
       -
         id: outline
         description: Outline
-        secret: '{{ ldap_oidc_secrets.outline | string | argon2 }}'
+        secret: '{{ ldap_oidc_secrets.outline | string | argon2(authelia_salt) }}'
         public: false
         authorization_policy: one_factor
         redirect_uris:
@@ -99,7 +99,7 @@ identity_providers:
       -
         id: guacamole
         description: Apache Guacamole
-        secret: '{{ ldap_oidc_secrets.guacamole | string | argon2 }}'
+        secret: '{{ ldap_oidc_secrets.guacamole | string | argon2(authelia_salt) }}'
         public: false
         authorization_policy: one_factor
         redirect_uris:
@@ -117,7 +117,7 @@ identity_providers:
       -
         id: gitea
         description: Gitea
-        secret: '{{ ldap_oidc_secrets.gitea | string | argon2 }}'
+        secret: '{{ ldap_oidc_secrets.gitea | string | argon2(authelia_salt) }}'
         public: false
         authorization_policy: one_factor
         redirect_uris:
@@ -130,7 +130,7 @@ identity_providers:
       -
         id: grafana
         description: Grafana
-        secret: '{{ ldap_oidc_secrets.grafana | string | argon2 }}'
+        secret: '{{ ldap_oidc_secrets.grafana | string | argon2(authelia_salt) }}'
         public: false
         authorization_policy: one_factor
         redirect_uris:
