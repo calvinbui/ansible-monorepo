@@ -53,10 +53,10 @@ networks:
   granny:
     name: granny
     subnet: /24
-    gateway: 192.168.5.1
-    dns: 192.168.5.1
-    iprange: 192.168.5.128/25
-    prefix: 192.168.5
+    gateway: 192.168.6.1
+    dns: 192.168.6.1
+    iprange: 192.168.6.128/25
+    prefix: 192.168.6
     parent: ens3f0
     driver: macvlan
     vlan: 50
