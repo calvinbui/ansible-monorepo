@@ -114,7 +114,6 @@ identity_providers:
         grant_types:
           - implicit
         userinfo_signing_algorithm: none
-
       -
         id: gitea
         description: Gitea
@@ -127,4 +126,18 @@ identity_providers:
           - openid
           - email
           - profile
+        userinfo_signing_algorithm: none
+      -
+        id: grafana
+        description: Grafana
+        secret: '{{ ldap_oidc_secrets.grafana | string | argon2 }}'
+        public: false
+        authorization_policy: one_factor
+        redirect_uris:
+          - https://grafana.{{ common_tld }}/login/generic_oauth
+        scopes:
+          - openid
+          - profile
+          - groups
+          - email
         userinfo_signing_algorithm: none

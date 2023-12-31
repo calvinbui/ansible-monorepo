@@ -53,6 +53,23 @@
         name: docker_container
       vars:
         image: grafana/grafana:10.2.3
+        env:
+          GF_USERS_AUTO_ASSIGN_ORG_ROLE: Admin
+          GF_SERVER_ROOT_URL: "https://grafana.{{ common_tld }}"
+          GF_AUTH_GENERIC_OAUTH_ENABLED: "true"
+          GF_AUTH_GENERIC_OAUTH_NAME: Authelia
+          GF_AUTH_GENERIC_OAUTH_ICON: signin
+          GF_AUTH_GENERIC_OAUTH_CLIENT_ID: grafana
+          GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET: "{{ ldap_oidc_secrets.grafana }}"
+          GF_AUTH_GENERIC_OAUTH_SCOPES: openid profile email groups
+          GF_AUTH_GENERIC_OAUTH_EMPTY_SCOPES: "false"
+          GF_AUTH_GENERIC_OAUTH_AUTH_URL: https://authelia.{{ common_tld }}/api/oidc/authorization
+          GF_AUTH_GENERIC_OAUTH_TOKEN_URL: https://authelia.{{ common_tld }}/api/oidc/token
+          GF_AUTH_GENERIC_OAUTH_API_URL: https://authelia.{{ common_tld }}/api/oidc/userinfo
+          GF_AUTH_GENERIC_OAUTH_LOGIN_ATTRIBUTE_PATH: preferred_username
+          GF_AUTH_GENERIC_OAUTH_GROUPS_ATTRIBUTE_PATH: groups
+          GF_AUTH_GENERIC_OAUTH_NAME_ATTRIBUTE_PATH: name
+          GF_AUTH_GENERIC_OAUTH_USE_PKCE: "true"
         volumes:
           - "{{ config_directory }}/data:/var/lib/grafana"
           - "{{ config_directory }}/provisioning:/etc/grafana/provisioning"
