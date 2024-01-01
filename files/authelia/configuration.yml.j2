@@ -161,3 +161,18 @@ identity_providers:
           - email
           - groups
         userinfo_signing_algorithm: none
+      -
+        id: portainer
+        description: Portainer
+        secret: '{{ ldap_oidc_secrets.portainer | string | argon2(authelia_salt) }}'
+        public: false
+        authorization_policy: one_factor
+        consent_mode: implicit
+        redirect_uris:
+          - https://portainer.{{ common_tld }}
+        scopes:
+          - openid
+          - profile
+          - groups
+          - email
+        userinfo_signing_algorithm: none
