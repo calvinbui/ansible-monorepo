@@ -89,6 +89,7 @@ identity_providers:
         secret: '{{ ldap_oidc_secrets.outline | string | argon2(authelia_salt) }}'
         public: false
         authorization_policy: one_factor
+        consent_mode: implicit
         redirect_uris:
           - https://outline.{{ common_tld }}/auth/oidc.callback
         scopes:
@@ -103,6 +104,7 @@ identity_providers:
         secret: '{{ ldap_oidc_secrets.guacamole | string | argon2(authelia_salt) }}'
         public: false
         authorization_policy: one_factor
+        consent_mode: implicit
         redirect_uris:
           - https://guacamole.{{ common_tld }}
         scopes:
@@ -121,6 +123,7 @@ identity_providers:
         secret: '{{ ldap_oidc_secrets.gitea | string | argon2(authelia_salt) }}'
         public: false
         authorization_policy: one_factor
+        consent_mode: implicit
         redirect_uris:
           - https://gitea.{{ common_tld }}/user/oauth2/authelia/callback
         scopes:
@@ -134,6 +137,7 @@ identity_providers:
         secret: '{{ ldap_oidc_secrets.grafana | string | argon2(authelia_salt) }}'
         public: false
         authorization_policy: one_factor
+        consent_mode: implicit
         redirect_uris:
           - https://grafana.{{ common_tld }}/login/generic_oauth
         scopes:
