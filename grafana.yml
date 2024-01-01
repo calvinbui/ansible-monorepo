@@ -5,6 +5,18 @@
   vars:
     application: grafana
 
+    grafana_home_assistant_influxdb_token: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      32613333613534363730393162633037646336633839363261623837396138373865343666303261
+      6638653039366334383539633531383463633432613338660a643934316465396263643030376231
+      63613339376663316234333063336162356635306233346631663138666634633737613534326335
+      6262656139356636360a376138303161656439653262313365643335666466373631383561386230
+      36363737356239356261326263643131643565626462663632663539396662336265376132663731
+      36306165333162363830646432363465653835613937616438666639623662653765333137626632
+      33626366666236333936666535336164356531313135373230363762303765366538343463326563
+      65313563613835363566393761383831343265663466363031663235396634633731353839393366
+      3861
+
     docker_network: "{{ networks.user }}"
 
   handlers:
@@ -24,12 +36,54 @@
         group: "{{ common_group }}"
         mode: "0771"
       loop:
-        - "{{ config_directory }}"
-        - "{{ config_directory }}/provisioning"
+        - "{{ config_directory }}/provisioning/dashboards"
+        - "{{ config_directory }}/provisioning/datasources"
         - "{{ config_directory }}/provisioning/plugins"
         - "{{ config_directory }}/provisioning/notifiers"
         - "{{ config_directory }}/provisioning/alerting"
         - "{{ config_directory }}/data"
+
+    - name: Create Thanos datasource
+      ansible.builtin.copy:
+        content: |
+          apiVersion: 1
+
+          datasources:
+            - name: Thanos Query
+              type: prometheus
+              access: proxy
+              url: http://thanos-query.{{ networks.user.name }}:10902
+              isDefault: true
+              jsonData:
+                prometheusType: Thanos
+                prometheusVersion: 0.31.1
+        dest: "{{ config_directory }}/provisioning/datasources/thanos.yml"
+        owner: "472"  # grafana user
+        group: "{{ common_group }}"
+        mode: "0740"
+      notify: Restart
+
+    - name: Create Home Assistant Influx DB datasource
+      ansible.builtin.copy:
+        content: |
+          apiVersion: 1
+
+          datasources:
+            - name: Home Assistant InfluxDB
+              type: influxdb
+              access: proxy
+              url: https://home-assistant-influxdb.{{ common_tld }}
+              jsonData:
+                version: Flux
+                organization: home-assistant-org
+                defaultBucket: home-assistant-bucket
+              secureJsonData:
+                token: {{ grafana_home_assistant_influxdb_token }}
+        dest: "{{ config_directory }}/provisioning/datasources/home-assistant-influxdb.yml"
+        owner: "472"  # grafana user
+        group: "{{ common_group }}"
+        mode: "0740"
+      notify: Restart
 
     - name: Create container
       ansible.builtin.include_role:
