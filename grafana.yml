@@ -16,37 +16,17 @@
           '*': ignore
 
   tasks:
-    - name: Create config folder
+    - name: Create folders
       ansible.builtin.file:
-        path: "{{ config_directory }}"
-        state: directory
-        owner: "472"  # grafana user
-        group: "{{ common_group }}"
-        mode: "0771"
-
-    - name: Create directories
-      ansible.builtin.file:
-        path: "{{ config_directory }}/{{ item }}"
+        path: "{{ item }}"
         state: directory
         owner: "472"  # grafana user
         group: "{{ common_group }}"
         mode: "0771"
       loop:
-        - "provisioning"
-        - "provisioning/datasources"
-        - "provisioning/dashboards"
-        - "data"
-        - "data/plugins"
-
-    - name: Download plugins
-      ansible.builtin.unarchive:
-        src: "https://grafana.com/api/plugins/{{ item.name }}/versions/{{ item.version }}/download"
-        dest: "{{ config_directory }}/data/plugins"
-        remote_src: true
-      loop:
-        - name: grafana-piechart-panel
-          version: 1.6.2
-      notify: Restart
+        - "{{ config_directory }}"
+        - "{{ config_directory }}/provisioning"
+        - "{{ config_directory }}/data"
 
     - name: Create container
       ansible.builtin.include_role:
@@ -54,6 +34,8 @@
       vars:
         image: grafana/grafana:10.2.3
         env:
+          GF_INSTALL_PLUGINS: "grafana-piechart-panel"
+
           GF_USERS_AUTO_ASSIGN_ORG_ROLE: Admin
           GF_SERVER_ROOT_URL: "https://grafana.{{ common_tld }}"
           GF_AUTH_GENERIC_OAUTH_ENABLED: "true"
