@@ -146,3 +146,18 @@ identity_providers:
           - groups
           - email
         userinfo_signing_algorithm: none
+      -
+        id: minio
+        description: MinIO
+        secret: '{{ ldap_oidc_secrets.minio | string | argon2(authelia_salt) }}'
+        public: false
+        authorization_policy: one_factor
+        consent_mode: implicit
+        redirect_uris:
+          - https://minio-console.{{ common_tld }}/oauth_callback
+        scopes:
+          - openid
+          - profile
+          - email
+          - groups
+        userinfo_signing_algorithm: none

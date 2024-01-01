@@ -45,6 +45,17 @@
 
           MINIO_SERVER_URL: "https://{{ application }}.{{ common_tld }}"
           MINIO_BROWSER_REDIRECT_URL: "https://{{ application }}-console.{{ common_tld }}"
+
+          MINIO_IDENTITY_OPENID_ENABLE: "on"
+          MINIO_IDENTITY_OPENID_COMMENT: "authelia"
+          MINIO_IDENTITY_OPENID_CONFIG_URL: "https://authelia.{{ common_tld }}/.well-known/openid-configuration"
+          MINIO_IDENTITY_OPENID_CLIENT_ID: "{{ application }}"
+          MINIO_IDENTITY_OPENID_CLIENT_SECRET: "{{ ldap_oidc_secrets.minio }}"
+          MINIO_IDENTITY_OPENID_DISPLAY_NAME: "Authelia"
+          MINIO_IDENTITY_OPENID_CLAIM_PREFIX: "authelia"
+          MINIO_IDENTITY_OPENID_SCOPES: "openid,profile,email"
+          MINIO_IDENTITY_OPENID_ROLE_POLICY: "readonly"
+          MINIO_IDENTITY_OPENID_REDIRECT_URI: "https://{{ application }}-console.{{ common_tld }}/oauth_callback"
         volumes:
           - "{{ config_directory }}/data:/data"
         traefik:
