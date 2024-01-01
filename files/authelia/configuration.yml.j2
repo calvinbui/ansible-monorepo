@@ -176,3 +176,18 @@ identity_providers:
           - groups
           - email
         userinfo_signing_algorithm: none
+      -
+        id: nextcloud
+        description: Nextcloud
+        secret: '{{ ldap_oidc_secrets.nextcloud | string | argon2(authelia_salt) }}'
+        public: false
+        authorization_policy: one_factor
+        consent_mode: implicit
+        redirect_uris:
+          - https://nextcloud.{{ common_tld }}/apps/oidc_login/oidc
+        scopes:
+          - openid
+          - profile
+          - email
+          - groups
+        userinfo_signing_algorithm: none

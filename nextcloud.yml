@@ -250,16 +250,16 @@
           value: '{\"csv\":\"true\",\"doc\":\"true\",\"docm\":\"true\",\"docx\":\"true\",\"docxf\":\"true\",\"oform\":\"true\",\"dotx\":\"true\",\"epub\":\"false\",\"html\":\"false\",\"odp\":\"true\",\"ods\":\"true\",\"odt\":\"true\",\"otp\":\"true\",\"ots\":\"true\",\"ott\":\"true\",\"pdf\":\"false\",\"potm\":\"true\",\"potx\":\"true\",\"ppsm\":\"true\",\"ppsx\":\"true\",\"ppt\":\"true\",\"pptm\":\"true\",\"pptx\":\"true\",\"rtf\":\"true\",\"txt\":\"true\",\"xls\":\"true\",\"xlsm\":\"true\",\"xlsx\":\"true\",\"xltm\":\"true\",\"xltx\":\"true\"}'
         -
           name: customizationChat
-          value: "false"
+          value: false
         -
           name: customizationFeedback
-          value: "false"
+          value: false
         -
           name: customizationHelp
-          value: "false"
+          value: false
         -
           name: customizationToolbarNoTabs
-          value: "false"
+          value: false
         -
           name: customizationTheme
           value: "theme-light"
@@ -383,3 +383,58 @@
         -
           app: files_fulltextsearch
           value: '{\"files_pdf\":\"1\",\"files_office\":\"1\"}'
+
+    - name: Install oidc app
+      community.docker.docker_container_exec:
+        container: "{{ application }}"
+        user: www-data
+        command: "php occ app:install oidc_login"
+      register: _command_result
+      failed_when: "'Could not download app' in _command_result.stdout"
+      changed_when: "'already installed' not in _command_result.stdout"
+      retries: 3
+      delay: 2
+
+    - name: Configure oidc app
+      community.docker.docker_container_exec:
+        container: "{{ application }}"
+        user: www-data
+        command: "php occ config:system:set {{ item.key }} {% if item.value | type_debug == 'bool' %}--type=boolean{% elif item.value | type_debug == 'int' %}--type=integer{% endif %} --value='{{ item.value }}'"
+      register: _command_result
+      failed_when: "'set to' not in _command_result.stdout"
+      changed_when: false
+      until: _command_result is success
+      retries: 3
+      delay: 2
+      loop: "{{ _nextcloud_oidc_config | dict2items }}"
+      vars:
+        _nextcloud_oidc_config:
+          allow_user_to_change_display_name: false
+          lost_password_link: "disabled"
+          oidc_login_provider_url: "https://authelia.{{ common_tld }}"
+          oidc_login_client_id: "{{ application }}"
+          oidc_login_client_secret: "{{ ldap_oidc_secrets.nextcloud }}"
+          oidc_login_auto_redirect: false
+          oidc_login_end_session_redirect: false
+          oidc_login_button_text: "Log in with Authelia"
+          oidc_login_hide_password_form: false
+          oidc_login_use_id_token: true
+          oidc_login_attributes id: "preferred_username"
+          oidc_login_attributes name: "name"
+          oidc_login_attributes mail: "email"
+          oidc_login_attributes groups: "groups"
+          oidc_login_default_group: "admin"
+          oidc_login_use_external_storage: false
+          oidc_login_scope: "openid profile email groups"
+          oidc_login_proxy_ldap: false
+          oidc_login_disable_registration: false
+          oidc_login_redir_fallback: false
+          oidc_login_alt_login_page: "assets/login.php"
+          oidc_login_tls_verify: true
+          oidc_create_groups: false
+          oidc_login_webdav_enabled: false
+          oidc_login_password_authentication: false
+          oidc_login_public_key_caching_time: 86400
+          oidc_login_min_time_between_jwks_requests: 10
+          oidc_login_well_known_caching_time: 86400
+          oidc_login_update_avatar: false
