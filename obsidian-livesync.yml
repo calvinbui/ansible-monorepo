@@ -52,6 +52,9 @@
           methods = GET,PUT,POST,HEAD,DELETE
           max_age = 3600
         dest: "{{ config_directory }}/local.ini"
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0744"
 
     - name: Create container
       ansible.builtin.include_role:
