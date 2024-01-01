@@ -26,6 +26,9 @@
       loop:
         - "{{ config_directory }}"
         - "{{ config_directory }}/provisioning"
+        - "{{ config_directory }}/provisioning/plugins"
+        - "{{ config_directory }}/provisioning/notifiers"
+        - "{{ config_directory }}/provisioning/alerting"
         - "{{ config_directory }}/data"
 
     - name: Create container
@@ -34,10 +37,20 @@
       vars:
         image: grafana/grafana:10.2.3
         env:
-          GF_INSTALL_PLUGINS: "grafana-piechart-panel"
-
-          GF_USERS_AUTO_ASSIGN_ORG_ROLE: Admin
           GF_SERVER_ROOT_URL: "https://grafana.{{ common_tld }}"
+          GF_SERVER_ENABLE_GZIP: "true"
+
+          GF_ANALYTICS_ENABLED: "false"
+          GF_ANALYTICS_REPORTING_ENABLED: "false"
+          GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+          GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES: "false"
+          GF_ANALYTICS_FEEDBACK_LINKS_ENABLED: "false"
+
+          GF_SECURITY_DISABLE_GRAVATAR: "true"
+
+          GF_USERS_DEFAULT_LANGUAGE: "{{ common_locale }}"
+          GF_USERS_AUTO_ASSIGN_ORG_ROLE: Admin
+
           GF_AUTH_GENERIC_OAUTH_ENABLED: "true"
           GF_AUTH_GENERIC_OAUTH_NAME: Authelia
           GF_AUTH_GENERIC_OAUTH_ICON: signin
@@ -52,6 +65,11 @@
           GF_AUTH_GENERIC_OAUTH_GROUPS_ATTRIBUTE_PATH: groups
           GF_AUTH_GENERIC_OAUTH_NAME_ATTRIBUTE_PATH: name
           GF_AUTH_GENERIC_OAUTH_USE_PKCE: "true"
+
+          GF_NEWS_NEWS_FEED_ENABLED: "FALSE"
+
+          GF_DATE_FORMATS_DEFAULT_TIMEZONE: "{{ common_timezone }}"
+          GF_DATE_FORMATS_DEFAULT_WEEK_START: "monday"
         volumes:
           - "{{ config_directory }}/data:/var/lib/grafana"
           - "{{ config_directory }}/provisioning:/etc/grafana/provisioning"
