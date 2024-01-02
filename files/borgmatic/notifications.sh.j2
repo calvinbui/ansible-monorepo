@@ -3,9 +3,14 @@
 step=$1
 name=$2
 
-if /usr/local/bin/borgmatic check --repair; then
-  if /usr/local/bin/borgmatic --stats --list -v 0 2>&1; then
-    exit 0
+# check backup exists or if something else has locked it
+if /usr/local/bin/borgmatic list; then
+  # running repair if that's the problem
+  if /usr/local/bin/borgmatic check --repair; then
+    # run the backup again if that's the case
+    if /usr/local/bin/borgmatic --stats --list -v 0 2>&1; then
+      exit 0
+    fi
   fi
 fi
 

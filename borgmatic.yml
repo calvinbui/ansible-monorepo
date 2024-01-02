@@ -1,19 +1,5 @@
 ---
 
-# https://torsion.org/borgmatic/
-#
-# Init the backup with:
-# $ docker exec borgmatic sh -c "borgmatic init --encryption repokey-blake2"
-#
-# (if required) Extract the encryption key with:
-# $ borg key export /mnt/destination
-#
-# Start a backup with:
-# $ borgmatic --stats --list
-#
-# Restore a backup with:
-# $ borgmatic extract
-
 - hosts: homelab
 
   vars:
@@ -21,64 +7,60 @@
 
     config_directory: /borgmatic
 
+    borgmatic_hetzner_storage_box_host: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      65343838343365376137613863316438653533616236343066316134313931306633613139363264
+      6632303265393664376538643566333738326431326431340a386164313666613730666331656136
+      33333733346632313036373866393337316637646562656361306533643639323037306432303737
+      3863353061656164340a306438323464643863396138356535393132363237383164653231643939
+      32326338356462393234326632323537383336353936356262643832343864663630336432616537
+      3230633564653339336162306432316633303862656665646366
+    borgmatic_hetzner_storage_box_port: 23
+
     borgmatic_backups:
       - name: backups
         source: "{{ common_directory_backup }}"
         crontab: "30 1 * * *"
-        repository: ssh://azy1uocs@azy1uocs.repo.borgbase.com/./repo
+        repository: ssh://{{ borgmatic_hetzner_storage_box_host }}:{{ borgmatic_hetzner_storage_box_port }}/./borg/backups
         exclude_patterns:
           - "/mnt/source/Time Machine"
 
       - name: misc
         source: "{{ common_directory_misc }}"
         crontab: "45 1 * * *"
-        repository: ssh://q09177h4@q09177h4.repo.borgbase.com/./repo
+        repository: ssh://{{ borgmatic_hetzner_storage_box_host }}:{{ borgmatic_hetzner_storage_box_port }}/./borg/misc
 
       - name: work
         source: "{{ common_directory_storage }}/Work"
         crontab: "0 2 * * *"
-        repository: ssh://lh782u97@lh782u97.repo.borgbase.com/./repo
+        repository: ssh://{{ borgmatic_hetzner_storage_box_host }}:{{ borgmatic_hetzner_storage_box_port }}/./borg/work
 
       - name: photos
-        source: "{{ common_directory_photos }}"
-        crontab: "30 4 * * *"
-        repository: ssh://g0h7y7az@g0h7y7az.repo.borgbase.com/./repo
+        source: "{{ common_directory_photos }}/library"
+        crontab: "30 2 * * *"
+        repository: ssh://{{ borgmatic_hetzner_storage_box_host }}:{{ borgmatic_hetzner_storage_box_port }}/./borg/photos
 
       - name: apps
         source: "{{ common_directory }}"
-        crontab: "0 4 * * *"
-        repository: ssh://y8p6ha46@y8p6ha46.repo.borgbase.com/./repo
+        crontab: "30 3 * * *"
+        repository: ssh://{{ borgmatic_hetzner_storage_box_host }}:{{ borgmatic_hetzner_storage_box_port }}/./borg/apps
         exclude_patterns:
           - "/mnt/source/home-assistant/config/gtfs"
-
           - "/mnt/source/nextcloud/app/data/*/cache"
-
           - "/mnt/source/languagetool"
-
           - "/mnt/source/plex/Library/Application Support/Plex Media Server/Cache"
-
           - "/mnt/source/renovate"
-
           - "/mnt/source/immich/ml-cache"
-
           - "/mnt/source/nvidia"
-
           - "/mnt/source/vscode/repos"
-
           - "/mnt/source/obico/repo"
-
           - "/mnt/source/esphome"
-
           - "/mnt/source/webtop"
-
           - "/mnt/source/recyclarr"
-
           - "/mnt/source/prometheus"
-
+          - "/mnt/source/thanos"
           - "/mnt/source/portainer/backups"
-
           - "/mnt/source/*/cache"
-
           - "/mnt/source/*/*/log"
           - "/mnt/source/*/*/log.*"
           - "/mnt/source/*/*/logs"
@@ -98,6 +80,7 @@
       3966623038626139300a666265326566373439663038393432396432356636353733643361623031
       35663138313039623361346562346234636365316164636365663439326663643261643438376334
       3361306465303461613739396564306434333033643962616664
+
     borgmatic_notification_webhook: !vault |
       $ANSIBLE_VAULT;1.1;AES256
       35316463616432373433336236326164616232316162646138373738656634353466653863613563
@@ -151,7 +134,7 @@
         dest: "{{ config_directory }}/{{ item.name }}/borgmatic.d/crontab.txt"
         owner: root
         group: root
-        mode: "0744"
+        mode: "0755"
       loop: "{{ borgmatic_backups }}"
 
     - name: Copy SSH keys
@@ -193,4 +176,26 @@
           BORG_CHECK_I_KNOW_WHAT_I_AM_DOING: "true"
         comparisons:
           env: strict
+      loop: "{{ borgmatic_backups }}"
+
+    - name: Create backup locations
+      ansible.builtin.command: ssh -p{{ borgmatic_hetzner_storage_box_port }} {{ borgmatic_hetzner_storage_box_host }} mkdir -p borg/{{ '{' }}{{ borgmatic_backups | map(attribute='name') | flatten | join(',') }}{{ '}' }}
+      changed_when: false
+      become: false
+      delegate_to: localhost
+
+    - name: Initialise repos
+      community.docker.docker_container_exec:
+        container: "borgmatic-{{ item.name }}"
+        command: borgmatic init --encryption=repokey-blake2
+      register: _command_result
+      changed_when: _command_result.stdout != ''
+      loop: "{{ borgmatic_backups }}"
+
+    - name: Disable older versions for security
+      community.docker.docker_container_exec:
+        container: "borgmatic-{{ item.name }}"
+        command: borgmatic borg upgrade --disable-tam
+      register: _command_result
+      changed_when: _command_result.stdout != ''
       loop: "{{ borgmatic_backups }}"
