@@ -35,6 +35,7 @@
           require_valid_user = true
           max_http_request_size = 4294967296
           enable_cors = true
+          require_valid_user_except_for_up = true
 
           [chttpd_auth]
           require_valid_user = true
@@ -77,6 +78,8 @@
           - port: 5984
             middlewares:
               - "{{ application }}-cors"
+        blackbox:
+          path: /_up
         labels:
           '{
             "traefik.http.middlewares.{{ application }}-cors.headers.accesscontrolallowmethods": "GET,PUT,POST,HEAD,DELETE",
