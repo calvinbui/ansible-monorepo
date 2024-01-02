@@ -83,8 +83,11 @@
         image: quay.io/thanos/thanos:v0.33.0
         command:
           - query
+
           - --endpoint={{ application }}-store.{{ docker_network.name }}:10901
           - --endpoint={{ application }}-sidecar.{{ docker_network.name }}:10901
+
+          - --alert.query-url=https://{{ application }}.{{ common_tld }}
 
     - name: Create query-frontend container
       ansible.builtin.include_role:
