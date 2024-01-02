@@ -1,0 +1,19 @@
+---
+
+groups:
+  - name: docker_state_exporter
+    rules:
+      -
+        alert: docker_state down
+        expr: up{job="docker_state_exporter"} != 1
+        for: 5m
+        annotations:
+          title: docker_state_exporter is down
+          description: "The exporter could not be reached"
+      -
+        alert: Container Down
+        expr: max by (name) (container_state_status{status=~"(running|exited)"}) != 1
+        for: 1m
+        annotations:
+          title: Container not running
+          description: "The container {{ $labels.name }} is not running"

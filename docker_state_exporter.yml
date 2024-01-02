@@ -1,0 +1,19 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: docker_state_exporter
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: karugaru/docker_state_exporter
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+        metrics:
+          - port: 8080
