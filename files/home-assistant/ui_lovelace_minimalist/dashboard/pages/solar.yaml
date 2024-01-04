@@ -222,12 +222,6 @@ cards:
         name: Usage (kWh)
         icon: mdi:home-lightning-bolt
         show_state: false
-        style: &row_style
-          hui-generic-entity-row:
-            $: |
-              .info.pointer.text-content {
-                margin-left: 0px !important;
-              }
         entities:
           - entity: sensor.electricity_usage_today_total
             name: Today
@@ -251,7 +245,6 @@ cards:
         name: Cost ($)
         icon: mdi:currency-usd
         show_state: false
-        style: *row_style
         entities:
           - entity: sensor.electricity_costs_today_total
             name: Today
@@ -274,7 +267,6 @@ cards:
         name: Grid ($)
         icon: mdi:transmission-tower-export
         show_state: false
-        style: *row_style
         entities:
           - entity: sensor.electricity_costs_today_import
             name: Today
@@ -297,7 +289,6 @@ cards:
         name: Solar ($)
         icon: mdi:transmission-tower-import
         show_state: false
-        style: *row_style
         entities:
           - entity: sensor.electricity_costs_today_export
             name: Today
@@ -325,35 +316,30 @@ cards:
         type: custom:multiple-entity-row
         entity: sensor.tou_period
         name: Current Period
-        style: *row_style
       -
         type: custom:multiple-entity-row
         entity: sensor.electricity_costs_currently
         name: Current Cost ($/Hour)
         icon: mdi:currency-usd
         unit: USD
-        style: *row_style
       -
         type: custom:multiple-entity-row
         entity: sensor.electricity_costs_average_per_day
         name: Cost Per Day ($)
         icon: mdi:currency-usd
         unit: USD
-        style: *row_style
       -
         type: custom:multiple-entity-row
         entity: sensor.electricity_costs_bill_forecast
         name: Forecasted Bill ($)
         icon: mdi:chart-line
         unit: USD
-        style: *row_style
       -
         type: custom:multiple-entity-row
         entity: sensor.electricity_costs_alternative_plan
         name: Solar Saving (Today)
         icon: mdi:weather-sunny-off
         unit: USD
-        style: *row_style
 
   # Usage
   -
@@ -367,7 +353,6 @@ cards:
         name: Peak (kWh)
         icon: mdi:transmission-tower-export
         show_state: false
-        style: *row_style
         entities:
           - entity: sensor.grid_power_import_daily_peak
             name: Today
@@ -392,7 +377,6 @@ cards:
         name: Off-Peak (kWh)
         icon: mdi:transmission-tower-export
         show_state: false
-        style: *row_style
         entities:
           - entity: sensor.grid_power_import_daily_offpeak
             name: Today
@@ -417,7 +401,6 @@ cards:
         name: Shoulder (kWh)
         icon: mdi:transmission-tower-export
         show_state: false
-        style: *row_style
         entities:
           - entity: sensor.grid_power_import_daily_shoulder
             name: Today
@@ -448,7 +431,6 @@ cards:
         name: Yield
         icon: mdi:solar-panel-large
         show_state: false
-        style: *row_style
         entities:
           - entity: sensor.solar_generated_today
             name: Today
@@ -471,7 +453,6 @@ cards:
         name: Export
         icon: mdi:transmission-tower-import
         show_state: false
-        style: *row_style
         entities:
           - entity: sensor.grid_power_export_daily_anytime
             name: Today
@@ -495,7 +476,6 @@ cards:
         name: Used
         icon: mdi:sun-wireless
         show_state: false
-        style: *row_style
         entities:
           - entity: sensor.electricity_usage_today_solar
             name: Today
@@ -518,9 +498,7 @@ cards:
         name: Solar Net Cost ($)
         unit: false
         format: precision2
-        style: *row_style
       -
         type: custom:multiple-entity-row
         entity: sensor.solar_breakeven_date
         name: Breakeven Date
-        style: *row_style

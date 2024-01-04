@@ -351,8 +351,8 @@ custom_card_calvin_cover:
     #     thumbVerticalPadding: "0px"
     #     thumbWidth: "0px"
     #     card_mod:
-    #     style: |
-    #       ha-card {
-    #         border-radius: 14px;
-    #         box-shadow: none;
-    #       }
+    #       style: |
+    #         ha-card {
+    #           border-radius: 14px;
+    #           box-shadow: none;
+    #         }
