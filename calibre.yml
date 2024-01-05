@@ -7,6 +7,14 @@
 
     docker_network: "{{ networks.iot }}"
 
+  handlers:
+    - name: Restart
+      community.docker.docker_container:
+        name: "{{ application }}"
+        restart: true
+        comparisons:
+          '*': ignore
+
   tasks:
     - name: Create config folder
       ansible.builtin.file:
