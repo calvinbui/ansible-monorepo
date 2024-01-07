@@ -37,7 +37,7 @@ cards:
               ulm_card_person_icon: mdi:emoticon-tongue
             <<: &person_card
               type: 'custom:button-card'
-              template: card_person
+              template: custom_card_calvin_person
           -
             entity: person.tammy
             variables:
