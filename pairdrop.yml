@@ -50,7 +50,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/schlagmichdoch/pairdrop:v1.10.3
+        image: ghcr.io/schlagmichdoch/pairdrop:v1.10.5
         command: "npm run start:prod"
         volumes:
           - "{{ config_directory }}/rtc_config.json:/home/node/app/rtc_config.json"
