@@ -13,7 +13,7 @@
       3931346438636162610a363965363661636635303530636164336366363664633661333439393637
       65336234623537353366633338386366336432656632336461306164663466393335
 
-    docker_network: "{{ networks.pub }}"
+    docker_network: "{{ networks.granny }}"
 
   tasks:
     - name: Create playwright container
@@ -35,7 +35,7 @@
           DEFAULT_BLOCK_ADS: "false"
           DEFAULT_STEALTH: "true"
 
-          DEFAULT_LAUNCH_ARGS: '["--disable-web-security=true", "--proxy-server=socks5://10.8.0.1"]'
+          DEFAULT_LAUNCH_ARGS: '["--disable-web-security=true"]'
           TOKEN: "{{ changedetection_browserless_token }}"
 
     - name: Create "{{ application }}" container
@@ -61,6 +61,7 @@
           description: "Website change detection"
           widget:
             type: changedetectionio
+            url: https://{{ application }}.{{ common_tld }}
             key: !vault |
               $ANSIBLE_VAULT;1.1;AES256
               32383631616238623937663766393861623062373133356434333061333133393037313937353735
