@@ -5,7 +5,7 @@
   vars:
     application: jdownloader
 
-    docker_network: "{{ networks.pub }}"
+    docker_network: "{{ networks.granny }}"
 
   tasks:
     - name: Create config folder
