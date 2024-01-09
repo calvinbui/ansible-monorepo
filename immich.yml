@@ -48,7 +48,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-server"
-        image: ghcr.io/immich-app/immich-server:v1.92.0
+        image: ghcr.io/immich-app/immich-server:v1.92.1
         command: ["start.sh", "immich"]
         env: &immich_shared_env
           DB_HOSTNAME: "{{ _postgres_hostname }}"
@@ -101,7 +101,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-microservices"
-        image: ghcr.io/immich-app/immich-server:v1.92.0
+        image: ghcr.io/immich-app/immich-server:v1.92.1
         command: ["start.sh", "microservices"]
         device_requests:
           - driver: nvidia
@@ -125,7 +125,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-machine-learning"
-        image: ghcr.io/immich-app/immich-machine-learning:v1.92.0
+        image: ghcr.io/immich-app/immich-machine-learning:v1.92.1
         env: *immich_shared_env
         volumes:
           - *immich_upload_volume
