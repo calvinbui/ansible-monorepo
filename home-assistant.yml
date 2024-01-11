@@ -401,32 +401,6 @@
         group: false
         perms: false
 
-    - name: Create gtfs folder
-      tags:
-        - integrations
-      ansible.builtin.file:
-        path: "{{ config_directory }}/config/gtfs"
-        state: directory
-        owner: "{{ common_root_id }}"
-        group: "{{ common_root_group }}"
-        mode: "0771"
-
-    - name: Download gtfs static data
-      ansible.builtin.get_url:
-        url: "https://opendata.transport.nsw.gov.au/dataset/d1f68d4f-b778-44df-9823-cf2fa922e47f/resource/67974f14-01bf-47b7-bfa5-c7f2f8a950ca/download/full_greater_sydney_gtfs_static_0.zip"
-        dest: "{{ config_directory }}/config/gtfs/full_greater_sydney_gtfs_static_0.zip"
-        owner: "{{ common_root_id }}"
-        group: "{{ common_root_group }}"
-        mode: "0644"
-      register: _gtfs_static_data
-
-    - name: Delete existing gtfs sqlite database
-      ansible.builtin.file:
-        path: "{{ config_directory }}/config/gtfs/transport_nsw_timetables_complete.sqlite"
-        state: absent
-      when: _gtfs_static_data.changed
-      notify: Restart
-
     - name: Install HACS
       community.docker.docker_container_exec:
         container: "{{ application }}"

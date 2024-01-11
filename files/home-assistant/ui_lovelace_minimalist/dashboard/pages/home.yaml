@@ -9,13 +9,13 @@ layout:
   grid-template-columns: 1fr 5fr 5fr 1fr
   grid-column-gap: 20px
   grid-template-areas: |
-    ". people-calendar weather-travel ."
+    ". people-calendar weather ."
   mediaquery:
     "(max-width: 800px)":
       grid-template-columns: 100%
       grid-template-areas: |
         "people-calendar"
-        "weather-travel"
+        "weather"
 
 cards:
   - type: vertical-stack
@@ -102,32 +102,8 @@ cards:
 
   - type: vertical-stack
     view_layout:
-      grid-area: weather-travel
+      grid-area: weather
     cards:
-      -
-        name: 🚆 Travel
-        <<: *title_card
-      -
-        type: horizontal-stack
-        cards:
-          -
-            type: 'custom:button-card'
-            template: card_generic_swap
-            entity: sensor.north_strathfield_station_platform_1
-            variables:
-              ulm_card_generic_swap_name: Platform 1
-          -
-            type: 'custom:button-card'
-            template: card_generic_swap
-            entity: sensor.north_strathfield_station_platform_2
-            variables:
-              ulm_card_generic_swap_name: Platform 2
-          -
-            type: 'custom:button-card'
-            template: card_generic_swap
-            entity: sensor.north_strathfield_station_platform_3
-            variables:
-              ulm_card_generic_swap_name: Platform 3
       -
         type: custom:button-card
         template: card_title
