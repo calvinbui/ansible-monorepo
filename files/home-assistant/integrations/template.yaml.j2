@@ -3,7 +3,35 @@
 
 # https://www.home-assistant.io/integrations/template/
 
-- sensor:
+
+  # Persist last_changed
+  # https://community.home-assistant.io/t/persistent-version-of-last-changed-for-the-ui/467163/67
+-
+  trigger:
+    - platform: state
+      entity_id:
+        - device_tracker.galaxy_z_fold4
+        - device_tracker.tammy_s_galaxy_s21
+        - device_tracker.6e_45_b3_65_1d_c1
+        - device_tracker.tanyas_iphone_2
+      not_to:
+        - unavailable
+        - unknown
+      not_from:
+        - unavailable
+        - unknown
+  sensor:
+    unique_id: dbf841e2-ae6f-4fc1-9534-a1046204945f
+    name: Nominal Change History
+    state: "OK"
+    attributes:
+      changes: >
+        {% set current = this.attributes.get('changes', {}) %}
+        {% set new = {trigger.entity_id: trigger.to_state.last_changed.isoformat()} %}
+        {{ dict(current, **new) }}
+
+-
+  sensor:
 
   #
   # Solar and Electricity Consumption

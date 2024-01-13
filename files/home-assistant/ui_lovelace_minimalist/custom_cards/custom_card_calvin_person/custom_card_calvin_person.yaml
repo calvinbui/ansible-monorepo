@@ -18,8 +18,17 @@ custom_card_calvin_person:
   show_name: true
   label: >
     [[[
-      var device = states[variables.ulm_card_person_entity].attributes.source;
-      var device_last_changed = new Date(states[device].last_changed);
+      var user_device = states[variables.ulm_card_person_entity].attributes.source;
+
+      var nominal_change_history = states['sensor.nominal_change_history']['attributes']['changes'];
+
+      if (user_device in nominal_change_history) {
+        var timestamp = nominal_change_history[user_device];
+      } else {
+        var timestamp = states[user_device].last_changed;
+      }
+
+      var device_last_changed = new Date(timestamp);
 
       var hours_threshold_to_show_day = 20;
       var days_threshold_to_show_date = 5;
