@@ -96,8 +96,7 @@
     /* prowlarr */
     {
       matchPackagePatterns: [".*\\/prowlarr"],
-      versioning: "regex:^develop-version-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)$",
-      customChangelogUrl: "https://github.com/Prowlarr/Prowlarr",
+      versioning: "regex:^version-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)$",
       prBodyNotes: "[Releases](https://github.com/Prowlarr/Prowlarr/releases)",
     },
     /* renovate */
