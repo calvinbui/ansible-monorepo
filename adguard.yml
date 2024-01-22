@@ -21,7 +21,7 @@
         name: docker_container
       vars:
         image: adguard/adguardhome:v0.107.43
-        ipv4_address: "{{ docker_network.prefix }}.101"
+        ipv4_address: "{{ docker_network.prefix }}.252"
         homepage:
           name: AdGuard Home
           group: Networking

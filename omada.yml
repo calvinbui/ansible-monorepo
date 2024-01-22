@@ -28,7 +28,7 @@
           - "{{ config_directory }}/data:/opt/tplink/EAPController/data"
           - "{{ config_directory }}/work:/opt/tplink/EAPController/work"
           - "{{ config_directory }}/logs:/opt/tplink/EAPController/logs"
-        ipv4_address: "{{ docker_network.prefix }}.3"
+        ipv4_address: "{{ docker_network.prefix }}.252"
         homepage:
           name: TP-Link Omada Controller
           group: Networking

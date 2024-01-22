@@ -60,7 +60,7 @@
         name: docker_container
       vars:
         image: ghcr.io/gethomepage/homepage:v0.8.6
-        ipv4_address: "{{ docker_network.prefix }}.6"
+        ipv4_address: "{{ docker_network.prefix }}.251"
         volumes:
           - "{{ config_directory }}/config:/app/config"
           - "{{ homepage_icons_remote_dir }}:/app/public/icons"

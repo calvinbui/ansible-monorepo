@@ -352,7 +352,7 @@
       vars:
         name: "{{ application }}-traefik-bouncer"
         image: fbonalair/traefik-crowdsec-bouncer:0.5.0
-        ipv4_address: "{{ docker_network.prefix }}.5"
+        ipv4_address: "{{ docker_network.prefix }}.250"
         env:
           CROWDSEC_AGENT_HOST: "{{ application }}.{{ docker_network.name }}:8080"
           PORT: "8080"

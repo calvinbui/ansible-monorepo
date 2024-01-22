@@ -63,7 +63,7 @@
         name: docker_container
       vars:
         image: quay.io/prometheus/prometheus:v2.49.1
-        ipv4_address: "{{ docker_network.prefix }}.21"
+        ipv4_address: "{{ docker_network.prefix }}.254"
         command:
           - --config.file=/etc/prometheus/prometheus.yml
 

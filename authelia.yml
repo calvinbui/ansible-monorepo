@@ -136,7 +136,7 @@
         name: docker_container
       vars:
         image: ghcr.io/authelia/authelia:4.37.5
-        ipv4_address: "{{ docker_network.prefix }}.4"
+        ipv4_address: "{{ docker_network.prefix }}.254"
         env:
           TZ: "{{ common_timezone }}"
         volumes:

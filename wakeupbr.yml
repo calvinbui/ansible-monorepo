@@ -15,8 +15,8 @@
         image: aecampos/wakeupbr:latest
         command:
           - -o
-          - "{{ networks.user.prefix }}.102"
+          - "{{ networks.user.prefix }}.251"
         network:
           - name: "{{ docker_network.name }}"
           - name: "{{ networks.user.name }}"
-            ipv4_address: "{{ networks.user.prefix }}.102"
+            ipv4_address: "{{ networks.user.prefix }}.251"

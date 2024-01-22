@@ -1,32 +1,46 @@
 ---
 
 networks:
+  # 192.168.1.1: gateway + dns
+  # 192.168.1.2 - 192.168.1.63: static
+  # 192.168.1.64 - 192.168.1.191: dynamic
+  # 192.168.1.192 - 192.168.1.254: docker
+  # 192.168.1.255: broadcast
   mgmt:
     name: mgmt
-    subnet: /24
-    gateway: 192.168.1.1
+    subnet: 192.168.1.1/24
     dns: 192.168.1.1
-    iprange: 192.168.1.128/26
+    iprange: 192.168.1.192/26
     prefix: 192.168.1
     parent: ens3f0
     driver: macvlan
     vlan: 10
+
+  # 192.168.2.1: gateway + dns
+  # 192.168.2.2 - 192.168.2.63: static
+  # 192.168.2.64 - 192.168.2.191: dynamic
+  # 192.168.2.192 - 192.168.2.254: docker
+  # 192.168.2.255: broadcast
   user:
     name: user
-    subnet: /24
-    gateway: 192.168.2.1
+    subnet: 192.168.2.1/24
     dns: 192.168.2.1
-    iprange: 192.168.2.128/26
+    iprange: 192.168.2.192/26
     prefix: 192.168.2
     parent: ens3f0
     driver: macvlan
     vlan: 20
+
+  # 192.168.3.1: gateway + dns
+  # 192.168.3.2 - 192.168.3.127: static
+  # 192.168.3.128 - 192.168.3.191: dynamic
+  # 192.168.3.192 - 192.168.3.254: docker
+  # 192.168.3.255: broadcast
   iot:
     name: iot
-    subnet: /24
-    gateway: 192.168.3.1
+    subnet: 192.168.3.1/24
     dns: 192.168.3.1
-    iprange: 192.168.3.128/26
+    iprange: 192.168.3.192/26
     prefix: 192.168.3
     parent: ens3f0
     driver: macvlan
@@ -40,20 +54,30 @@ networks:
         33356136633765376339653137343735356332363365396266336630656336336630636166303334
         6237633631393363310a313834333336336461316565383361663630633435653161333132656431
         6466
+
+  # 192.168.4.1: gateway + dns
+  # 192.168.4.2 - 192.168.4.63: static
+  # 192.168.4.64 - 192.168.4.127: dynamic
+  # 192.168.4.128 - 192.168.4.254: docker
+  # 192.168.4.255: broadcast
   pub:
     name: pub
-    subnet: /24
-    gateway: 192.168.4.1
+    subnet: 192.168.4.1/24
     dns: 192.168.4.1
     iprange: 192.168.4.128/25
     prefix: 192.168.4
     parent: ens3f0
     driver: macvlan
     vlan: 40
+
+  # 192.168.6.1: gateway + dns
+  # 192.168.6.2 - 192.168.6.63: static
+  # 192.168.6.64 - 192.168.6.127: dynamic
+  # 192.168.6.128 - 192.168.6.254: docker
+  # 192.168.6.255: broadcast
   granny:
     name: granny
-    subnet: /24
-    gateway: 192.168.6.1
+    subnet: 192.168.6.1/24
     dns: 192.168.6.1
     iprange: 192.168.6.128/25
     prefix: 192.168.6

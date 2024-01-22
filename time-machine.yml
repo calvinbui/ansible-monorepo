@@ -98,4 +98,4 @@
           - "{{ config_directory }}/run-samba:/run/samba"
         network:
           - name: "{{ docker_network.name }}"
-            ipv4_address: "{{ networks.user.prefix }}.20"
+            ipv4_address: "{{ networks.user.prefix }}.253"

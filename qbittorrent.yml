@@ -38,7 +38,7 @@
         volumes:
           - "{{ config_directory }}:/config/qBittorrent"
           - "{{ common_directory_download }}:{{ common_mounted_directory_download }}"
-        ipv4_address: "{{ docker_network.prefix }}.2"
+        ipv4_address: "{{ docker_network.prefix }}.252"
         traefik:
           - port: 8090
             auth: basic

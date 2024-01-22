@@ -140,4 +140,4 @@
           - "{{ config_directory }}/config:/mosquitto/config"
           - "{{ config_directory }}/data:/mosquitto/data"
           - "{{ config_directory }}/log:/mosquitto/log"
-        ipv4_address: "{{ docker_network.prefix }}.190"
+        ipv4_address: "{{ docker_network.prefix }}.254"

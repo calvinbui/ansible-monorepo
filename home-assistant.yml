@@ -199,7 +199,7 @@
         volumes:
           - "{{ config_directory }}/config:/config"
           - /etc/localtime:/etc/localtime:ro
-        ipv4_address: "{{ docker_network.prefix }}.20"
+        ipv4_address: "{{ docker_network.prefix }}.253"
         traefik:
           - name: "{{ application }}-short"
             port: 8123

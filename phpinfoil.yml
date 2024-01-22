@@ -53,7 +53,7 @@
         volumes:
           - "{{ config_directory }}/cache:/var/www/html/cache"
           - "{{ common_directory_games }}/Switch/Games:/var/www/html/data/games"
-        ipv4_address: "{{ docker_network.prefix }}.65"
+        ipv4_address: "{{ docker_network.prefix }}.250"
         labels:
           chadburn.enabled: "true"
 

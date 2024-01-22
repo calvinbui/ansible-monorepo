@@ -31,7 +31,7 @@
         name: docker_container
       vars:
         image: plexinc/pms-docker:1.32.8.7639-fb6452ebf
-        ipv4_address: "{{ docker_network.prefix }}.3"
+        ipv4_address: "{{ docker_network.prefix }}.253"
         env:
           PLEX_UID: "{{ common_user_id | string }}"
           PLEX_GID: "{{ common_root_group | string }}"
