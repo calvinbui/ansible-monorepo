@@ -17,3 +17,10 @@ groups:
         annotations:
           title: Container not running
           description: "The container {{ $labels.name }} is not running"
+      -
+        alert: Container Restarting
+        expr: sum by (name) (increase(container_restartcount[5m])) > 0
+        for: 5m
+        annotations:
+          title: Container restarting
+          description: "The container {{ $labels.name }} is restarting"
