@@ -85,7 +85,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-collabora"
-        image: collabora/code:23.05.7.2.1
+        image: collabora/code:23.05.7.5.1
         capabilities:
           - MKNOD
         env:
