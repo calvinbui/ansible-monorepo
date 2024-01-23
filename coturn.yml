@@ -32,8 +32,8 @@
           listening-ip=0.0.0.0
           fingerprint
           verbose
-          {% for users in coturn_users %}
-          user={{ users.name }}:{{ users.password }}
+          {% for k, v in coturn_users.items() %}
+          user={{ k }}:{{ v }}
           {% endfor %}
           lt-cred-mech
           no-cli
