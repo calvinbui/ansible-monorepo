@@ -1,0 +1,27 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: peanut
+
+    docker_network: "{{ networks.user }}"
+
+  tasks:
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: brandawg93/peanut:2.3.4
+        env:
+          NUT_HOST: "{{ nut_host }}"
+        traefik:
+          - port: 8080
+            auth: page
+        homepage:
+          name: PeaNUT
+          group: Management
+          weight: 300
+          description: "Dashboard for Network UPS Tools"
+          widget:
+            key: cyberpower
