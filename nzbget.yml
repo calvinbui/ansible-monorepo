@@ -54,6 +54,8 @@
           group: Favourites
           weight: 200
           description: "Download files from Usenet"
+          # temporary until authelia 4.38
+          url: "http://{{ application }}.{{ docker_network.name }}:6789"
           widget:
             username: ""
             password: ""

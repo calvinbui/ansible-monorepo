@@ -47,6 +47,8 @@
           group: Favourites
           weight: 250
           description: "Download torrents"
+          # temporary until authelia 4.38
+          url: "http://{{ application }}.{{ docker_network.name }}:8090"
           widget:
             username: ""
             password: ""
