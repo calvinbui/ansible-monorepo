@@ -64,15 +64,6 @@
           UPLOAD_LOCATION: "/usr/src/app/upload"
 
           LOG_LEVEL: "log"
-
-          DISABLE_REVERSE_GEOCODING: "false"
-          REVERSE_GEOCODING_PRECISION: "3"
-
-          IMMICH_WEB_URL: &immich_web_url "http://{{ application }}-web:3000"
-          IMMICH_SERVER_URL: &immich_server_url "http://{{ application }}-server:3001"
-          IMMICH_MACHINE_LEARNING_URL: "http://{{ application }}-machine-learning:3003"
-
-          IMMICH_API_URL_EXTERNAL: "https://{{ application }}.{{ common_tld }}"
         volumes:
           - &immich_upload_volume "{{ common_directory_photos }}/Immich:/usr/src/app/upload"
           - &immich_localtime_volume /etc/localtime:/etc/localtime:ro
@@ -114,6 +105,7 @@
         env:
           <<: *immich_shared_env
           NVIDIA_DRIVER_CAPABILITIES: all
+          TZ: "{{ common_timezone }}"
         volumes:
           - *immich_upload_volume
           - *immich_localtime_volume
