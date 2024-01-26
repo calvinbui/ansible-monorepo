@@ -20,7 +20,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: jlesage/jdownloader-2:v23.12.2
+        image: jlesage/jdownloader-2:v24.01.1
         env:
           TZ: "{{ common_timezone }}"
 
