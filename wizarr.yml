@@ -30,7 +30,6 @@
             rule: Host(`{{ application }}.{{ common_tld }}`) && (Path(`/join`, `/setup`) || PathPrefix(`/j/`, `/setup/`, `/static/`))
             priority: 2
         homepage:
-          name: Wizarr
           group: Plex
           weight: 700
           description: "User invitation and management system for Plex"

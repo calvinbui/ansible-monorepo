@@ -103,7 +103,7 @@
           - port: 80
             rule: Host(`{{ application }}.{{ common_tld }}`)
         homepage:
-          name: Drone
+          name: "{{ application | title }} Server"
           group: Programming
           weight: 400
           description: "CI"
@@ -137,7 +137,8 @@
           - port: 3000
             rule: Host(`{{ application }}-runner.{{ common_tld }}`)
         homepage:
-          name: Drone Runner
+          name: "{{ application | title }} Runner"
+          href: "https://{{ application }}-runner.{{ common_tld }}"
           group: Programming
           weight: 400
           description: "CI"

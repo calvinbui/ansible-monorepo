@@ -138,7 +138,6 @@
         traefik:
           - port: 3000
         homepage:
-          name: Gitea
           group: Programming
           weight: 100
           description: "Git service"

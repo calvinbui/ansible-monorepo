@@ -60,7 +60,6 @@
         blackbox:
           path: /identity
         homepage:
-          name: Plex
           group: Plex
           weight: 500
           description: "Media server"

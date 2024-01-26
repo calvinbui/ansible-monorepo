@@ -145,7 +145,6 @@
         traefik:
           - port: 9091
         homepage:
-          name: Authelia
           group: Management
           weight: 400
           description: "Authentication and authorization"

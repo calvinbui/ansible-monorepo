@@ -21,7 +21,6 @@
           - port: 8080
             auth: page
         homepage:
-          name: Dozzle
           group: Favourites
           weight: 950
           description: "Logs for docker containers"

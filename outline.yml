@@ -130,7 +130,6 @@
         traefik:
           - port: 443
         homepage:
-          name: Outline
           group: Documents
           weight: 150
           description: "Wiki"

@@ -62,7 +62,6 @@
 
           TZ: "{{ common_timezone }}"
         homepage:
-          name: Traefik
           group: Networking
           weight: 300
           description: "Reverse proxy"

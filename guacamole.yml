@@ -90,7 +90,6 @@
             middlewares:
               - "{{ application }}-addprefix"
         homepage:
-          name: Guacamole
           group: Remote Access
           weight: 100
           description: "Remote access"

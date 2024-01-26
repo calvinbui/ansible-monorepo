@@ -87,7 +87,6 @@
         blackbox:
           path: /about-polr
         homepage:
-          name: Polr
           group: Sharing
           weight: 690
           description: "URL shortener"

@@ -45,7 +45,6 @@
           - port: 3000
             auth: page
         homepage:
-          name: Webtop
           group: Remote Access
           weight: 300
           description: "Ubuntu"

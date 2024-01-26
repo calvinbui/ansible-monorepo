@@ -53,7 +53,6 @@
         traefik:
           - port: 22300
         homepage:
-          name: Joplin
           group: Documents
           weight: 700
           description: "Note taking"

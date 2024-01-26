@@ -51,7 +51,6 @@
             "traefik.http.middlewares.{{ application }}.headers.customResponseHeaders.Cross-Origin-Resource-Policy": "same-site"
           }'
         homepage:
-          name: Calibre
           group: Favourites
           weight: 500
           description: "eBook Manager"

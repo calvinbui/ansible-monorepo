@@ -61,7 +61,6 @@
           - port: 6767
             auth: basic
         homepage:
-          name: Bazarr
           group: Media
           weight: 800
           description: "Manage and download subtitles"

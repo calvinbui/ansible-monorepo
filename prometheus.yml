@@ -99,7 +99,6 @@
           - port: 9090
             auth: page
         homepage:
-          name: Prometheus
           group: Monitoring
           weight: 401
           description: "Monitoring system"

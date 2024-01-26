@@ -68,7 +68,6 @@
         traefik:
           - port: 8065
         homepage:
-          name: Mattermost
           group: Collaboration
           weight: 500
           description: "Online chat"

@@ -103,11 +103,9 @@
           - port: 3334
             rule: Host(`{{ application }}.{{ common_tld }}`)
         homepage:
-          name: Obico
           group: 3D Printing
           weight: 600
           description: "3D printing failure detection"
-          href: "https://{{ application }}.{{ common_tld }}"
         blackbox:
           path: /hc/
         volumes: &web_volumes

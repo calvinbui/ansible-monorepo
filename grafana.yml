@@ -130,12 +130,10 @@
         traefik:
           - port: 3000
         homepage:
-          name: Grafana
           group: Monitoring
           weight: 100
           description: "Dashboards"
           widget:
-            url: "https://{{ application }}.{{ common_tld }}"
             username: !vault |
               $ANSIBLE_VAULT;1.1;AES256
               61373333346334636532653337323135333961643536313433653363353762333465313736376662

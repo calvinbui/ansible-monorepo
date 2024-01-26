@@ -45,7 +45,6 @@
         traefik:
           - port: 80
         homepage:
-          name: Hauk
           group: Sharing
           weight: 490
           description: "Location sharing"

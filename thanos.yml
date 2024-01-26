@@ -103,11 +103,9 @@
             port: 10902
             auth: page
         homepage:
-          name: Thanos
           group: Monitoring
           weight: 400
           description: "Prometheus long-term storage"
-          href: "https://{{ application }}.{{ common_tld }}"
 
     - name: Create bucket container
       ansible.builtin.include_role:

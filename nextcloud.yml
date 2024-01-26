@@ -174,7 +174,6 @@
             middlewares:
               - "{{ application }}-dav"
         homepage:
-          name: Nextcloud
           group: Favourites
           weight: 100
           description: "Productivity platform"

@@ -70,7 +70,6 @@
           - port: 9696
             auth: basic
         homepage:
-          name: Prowlarr
           group: Favourites
           weight: 350
           description: "Index manager"

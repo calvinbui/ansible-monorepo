@@ -101,8 +101,6 @@
         traefik:
           - port: 80
         homepage:
-          name: Bitwarden
           group: Tools
           weight: 200
           description: "Password manager (Vaultwarden)"
-          href: "https://{{ application }}.{{ common_tld }}"

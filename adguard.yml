@@ -27,7 +27,7 @@
           group: Networking
           weight: 585
           description: "Ads & tracker blocking DNS server"
-          href: http://adguard.{{ common_local_tld }}
+          href: http://{{ application }}.{{ common_local_tld }}
           widget:
             username: !vault |
               $ANSIBLE_VAULT;1.1;AES256

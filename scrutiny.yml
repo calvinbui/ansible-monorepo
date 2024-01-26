@@ -62,7 +62,6 @@
           - port: 8080
             auth: page
         homepage:
-          name: scrutiny
           group: Storage
           weight: 250
           description: "S.M.A.R.T. monitoring"

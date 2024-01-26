@@ -24,7 +24,6 @@
         traefik:
           - port: 9000
         homepage:
-          name: Portainer
           group: Management
           weight: 200
           description: "Container management"

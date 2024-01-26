@@ -35,13 +35,13 @@
   vars:
     _labels:
       - label: name
-        default: "{{ app_name }}"
+        default: "{{ application | title }}"
       - label: group
       - label: icon
         default: "/icons/{{ _homepage_icons_local.files.0.path.split('/')|last if homepage['icon'] is not defined else omit }}"
       - label: description
       - label: href
-        default: "https://{{ app_name + '.' + common_tld }}"
+        default: "https://{{ application + '.' + common_tld }}"
       - label: weight
 
 - name: Add homepage default widget labels
@@ -54,7 +54,7 @@
       - label: type
         default: "{{ application }}"
       - label: url
-        default: "{{ 'http://' + app_name + '.' + docker_network.name + ':' + traefik[0].port|string if traefik is defined else homepage_labels['homepage.href'] }}"
+        default: "{{ 'https://' + application + '.' + common_tld if traefik is defined else homepage_labels['homepage.href'] }}"
 
 - name: Add homepage additional widget labels
   when: homepage['widget'] is defined

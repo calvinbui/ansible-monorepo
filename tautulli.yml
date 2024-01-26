@@ -38,7 +38,6 @@
         traefik:
           - port: 8181
         homepage:
-          name: Tautulli
           group: Plex
           weight: 690
           description: "Plex monitoring and tracking"

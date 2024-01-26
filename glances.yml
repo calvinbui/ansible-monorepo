@@ -34,7 +34,6 @@
                 - compute
                 - utility
         homepage:
-          name: Glances
           group: Monitoring
           weight: 250
           description: "System monitoring"

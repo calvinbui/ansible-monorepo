@@ -59,7 +59,6 @@
             middlewares:
               - "{{ application }}-script-path"
         homepage:
-          name: umami
           group: Monitoring
           weight: 300
           description: "Web analytics"

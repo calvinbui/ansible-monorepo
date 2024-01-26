@@ -80,8 +80,6 @@
           - port: 3001
             rule: Host(`{{ application }}.{{ common_tld }}`)
         homepage:
-          name: Immich
-          href: "https://{{ application }}.{{ common_tld }}"
           group: Favourites
           weight: 150
           description: "Photo & Video Backup"

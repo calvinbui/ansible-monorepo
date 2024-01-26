@@ -71,7 +71,6 @@
           - port: 7878
             auth: basic
         homepage:
-          name: Radarr
           group: Favourites
           weight: 410
           description: "Manage and download movies"

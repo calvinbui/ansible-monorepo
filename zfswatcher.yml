@@ -49,7 +49,6 @@
         blackbox:
           auth: basic
         homepage:
-          name: zfswatcher
           group: Storage
           weight: 300
           description: "ZFS pool monitoring"

@@ -73,7 +73,6 @@
           - port: 9093
             auth: page
         homepage:
-          name: Alertmanager
           group: Monitoring
           weight: 500
           description: "Alerting"

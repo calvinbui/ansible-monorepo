@@ -34,7 +34,6 @@
         traefik:
           - port: 3000
         homepage:
-          name: Mealie
           group: Home
           weight: 200
           description: Recipe management
