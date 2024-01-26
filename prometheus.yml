@@ -63,7 +63,6 @@
         name: docker_container
       vars:
         image: quay.io/prometheus/prometheus:v2.49.1
-        ipv4_address: "{{ docker_network.prefix }}.254"
         command:
           - --config.file=/etc/prometheus/prometheus.yml
 
@@ -104,7 +103,6 @@
           description: "Monitoring system"
           widget:
             type: prometheus
-            url: "http://{{ application }}.{{ common_local_tld }}:9090"
             fields: '["targets_up", "targets_down"]'
         metrics:
           - port: 9090
