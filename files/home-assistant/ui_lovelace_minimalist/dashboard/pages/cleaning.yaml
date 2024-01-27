@@ -9,7 +9,7 @@ layout:
   grid-template-columns: "1fr 20% 60% 1fr"
   grid-column-gap: 20px
   grid-template-areas: |
-    ". bins vacuum ."
+    ". bins-laundry-dishwasher vacuum ."
   mediaquery:
     "(max-width: 800px)":
       grid-template-columns: 100%
@@ -20,7 +20,7 @@ layout:
 cards:
   - type: vertical-stack
     view_layout:
-      grid-area: bins
+      grid-area: bins-laundry-dishwasher
     cards:
       -
         type: custom:button-card
@@ -74,6 +74,36 @@ cards:
             ha-card {
               --card-background-color: rgba(var(--color-purple),0.1) !important;
             }
+
+      -
+        type: custom:button-card
+        template: card_title
+        name: 🧺 Laundry
+      -
+        type: 'custom:button-card'
+        template: card_generic_swap
+        entity: sensor.bosch_wax32k41au_68a40e43fa03_bsh_common_status_operationstate
+        variables:
+          ulm_card_generic_swap_name: Washing Machine
+          ulm_card_generic_swap_icon: "mdi:washing-machine"
+      -
+        type: 'custom:button-card'
+        template: card_generic_swap
+        entity: input_boolean.dryer_running
+        variables:
+          ulm_card_generic_swap_name: Dryer
+          ulm_card_generic_swap_icon: "mdi:tumble-dryer"
+      -
+        type: custom:button-card
+        template: card_title
+        name: 🧼 Dishwasher
+      -
+        type: 'custom:button-card'
+        template: card_generic_swap
+        entity: input_boolean.dishwasher_running
+        variables:
+          ulm_card_generic_swap_name: Status
+          ulm_card_generic_swap_icon: "mdi:dishwasher"
 
   - type: vertical-stack
     view_layout:
