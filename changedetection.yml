@@ -21,7 +21,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-playwright-chrome"
-        image: browserless/chrome:1.60-chrome-stable
+        image: browserless/chrome:1.61-chrome-stable
         shm_size: "2g"
         env:
           SCREEN_WIDTH: "1920"
