@@ -62,8 +62,8 @@ cards:
       grid_area: graph
     type: 'custom:config-template-card'
     entities:
-      - sensor.sunrise
-      - sensor.sunset
+      - sensor.home_sun_rising
+      - sensor.home_sun_setting
     variables:
       getTime: |
         sensor => {
@@ -152,18 +152,18 @@ cards:
         annotations:
           xaxis:
             -
-              x: "${getTime('sensor.sunrise')}"
+              x: "${getTime('sensor.home_sun_rising')}"
               strokeDashArray: 2
               label:
-                text: "${'☀️ Sunrise - ' + getTimeString('sensor.sunrise')}"
+                text: "${'☀️ Sunrise - ' + getTimeString('sensor.home_sun_rising')}"
                 borderWidth: 0
                 style:
                   background: '#0000'
             -
-              x: "${getTime('sensor.sunset')}"
+              x: "${getTime('sensor.home_sun_setting')}"
               strokeDashArray: 2
               label:
-                text: "${'🌙 Sunset - ' + getTimeString('sensor.sunset')}"
+                text: "${'🌙 Sunset - ' + getTimeString('sensor.home_sun_setting')}"
                 borderWidth: 0
                 style:
                   background: '#0000'
