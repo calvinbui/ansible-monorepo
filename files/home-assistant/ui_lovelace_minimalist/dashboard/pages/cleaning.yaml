@@ -65,18 +65,6 @@ cards:
       -
         type: custom:button-card
         template: custom_card_calvin_waste
-        entity: sensor.waste_collection_schedule_soft_plastics
-        variables:
-          ulm_card_generic_swap_name: Soft Plastics
-          ulm_card_generic_swap_icon: "mdi:shopping"
-        card_mod:
-          style: |
-            ha-card {
-              --card-background-color: rgba(var(--color-blue),0.1) !important;
-            }
-      -
-        type: custom:button-card
-        template: custom_card_calvin_waste
         entity: sensor.waste_collection_schedule_bulk_household
         variables:
           ulm_card_generic_swap_name: Bulk Household
