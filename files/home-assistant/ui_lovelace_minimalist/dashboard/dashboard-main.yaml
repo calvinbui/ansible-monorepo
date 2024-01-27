@@ -13,5 +13,6 @@ views:
   - !include pages/solar.yaml
   - !include pages/lighting.yaml
   - !include pages/air-conditioner.yaml
+  - !include pages/media.yaml
   - !include pages/indoor-cameras.yaml
   - !include pages/outdoor-cameras.yaml

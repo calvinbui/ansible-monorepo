@@ -1,0 +1,80 @@
+---
+
+title: Media
+path: media
+icon: mdi:movie-open
+
+type: custom:grid-layout
+layout:
+  grid-template-columns: 1fr 20% 55% 1fr
+  grid-column-gap: 20px
+  grid-template-areas: |
+    ". remote nowplaying ."
+  mediaquery:
+    "(max-width: 800px)":
+      grid-template-columns: 100%
+      grid-template-areas: |
+        "remote"
+        "nowplaying"
+
+cards:
+  -
+    type: vertical-stack
+    view_layout:
+      grid-area: remote
+    cards:
+    -
+      type: custom:firemote-card
+      entity: media_player.shield_adb
+      device_family: nvidia-shield
+      device_type: shield-tv-pro-2019
+      compatibility_mode: default
+      android_tv_remote_entity: remote.shield
+      scale: '100'
+      app_launch_1: plex
+      app_launch_2: smart-tube-next
+      app_launch_3: function-find-my-remote
+
+  -
+    type: vertical-stack
+    view_layout:
+      grid-area: nowplaying
+    cards:
+      -
+        type: conditional
+        conditions:
+          - condition: state
+            entity: media_player.plex_plex_for_android_tv_shield_android_tv
+            state: unavailable
+        card:
+          type: custom:upcoming-media-card
+          entity: sensor.plex_recently_added
+          title: Recently Added to Plex
+          max: '4'
+          image_style: fanart
+          flag: false
+          title_size: medium
+          line1_text: "$number"
+          line2_text: "$empty"
+          line3_text: "$empty"
+      -
+        type: conditional
+        conditions:
+          - condition: state
+            entity: media_player.plex_plex_for_android_tv_shield_android_tv
+            state_not: unavailable
+        card:
+          type: custom:mini-media-player
+          entity: media_player.plex_plex_for_android_tv_shield_android_tv
+          name: Living Room
+          tap_action: false
+          hide:
+            name: true
+            icon: true
+            power: true
+            volume: true
+            play_pause: true
+            runtime: false
+            runtime_remaining: false
+          artwork: full-cover-fit
+          toggle_power: false

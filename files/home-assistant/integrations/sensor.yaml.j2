@@ -1,5 +1,13 @@
 ---
 
+# https://github.com/NemesisRE/sensor.plex_recently_added
+
+-
+  platform: plex_recently_added
+  token: {{ home_assistant_integrations.plex_token }}
+  host: plex.{{ common_tld }}
+  port: 32400
+
 {%- raw %}
 
 # https://github.com/mampfes/hacs_waste_collection_schedule
