@@ -91,7 +91,7 @@ cards:
             entity: calendar.tammy_nguyen013_gmail_com
             name: Tammy
           -
-            entity: calendar.nsw_public_holidays_2021_2023
+            entity: calendar.australia_nsw
             name: Public Holidays
 
   - type: vertical-stack
