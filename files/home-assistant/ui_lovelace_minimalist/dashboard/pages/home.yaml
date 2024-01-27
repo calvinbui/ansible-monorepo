@@ -28,7 +28,7 @@ cards:
           type: custom:button-card
           template: card_title
       -
-        type: horizontal-stack
+        type: vertical-stack
         cards:
           -
             entity: person.calvin
@@ -44,9 +44,6 @@ cards:
               ulm_card_person_entity: person.tammy
               ulm_card_person_icon: mdi:face-agent
             <<: *person_card
-      -
-        type: horizontal-stack
-        cards:
           -
             entity: person.winnie
             variables:
