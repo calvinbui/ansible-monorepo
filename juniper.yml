@@ -97,8 +97,8 @@
         access: "{{ networks.iot.vlan }}"
       -
         port: "27"
-        description: "reserved-1"
-        access: "{{ networks.user.vlan }}"
+        description: "doorbell"
+        access: "{{ networks.iot.vlan }}"
       -
         port: "28"
         description: "reserved-2"
