@@ -21,7 +21,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-id"
-        image: rustdesk/rustdesk-server:1.1.8-2
+        image: rustdesk/rustdesk-server:1.1.10-2
         command: hbbs
         volumes:
           - "{{ config_directory }}/hbbs:/root"
@@ -44,7 +44,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-relay"
-        image: rustdesk/rustdesk-server:1.1.8-2
+        image: rustdesk/rustdesk-server:1.1.10-2
         command: hbbr
         volumes:
           - "{{ config_directory }}/hbbr:/root"
