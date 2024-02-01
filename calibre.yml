@@ -51,8 +51,8 @@
             "traefik.http.middlewares.{{ application }}.headers.customResponseHeaders.Cross-Origin-Resource-Policy": "same-site"
           }'
         homepage:
-          group: Favourites
-          weight: 500
+          group: Media
+          weight: 600
           description: "eBook Manager"
 
     - name: Copy Kindle key
