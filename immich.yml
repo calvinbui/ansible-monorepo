@@ -115,7 +115,17 @@
         name: docker_container
       vars:
         name: "{{ application }}-machine-learning"
-        image: ghcr.io/immich-app/immich-machine-learning:v1.94.1
+        image: ghcr.io/immich-app/immich-machine-learning:v1.94.1-cuda
+        device_requests:
+          - driver: nvidia
+            count: -1
+            device_ids: []
+            options: {}
+            capabilities:
+              - - gpu
+                - video
+                - compute
+                - utility
         env: *immich_shared_env
         volumes:
           - *immich_upload_volume
