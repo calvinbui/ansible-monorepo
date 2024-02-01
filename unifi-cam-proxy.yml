@@ -1,0 +1,143 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: unifi-cam-proxy
+
+    unifi_cam_proxy_nvr: "nvr.{{ common_local_tld }}"
+    unifi_cam_proxy_nvr_cookie: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      36633365666432323264336662663861373333363562643732316331313663323961373465623966
+      6339656263636532303862376162666530306635636561340a633633313265663163333962373235
+      32323937363733623961653231353230383265376264323665353432326162346333363365663665
+      6265386236623036360a643164663437376134383732333739303432326561613639313964306366
+      34373938373433316336643832333238383334303532643839613636663866653836306561343466
+      37333232373836653736366132383939343337373836666662323139326366373866373434343962
+      61343461636561313961353632626365663433636536363664313937323235643631353732313536
+      38646236343330356364383835633361393235303166323766663934356666616532376138303463
+      34346465663661663561393939666433363939633436623031643262383830643163346361336335
+      64333434663966633264653636626233386435323863643735623861633232326432623436313466
+      62353131383632633235383861663161323838623636613262363332616131393964653434383561
+      39393762636662666230663239663834333362633235613433313534366133623863613962363264
+      65653865303337353266336434353332333137663539613130373264383931393361616264323164
+      65636236366638326632393833306632363435373031653637643863316438366231623364316538
+      38656565653865376339363162333636636434353765313533343935346238343833363665616636
+      39366433363535386466643361666434326439626236656531626132663964356532373038383462
+      62313761646132346236643838343237336335643161306233306333333964306337306331623662
+      33636166363139643239306538646337353736323437646339663861316238343637633434623132
+      63393030636530643062353063366331333132326265306361353666313036643633306565646338
+      65386333353662386237333235356136386537393565323639653832383763353732363463373239
+      37643962373738353231366230663735373232396439653530323538613933313966633566383838
+      61643063383261653661616633373064383861373566343330346634373536396664656235646662
+      373938653966373339643035623831336165
+
+    unifi_cam_proxy_reolink_password: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      31303938643130346239653433343462306439386232663338376430613036616435306661643762
+      3765646234383365626635643262333332653463656536650a343035616532306536313137323435
+      34303264326333373863323761326130623337316634366330343930303634306634643032313633
+      3635653363653766380a393936633533393534646133666433663939383737643232623362386439
+      64373362376335313264316439313934376261346130613161316666663838663733
+
+    docker_network: "{{ networks.iot }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    # openssl ecparam -out /tmp/private.key -name prime256v1 -genkey -noout
+    - name: Create private key
+      community.crypto.openssl_privatekey:
+        type: ECC
+        path: "{{ config_directory }}/private.key"
+        curve: secp256r1 # aka prime256v1
+        return_content: false
+      register: _unifi_cam_proxy_private_key
+
+    - debug:
+        var: _unifi_cam_proxy_private_key
+
+    # openssl req -new -sha256 -key /tmp/private.key -out /tmp/server.csr -subj "/C=TW/L=Taipei/O=Ubiquiti Networks Inc./OU=devint/CN=camera.ubnt.dev/emailAddress=support@ubnt.com"
+    - name: Create certificate signing request
+      community.crypto.openssl_csr:
+        digest: sha256
+        privatekey_path: "{{ _unifi_cam_proxy_private_key.filename }}"
+        path: "{{ config_directory }}/server.csr"
+        C: TW
+        L: Taipei
+        O: Ubiquiti Networks Inc.
+        OU: devint
+        CN: camera.ubnt.dev
+        emailAddress: support@ubnt.com
+      register: _unifi_cam_proxy_csr
+
+    # openssl x509 -req -sha256 -days 36500 -in /tmp/server.csr -signkey /tmp/private.key -out /tmp/public.key
+    - name: Create certificate
+      community.crypto.x509_certificate:
+        selfsigned_digest: sha256
+        selfsigned_not_after: "+36500d"
+        csr_path: "{{ _unifi_cam_proxy_csr.filename }}"
+        privatekey_path: "{{ _unifi_cam_proxy_private_key.filename }}"
+        path: "{{ config_directory }}/public.key"
+        provider: selfsigned
+      register: _unifi_cam_proxy_certificate
+
+    # cat /tmp/private.key /tmp/public.key > client.pem
+    - name: Create client.pem
+      block:
+        - name: Read private key
+          ansible.builtin.slurp:
+            src: "{{ _unifi_cam_proxy_private_key.filename }}"
+          register: _unifi_cam_proxy_private_key_contents
+
+        - name: Read certificate
+          ansible.builtin.slurp:
+            src: "{{ _unifi_cam_proxy_certificate.filename }}"
+          register: _unifi_cam_proxy_certificate_contents
+
+        - name: Create client.pem
+          ansible.builtin.copy:
+            dest: "{{ config_directory }}/client.pem"
+            content: |
+              {{ _unifi_cam_proxy_private_key_contents.content | b64decode }}
+              {{ _unifi_cam_proxy_certificate_contents.content | b64decode }}
+
+    - name: Get adoption token
+      ansible.builtin.uri:
+        url: https://{{ unifi_cam_proxy_nvr }}/proxy/protect/api/cameras/manage-payload
+        headers:
+          cookie: "TOKEN={{ unifi_cam_proxy_nvr_cookie }}"
+      register: _unifi_cam_proxy_token
+
+    # it will break if any are true:
+    # - ip address is a domain name
+    # - hwaccel is used
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-{{ item.name | lower | replace(' ', '-') }}"
+        image: keshavdv/unifi-cam-proxy:dev
+        volumes:
+          - "{{ config_directory }}/client.pem:/client.pem"
+        command: >-
+          /usr/local/bin/unifi-cam-proxy
+          --host="{{ unifi_cam_proxy_nvr }}"
+          --cert="/client.pem"
+          --token="{{ _unifi_cam_proxy_token.json.mgmt.token }}"
+          --name="{{ item.name }}"
+          --ip="{{ item.ip }}"
+          --model="{{ item.model }}"
+          {{ item.command }}
+      loop:
+        - # https://unifi-cam-proxy.com/configuration/reolink
+          name: Reolink Doorbell
+          ip: "{{ docker_network.prefix }}.41"
+          model: UVC G4 Doorbell Pro PoE
+          command: reolink -u admin -p "{{ unifi_cam_proxy_reolink_password }}" -s "sub" --ffmpeg-args=' -c:v copy -bsf:v "h264_metadata=tick_rate=60000/1001" -ar 32000 -ac 1 -codec:a aac -b:a 32k'
