@@ -195,3 +195,19 @@ identity_providers:
           - email
           - groups
         userinfo_signing_algorithm: none
+      -
+        id: audiobookshelf
+        description: Audiobookshelf
+        secret: '{{ ldap_oidc_secrets.audiobookshelf | string | argon2(authelia_salt) }}'
+        public: false
+        authorization_policy: one_factor
+        consent_mode: implicit
+        redirect_uris:
+          - https://audiobookshelf.{{ common_tld }}/auth/openid/callback
+          - https://audiobookshelf.{{ common_tld }}/auth/openid/mobile-redirect
+        scopes:
+          - openid
+          - profile
+          - email
+          - groups
+        userinfo_signing_algorithm: none
