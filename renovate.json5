@@ -382,6 +382,11 @@
       customChangelogUrl: "https://github.com/kovidgoyal/calibre",
       prBodyNotes: "[What's new](https://calibre-ebook.com/whats-new)",
     },
+    /* rustdesk */
+    {
+      matchPackagePatterns: [".*\\/rustdesk-server"],
+      versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?<build>-\\d+)?$",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
