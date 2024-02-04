@@ -46,7 +46,7 @@
 
           APP_NAME: "{{ application | capitalize }}"
           APP_PROTOCOL: "https://"
-          APP_ADDRESS: "{{ common_short_tld }}"
+          APP_ADDRESS: "s.{{ common_tld }}"
 
           ADMIN_USERNAME: "admin"
           ADMIN_PASSWORD: !vault |
@@ -76,7 +76,7 @@
           POLR_ALLOW_ACCT_CREATION: "false"
         traefik:
           - port: 8080
-            rule: Host(`{{ common_short_tld }}`)
+            rule: Host(`s.{{ common_tld }}`)
         # block ability to guess shortened urls
         labels:
           '{
@@ -90,4 +90,4 @@
           group: Sharing
           weight: 690
           description: "URL shortener"
-          href: "https://{{ common_short_tld }}"
+          href: "https://s.{{ common_tld }}"
