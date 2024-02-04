@@ -64,7 +64,7 @@
           GITEA__repository__DEFAULT_BRANCH: "master"
           GITEA__repository__FORCE_PRIVATE: "true"
           GITEA__repository__DEFAULT_PRIVATE: "true"
-          GITEA__repository__DISABLED_REPO_UNITS: "repo.issues,repo.ext_issues,repo.wiki,repo.ext_wiki,repo.projects,repo.packages"
+          GITEA__repository__DISABLED_REPO_UNITS: "repo.ext_issues,repo.wiki,repo.ext_wiki,repo.projects,repo.packages"
           GITEA__repository__DEFAULT_REPO_UNITS: "repo.code,repo.pulls,repo.actions"
           GITEA__repository__DISABLE_STARS: "true"
 
