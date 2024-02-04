@@ -24,7 +24,6 @@
   commitMessagePrefix: "{{depName}}:",
   commitMessageAction: "update",
   commitMessageTopic: "version",
-  commitMessageExtra: "to {{#if isMajor}}{{{prettyNewMajor}}}{{else}}{{{prettyNewVersion}}}{{/if}}",
 
   /*
     Renovate will evaluate all packageRules and not stop once it gets a first match
