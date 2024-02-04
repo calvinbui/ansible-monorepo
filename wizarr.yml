@@ -12,24 +12,14 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/wizarrrr/wizarr:2.2.0
+        image: ghcr.io/wizarrrr/wizarr:3.5.1
         env:
-          APP_URL: "https://{{ application }}.{{ common_tld }}"
-          DISABLE_BUILTIN_AUTH: "true"
           TZ: "{{ common_timezone }}"
         volumes:
           - "{{ config_directory }}:/data/database"
         traefik:
-          - name: "{{ application }}-admin"
-            port: 5690
-            auth: page
-            rule: Host(`{{ application }}.{{ common_tld }}`)
-            priority: 1
-          - name: "{{ application }}-public"
-            port: 5690
-            rule: Host(`{{ application }}.{{ common_tld }}`) && (Path(`/join`, `/setup`) || PathPrefix(`/j/`, `/setup/`, `/static/`))
-            priority: 2
+          - port: 5690
         homepage:
           group: Plex
           weight: 700
-          description: "User invitation and management system for Plex"
+          description: "User invitation and management system"
