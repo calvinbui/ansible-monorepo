@@ -13,10 +13,6 @@
     fileMatch: ["^.*\\.ya?ml$"],
   },
 
-  python: {
-    enabled: false,
-  },
-
   timezone: "Australia/Sydney",
 
   reviewers: ["calvinbui"],
@@ -30,6 +26,10 @@
     You should order your packageRules in order of importance so that later rules can override settings from earlier rules if needed.
   */
   packageRules: [
+    {
+      matchCategories: ["python"],
+      enabled: false,
+    },
     /* Ignore latest and localhost tags */
     {
       matchDatasources: ["docker"],
