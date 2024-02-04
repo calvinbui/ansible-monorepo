@@ -114,8 +114,10 @@
           BitTorrent.Session\MaxActiveTorrents: 20 # Maximum active torrents
 
           ## Seeding Limits
-          BitTorrent.Session\GlobalMaxRatio: 0 # When ratio reaches
-          Preferences.Bittorrent\MaxRatioAction: 0
+          BitTorrent.Session\GlobalMaxRatio: -1 # When ratio reaches
+          BitTorrent.Session\GlobalMaxSeedingMinutes: 5000 # When total seeding time reaches
+          BitTorrent.Session\GlobalMaxInactiveSeedingMinutes: -1 # When inactive seeding time reaches
+          Preferences.Bittorrent\MaxRatioAction: 0 # then
 
           # Web UI
           ## Language
