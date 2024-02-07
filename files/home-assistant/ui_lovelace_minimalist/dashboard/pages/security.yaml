@@ -32,6 +32,30 @@ cards:
           ulm_custom_card_entity_1_name: Front Door
           ulm_custom_card_entity_1_lock: lock.front_door
           ulm_custom_card_entity_1_lock_battery: sensor.front_door_battery_percentage
+      -
+        name: 🛎️ Doorbell
+        <<: *security_card_title
+      -
+        type: custom:webrtc-camera
+        server: http://go2rtc:1984/
+        streams:
+          -
+            name: 🗣️
+            url: reolink_doorbell
+          -
+            name: 🤐
+            url: reolink_doorbell
+            mode: webrtc
+            media: video,audio,microphone
+        muted: true
+        background: false
+        ui: true
+        poster: https://wallpapers.com/images/hd/please-stand-by-fallout-76-ye5n5c08piahzmne.jpg
+        style: >-
+          .screenshot {display: none}
+          .pictureinpicture {display: none}
+          .mode {display: none}
+
   - type: vertical-stack
     cards:
       -

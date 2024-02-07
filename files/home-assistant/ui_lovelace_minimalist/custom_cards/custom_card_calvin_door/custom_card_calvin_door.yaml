@@ -82,10 +82,10 @@ custom_card_calvin_door:
               type: "custom:button-card"
               template: "widget_icon"
               icon: "mdi:lock-open-variant"
-              size: 42px
+              size: 32px
               styles:
                 card:
-                  - height: 66px
+                  - height: 50px
               entity: "[[[ return entity.entity_id ]]]"
               tap_action:
                 action: "call-service"
@@ -109,10 +109,10 @@ custom_card_calvin_door:
               type: "custom:button-card"
               template: "widget_icon"
               icon: "mdi:lock"
-              size: 42px
+              size: 32px
               styles:
                 card:
-                  - height: 66px
+                  - height: 50px
               entity: "[[[ return entity.entity_id ]]]"
               tap_action:
                 action: "call-service"
