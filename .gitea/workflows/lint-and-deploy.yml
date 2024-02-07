@@ -37,7 +37,7 @@ jobs:
          fetch-depth: 2  # to be able to get files changed
 
       - name: 🔑 Setup SSH
-        uses: webfactory/ssh-agent@v0.8.0
+        uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
