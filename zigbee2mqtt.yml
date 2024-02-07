@@ -110,7 +110,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: koenkk/zigbee2mqtt:1.35.2
+        image: koenkk/zigbee2mqtt:1.35.3
         devices:
           - /dev/serial/by-id/usb-Silicon_Labs_Sonoff_Zigbee_3.0_USB_Dongle_Plus_0001-if00-port0:/dev/ttyACM0
         env:
