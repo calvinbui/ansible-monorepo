@@ -1,0 +1,72 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: go2rtc
+
+    docker_network: "{{ networks.iot }}"
+
+  handlers:
+    - name: Restart
+      community.docker.docker_container:
+        name: "{{ application }}"
+        restart: true
+        comparisons:
+          '*': ignore
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Create config
+      ansible.builtin.copy:
+        content: |
+          streams:
+            reolink_doorbell:
+              - ffmpeg:rtsp://admin:{{ reolink_doorbell_password }}@reolink-doorbell.{{ common_local_tld }}:554/h264Preview_01_sub#audio=pcm#audio=volume
+              - rtsp://admin:{{ reolink_doorbell_password }}@reolink-doorbell.{{ common_local_tld }}:554/h264Preview_01_sub
+
+          ffmpeg:
+            bin: ffmpeg
+            volume: "-af \"volume=20dB\""
+
+        dest: "{{ config_directory }}/go2rtc.yaml"
+        mode: "0660"
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+      notify: Restart
+      vars:
+        reolink_doorbell_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          36373330303162383736366263383435616539303963373535333261343662333962366665656436
+          3064303337643030326265623963326461366161663932360a323236316161353165303034633038
+          36663633363032326230356663666632653463666636306262656164396130623731323036626433
+          3839323164626664350a636634356566323465653937626664306539383930383630613639363235
+          34633362333461336538366633633236326233343866306437626331396232643566
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: alexxit/go2rtc:1.8.5-hardware
+        ipv4_address: "{{ docker_network.prefix }}.249"
+        device_requests:
+          - driver: nvidia
+            count: -1
+            device_ids: []
+            options: {}
+            capabilities:
+              - - gpu
+                - video
+                - compute
+                - utility
+        env:
+          TZ: "{{ common_timezone }}"
+        volumes:
+          - "{{ config_directory }}:/config"
