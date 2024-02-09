@@ -1,0 +1,31 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: irssi
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: irssi:1.4.5
+        user: "{{ common_user_id }}"
+        group: "{{ common_group_id }}"
+        volumes:
+          - "{{ config_directory }}:/home/user/.irssi"
+          - /etc/localtime:/etc/localtime
+        log_driver: none
+        tty: true
+        interactive: true

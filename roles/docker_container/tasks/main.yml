@@ -133,6 +133,9 @@
       max-size: 1MB
       max-file: "1"
 
+    interactive: "{{ interactive | default(omit) }}"
+    tty: "{{ tty | default(omit) }}"
+
     labels: "{{ combined_labels }}"
 
     comparisons: "{{ {'volumes': 'strict', 'networks': 'strict'} | combine(comparisons | default({})) }}"
