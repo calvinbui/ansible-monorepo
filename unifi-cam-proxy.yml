@@ -139,5 +139,5 @@
         - # https://unifi-cam-proxy.com/configuration/reolink
           name: Reolink Doorbell
           ip: "{{ docker_network.prefix }}.41"
-          model: UVC G4 Doorbell Pro PoE
+          model: UVC G3 Flex
           command: reolink -u admin -p "{{ unifi_cam_proxy_reolink_password }}" -s "sub" --ffmpeg-args=' -c:v copy -bsf:v "h264_metadata=tick_rate=60000/1001" -ar 32000 -ac 1 -codec:a aac -b:a 32k'
