@@ -1,3 +1,5 @@
+---
+
 groups:
   - name: smartmon_temperature
     rules:

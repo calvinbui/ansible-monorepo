@@ -1,2 +1,4 @@
+---
+
 logging_ip: 192.168.1.195
 logging_syslog_port: 514

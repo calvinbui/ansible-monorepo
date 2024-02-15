@@ -23,17 +23,17 @@ cards:
     view_layout:
       grid-area: remote
     cards:
-    -
-      type: custom:firemote-card
-      entity: media_player.shield_adb
-      device_family: nvidia-shield
-      device_type: shield-tv-pro-2019
-      compatibility_mode: default
-      android_tv_remote_entity: remote.shield
-      scale: '100'
-      app_launch_1: plex
-      app_launch_2: smart-tube-next
-      app_launch_3: function-find-my-remote
+      -
+        type: custom:firemote-card
+        entity: media_player.shield_adb
+        device_family: nvidia-shield
+        device_type: shield-tv-pro-2019
+        compatibility_mode: default
+        android_tv_remote_entity: remote.shield
+        scale: '100'
+        app_launch_1: plex
+        app_launch_2: smart-tube-next
+        app_launch_3: function-find-my-remote
 
   -
     type: vertical-stack

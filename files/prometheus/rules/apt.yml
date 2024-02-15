@@ -1,3 +1,5 @@
+---
+
 groups:
   - name: apt_reboot_required
     rules:
