@@ -1,3 +1,5 @@
+---
+
 skip_list:
   - args[module]
   - git-latest
@@ -14,6 +16,8 @@ skip_list:
 
 exclude_paths:
   - inventory.yml
+  - files/
+  - .gitea/
 
 enable_list:
   - empty-string-compare

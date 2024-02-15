@@ -60,9 +60,6 @@
         return_content: false
       register: _unifi_cam_proxy_private_key
 
-    - debug:
-        var: _unifi_cam_proxy_private_key
-
     # openssl req -new -sha256 -key /tmp/private.key -out /tmp/server.csr -subj "/C=TW/L=Taipei/O=Ubiquiti Networks Inc./OU=devint/CN=camera.ubnt.dev/emailAddress=support@ubnt.com"
     - name: Create certificate signing request
       community.crypto.openssl_csr:
@@ -107,6 +104,7 @@
             content: |
               {{ _unifi_cam_proxy_private_key_contents.content | b64decode }}
               {{ _unifi_cam_proxy_certificate_contents.content | b64decode }}
+            mode: "0640"
 
     - name: Get adoption token
       ansible.builtin.uri:
