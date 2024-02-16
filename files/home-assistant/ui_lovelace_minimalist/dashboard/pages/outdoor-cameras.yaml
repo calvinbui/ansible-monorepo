@@ -11,19 +11,29 @@ layout:
 
 cards:
   -
-    entity: camera.driveway_low
-    <<: &outdoor_camera_card
-      type: custom:button-card
-      template: custom_card_camera
-      show_icon: false
-      variables:
-        ulm_custom_card_camera_title: false
+    streams:
+      - url: driveway
+    <<: &webrtc_camera
+      type: custom:webrtc-camera
+      server: http://go2rtc:1984/
+      background: false
+      ui: true
+      mode: mse
+      media: video
+      poster: https://wallpapers.com/images/hd/please-stand-by-fallout-76-ye5n5c08piahzmne.jpg
+      style: >-
+        .screenshot {display: none}
+        .pictureinpicture {display: none}
+        .mode {display: none}
   -
-    entity: camera.rear_balcony
-    <<: *outdoor_camera_card
+    streams:
+      - url: rear_balcony
+    <<: *webrtc_camera
   -
-    entity: camera.outdoor_side
-    <<: *outdoor_camera_card
+    streams:
+      - url: outdoor_side
+    <<: *webrtc_camera
   -
-    entity: camera.backyard
-    <<: *outdoor_camera_card
+    streams:
+      - url: backyard
+    <<: *webrtc_camera

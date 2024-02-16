@@ -22,35 +22,43 @@ layout:
 
 cards:
   -
-    entity: camera.downstairs_common
+    streams:
+      - url: downstairs_common
     view_layout:
       grid-area: bigcamera1
-    <<: &indoor_camera_card
-      show_state: false
-      show_name: false
-      camera_view: live
-      type: picture-entity
-      tap_action:
-        action: none
-      hold_action:
-        action: none
+    <<: &webrtc_camera
+      type: custom:webrtc-camera
+      server: http://go2rtc:1984/
+      background: true
+      ui: true
+      mode: mse
+      media: video
+      poster: https://wallpapers.com/images/hd/please-stand-by-fallout-76-ye5n5c08piahzmne.jpg
+      style: >-
+        .screenshot {display: none}
+        .pictureinpicture {display: none}
+        .mode {display: none}
   -
-    entity: camera.foyer
+    streams:
+      - url: foyer
     view_layout:
       grid-area: bigcamera2
-    <<: *indoor_camera_card
+    <<: *webrtc_camera
   -
-    entity: camera.front_bedrooms
+    streams:
+      - url: front_bedrooms
     view_layout:
       grid-area: smallcamera1
-    <<: *indoor_camera_card
+    <<: *webrtc_camera
   -
-    entity: camera.upstairs_hallway
+    streams:
+      - url: upstairs_hallway
     view_layout:
       grid-area: smallcamera2
-    <<: *indoor_camera_card
+    <<: *webrtc_camera
   -
-    entity: camera.garage
+    streams:
+      - url: garage
     view_layout:
       grid-area: smallcamera3
-    <<: *indoor_camera_card
+    <<: *webrtc_camera
