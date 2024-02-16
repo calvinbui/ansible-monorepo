@@ -32,6 +32,24 @@
               - ffmpeg:rtsp://admin:{{ reolink_doorbell_password }}@reolink-doorbell.{{ common_local_tld }}:554/h264Preview_01_sub#audio=pcm#audio=volume
               - rtsp://admin:{{ reolink_doorbell_password }}@reolink-doorbell.{{ common_local_tld }}:554/h264Preview_01_sub
 
+            driveway: rtspx://192.168.3.3:7441/SiIzjZyICCOaM23e
+
+            backyard: rtspx://192.168.3.3:7441/AKV6ed7s96ojGDU0
+
+            downstairs_common: rtspx://192.168.3.3:7441/pUoYtfbCbSjvhIyR
+
+            foyer: rtspx://192.168.3.3:7441/QfbyJT2WbsWBUqXU
+
+            front_bedrooms: rtspx://192.168.3.3:7441/CwFM91PCiKat6Z7T
+
+            garage: rtspx://192.168.3.3:7441/hmXnXbDRoF573SZ4
+
+            outdoor_side: rtspx://192.168.3.3:7441/zUs5nXcCogxPqbzi
+
+            rear_balcony: rtspx://192.168.3.3:7441/E82ebu7JnaHYUv9u
+
+            upstairs_hallway: rtspx://192.168.3.3:7441/QGDEqJaMlkK8volh
+
           ffmpeg:
             bin: ffmpeg
             volume: "-af \"volume=20dB\""
