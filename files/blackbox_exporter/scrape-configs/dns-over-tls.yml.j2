@@ -8,7 +8,9 @@ scrape_configs:
       module: [tcp_tls]
     static_configs:
       - targets:
-        - dot.seby.io:853
+          - p1.freedns.controld.com:853
+          - dns10.quad9.net:853
+          - dot.sb:853
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
