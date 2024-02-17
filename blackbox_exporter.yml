@@ -18,6 +18,11 @@
         comparisons:
           '*': ignore
 
+    - name: Reload Prometheus
+      community.docker.docker_container_exec:
+        container: prometheus
+        command: kill -HUP 1
+
   tasks:
     - name: Create config folder
       ansible.builtin.file:
@@ -52,3 +57,4 @@
         group: "{{ common_group }}"
       with_fileglob:
         - "{{ files_directory }}/scrape-configs/*"
+      notify: Reload Prometheus
