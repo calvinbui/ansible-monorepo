@@ -129,16 +129,6 @@ services:
         weight: 500
         monitor: true
 
-  - group: Storage
-    items:
-      -
-        name: BorgBase
-        icon: /icons/borgmatic.svg
-        description: Hosting For BorgBackup
-        url: https://www.borgbase.com
-        weight: 400
-        monitor: false
-
   - group: Home Automation
     items:
       -
