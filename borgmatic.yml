@@ -36,7 +36,7 @@
         repository: ssh://{{ borgmatic_hetzner_storage_box_host }}:{{ borgmatic_hetzner_storage_box_port }}/./borg/work
 
       - name: photos
-        source: "{{ common_directory_photos }}/library"
+        source: "{{ common_directory_photos }}/Immich"
         crontab: "30 2 * * *"
         repository: ssh://{{ borgmatic_hetzner_storage_box_host }}:{{ borgmatic_hetzner_storage_box_port }}/./borg/photos
 
