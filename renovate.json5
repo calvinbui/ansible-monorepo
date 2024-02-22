@@ -400,6 +400,11 @@
       matchPackagePatterns: [".*\\/mealie"],
       customChangelogUrl: "https://github.com/mealie-recipes/mealie",
     },
+    /* audiobookshelf */
+    {
+      matchPackagePatterns: [".*\\/audiobookshelf"],
+      customChangelogUrl: "https://github.com/advplyr/audiobookshelf",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
