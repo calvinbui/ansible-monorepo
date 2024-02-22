@@ -5,12 +5,16 @@ scrape_configs:
   - job_name: blackbox_dns_over_tls
     metrics_path: /probe
     params:
-      module: [tcp_tls]
+      module: [dns_over_tls]
     static_configs:
       - targets:
-          - p1.freedns.controld.com:853
-          - dns10.quad9.net:853
-          - dot.sb:853
+          # dns.quad9.net
+          - 9.9.9.9
+          - 149.112.112.112
+
+          # dot.sb
+          - 185.222.222.222
+          - 45.11.45.11
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target

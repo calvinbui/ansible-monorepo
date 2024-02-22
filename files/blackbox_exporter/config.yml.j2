@@ -45,3 +45,11 @@ modules:
     prober: tcp
     tcp:
       tls: false
+
+  dns_over_tls:
+    prober: dns
+    dns:
+      dns_over_tls: true
+      transport_protocol: tcp
+      query_name: {{ common_tld }}
+      query_type: A
