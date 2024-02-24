@@ -13,6 +13,23 @@
       3035303733313362630a626335363735343732666434636336326364326137623161333235346635
       66616131623836326339653631663830313063643762356533353433336463373834
 
+    paperless_oidc: |
+      {
+        "openid_connect": {
+          "APPS": [
+            {
+              "provider_id": "authelia",
+              "name": "Authelia",
+              "client_id": "{{ application }}",
+              "secret": "{{ ldap_oidc_secrets.paperless }}",
+              "settings": {
+                "server_url": "https://authelia.{{ common_tld }}"
+              }
+            }
+          ]
+        }
+      }
+
     docker_network: "{{ networks.iot }}"
 
   tasks:
@@ -101,13 +118,8 @@
           PAPERLESS_TIKA_ENDPOINT: "http://{{ application }}-tika:9998"
           PAPERLESS_TIKA_GOTENBERG_ENDPOINT: "http://{{ application }}-gotenberg:3000"
 
-          PAPERLESS_URL: "https://{{ application }}.{{ common_tld }}"
-          PAPERLESS_CSRF_TRUSTED_ORIGINS: "https://{{ application }}.{{ common_tld }}"
-          PAPERLESS_ALLOWED_HOSTS: "https://{{ application }}.{{ common_tld }}"
-          PAPERLESS_CORS_ALLOWED_HOSTS: "https://{{ application }}.{{ common_tld }}"
+          PAPERLESS_LOGROTATE_MAX_BACKUPS: "0"
 
-          PAPERLESS_TIME_ZONE: "{{ common_timezone }}"
-          PAPERLESS_OCR_LANGUAGE: "eng"
           PAPERLESS_SECRET_KEY: !vault |
             $ANSIBLE_VAULT;1.1;AES256
             30353865316135366430366535366133663766396663653933623661393862663561353736643031
@@ -115,8 +127,25 @@
             34326136376232613737636661646564666239656166323561366536323530643062306334343664
             3333363561316362350a653033366431313335373531633533613838646334306533313566366332
             64383064313763323465343030356561666665643936386430306530616461313434
+          PAPERLESS_URL: "https://{{ application }}.{{ common_tld }}"
+          PAPERLESS_CSRF_TRUSTED_ORIGINS: "https://{{ application }}.{{ common_tld }}"
+          PAPERLESS_ALLOWED_HOSTS: "https://{{ application }}.{{ common_tld }}"
+          PAPERLESS_CORS_ALLOWED_HOSTS: "https://{{ application }}.{{ common_tld }}"
 
-          PAPERLESS_LOGROTATE_MAX_BACKUPS: "0"
+          PAPERLESS_SOCIALACCOUNT_PROVIDERS: "{{ paperless_oidc | to_json }}"
+
+          PAPERLESS_OCR_LANGUAGE: "eng"
+
+          PAPERLESS_TIME_ZONE: "{{ common_timezone }}"
+          PAPERLESS_APPS: "allauth.socialaccount.providers.openid_connect"
+
+          PAPERLESS_EMAIL_HOST: "{{ common_email_server }}"
+          PAPERLESS_EMAIL_PORT: "{{ common_email_port | string }}"
+          PAPERLESS_EMAIL_HOST_USER: "{{ common_email_username }}"
+          PAPERLESS_EMAIL_FROM: "{{ application }}{{ common_email_to }}"
+          PAPERLESS_EMAIL_HOST_PASSWORD: "{{ common_email_password }}"
+          PAPERLESS_EMAIL_USE_TLS: "{{ 'true' if common_email_protocol=='tls' else 'false' }}"
+          PAPERLESS_EMAIL_USE_SSL: "{{ 'false' if common_email_protocol=='tls' else 'true' }}"
         traefik:
           - port: 8000
         homepage:

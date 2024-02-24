@@ -211,3 +211,18 @@ identity_providers:
           - email
           - groups
         userinfo_signing_algorithm: none
+      -
+        id: paperless
+        description: Paperless
+        secret: '{{ ldap_oidc_secrets.paperless | string | argon2(authelia_salt) }}'
+        public: false
+        authorization_policy: one_factor
+        consent_mode: implicit
+        redirect_uris:
+          - https://paperless.{{ common_tld }}/accounts/oidc/authelia/login/callback/
+        scopes:
+          - openid
+          - profile
+          - email
+          - groups
+        userinfo_signing_algorithm: none
