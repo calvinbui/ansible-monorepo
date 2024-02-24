@@ -437,3 +437,18 @@
           oidc_login_min_time_between_jwks_requests: 10
           oidc_login_well_known_caching_time: 86400
           oidc_login_update_avatar: false
+
+    - name: Install other apps
+      community.docker.docker_container_exec:
+        container: "{{ application }}"
+        user: www-data
+        command: "php occ app:install {{ item }}"
+      register: _command_result
+      failed_when: "'Could not download app' in _command_result.stdout"
+      changed_when: "'already installed' not in _command_result.stdout"
+      retries: 3
+      delay: 2
+      loop:
+        - calendar
+        - contacts
+        - tasks
