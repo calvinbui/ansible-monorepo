@@ -1,10 +1,10 @@
 ---
 
-ldap_host: "openldap.{{ ldap_network.name }}"
+ldap_host: "lldap.{{ ldap_network.name }}:3890"
 
 ldap_network: "{{ networks.pub }}"
 
-ldap_admin_user: admin
+ldap_admin_user: "admin"
 
 ldap_admin_password: !vault |
   $ANSIBLE_VAULT;1.1;AES256
@@ -18,11 +18,6 @@ ldap_admin_password: !vault |
   64653664356536396639
 
 ldap_base_dn: "dc={{ common_local_tld.split('.')[0] }},dc={{ common_local_tld.split('.')[1] }}"
-ldap_admin_dn: "cn={{ ldap_admin_user }},{{ ldap_base_dn }}"
-
-ldap_user_ou: "people"
-ldap_group_ou: "groups"
-ldap_account_attribute: "uid"
 
 # authelia crypto hash generate pbkdf2 --variant sha512 --random --random.length 72 --random.charset rfc3986
 ldap_oidc_secrets:

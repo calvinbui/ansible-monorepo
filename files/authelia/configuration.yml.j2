@@ -14,21 +14,22 @@ default_redirection_url: https://{{ application }}.{{ common_tld }}
 authentication_backend:
   password_reset:
     disable: false
-  refresh_interval: 5m
+  refresh_interval: 1m
   ldap:
     implementation: custom
     url: ldap://{{ ldap_host }}
-
-    username_attribute: uid
+    timeout: 5s
+    start_tls: false
     base_dn: {{ ldap_base_dn }}
-
-    additional_users_dn: ou={{ ldap_user_ou }}
-    additional_groups_dn: ou={{ ldap_group_ou }}
-
-    users_filter: (&({username_attribute}={input})(objectClass=person))
-    groups_filter: (&(uniquemember={dn})(objectclass=groupOfUniqueNames))
-
-    user: {{ ldap_admin_dn }}
+    username_attribute: uid
+    additional_users_dn: ou=people
+    users_filter: "(&({username_attribute}={input})(objectClass=person))"
+    additional_groups_dn: ou=groups
+    groups_filter: "(member={dn})"
+    group_name_attribute: cn
+    mail_attribute: mail
+    display_name_attribute: displayName
+    user: "uid={{ ldap_admin_user }},ou=people,{{ ldap_base_dn }}"
     password: {{ ldap_admin_password }}
 
 access_control:

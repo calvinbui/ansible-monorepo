@@ -46,7 +46,7 @@
       32316161393737333233616331333837363261303835343638346135383661366565323635623865
       34393337383838346135
 
-    docker_network: "{{ networks.pub }}"
+    docker_network: "{{ ldap_network }}"
 
   handlers:
     - name: Restart
