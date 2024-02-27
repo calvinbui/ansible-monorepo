@@ -102,6 +102,7 @@
         path: "{{ config_directory }}/config/config.xml"
         xpath: "/Config/{{ item.key }}"
         value: "{{ item.value | string }}"
+        pretty_print: true
       loop: "{{ _radarr_config | dict2items }}"
       notify: Restart
       vars:
