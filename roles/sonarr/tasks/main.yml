@@ -8,13 +8,37 @@
     group: "{{ common_root_group }}"
     mode: "0771"
 
+- name: Copy SQL database init script to create log database
+  ansible.builtin.copy:
+    content: |
+      #!/usr/bin/env bash
+
+      set -euo pipefail
+
+      psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+        CREATE DATABASE "{{ application }}-log";
+        GRANT ALL PRIVILEGES ON DATABASE "{{ application }}-log" TO "$POSTGRES_USER";
+      EOSQL
+    dest: "{{ config_directory }}/init-log-db.sh"
+    mode: "0755"
+
+- name: Create postgres container
+  ansible.builtin.import_role:
+    name: postgres
+  vars:
+    postgres_version: 16
+    postgres_database: "{{ application }}-main"
+    postgres_directory_extra:
+      - "{{ config_directory }}/init-log-db.sh:/docker-entrypoint-initdb.d/init-log-db.sh:ro"
+    postgres_password: "{{ postgresdb_password }}"
+
 - name: Create container
   ansible.builtin.include_role:
     name: docker_container
   vars:
     image: lscr.io/linuxserver/sonarr:develop-version-4.0.1.1168
     volumes:
-      - "{{ config_directory }}:/config"
+      - "{{ config_directory }}/config:/config"
       - "{{ common_directory_storage }}:{{ common_mounted_directory }}"
     env:
       PUID: "{{ common_user_id | string }}"
@@ -29,7 +53,7 @@
 
 - name: Wait for config
   ansible.builtin.wait_for:
-    path: "{{ config_directory }}/config.xml"
+    path: "{{ config_directory }}/config/config.xml"
 
 - name: Install lxml
   ansible.builtin.pip:
@@ -38,9 +62,10 @@
 
 - name: Configure
   community.general.xml:
-    path: "{{ config_directory }}/config.xml"
+    path: "{{ config_directory }}/config/config.xml"
     xpath: "/Config/{{ item.key }}"
     value: "{{ item.value | string }}"
+    pretty_print: true
   loop: "{{ _sonarr_config | dict2items }}"
   notify: Restart
   vars:
@@ -50,3 +75,11 @@
       AnalyticsEnabled: "False"
       AuthenticationMethod: "External"
       InstanceName: "{{ application | replace('-', ' ') | title }}"
+
+      # https://wiki.servarr.com/sonarr/postgres-setup
+      PostgresHost: "{{ _postgres_hostname }}"
+      PostgresPort: "{{ _postgres_port }}"
+      PostgresMainDb: "{{ _postgres_database }}"
+      PostgresLogDb: "{{ application }}-log"
+      PostgresUser: "{{ _postgres_username }}"
+      PostgresPassword: "{{ _postgres_password }}"

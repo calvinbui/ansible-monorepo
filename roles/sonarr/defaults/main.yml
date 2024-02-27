@@ -4,6 +4,8 @@ application: sonarr
 
 docker_network: "{{ networks.pub }}"
 
+postgresdb_password: replaceme
+
 homepage_config:
   name: "{{ application | replace('-', ' ') | title }}"
   icon: "/icons/sonarr.svg"
