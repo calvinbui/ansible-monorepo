@@ -327,7 +327,7 @@
           - "{{ common_directory }}/nextcloud/app/data/nextcloud.log:/var/log/nextcloud.log:ro"
           - "{{ common_directory }}/prowlarr/config/logs/prowlarr.txt:/var/log/prowlarr.txt:ro"
           - "{{ common_directory }}/radarr/config/logs/radarr.txt:/var/log/radarr.txt:ro"
-          - "{{ common_directory }}/sonarr/logs/sonarr.txt:/var/log/sonarr.txt:ro"
+          - "{{ common_directory }}/sonarr/config/logs/sonarr.txt:/var/log/sonarr.txt:ro"
           - "{{ common_directory }}/traefik/logs:/var/log/traefik:ro"
           - /var/log/auth.log:/var/log/auth.log:ro
           - /var/log/kern.log:/var/log/kern.log:ro
