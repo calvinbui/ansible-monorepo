@@ -43,6 +43,20 @@
         - "{{ config_directory }}/provisioning/alerting"
         - "{{ config_directory }}/data"
 
+    - name: Create postgres container
+      ansible.builtin.import_role:
+        name: postgres
+      vars:
+        postgres_version: 16
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          61306432333966643438373539623339333439633861636437346135333762343634363634393735
+          6165386163373361316437666665396639393662643163310a383065363865313736386662626564
+          64366562636666623362303332343334613165663130356334653131653438376335333262393031
+          3137316638653363620a666232666139663465626230333331333666303439313166376366336133
+          62663765643363393661613130383565376663623334643436333665666464666466646565373936
+          6261636238343765663532336233343939623631643866633832
+
     - name: Create Thanos datasource
       ansible.builtin.copy:
         content: |
@@ -124,6 +138,12 @@
 
           GF_DATE_FORMATS_DEFAULT_TIMEZONE: "{{ common_timezone }}"
           GF_DATE_FORMATS_DEFAULT_WEEK_START: "monday"
+
+          GF_DATABASE_TYPE: "postgres"
+          GF_DATABASE_HOST: "{{ _postgres_hostname }}:{{ _postgres_port | string }}"
+          GF_DATABASE_NAME: "{{ _postgres_database }}"
+          GF_DATABASE_USER: "{{ _postgres_username }}"
+          GF_DATABASE_PASSWORD: "{{ _postgres_password }}"
         volumes:
           - "{{ config_directory }}/data:/var/lib/grafana"
           - "{{ config_directory }}/provisioning:/etc/grafana/provisioning"
