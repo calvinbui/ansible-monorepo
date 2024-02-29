@@ -1,0 +1,11 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
+
+---
+
+# https://github.com/franc6/ics_calendar
+calendars:
+{% for i in home_assistant_integrations.ics_calendar %}
+  - name: {{ i.name }}
+    url: {{ i.url }}
+    include_all_day: true
+{% endfor %}
