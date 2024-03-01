@@ -1,0 +1,106 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: authentik
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_group_id }}"
+        mode: "0771"
+      loop:
+        - "{{ config_directory }}/media"
+        - "{{ config_directory }}/custom-templates"
+        - "{{ config_directory }}/certs"
+
+    - name: Create redis container
+      ansible.builtin.include_role:
+        name: redis
+      vars:
+        redis_version: 7
+        redis_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          30633734303238393034636236656635383061363366653965613936353130663766646666323834
+          3431383964613438613039313637313334623533393566380a396462323664326136633863663732
+          39313532663835653738363063363066386234316139363863653734623039303364353039303765
+          3538643334633137340a633838366339343539336362336262313731373030663431366662386565
+          34343364303662643632303561346236396238303933326332306266343132396337
+
+    - name: Create postgres container
+      ansible.builtin.import_role:
+        name: postgres
+      vars:
+        postgres_version: 16
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          66353061616138653564656435383737646337656462623137323838653239646233393163373963
+          6461303361633834623761303530623839336531323263360a333739613037383430316565633932
+          36316139656339393566653034623332653730313461346439356661393634633935336332373361
+          3935356638376331370a333366353365313932333333623565363632323063666534366563303962
+          37386233663332366361353438636236373666616333643563336435363363313633
+
+    - name: Create server container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-server"
+        command: [server]
+        volumes:
+          - &_authentik_media_volume "{{ config_directory }}/media:/media"
+          - &_authentik_template_volume "{{ config_directory }}/custom-templates:/templates"
+        traefik:
+          - port: 9000
+            rule: Host(`{{ application }}.{{ common_tld }}`)
+        <<: &_authentik_container
+          image: ghcr.io/goauthentik/server:2024.2.1
+          env:
+            AUTHENTIK_POSTGRESQL__HOST: "{{ _postgres_hostname }}"
+            AUTHENTIK_POSTGRESQL__NAME: "{{ _postgres_database }}"
+            AUTHENTIK_POSTGRESQL__USER: "{{ _postgres_username }}"
+            AUTHENTIK_POSTGRESQL__PORT: "{{ _postgres_port | string }}"
+            AUTHENTIK_POSTGRESQL__PASSWORD: "{{ _postgres_password }}"
+
+            AUTHENTIK_REDIS__HOST: "{{ _redis_hostname }}"
+            AUTHENTIK_REDIS__PORT: "{{ _redis_port | string }}"
+            AUTHENTIK_REDIS__PASSWORD: "{{ _redis_password }}"
+
+            AUTHENTIK_SECRET_KEY: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              32656434363363306665653737313537336564613434393664396463653530386466306334626337
+              6361646639353432396430333531313630663633613338380a346133666162666465336462373033
+              30623832386433343430356638663163393134313838333262633830326666646664323561306330
+              3561613764636132610a353535666663343465363532613964636238636563633163653034363338
+              30663366303038666362666663313964616639333162336536326365303463386464643833356263
+              61383934346234323766353330636438396332623532363635656634366131396262326163306236
+              653963653738346636373364353038303033
+
+            AUTHENTIK_ERROR_REPORTING__ENABLED: "false"
+
+            AUTHENTIK_EMAIL__HOST: "{{ common_email_server }}"
+            AUTHENTIK_EMAIL__PORT: "{{ common_email_port | string }}"
+            AUTHENTIK_EMAIL__USERNAME: "{{ common_email_username }}"
+            AUTHENTIK_EMAIL__PASSWORD: "{{ common_email_password }}"
+            AUTHENTIK_EMAIL__USE_TLS: "{{ 'true' if common_email_protocol=='tls' else 'false' }}"
+            AUTHENTIK_EMAIL__USE_SSL: "{{ 'true' if common_email_protocol=='ssl' else 'false' }}"
+            AUTHENTIK_EMAIL__FROM: "{{ application }}{{ common_email_to }}"
+
+    - name: Create worker container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-worker"
+        command: [worker]
+        user: root
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+          - *_authentik_media_volume
+          - "{{ config_directory }}/certs:/certs"
+          - *_authentik_template_volume
+        <<: *_authentik_container
