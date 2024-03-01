@@ -72,16 +72,16 @@
           GUACD_HOSTNAME: "{{ application }}-guacd.{{ docker_network.name }}"
           GUACD_LOG_LEVEL: debug
 
-          POSTGRES_HOSTNAME: "{{ _postgres_hostname }}"
-          POSTGRES_DATABASE: "{{ _postgres_database }}"
-          POSTGRES_USER: "{{ _postgres_username }}"
-          POSTGRES_PASSWORD: "{{ _postgres_password }}"
+          POSTGRESQL_HOSTNAME: "{{ _postgres_hostname }}"
+          POSTGRESQL_DATABASE: "{{ _postgres_database }}"
+          POSTGRESQL_USER: "{{ _postgres_username }}"
+          POSTGRESQL_PASSWORD: "{{ _postgres_password }}"
 
+          OPENID_AUTHORIZATION_ENDPOINT: "https://authentik.{{ common_tld }}/application/o/authorize/"
           OPENID_CLIENT_ID: "{{ application }}"
-          OPENID_SCOPE: openid profile groups email
-          OPENID_ISSUER: "https://authelia.{{ common_tld }}"
-          OPENID_JWKS_ENDPOINT: "https://authelia.{{ common_tld }}/jwks.json"
-          OPENID_AUTHORIZATION_ENDPOINT: "https://authelia.{{ common_tld }}/api/oidc/authorization?state=1234abcedfdhf"
+          OPENID_ISSUER: "https://authentik.{{ common_tld }}/application/o/{{ application }}/"
+          OPENID_JWKS_ENDPOINT: "https://authentik.{{ common_tld }}/application/o/{{ application }}/jwks/"
+          OPENID_SCOPE: openid profile email
           OPENID_REDIRECT_URI: "https://{{ application }}.{{ common_tld }}"
           OPENID_USERNAME_CLAIM_TYPE: preferred_username
           OPENID_GROUPS_CLAIM_TYPE: groups
