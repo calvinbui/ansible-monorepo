@@ -69,14 +69,18 @@
           TZ: "{{ common_timezone }}"
         traefik:
           - port: 7878
-            auth: basic
+            auth: page
+            rule: Host(`{{ application }}.{{ common_tld }}`)
+          -
+            name: "{{ application }}-bypass-auth"
+            port: 7878
+            rule: Host(`{{ application }}.{{ common_tld }}`) && PathPrefix(`/api/`) && Headers(`{{ traefik_bypass_auth_header.key }}`, `{{ traefik_bypass_auth_header.value }}`)
         homepage:
           group: Favourites
           weight: 410
           description: "Manage and download movies"
           widget:
             key: "{{ radarr_api_key }}"
-            # temporary until authelia 4.38
             url: "http://{{ application }}.{{ docker_network.name }}:7878"
             enableQueue: "true"
             fields: '["wanted", "movies"]'
@@ -85,6 +89,8 @@
           start_period: 5s
           interval: 5s
           retries: 3
+        blackbox:
+          path: /ping
         labels:
           autoheal: "true"
 

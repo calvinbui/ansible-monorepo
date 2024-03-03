@@ -5,6 +5,16 @@
   vars:
     application: authentik
 
+    authentik_terraform_api_token: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      65343033313337326461393565393263326238366664323161376132333636303631653631613831
+      6336626461366462326463346635383362333363353938320a353239346539323734323230313739
+      38613839386434393663643031623239356430356162623765373962656339646636313935316431
+      6336393961363436650a393966303565353931393134363935663135373436623931643638383666
+      31323462336439363965646232303537366533643163353637646535663866633935626361303931
+      38666234376363346163333863626264356632336532356139313339646437636533316439393436
+      316435356432633965626663333830353336
+
     docker_network: "{{ networks.pub }}"
 
   tasks:
@@ -51,6 +61,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-server"
+        ipv4_address: "{{ docker_network.prefix }}.249"
         command: [server]
         volumes:
           - &_authentik_media_volume "{{ config_directory }}/media:/media"
@@ -58,6 +69,12 @@
         traefik:
           - port: 9000
             rule: Host(`{{ application }}.{{ common_tld }}`)
+        labels:
+          '{
+            "traefik.http.middlewares.{{ application }}.forwardauth.address": "http://{{ application }}.{{ common_local_tld }}:9000/outpost.goauthentik.io/auth/traefik",
+            "traefik.http.middlewares.{{ application }}.forwardauth.trustForwardHeader": "true",
+            "traefik.http.middlewares.{{ application }}.forwardauth.authResponseHeaders": "X-authentik-username,X-authentik-groups,X-authentik-email,X-authentik-name,X-authentik-uid,X-authentik-jwt,X-authentik-meta-jwks,X-authentik-meta-outpost,X-authentik-meta-provider,X-authentik-meta-app,X-authentik-meta-version"
+          }'
         <<: &_authentik_container
           image: ghcr.io/goauthentik/server:2024.2.1
           env:
@@ -99,8 +116,53 @@
         command: [worker]
         user: root
         volumes:
-          - /var/run/docker.sock:/var/run/docker.sock
           - *_authentik_media_volume
           - "{{ config_directory }}/certs:/certs"
           - *_authentik_template_volume
         <<: *_authentik_container
+
+    - name: Create LDAP outpost container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-outpost-ldap"
+        image: ghcr.io/goauthentik/ldap:2024.2.1
+        env:
+          AUTHENTIK_HOST: "https://{{ application }}.{{ common_tld }}"
+          AUTHENTIK_INSECURE: "false"
+          # within View Deployment Info on the Outpost
+          AUTHENTIK_TOKEN: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            63663932653139663364643363663331383463333633313663623564313161363535653362646537
+            6532326433313634373531393035646565386631383861640a366238353937633738393638333030
+            38343535326634356262663163623166393963376531386666666639613931323463313362393063
+            3939646230666338350a356232386532653833366435656636343832393036333033316538613062
+            35313439653233666131643934376461313765343462353139373561323662353939373563653161
+            64343833646433363930363265626262343434646430653636366230333136653032383736346133
+            666435653361333538376632306566346161
+
+    - name: Wait for it to come up
+      ansible.builtin.wait_for:
+        host: "{{ application }}.{{ common_tld }}"
+        port: 443
+
+    - name: Terraform
+      community.general.terraform:
+        project_path: "{{ files_directory }}/terraform"
+        force_init: true
+        init_reconfigure: true
+        variables:
+          common_tld: "{{ common_tld }}"
+          ldap_base_dn: "{{ ldap_base_dn }}"
+          ldap_username: "{{ ldap_username }}"
+          ldap_password: "{{ ldap_password }}"
+      delegate_to: localhost
+      become: false
+      environment:
+        AWS_ENDPOINT_URL_S3: "{{ terraform_backend_endpoint }}"
+        AWS_ACCESS_KEY_ID: "{{ terraform_backend_access_key }}"
+        AWS_SECRET_ACCESS_KEY: "{{ terraform_backend_secret_key }}"
+        AWS_DEFAULT_REGION: "{{ terraform_backend_region }}"
+
+        AUTHENTIK_URL: "https://{{ application }}.{{ common_tld }}"
+        AUTHENTIK_TOKEN: "{{ authentik_terraform_api_token }}"

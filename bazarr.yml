@@ -59,13 +59,17 @@
           POSTGRES_PASSWORD: "{{ _postgres_password }}"
         traefik:
           - port: 6767
-            auth: basic
+            auth: page
+            rule: Host(`{{ application }}.{{ common_tld }}`)
+          -
+            name: "{{ application }}-bypass-auth"
+            port: 6767
+            rule: Host(`{{ application }}.{{ common_tld }}`) && PathPrefix(`/api/`) && Headers(`{{ traefik_bypass_auth_header.key }}`, `{{ traefik_bypass_auth_header.value }}`)
         homepage:
           group: Media
           weight: 800
           description: "Manage and download subtitles"
           widget:
-            # temporary until authelia 4.38
             url: "http://{{ application }}.{{ docker_network.name }}:6767"
             key: "{{ bazarr_api_key }}"
 

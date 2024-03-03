@@ -15,7 +15,6 @@ homepage_config:
   widget:
     type: sonarr
     key: "{{ sonarr_api_key }}"
-    # temporary until authelia 4.38
     url: "http://{{ application }}.{{ docker_network.name }}:8989"
     enableQueue: "true"
     fields: '["wanted", "series"]'

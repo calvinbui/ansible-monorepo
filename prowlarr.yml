@@ -67,14 +67,19 @@
           PGID: "{{ common_root_group | string }}"
           TZ: "{{ common_timezone }}"
         traefik:
-          - port: 9696
-            auth: basic
+          -
+            port: 9696
+            auth: page
+            rule: Host(`{{ application }}.{{ common_tld }}`)
+          -
+            name: "{{ application }}-bypass-auth"
+            port: 9696
+            rule: Host(`{{ application }}.{{ common_tld }}`) && PathPrefix(`/api/`) && Headers(`{{ traefik_bypass_auth_header.key }}`, `{{ traefik_bypass_auth_header.value }}`)
         homepage:
           group: Favourites
           weight: 350
           description: "Index manager"
           widget:
-            # temporary until authelia 4.38
             url: "http://{{ application }}.{{ docker_network.name }}:9696"
             key: "{{ prowlarr_api_key }}"
         healthcheck:

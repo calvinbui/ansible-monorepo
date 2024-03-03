@@ -46,6 +46,7 @@
           - /dev/log:/dev/log:rw
         traefik:
           - port: 8990
+            auth: page
         blackbox:
           auth: basic
         homepage:

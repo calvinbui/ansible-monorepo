@@ -158,10 +158,12 @@
           - /etc/localtime:/etc/localtime:ro
         ipv4_address: "{{ docker_network.prefix }}.253"
         traefik:
-          - name: "{{ application }}-short"
+          -
+            name: "{{ application }}-short"
             port: 8123
             rule: Host(`home.{{ common_tld }}`)
-          - port: 8123
+          -
+            port: 8123
             rule: Host(`{{ application }}.{{ common_tld }}`)
         homepage:
           name: Home Assistant

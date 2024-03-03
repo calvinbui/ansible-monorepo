@@ -45,8 +45,15 @@
       PGID: "{{ common_root_group | string }}"
       TZ: "{{ common_timezone }}"
     traefik:
-      - port: 8989
-        auth: basic
+      -
+        port: 8989
+        auth: page
+        rule: Host(`{{ application }}.{{ common_tld }}`)
+      -
+        name: "{{ application }}-bypass-auth"
+        port: 8989
+        rule: Host(`{{ application }}.{{ common_tld }}`) && PathPrefix(`/api/`) && Headers(`{{ traefik_bypass_auth_header.key }}`, `{{ traefik_bypass_auth_header.value }}`)
+
     homepage: "{{ homepage_config }}"
     blackbox:
       path: /ping

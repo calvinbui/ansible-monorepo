@@ -46,7 +46,7 @@
       32316161393737333233616331333837363261303835343638346135383661366565323635623865
       34393337383838346135
 
-    docker_network: "{{ ldap_network }}"
+    docker_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart
@@ -152,11 +152,7 @@
           path: /api/health
         labels:
           '{
-            "traefik.http.middlewares.{{ traefik_middleware_authelia.split("@")[0] }}.forwardauth.address": "http://{{ application }}.{{ common_local_tld }}:9091/api/verify?rd=https://{{ application }}.{{ common_tld }}",
-            "traefik.http.middlewares.{{ traefik_middleware_authelia.split("@")[0] }}.forwardauth.trustForwardHeader": "true",
-            "traefik.http.middlewares.{{ traefik_middleware_authelia.split("@")[0] }}.forwardauth.authResponseHeaders": "Remote-User,Remote-Groups,Remote-Name,Remote-Email",
-
-            "traefik.http.middlewares.{{ traefik_middleware_authelia_basic.split("@")[0] }}.forwardauth.address": "http://{{ application }}.{{ common_local_tld }}:9091/api/verify?auth=basic",
-            "traefik.http.middlewares.{{ traefik_middleware_authelia_basic.split("@")[0] }}.forwardauth.trustForwardHeader": "true",
-            "traefik.http.middlewares.{{ traefik_middleware_authelia_basic.split("@")[0] }}.forwardauth.authResponseHeaders": "Remote-User, Remote-Groups, Remote-Name, Remote-Email"
+            "traefik.http.middlewares.{{ application }}.forwardauth.address": "http://{{ application }}.{{ common_local_tld }}:9091/api/verify?rd=https://{{ application }}.{{ common_tld }}",
+            "traefik.http.middlewares.{{ application }}.forwardauth.trustForwardHeader": "true",
+            "traefik.http.middlewares.{{ application }}.forwardauth.authResponseHeaders": "Remote-User,Remote-Groups,Remote-Name,Remote-Email"
           }'

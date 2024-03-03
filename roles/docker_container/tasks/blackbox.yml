@@ -13,7 +13,7 @@
       value: "{{ blackbox.auth | default(route.auth) | default('none') }}"
     -
       key: "blackbox.target"
-      value: "{{ blackbox.protocol |default('https') }}://{{ (route.rule | regex_replace('^Host\\(`(.*)`\\)$', '\\1')) if route.rule is defined else (blackbox.host | default(route_name + '.' + common_tld)) }}{{ blackbox.path | default('') }}"
+      value: "{{ blackbox.protocol|default('https') }}://{{ (route.rule | regex_replace('^Host\\(`(.*)`\\)$', '\\1')) if route.rule is defined else (blackbox.host | default(route_name + '.' + common_tld)) }}{{ blackbox.path | default('') }}"
 
 - name: "Generating TCP blackbox service discovery labels"
   when: route.type is defined and route.type == "tcp"

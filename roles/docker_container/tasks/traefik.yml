@@ -8,19 +8,12 @@
   ansible.builtin.set_fact:
     route_middlewares: "{{ route_middlewares + route.middlewares|default([]) }}"
 
-- name: Add Authelia basic auth
-  when:
-    - route.auth is defined
-    - route.auth == "basic"
-  ansible.builtin.set_fact:
-    route_middlewares: "{{ route_middlewares + [traefik_middleware_authelia_basic] }}"
-
-- name: Add Authelia login page
+- name: Add auth page
   when:
     - route.auth is defined
     - route.auth == "page"
   ansible.builtin.set_fact:
-    route_middlewares: "{{ route_middlewares + [traefik_middleware_authelia] }}"
+    route_middlewares: "{{ route_middlewares + [traefik_middleware_forward_auth] }}"
 
 - name: "Generating HTTP Traefik labels for {{ route_name }}"
   when: traefik and (route.type is undefined or (route.type is defined and route.type == "http"))

@@ -47,14 +47,20 @@
           TZ: "{{ common_timezone }}"
           UMASK: "022"
         traefik:
-          - port: 6789
-            auth: basic
+          -
+            port: 6789
+            auth: page
+            rule: Host(`{{ application }}.{{ common_tld }}`)
+          -
+            name: "{{ application }}-bypass-auth"
+            port: 6789
+            rule: Host(`{{ application }}.{{ common_tld }}`) && Headers(`{{ traefik_bypass_auth_header.key }}`, `{{ traefik_bypass_auth_header.value }}`)
+
         homepage:
           name: NZBGet
           group: Favourites
           weight: 200
           description: "Download files from Usenet"
-          # temporary until authelia 4.38
           url: "http://{{ application }}.{{ docker_network.name }}:6789"
           widget:
             username: ""

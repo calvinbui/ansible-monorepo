@@ -47,13 +47,16 @@
           DISABLE_TELEMETRY: "1"
           DISABLE_UPDATES: "1"
         traefik:
-          - name: "umami-private"
+          -
+            name: "{{ application }}-private"
             port: 3000
             rule: Host(`{{ application }}.{{ common_tld }}`)
-          - name: "umami-public"
+          -
+            name: "{{ application }}-public"
             port: 3000
             rule: Host(`umami.calvin.me`)
-          - name: "umami-scripts"
+          -
+            name: "{{ application }}-scripts"
             port: 3000
             rule: Host(`u.calvin.me`)
             middlewares:
