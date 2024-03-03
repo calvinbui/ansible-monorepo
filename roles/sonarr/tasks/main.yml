@@ -36,7 +36,7 @@
   ansible.builtin.include_role:
     name: docker_container
   vars:
-    image: lscr.io/linuxserver/sonarr:develop-version-4.0.2.1192
+    image: lscr.io/linuxserver/sonarr:develop-version-4.0.2.1223
     volumes:
       - "{{ config_directory }}/config:/config"
       - "{{ common_directory_storage }}:{{ common_mounted_directory }}"
