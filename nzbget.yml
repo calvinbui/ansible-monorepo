@@ -61,7 +61,6 @@
           group: Favourites
           weight: 200
           description: "Download files from Usenet"
-          url: "http://{{ application }}.{{ docker_network.name }}:6789"
           widget:
             username: ""
             password: ""

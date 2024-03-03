@@ -72,31 +72,27 @@
           GUACD_HOSTNAME: "{{ application }}-guacd.{{ docker_network.name }}"
           GUACD_LOG_LEVEL: debug
 
+          WEBAPP_CONTEXT: "ROOT"
+
           POSTGRESQL_HOSTNAME: "{{ _postgres_hostname }}"
           POSTGRESQL_DATABASE: "{{ _postgres_database }}"
           POSTGRESQL_USER: "{{ _postgres_username }}"
           POSTGRESQL_PASSWORD: "{{ _postgres_password }}"
 
-          OPENID_AUTHORIZATION_ENDPOINT: "https://authentik.{{ common_tld }}/application/o/authorize/"
+          OPENID_AUTHORIZATION_ENDPOINT: "https://authelia.{{ common_tld }}/api/oidc/authorization?state=1234abcedfdhf"
           OPENID_CLIENT_ID: "{{ application }}"
-          OPENID_ISSUER: "https://authentik.{{ common_tld }}/application/o/{{ application }}/"
-          OPENID_JWKS_ENDPOINT: "https://authentik.{{ common_tld }}/application/o/{{ application }}/jwks/"
+          OPENID_ISSUER: "https://authelia.{{ common_tld }}"
+          OPENID_JWKS_ENDPOINT: "https://authelia.{{ common_tld }}/jwks.json"
           OPENID_SCOPE: openid profile email
           OPENID_REDIRECT_URI: "https://{{ application }}.{{ common_tld }}"
           OPENID_USERNAME_CLAIM_TYPE: preferred_username
           OPENID_GROUPS_CLAIM_TYPE: groups
         traefik:
           - port: 8080
-            middlewares:
-              - "{{ application }}-addprefix"
         homepage:
           group: Remote Access
           weight: 100
           description: "Remote access"
-        labels:
-          '{
-            "traefik.http.middlewares.{{ application }}-addprefix.addprefix.prefix": "/guacamole"
-          }'
 
     - name: Link extensions
       community.docker.docker_container_exec:

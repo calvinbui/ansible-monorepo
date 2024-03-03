@@ -80,7 +80,6 @@
           weight: 350
           description: "Index manager"
           widget:
-            url: "http://{{ application }}.{{ docker_network.name }}:9696"
             key: "{{ prowlarr_api_key }}"
         healthcheck:
           test: "curl -f http://localhost:9696/ || exit 1"

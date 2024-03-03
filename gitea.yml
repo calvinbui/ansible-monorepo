@@ -5,20 +5,6 @@
   vars:
     application: gitea
 
-    gitea_oidc_secret: !vault |
-      $ANSIBLE_VAULT;1.1;AES256
-      34306261383234663866353066613363613230646336616661383864613735373662376262336139
-      6137303437393862373538623631646366666438373035390a346133616365353133356537363132
-      66666134393532313537373862383365353064316234383666326363363734666334623766633563
-      3766353739366233380a393839303039343630393835353737313037393731343031636530396535
-      32393063313265653262336563393635386563626563373265613038353332393637336664356164
-      66336535613937646338393631633963343335623131363066336662643365646562393538663661
-      61333236306631306635623865336338303533313065363535613439376164323961323334343635
-      30613833333331346335316434313165656134613236653765323030616633626265643336663165
-      37326464386532383265626636616531396634656230356533666164636262623162653563613331
-      33346332373532643364343661643366663333376564303831626538653965373335393266613665
-      363831343433333865646236363338663431
-
     docker_network: "{{ networks.pub }}"
 
   tasks:
@@ -102,7 +88,7 @@
 
           GITEA__openid__ENABLE_OPENID_SIGNIN: "false"
           GITEA__openid__ENABLE_OPENID_SIGNUP: "true"
-          GITEA__openid__WHITELISTED_URIS: "authentik.{{ common_tld }}"
+          GITEA__openid__WHITELISTED_URIS: "authelia.{{ common_tld }}"
           GITEA__service__DISABLE_REGISTRATION: "true"
           GITEA__service__ALLOW_ONLY_EXTERNAL_REGISTRATION: "true"
           GITEA__service__SHOW_REGISTRATION_BUTTON: "false"
@@ -158,24 +144,24 @@
         blackbox:
           path: /api/healthz
 
-    - name: Add authentik source
+    - name: Add authelia source
       community.docker.docker_container_exec:
         container: "{{ application }}"
         user: 1000
         command: >-
           gitea admin auth add-oauth
-            --name authentik
+            --name Authelia
             --provider openidConnect
             --key {{ application }}
-            --secret {{ gitea_oidc_secret }}
-            --auto-discover-url https://authentik.{{ common_tld }}/application/o/{{ application }}/.well-known/openid-configuration
+            --secret {{ ldap_oidc_apps.gitea.secret }}
+            --auto-discover-url https://authelia.{{ common_tld }}/.well-known/openid-configuration
       register: _command_result
       failed_when:
         - ('Command error' in _command_result.stderr)
         - ('login source already exists' not in _command_result.stderr)
       changed_when: ('login source already exists' not in _command_result.stderr)
 
-    - name: Get authentik source ID
+    - name: Get Authelia source ID
       community.docker.docker_container_exec:
         container: "{{ application }}"
         user: 1000
@@ -188,21 +174,18 @@
       ansible.builtin.set_fact:
         _gitea_auth_id: "{{ _gitea_auth_sources.stdout_lines[1] | split('\t') | first }}"
 
-    - name: Update authentik source
+    - name: Update Authelia source
       community.docker.docker_container_exec:
         container: "{{ application }}"
         user: 1000
         command: >-
           gitea admin auth update-oauth
             --id {{ _gitea_auth_id }}
-            --name authentik
+            --name Authelia
             --provider openidConnect
             --key {{ application }}
-            --secret {{ gitea_oidc_secret }}
-            --icon-url https://authentik.{{ common_tld }}/static/dist/assets/icons/icon.svg
-            --auto-discover-url https://authentik.{{ common_tld }}/application/o/{{ application }}/.well-known/openid-configuration
-            --scopes email
-            --scopes profile
+            --secret {{ ldap_oidc_apps.gitea.secret }}
+            --auto-discover-url https://authelia.{{ common_tld }}/.well-known/openid-configuration
       register: _command_result
       failed_when: ('Command error' in _command_result.stderr)
       changed_when: true # nothing is returned so we'll always assume changed

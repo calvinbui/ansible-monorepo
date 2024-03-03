@@ -14,7 +14,3 @@ traefik_bypass_auth_header:
     65353038623733323866303234636633303665306531666432653330316131323563343237653335
     37366235383130376132653933303833306162373935653730656233653137626466363634626262
     35303166383434323737
-
-traefik_middleware_forward_auth: authelia@docker
-# can't replace authelia until https://github.com/goauthentik/authentik/issues/6886 is resolved
-# traefik_middleware_forward_auth: authentik@docker

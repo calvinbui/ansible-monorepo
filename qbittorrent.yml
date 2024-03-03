@@ -53,7 +53,6 @@
           group: Favourites
           weight: 250
           description: "Download torrents"
-          url: "http://{{ application }}.{{ docker_network.name }}:8090"
           widget:
             username: ""
             password: ""

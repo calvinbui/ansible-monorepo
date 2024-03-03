@@ -70,7 +70,6 @@
           weight: 800
           description: "Manage and download subtitles"
           widget:
-            url: "http://{{ application }}.{{ docker_network.name }}:6767"
             key: "{{ bazarr_api_key }}"
 
     - name: If "{{ application }}" has not been configured, go through the initial setup to generate a configuration file.

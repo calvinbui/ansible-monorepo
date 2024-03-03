@@ -81,7 +81,6 @@
           description: "Manage and download movies"
           widget:
             key: "{{ radarr_api_key }}"
-            url: "http://{{ application }}.{{ docker_network.name }}:7878"
             enableQueue: "true"
             fields: '["wanted", "movies"]'
         healthcheck:
