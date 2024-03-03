@@ -67,14 +67,7 @@
           widget:
             # temporary until authelia 4.38
             url: "http://{{ application }}.{{ docker_network.name }}:6767"
-            key: !vault |
-              $ANSIBLE_VAULT;1.1;AES256
-              32633230363065306662613430303535323839393666313964386239663032343237653265383330
-              6163633134373034646264356430306463616237393966630a313637623035363434336163666361
-              39313835396264393438313735376666313663383437383164623837626339656538326566313939
-              6465633663656333380a356461366435323639636430623561346337396536636662656334313733
-              35353538373131386138303261373033373165346335326463626661316564663134626630346638
-              3566396236636136663465373261666336303363306264306534
+            key: "{{ bazarr_api_key }}"
 
     - name: If "{{ application }}" has not been configured, go through the initial setup to generate a configuration file.
       ansible.builtin.wait_for:
@@ -91,6 +84,8 @@
       vars:
         _bazarr_config:
           analytics.enabled: false
+
+          auth.apikey: "{{ bazarr_api_key }}"
 
           general.single_language: true
           general.upgrade_manual: false
