@@ -5,14 +5,6 @@
   vars:
     application: changedetection
 
-    changedetection_browserless_token: !vault |
-      $ANSIBLE_VAULT;1.1;AES256
-      65663961663733333833633562643435316565303839646638343835393364393632353665323636
-      6530343163323232626665343130346264346130306437340a333132336262613562626562323866
-      32386234623861396664643230343563356161353434663964383363366436623761613432306261
-      3931346438636162610a363965363661636635303530636164336366363664633661333439393637
-      65336234623537353366633338386366336432656632336461306164663466393335
-
     docker_network: "{{ networks.granny }}"
 
   tasks:
@@ -21,34 +13,26 @@
         name: docker_container
       vars:
         name: "{{ application }}-playwright-chrome"
-        image: browserless/chrome:1.61-chrome-stable
-        shm_size: "2g"
+        image: dgtlmoon/sockpuppetbrowser:latest
+        capabilities:
+          - SYS_ADMIN
         env:
           SCREEN_WIDTH: "1920"
           SCREEN_HEIGHT: "1024"
           SCREEN_DEPTH: "16"
-          ENABLE_DEBUGGER: "false"
-          PREBOOT_CHROME: "true"
-          CONNECTION_TIMEOUT: "300000"
-          MAX_CONCURRENT_SESSIONS: "10"
-          CHROME_REFRESH_TIME: "600000"
-          DEFAULT_BLOCK_ADS: "false"
-          DEFAULT_STEALTH: "true"
-
-          DEFAULT_LAUNCH_ARGS: '["--disable-web-security=true"]'
-          TOKEN: "{{ changedetection_browserless_token }}"
+          MAX_CONCURRENT_CHROME_PROCESSES: "10"
 
     - name: Create "{{ application }}" container
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/dgtlmoon/changedetection.io:0.45.14
+        image: ghcr.io/dgtlmoon/changedetection.io:0.45.16
         volumes:
           - "{{ config_directory }}:/datastore"
         env:
           BASE_URL: "https://{{ application }}.{{ common_tld }}"
 
-          PLAYWRIGHT_DRIVER_URL: "ws://{{ application }}-playwright-chrome:3000?token={{ changedetection_browserless_token }}"
+          PLAYWRIGHT_DRIVER_URL: "ws://{{ application }}-playwright-chrome:3000"
 
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_group_id | string }}"
