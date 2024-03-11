@@ -78,3 +78,30 @@ home_assistant_integrations:
     32366363366263646137646166633830313837386632653333306432663661656532353366333933
     6566636235326463660a343663323837623165333261663264383135636631316465396539363861
     65326332333735346637636663316262633634313634346132376661333762653130
+
+home_assistant_gardening:
+  schedule:
+    summer:
+      - Monday
+      - Wednesday
+      - Friday
+    spring:
+      - Monday
+    autumn:
+      - Monday
+  systems:
+    -
+      name: Backyard Sprinklers
+      time: "09:00:00"
+      icon: sprinkler-variant
+      linktap: d1_sprinklers
+    -
+      name: Frontyard Drippers
+      time: "11:00:00"
+      icon: water
+      linktap: g2s_plants
+    -
+      name: Side Plants
+      time: "13:00:00"
+      icon: flower-tulip
+      linktap: d1_plants

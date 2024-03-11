@@ -255,7 +255,6 @@
             owner: "{{ common_root_id }}"
             group: "{{ common_root_group }}"
             mode: "0771"
-          notify: Restart
 
         - name: Add custom automations folder to configuration
           ansible.builtin.lineinfile:
@@ -266,10 +265,21 @@
 
         - name: Copy custom automations
           ansible.builtin.copy:
-            src: "{{ files_directory }}/automations/"
-            dest: "{{ home_assistant_automations_dir }}"
+            src: "{{ item }}"
+            dest: "{{ home_assistant_automations_dir }}/{{ item | basename }}"
             mode: "0644"
           notify: Restart
+          with_fileglob:
+            - "{{ files_directory }}/automations/*.yaml"
+
+        - name: Template custom automations
+          ansible.builtin.template:
+            src: "{{ item }}"
+            dest: "{{ home_assistant_automations_dir }}/{{ item | basename | regex_replace('\\.j2$', '') }}"
+            mode: "0644"
+          notify: Restart
+          with_fileglob:
+            - "{{ files_directory }}/automations/*.j2"
 
     - name: Copy dashboard
       tags:
@@ -277,10 +287,22 @@
       ansible.posix.synchronize:
         src: "{{ files_directory }}/ui_lovelace_minimalist/"
         dest: "{{ config_directory }}/config/ui_lovelace_minimalist/"
-        delete: true
+        delete: false
         owner: false
         group: false
         perms: false
+
+    - name: Template dashboard items
+      tags:
+        - dashboard
+      ansible.builtin.template:
+        src: "{{ item }}"
+        dest: "{{ config_directory }}/config/ui_lovelace_minimalist/dashboard/pages/{{ item | basename | regex_replace('\\.j2$', '') }}"
+        mode: "0644"
+        owner: "root"
+        group: "root"
+      with_fileglob:
+        - "{{ files_directory }}/ui_lovelace_minimalist/dashboard/pages/*.j2"
 
     - name: Install HACS
       community.docker.docker_container_exec:

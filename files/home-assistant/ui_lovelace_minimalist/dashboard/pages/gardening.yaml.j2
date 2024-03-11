@@ -1,0 +1,157 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
+---
+
+title: Gardening
+path: gardening
+icon: mdi:flower
+
+type: custom:grid-layout
+layout:
+  grid-template-columns: 0.2fr 4fr 5fr 5fr 0.2fr
+  grid-column-gap: 20px
+  grid-template-areas: |
+    ". schedule stats1 stats2 ."
+  mediaquery:
+    "(max-width: 800px)":
+      grid-template-columns: 100%
+      grid-template-areas: |
+        "stats1"
+        "stats2"
+        "schedule"
+
+cards:
+  - type: vertical-stack
+    view_layout:
+      grid-area: schedule
+    cards:
+      -
+        name: 🕙 Schedule
+        <<: &title_card
+          type: custom:button-card
+          template: card_title
+      -
+        type: markdown
+        title: Time
+        content: |
+          {% for g in home_assistant_gardening.systems %}
+          {{ g.name }}: {{ g.time }}
+          {% endfor %}
+      -
+        type: markdown
+        title: Seasons
+        content: |
+          {% for k, v in home_assistant_gardening.schedule.items() %}
+          {{ k | title }}: {{ v | join(", ") }}
+          {% endfor %}
+      -
+        name: ⚙️ Automations
+        <<: *title_card
+
+      {% for g in home_assistant_gardening.systems %}
+      -
+        type: 'custom:button-card'
+        template: card_input_boolean
+        entity: automation.gardening_{{ g.name | lower | replace(" ", "_") }}
+        variables:
+          ulm_card_input_boolean_name: {{ g.name }}
+          ulm_card_input_boolean_icon: mdi:{{ g.icon }}
+          ulm_card_input_boolean_force_background_color: true
+      {% endfor %}
+
+  - type: vertical-stack
+    view_layout:
+      grid-area: stats1
+    cards:
+    {% for g in home_assistant_gardening.systems %}
+    {% if loop.index % 2 != 0 %}
+      - type: vertical-stack
+        cards:
+          -
+            name: 🌱 {{ g.name }}
+            <<: *title_card
+          -
+            type: entities
+            entities:
+              -
+                type: custom:multiple-entity-row
+                name: Bucket
+                attribute: bucket
+                icon: mdi:pail
+                unit: mm
+                entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
+              -
+                type: custom:multiple-entity-row
+                name: Duration
+                icon: mdi:timer
+                unit: s
+                entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
+              -
+                type: custom:multiple-entity-row
+                name: Last Watering
+                icon: mdi:history
+                entity: sensor.linktap_{{ g.linktap }}_total_duration
+                unit: s
+              -
+                type: custom:multiple-entity-row
+                name: Water Consumed
+                icon: mdi:pail-minus
+                entity: sensor.linktap_{{ g.linktap }}_volume
+                unit: L
+              -
+                type: custom:multiple-entity-row
+                name: Size
+                attribute: size
+                icon: mdi:move-resize
+                unit: m²
+                entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
+    {% endif %}
+    {% endfor %}
+
+  - type: vertical-stack
+    view_layout:
+      grid-area: stats2
+    cards:
+    {% for g in home_assistant_gardening.systems %}
+    {% if loop.index % 2 == 0 %}
+      - type: vertical-stack
+        cards:
+          -
+            name: 🌱 {{ g.name }}
+            <<: *title_card
+          -
+            type: entities
+            entities:
+              -
+                type: custom:multiple-entity-row
+                name: Bucket
+                attribute: bucket
+                icon: mdi:pail
+                unit: mm
+                entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
+              -
+                type: custom:multiple-entity-row
+                name: Duration
+                icon: mdi:timer
+                unit: s
+                entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
+              -
+                type: custom:multiple-entity-row
+                name: Last Watering
+                icon: mdi:history
+                entity: sensor.linktap_{{ g.linktap }}_total_duration
+                unit: s
+              -
+                type: custom:multiple-entity-row
+                name: Water Consumed
+                icon: mdi:pail-minus
+                entity: sensor.linktap_{{ g.linktap }}_volume
+                unit: L
+              -
+                type: custom:multiple-entity-row
+                name: Size
+                attribute: size
+                icon: mdi:move-resize
+                unit: m²
+                entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
+    {% endif %}
+    {% endfor %}

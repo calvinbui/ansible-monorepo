@@ -1,0 +1,48 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
+---
+{% for g in home_assistant_gardening.systems %}
+- id: gardening_{{ g.name | lower | replace(" ", "_") }}
+  alias: Gardening - {{ g.name }}
+  description: ""
+  trigger:
+    - platform: time
+      at: "{{ g.time | string }}"
+  condition:
+    - condition: numeric_state
+      entity_id: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
+      above: 0
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.meteorological_season
+          state: winter
+      alias: Not Winter
+    - alias: Season / Day of Week
+      condition: or
+      conditions:
+      {% for k, v in home_assistant_gardening.schedule.items() %}
+        - alias: {{ k | title }}
+          condition: and
+          conditions:
+            - condition: state
+              entity_id: sensor.meteorological_season
+              state: {{ k }}
+            - condition: time
+              weekday:
+              {% for s in v %}
+                - {{ s[:3] | lower }}
+              {% endfor %}
+      {% endfor %}
+  action:
+    - service: linktap.start_watering
+      target:
+        entity_id: valve.linktap_{{ g.linktap }}
+      data:
+        seconds: "{% raw %}{{ states(\"sensor.smart_irrigation_{% endraw %}{{ g.name | lower | replace(" ", "_") }}{% raw %}\") }}{% endraw %}"
+    - service: smart_irrigation.reset_bucket
+      metadata: {}
+      data: {}
+      target:
+        entity_id: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
+  mode: single
+{% endfor %}
