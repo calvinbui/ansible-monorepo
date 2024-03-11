@@ -34,7 +34,8 @@ cards:
         title: Time
         content: |
           {% for g in home_assistant_gardening.systems %}
-          {{ g.name }}: {{ g.time }}
+          {{ g.name }}: {% raw %}{{ '2000-01-01T{% endraw %}{{ g.time }}'{% raw %} | as_timestamp() | timestamp_custom("%I:%M %p") }}{% endraw %}
+
           {% endfor %}
       -
         type: markdown
@@ -74,23 +75,26 @@ cards:
             entities:
               -
                 type: custom:multiple-entity-row
+                name: Duration
+                icon: mdi:timer
+                entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
+                show_state: false
+                entities:
+                  - entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
+                    name: Next
+                    format: duration
+                  - entity: sensor.linktap_{{ g.linktap }}_total_duration
+                    name: Last
+                    format: duration
+              -
+                type: custom:multiple-entity-row
                 name: Bucket
                 attribute: bucket
                 icon: mdi:pail
                 unit: mm
                 entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
               -
-                type: custom:multiple-entity-row
-                name: Duration
-                icon: mdi:timer
-                unit: s
-                entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
-              -
-                type: custom:multiple-entity-row
-                name: Last Watering
-                icon: mdi:history
-                entity: sensor.linktap_{{ g.linktap }}_total_duration
-                unit: s
+                type: divider
               -
                 type: custom:multiple-entity-row
                 name: Water Consumed
@@ -98,12 +102,18 @@ cards:
                 entity: sensor.linktap_{{ g.linktap }}_volume
                 unit: L
               -
+                type: divider
+              -
                 type: custom:multiple-entity-row
-                name: Size
-                attribute: size
-                icon: mdi:move-resize
-                unit: m²
-                entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
+                name: Linktap
+                icon: mdi:battery
+                entity: sensor.linktap_{{ g.linktap }}_battery
+                show_state: false
+                entities:
+                  - entity: sensor.linktap_{{ g.linktap }}_battery
+                    name: Battery
+                  - entity: sensor.linktap_{{ g.linktap }}_signal
+                    name: Signal
     {% endif %}
     {% endfor %}
 
@@ -123,23 +133,26 @@ cards:
             entities:
               -
                 type: custom:multiple-entity-row
+                name: Duration
+                icon: mdi:timer
+                entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
+                show_state: false
+                entities:
+                  - entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
+                    name: Next
+                    format: duration
+                  - entity: sensor.linktap_{{ g.linktap }}_total_duration
+                    name: Last
+                    format: duration
+              -
+                type: custom:multiple-entity-row
                 name: Bucket
                 attribute: bucket
                 icon: mdi:pail
                 unit: mm
                 entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
               -
-                type: custom:multiple-entity-row
-                name: Duration
-                icon: mdi:timer
-                unit: s
-                entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
-              -
-                type: custom:multiple-entity-row
-                name: Last Watering
-                icon: mdi:history
-                entity: sensor.linktap_{{ g.linktap }}_total_duration
-                unit: s
+                type: divider
               -
                 type: custom:multiple-entity-row
                 name: Water Consumed
@@ -147,11 +160,16 @@ cards:
                 entity: sensor.linktap_{{ g.linktap }}_volume
                 unit: L
               -
+                type: divider
+              -
                 type: custom:multiple-entity-row
-                name: Size
-                attribute: size
-                icon: mdi:move-resize
-                unit: m²
-                entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
-    {% endif %}
+                name: Linktap
+                icon: mdi:battery
+                entity: sensor.linktap_{{ g.linktap }}_battery
+                show_state: false
+                entities:
+                  - entity: sensor.linktap_{{ g.linktap }}_battery
+                    name: Battery
+                  - entity: sensor.linktap_{{ g.linktap }}_signal
+                    name: Signal    {% endif %}
     {% endfor %}
