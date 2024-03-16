@@ -1,0 +1,5 @@
+---
+
+collections:
+  - name: ansibleguy.opnsense
+    version: 1.2.8

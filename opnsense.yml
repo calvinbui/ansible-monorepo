@@ -1,0 +1,124 @@
+---
+
+- hosts: localhost
+
+  become: false
+
+  gather_facts: false
+
+  module_defaults:
+    group/ansibleguy.opnsense.all:
+      firewall: "opnsense-web.{{ common_local_tld }}"
+      api_key: !vault |
+        $ANSIBLE_VAULT;1.1;AES256
+        39316665636563343938653932626633343665383130633763396332626562363631383733643830
+        3139353338643737616539636232343835623831366135360a306432396133653934313438313462
+        37366133316362663364636431373933633332316135653736326166643238376238363931306137
+        3939363239383461660a663135636462303365383932356633616365303030653937343963623132
+        34313738336462356264353438323362393730653538623361623234653839313763633966646139
+        34303465303530393035616237326533396665616666626531613737633166373165643138346130
+        61616465633136346662666638333432353538333162363665303132636562666538306338366533
+        37386131613661313361316138656434346532666433623437396439393837323665333563376563
+        6434
+      api_secret: !vault |
+        $ANSIBLE_VAULT;1.1;AES256
+        32653564666439343233356263336530393238326339326434326264356364363464656235303433
+        3735636462616238643639316631623133366663616333340a303434333665333538616362373939
+        34313137626336313461336262356363633033333862386438626165306637643266633732306333
+        6533326465343566370a383463376665373237666434646532383233323837623966623135363832
+        34653938383662313533326237663431653965393038306237303030316162396438653730303030
+        66383732663064636636663931356466376339346165376330336437623865383861613138656237
+        61626165633831373465346238626635333633376636306133626262663265306633333837353634
+        31623632343361303562343731346533336330633137633835363737313463373561653062643436
+        6263
+
+  handlers:
+    - name: Reload Unbound
+      ansibleguy.opnsense.reload:
+        target: unbound
+
+    - name: Reload VLANs
+      ansibleguy.opnsense.reload:
+        target: interface_vlan
+
+    - name: Reload Monit
+      ansibleguy.opnsense.reload:
+        target: monit
+
+  tasks:
+    - name: Install Packages
+      ansibleguy.opnsense.package:
+        name:
+          - os-acme-client
+          - os-ddclient
+          - os-nut
+          - os-smart
+          - os-theme-cicada
+        action: 'install'
+      tags: packages
+
+    - name: Interface - VLANs
+      ansibleguy.opnsense.interface_vlan:
+        parent: igb2
+        name: "{{ networks[item].description }}"
+        vlan: "{{ networks[item].vlan }}"
+        priority: "{{ networks[item].priority }}"
+      loop: "{{ networks.keys() | list }}"
+      notify: Reload VLANs
+      tags: vlans
+
+    - name: Monit
+      ansibleguy.opnsense.monit_alert:
+        recipient: "opnsense{{ common_email_to }}"
+        not_on: false
+        reminder: 10
+      notify: Reload Monit
+      tags: monit
+
+    - name: Unbound - General
+      ansibleguy.opnsense.unbound_general:
+        enabled: true
+        port: 53
+        dnssec: true
+        dns64: false
+        dns64_prefix: '64:ff9b::/96'
+        aaaa_only_mode: false
+        register_dhcp_leases: true
+        register_dhcp_static_mappings: true
+        register_ipv6_link_local: false
+        register_system_records: true
+        txt_records: false
+        flush_dns_cache: true
+        local_zone_type: 'transparent'
+      notify: Reload Unbound
+      tags: unbound
+
+    - name: Unbound - DNS-over-TLS
+      ansibleguy.opnsense.unbound_dot:
+        domain: "{{ item.domain | default('') }}"
+        target: "{{ item.address }}"
+        port: "853"
+        verify: "{{ item.hostname }}"
+      notify: Reload Unbound
+      loop:
+        -
+          domain: plex.direct
+          address: 1.1.1.1
+          hostname: cloudflare-dns.com
+        -
+          domain: plex.direct
+          address: 1.0.0.1
+          hostname: cloudflare-dns.com
+        -
+          address: 9.9.9.9
+          hostname: dns.quad9.net
+        -
+          address: 149.112.112.112
+          hostname: dns.quad9.net
+        -
+          address: 185.222.222.222
+          hostname: dot.sb
+        -
+          address: 45.11.45.11
+          hostname: dot.sb
+      tags: unbound

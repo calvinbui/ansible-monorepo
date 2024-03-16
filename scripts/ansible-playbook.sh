@@ -5,7 +5,7 @@ set -eo pipefail
 allplaybooks=( )
 
 # playbook updates
-mapfile -t allplaybooks < <(git show --name-only --diff-filter=ACMRTU HEAD | grep -E "^(\w|-|_)+.y*ml")
+mapfile -t allplaybooks < <(git show --name-only --diff-filter=ACMRTU HEAD | grep -E "^(\w|-|_)+.y*ml" | grep -v requirements.yml)
 echo "Playbooks changed: ${allplaybooks[*]}"
 
 # role updates

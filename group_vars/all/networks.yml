@@ -8,6 +8,7 @@ networks:
   # 192.168.1.255: broadcast
   mgmt:
     name: mgmt
+    description: Management
     subnet: 192.168.1.1/24
     dns: 192.168.1.1
     iprange: 192.168.1.192/26
@@ -15,6 +16,7 @@ networks:
     parent: ens3f0
     driver: macvlan
     vlan: 10
+    priority: 7
 
   # 192.168.2.1: gateway + dns
   # 192.168.2.2 - 192.168.2.63: static
@@ -23,6 +25,7 @@ networks:
   # 192.168.2.255: broadcast
   user:
     name: user
+    description: Userland
     subnet: 192.168.2.1/24
     dns: 192.168.2.1
     iprange: 192.168.2.192/26
@@ -30,6 +33,7 @@ networks:
     parent: ens3f0
     driver: macvlan
     vlan: 20
+    priority: 6
 
   # 192.168.3.1: gateway + dns
   # 192.168.3.2 - 192.168.3.127: static
@@ -38,6 +42,7 @@ networks:
   # 192.168.3.255: broadcast
   iot:
     name: iot
+    description: IOT
     subnet: 192.168.3.1/24
     dns: 192.168.3.1
     iprange: 192.168.3.192/26
@@ -45,6 +50,7 @@ networks:
     parent: ens3f0
     driver: macvlan
     vlan: 30
+    priority: 0
     wifi:
       ssid: "Robot Uprising"
       password: !vault |
@@ -62,6 +68,7 @@ networks:
   # 192.168.4.255: broadcast
   pub:
     name: pub
+    description: Public
     subnet: 192.168.4.1/24
     dns: 192.168.4.1
     iprange: 192.168.4.128/25
@@ -69,6 +76,7 @@ networks:
     parent: ens3f0
     driver: macvlan
     vlan: 40
+    priority: 0
 
   # 192.168.6.1: gateway + dns
   # 192.168.6.2 - 192.168.6.63: static
@@ -77,6 +85,7 @@ networks:
   # 192.168.6.255: broadcast
   granny:
     name: granny
+    description: Granny
     subnet: 192.168.6.1/24
     dns: 192.168.6.1
     iprange: 192.168.6.128/25
@@ -84,3 +93,4 @@ networks:
     parent: ens3f0
     driver: macvlan
     vlan: 50
+    priority: 6

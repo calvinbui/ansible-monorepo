@@ -2,7 +2,7 @@
 
 set -eo pipefail
 
-mapfile -t allplaybooks < <(git show --name-only --diff-filter=ACMRTU HEAD | grep -E "^(\w|-|_)+.y*ml")
+mapfile -t allplaybooks < <(git show --name-only --diff-filter=ACMRTU HEAD | grep -E "^(\w|-|_)+.y*ml" | grep -v requirements.yml)
 
 if [[ "${#allplaybooks[@]}" -eq 0 ]]; then
   echo "No playbooks changed"

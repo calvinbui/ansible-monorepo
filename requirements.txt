@@ -8,3 +8,4 @@ netaddr==1.2.1
 paramiko==3.4.0
 passlib==1.7.4
 xmltodict==0.13.0
+httpx==0.27.0
