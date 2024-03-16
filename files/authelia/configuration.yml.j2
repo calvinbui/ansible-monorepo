@@ -2,14 +2,13 @@
 ---
 
 server:
-  host: 0.0.0.0
-  port: 9091
+  address: 0.0.0.0:9091
 
 theme: dark
 
-jwt_secret: "{{ authelia_jwt_secret }}"
-
-default_redirection_url: https://{{ application }}.{{ common_tld }}
+identity_validation:
+  reset_password:
+    jwt_secret: "{{ authelia_jwt_secret }}"
 
 authentication_backend:
   password_reset:
@@ -17,7 +16,7 @@ authentication_backend:
   refresh_interval: 1m
   ldap:
     implementation: custom
-    url: ldap://lldap.{{ docker_network.name }}:3890
+    address: ldap://lldap.{{ docker_network.name }}:3890
     timeout: 5s
     start_tls: false
 
@@ -25,14 +24,16 @@ authentication_backend:
 
     additional_users_dn: ou=people
     users_filter: "(&({username_attribute}={input})(objectClass=person))"
-    username_attribute: uid
 
-    mail_attribute: mail
-    display_name_attribute: displayName
 
     additional_groups_dn: ou=groups
     groups_filter: "(member={dn})"
-    group_name_attribute: cn
+
+    attributes:
+      username: uid
+      display_name: displayName
+      mail: mail
+      group_name: cn
 
     user: "uid={{ ldap_username }},ou=people,{{ ldap_base_dn }}"
     password: "{{ ldap_password}}"
@@ -53,7 +54,10 @@ access_control:
 session:
   name: authelia_session
   secret: "{{ authelia_session_secret }}"
-  domain: {{ common_tld }}
+  cookies:
+    - domain: {{ common_tld }}
+      authelia_url: "https://authelia.{{ common_tld }}"
+      default_redirection_url: "https://{{ common_tld }}"
   redis:
     host: {{ _redis_hostname }}
     port: {{ _redis_port }}
@@ -67,8 +71,7 @@ regulation:
 storage:
   encryption_key: "{{ authelia_storage_encryption_key }}"
   postgres:
-    host: {{ _postgres_hostname }}
-    port: {{ _postgres_port }}
+    address: {{ _postgres_hostname }}:{{ _postgres_port }}
     database: {{ _postgres_database }}
     username: "{{ _postgres_username }}"
     password: "{{ _postgres_password }}"
@@ -77,8 +80,7 @@ notifier:
   smtp:
     username: "{{ common_email_username }}"
     password: "{{ common_email_password }}"
-    host: "{{ common_email_server }}"
-    port: "{{ common_email_port }}"
+    address: "{{ common_email_server }}:{{ common_email_port }}"
     sender: "{{ application }}{{ common_email_to }}"
     disable_require_tls: "{{ 'false' if common_email_protocol=='tls' else 'true' }}"
 
@@ -90,13 +92,14 @@ log:
 
 identity_providers:
   oidc:
-    issuer_private_key: |
-      {{ _authelia_private_key.privatekey | indent(6) }}
+    jwks:
+      - key: |
+          {{ _authelia_private_key.privatekey | indent(10) }}
     clients:
       {% for k, v in ldap_oidc_apps.items() %}
-      - id: {{ k }}
-        description: {{ k | title }}
-        secret: "{{ v.secret | string | argon2(authelia_salt) }}"
+      - client_id: {{ k }}
+        client_name: {{ k | title }}
+        client_secret: "{{ v.secret | string | argon2(authelia_salt) }}"
         public: false
         authorization_policy: one_factor
         consent_mode: implicit
@@ -108,7 +111,7 @@ identity_providers:
           - openid
           - profile
           - email
-        userinfo_signing_algorithm: none
+        userinfo_signed_response_alg: none
         {% if k == "guacamole" %}
         response_types:
           - id_token
