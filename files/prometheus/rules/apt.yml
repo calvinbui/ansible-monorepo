@@ -17,7 +17,7 @@ groups:
     rules:
       -
         alert: Pending Upgrades
-        expr: apt_upgrades_pending != 0
+        expr: sum(apt_upgrades_pending) > 0
         for: 48h
         labels:
           send_resolved: "false"
