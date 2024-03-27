@@ -104,7 +104,7 @@ ldap_oidc_apps:
 
   nextcloud:
     redirect_uris:
-      - "https://nextcloud.{{ common_tld }}/apps/user_oidc/code"
+      - "https://nextcloud.{{ common_tld }}/apps/oidc_login/oidc"
     secret: !vault |
       $ANSIBLE_VAULT;1.1;AES256
       64356331393331343364313138363839326437653463343337363065383762333439643132346330

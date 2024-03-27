@@ -111,6 +111,11 @@ identity_providers:
           - openid
           - profile
           - email
+        {% if k == "nextcloud" %}
+          - groups
+        require_pkce: true
+        pkce_challenge_method: 'S256'
+        {% endif %}
         userinfo_signed_response_alg: none
         {% if k == "guacamole" %}
         response_types:
