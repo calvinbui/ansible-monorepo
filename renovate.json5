@@ -405,6 +405,11 @@
       matchPackagePatterns: [".*\\/audiobookshelf"],
       customChangelogUrl: "https://github.com/advplyr/audiobookshelf",
     },
+    /* act_runner */
+    {
+      matchPackagePatterns: [".*\\/act_runner"],
+      prBodyNotes: "[Releases](https://gitea.com/gitea/act_runner/releases)",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
