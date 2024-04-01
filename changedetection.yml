@@ -5,7 +5,7 @@
   vars:
     application: changedetection
 
-    docker_network: "{{ networks.granny }}"
+    docker_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create playwright container
@@ -27,6 +27,7 @@
         name: docker_container
       vars:
         image: ghcr.io/dgtlmoon/changedetection.io:0.45.16
+        ipv4_address: "{{ docker_network.prefix }}.248"
         volumes:
           - "{{ config_directory }}:/datastore"
         env:
