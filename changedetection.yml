@@ -12,7 +12,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        name: "{{ application }}-playwright-chrome"
+        name: "{{ application }}-chrome"
         image: dgtlmoon/sockpuppetbrowser:latest
         capabilities:
           - SYS_ADMIN
@@ -33,7 +33,7 @@
         env:
           BASE_URL: "https://{{ application }}.{{ common_tld }}"
 
-          PLAYWRIGHT_DRIVER_URL: "ws://{{ application }}-playwright-chrome:3000"
+          PLAYWRIGHT_DRIVER_URL: "ws://{{ application }}-chrome:3000"
 
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_group_id | string }}"
