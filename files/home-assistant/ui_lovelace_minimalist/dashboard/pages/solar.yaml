@@ -11,7 +11,7 @@ layout:
   grid-template-areas: |
     "flow  cost forecast"
     "graph grid solar   "
-    "graph .    .       "
+    "graph prevnext .   "
 
   mediaquery:
     "(max-width: 800px)":
@@ -20,6 +20,7 @@ layout:
       grid-template-areas: |
         "flow"
         "graph"
+        "prevnext"
         "cost"
         "forecast"
         "grid"
@@ -64,6 +65,7 @@ cards:
     entities:
       - sensor.home_sun_rising
       - sensor.home_sun_setting
+      - input_number.solar_graph_offset
     variables:
       getTime: |
         sensor => {
@@ -96,6 +98,7 @@ cards:
       graph_span: 24h
       span:
         start: day
+        offset: ${"-" + states['input_number.solar_graph_offset'].state + "d"}
 
       show:
         loading: true
@@ -502,3 +505,33 @@ cards:
         type: custom:multiple-entity-row
         entity: sensor.solar_breakeven_date
         name: Breakeven Date
+
+  -
+    view_layout:
+      grid-area: prevnext
+    type: horizontal-stack
+    cards:
+      -
+        type: custom:button-card
+        icon: mdi:skip-previous
+        name: Previous Day
+        styles:
+          card:
+            - height: 7em
+        tap_action:
+          action: call-service
+          service: input_number.increment
+          data:
+            entity_id: input_number.solar_graph_offset
+      -
+        type: custom:button-card
+        icon: mdi:skip-next
+        name: Next Day
+        styles:
+          card:
+            - height: 7em
+        tap_action:
+          action: call-service
+          service: input_number.decrement
+          data:
+            entity_id: input_number.solar_graph_offset
