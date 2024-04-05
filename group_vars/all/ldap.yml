@@ -88,6 +88,11 @@ ldap_oidc_apps:
       32306531376562363338623338316465383661343532653937353032663861393762366665356339
       62393936363363313537
 
+  mealie:
+    redirect_uris:
+      - "https://mealie.{{ common_tld }}/login"
+      - "https://mealie.{{ common_tld }}/login?direct=1"
+
   minio:
     redirect_uris:
       - "https://minio-console.{{ common_tld }}/oauth_callback"

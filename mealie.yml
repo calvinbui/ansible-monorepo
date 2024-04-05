@@ -35,7 +35,7 @@
       vars:
         image: ghcr.io/mealie-recipes/mealie:v1.4.0
         env:
-          # https://nightly.mealie.io/documentation/getting-started/installation/backend-config/
+          # https://docs.mealie.io/documentation/getting-started/installation/backend-config/
 
           ## General
           PUID: "{{ common_user_id | string }}"
@@ -60,6 +60,12 @@
           SMTP_FROM_EMAIL: "{{ application }}{{ common_email_to }}"
           SMTP_USER: "{{ common_email_username }}"
           SMTP_PASSWORD: "{{ common_email_password }}"
+
+          ## OpenID Connect (OIDC)
+          OIDC_AUTH_ENABLED: "true"
+          OIDC_CONFIGURATION_URL: "https://authelia.{{ common_tld }}/.well-known/openid-configuration"
+          OIDC_CLIENT_ID: "{{ application }}"
+          OIDC_PROVIDER_NAME: "Authelia"
         volumes:
           - "{{ config_directory }}/data:/app/data"
         traefik:

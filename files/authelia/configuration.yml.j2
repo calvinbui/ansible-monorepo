@@ -90,17 +90,33 @@ log:
   file_path: /var/log/authelia/authelia.log
   keep_stdout: true
 
+
 identity_providers:
   oidc:
     jwks:
       - key: |
           {{ _authelia_private_key.privatekey | indent(10) }}
+
+    cors:
+      endpoints:
+        - userinfo
+        - authorization
+        - token
+        - revocation
+        - introspection
+      allowed_origins:
+        - "https://mealie.{{ common_tld }}"
+
     clients:
       {% for k, v in ldap_oidc_apps.items() %}
       - client_id: {{ k }}
         client_name: {{ k | title }}
+        {% if 'secret' in v %}
         client_secret: "{{ v.secret | string | argon2(authelia_salt) }}"
         public: false
+        {% else %}
+        public: true
+        {% endif %}
         authorization_policy: one_factor
         consent_mode: implicit
         redirect_uris:
@@ -111,7 +127,7 @@ identity_providers:
           - openid
           - profile
           - email
-        {% if k == "nextcloud" %}
+        {% if k in ["mealie", "nextcloud"] %}
           - groups
         require_pkce: true
         pkce_challenge_method: 'S256'
@@ -122,5 +138,9 @@ identity_providers:
           - id_token
         grant_types:
           - implicit
+        {% endif %}
+        {% if k == "mealie" %}
+        grant_types:
+          - authorization_code
         {% endif %}
       {% endfor %}
