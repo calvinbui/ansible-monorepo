@@ -68,7 +68,7 @@ cards:
       - type: vertical-stack
         cards:
           -
-            name: 🌱 {{ g.name }}
+            name: {{ g.name }}
             <<: *title_card
           -
             type: entities
@@ -83,6 +83,7 @@ cards:
                   - entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
                     name: Next
                     format: duration
+                    hide_if: 0
                   - entity: sensor.linktap_{{ g.linktap }}_total_duration
                     name: Last
                     format: duration
@@ -126,7 +127,7 @@ cards:
       - type: vertical-stack
         cards:
           -
-            name: 🌱 {{ g.name }}
+            name: {{ g.name }}
             <<: *title_card
           -
             type: entities
@@ -141,6 +142,7 @@ cards:
                   - entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
                     name: Next
                     format: duration
+                    hide_if: 0
                   - entity: sensor.linktap_{{ g.linktap }}_total_duration
                     name: Last
                     format: duration
