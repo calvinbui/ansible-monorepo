@@ -54,7 +54,7 @@
             61343465636465613864636630623338393337346231343963313136656462393238343332323631
             3933376366373231303431363935656338313065363636623633
 
-          INTERVAL: "10"
+          INTERVAL: "120"
           TZ: "{{ common_timezone }}"
         labels:
           com.centurylinklabs.watchtower.enable: "false"
@@ -76,7 +76,7 @@
             61366537383865633630626463366261343361646665663262316266313232643032313538623738
             6238383335396636323064353130346439616239353238346230
 
-          INTERVAL: "10"
+          INTERVAL: "120"
           TZ: "{{ common_timezone }}"
         volumes:
           - "{{ config_directory }}/tammy.json:/usr/src/app/token.json"
