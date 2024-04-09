@@ -393,7 +393,7 @@
     /* glances */
     {
       matchPackagePatterns: [".*\\/glances"],
-      versioning: "regex:^ubuntu-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-full$",
+      versioning: "regex:^ubuntu-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)-full$",
     },
     /* mealie */
     {
