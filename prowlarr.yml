@@ -74,7 +74,7 @@
           -
             name: "{{ application }}-bypass-auth"
             port: 9696
-            rule: Host(`{{ application }}.{{ common_tld }}`) && PathPrefix(`/api/`) && Headers(`{{ traefik_bypass_auth_header.key }}`, `{{ traefik_bypass_auth_header.value }}`)
+            rule: Host(`{{ application }}.{{ common_tld }}`) && PathPrefix(`/api/`) && Header(`{{ traefik_bypass_auth_header.key }}`, `{{ traefik_bypass_auth_header.value }}`)
         homepage:
           group: Favourites
           weight: 350

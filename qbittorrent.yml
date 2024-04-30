@@ -47,7 +47,7 @@
           -
             name: "{{ application }}-bypass-auth"
             port: 8090
-            rule: Host(`{{ application }}.{{ common_tld }}`) && Headers(`{{ traefik_bypass_auth_header.key }}`, `{{ traefik_bypass_auth_header.value }}`)
+            rule: Host(`{{ application }}.{{ common_tld }}`) && Header(`{{ traefik_bypass_auth_header.key }}`, `{{ traefik_bypass_auth_header.value }}`)
         homepage:
           name: qBittorrent
           group: Favourites
