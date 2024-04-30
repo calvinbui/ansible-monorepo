@@ -93,7 +93,7 @@
           umask: "027"
           # https://cisofy.com/lynis/controls/AUTH-9286/
           pass_min_days: "1"
-          pass_max_days: "90"
+          pass_max_days: "99999"
           # https://cisofy.com/lynis/controls/AUTH-9230/
           sha_crypt_min_rounds: "5000"
           sha_crypt_max_rounds: "5000"
