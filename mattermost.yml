@@ -49,6 +49,7 @@
         - data
         - logs
         - plugins
+        - bleveindexes
         - client-plugins
 
     - name: Create container
@@ -61,6 +62,7 @@
           - "{{ config_directory }}/config/data:/mattermost/data"
           - "{{ config_directory }}/config/logs:/mattermost/logs"
           - "{{ config_directory }}/config/plugins:/mattermost/plugins"
+          - "{{ config_directory }}/config/bleveindexes:/mattermost/bleveindexes"
           - "{{ config_directory }}/config/client-plugins:/mattermost/client/plugins"
           - /etc/localtime:/etc/localtime:ro
         env:
@@ -110,3 +112,9 @@
           EmailSettings/EnableSMTPAuth: true
           EmailSettings/SMTPUsername: "{{ common_email_username }}"
           EmailSettings/SMTPPassword: "{{ common_email_password }}"
+
+          # https://docs.mattermost.com/configure/experimental-configuration-settings.html#experimental-bleve-configuration-settings
+          BleveSettings/EnableIndexing: true
+          BleveSettings/IndexDir: "/mattermost/bleveindexes"
+          BleveSettings/EnableSearching: true
+          BleveSettings/EnableAutocomplete: true
