@@ -86,26 +86,23 @@
       notify: Restart
       vars:
         _mattermost_configuration:
-          # https://docs.mattermost.com/configure/configuration-settings.html#site-url
+          # https://docs.mattermost.com/configure/environment-configuration-settings.html#site-url
           ServiceSettings/SiteURL: "https://{{ application }}.{{ common_tld }}"
-          ServiceSettings/ListenAddress: ":8065"
 
-          # https://docs.mattermost.com/channels/message-priority.html
-          ServiceSettings/PostPriority: true
+          # https://docs.mattermost.com/configure/environment-configuration-settings.html#web-server-listen-address
+          ServiceSettings/ListenAddress: ":8065"
 
           # https://docs.mattermost.com/configure/experimental-configuration-settings.html#enable-local-mode-for-mmctl
           ServiceSettings/EnableLocalMode: true
 
-          # https://docs.mattermost.com/channels/send-messages.html#draft-messages
-          ServiceSettings/AllowSyncedDrafts: true
-
-          # https://docs.mattermost.com/configure/configuration-settings.html#database
+          # https://docs.mattermost.com/configure/environment-configuration-settings.html#database
           SqlSettings/DriverName: postgres
           SqlSettings/DataSource: "{{ _postgres_url }}?sslmode=disable\u0026connect_timeout=10"
 
+          # https://docs.mattermost.com/configure/environment-configuration-settings.html#console-log-level
           LogSettings/ConsoleLevel: "INFO"
 
-          # https://docs.mattermost.com/configure/configuration-settings.html#smtp
+          # https://docs.mattermost.com/configure/environment-configuration-settings.html#smtp
           # https://docs.mattermost.com/configure/smtp-email.html#gmail
           EmailSettings/SMTPServer: "{{ common_email_server }}"
           EmailSettings/SMTPPort: "{{ common_email_port | string }}"
