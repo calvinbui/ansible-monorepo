@@ -6,6 +6,7 @@ influxdb_name: "{{ application }}-influxdb"
 influxdb_version: "2.4"
 influxdb_username: "{{ application }}"
 influxdb_password: "changeme"
+# influxdb_token:
 influxdb_org: "{{ application }}-org"
 influxdb_bucket: "{{ application }}-bucket"
 

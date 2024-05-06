@@ -28,6 +28,7 @@
       DOCKER_INFLUXDB_INIT_MODE: "setup"
       DOCKER_INFLUXDB_INIT_USERNAME: "{{ influxdb_username }}"
       DOCKER_INFLUXDB_INIT_PASSWORD: "{{ influxdb_password }}"
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "{{ influxdb_token | default(omit) }}"
       DOCKER_INFLUXDB_INIT_ORG: "{{ influxdb_org }}"
       DOCKER_INFLUXDB_INIT_BUCKET: "{{ influxdb_bucket }}"
 
@@ -69,6 +70,7 @@
     _influxdb_hostname: "{{ influxdb_name }}.{{ docker_network.name }}"
     _influxdb_username: "{{ influxdb_username }}"
     _influxdb_password: "{{ influxdb_password }}"
+    _influxdb_token: "{{ influxdb_token | default(omit) }}"
     _influxdb_org: "{{ influxdb_org }}"
     _influxdb_bucket: "{{ influxdb_bucket }}"
     _influxdb_port: 8086
