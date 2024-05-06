@@ -18,19 +18,53 @@
   handlers:
     - name: Restart
       community.docker.docker_container:
-        name: "{{ application }}"
+        name: "{{ application }}-web"
         restart: true
         comparisons:
           '*': ignore
 
   tasks:
-    - name: Create config folder
+    - name: Create config folders
       ansible.builtin.file:
-        path: "{{ config_directory }}"
+        path: "{{ item }}"
         state: directory
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
+      loop:
+        - "{{ config_directory }}"
+        - "{{ config_directory }}/config"
+
+    - name: Get disks
+      ansible.builtin.shell: for line in $(lsblk --noheadings --list --scsi --output name); do echo "/dev/${line}"; done
+      register: lsblk_disks
+      changed_when: false
+
+    - name: Create influxdb container
+      ansible.builtin.import_role:
+        name: influxdb
+      vars:
+        influxdb_version: 2.2
+        influxdb_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          63366261656539306233343037303463353065356666313237656235373931366464346639646566
+          3034303463303537333961336535303736626131333366610a376539393631653738386638666334
+          64346463626365363164366331616333313361336464666434633330636562303661613832363730
+          3137613961623630380a306337343664653433373235373764633662373835303635386532643465
+          63303764356237663361626165306236343030353865363164346361633735333438383635303736
+          63636134363266613664353531333531653139663264396236386330653764363663663838623038
+          65303034363230663030663165353264633734306239333437356434633739663734626465303035
+          34303366656137363966
+        influxdb_token: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          65663837636636656238616233306435356632373337333935303735336165383362623465366463
+          3266333866643231323038346233396564353361656633330a613265353564336163623439356237
+          33323834663564393231626333616464613164366161633161373036636639613438326332623136
+          3537616637313239380a616530336230353264393339373232633430393765323038323561323862
+          66303732666238306663623332663562393764323665383766313066383237633739333063623764
+          36353436383062626532336661353561633639353735336535326137373465336161633430643639
+          35316666326539323063633937666663316539313264343231623261653533666138353561356431
+          62353136626331656663
 
     - name: Template config
       ansible.builtin.template:
@@ -39,28 +73,18 @@
         mode: "0440"
       notify: Restart
 
-    - name: Get disks
-      ansible.builtin.shell: for line in $(lsblk --noheadings --list --scsi --output name); do echo "/dev/${line}"; done
-      register: lsblk_disks
-      changed_when: false
-
-    - name: Create container
+    - name: Create web container
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/analogj/scrutiny:v0.8.1-omnibus
-        env:
-          COLLECTOR_CRON_SCHEDULE: "*/5 * * * *"
-        capabilities:
-          - SYS_RAWIO
+        name: "{{ application }}-web"
+        image: ghcr.io/analogj/scrutiny:v0.8.1-web
         volumes:
-          - /run/udev:/run/udev:ro
           - "{{ config_directory }}/config:/opt/scrutiny/config"
-          - "{{ config_directory }}/influxdb:/opt/scrutiny/influxdb"
-        devices: "{{ lsblk_disks.stdout_lines }}"
         traefik:
           - port: 8080
             auth: page
+            rule: Host(`{{ application }}.{{ common_tld }}`)
         homepage:
           group: Storage
           weight: 250
@@ -68,3 +92,18 @@
           widget: {}
         blackbox:
           path: /api/status
+
+    - name: Create collector container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-collector"
+        image: ghcr.io/analogj/scrutiny:v0.8.1-collector
+        env:
+          COLLECTOR_CRON_SCHEDULE: "*/5 * * * *"
+          COLLECTOR_API_ENDPOINT: "http://{{ application }}-web.{{ docker_network.name }}:8080"
+        capabilities:
+          - SYS_RAWIO
+        volumes:
+          - /run/udev:/run/udev:ro
+        devices: "{{ lsblk_disks.stdout_lines }}"
