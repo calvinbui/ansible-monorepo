@@ -12,7 +12,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/wizarrrr/wizarr:4.0.0
+        image: ghcr.io/wizarrrr/wizarr:4.1.0
         env:
           TZ: "{{ common_timezone }}"
         volumes:
