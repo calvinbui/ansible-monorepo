@@ -12,7 +12,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/flaresolverr/flaresolverr:v3.3.17
+        image: ghcr.io/flaresolverr/flaresolverr:v3.3.18
         env:
           TEST_URL: "https://{{ common_tld }}"
           TZ: "{{ common_timezone }}"
