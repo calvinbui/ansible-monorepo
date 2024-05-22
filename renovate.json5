@@ -331,7 +331,7 @@
     /* apache tika */
     {
       matchPackagePatterns: [".*\\/tika"],
-      prBodyNotes: "[Docker Image Changes](https://github.com/apache/tika-docker/blob/master/CHANGES.md)\n[Tika Changes](https://github.com/apache/tika/blob/main/CHANGES.txt)",
+      prBodyNotes: "[Docker Image Changes](https://github.com/apache/tika-docker/blob/main/CHANGES.md)\n[Tika Changes](https://github.com/apache/tika/blob/main/CHANGES.txt)",
     },
     /* immich */
     {
