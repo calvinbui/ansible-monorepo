@@ -43,7 +43,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: gitea/gitea:1.21.11
+        image: gitea/gitea:1.22.0
         volumes:
           - "{{ config_directory }}/data:/data"
           - /etc/timezone:/etc/timezone:ro
@@ -125,7 +125,7 @@
 
           GITEA__api__ENABLE_SWAGGER: "false"
 
-          GITEA__oauth2__ENABLE: "true"
+          GITEA__oauth2__ENABLED: "true"
 
           GITEA__packages__ENABLED: "false"
 
