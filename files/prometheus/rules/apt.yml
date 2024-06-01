@@ -13,14 +13,14 @@ groups:
           title: Reboot Required
           description: "A reboot is required to install updates"
 
-  - name: apt_pending_updates
-    rules:
-      -
-        alert: Pending Upgrades
-        expr: sum(apt_upgrades_pending) > 0
-        for: 48h
-        labels:
-          send_resolved: "false"
-        annotations:
-          title: Pending Upgrades
-          description: "There are updates to install. To see these updates, run: apt list --upgradable"
+  # - name: apt_pending_updates
+  #   rules:
+  #     -
+  #       alert: Pending Upgrades
+  #       expr: sum(apt_upgrades_pending) > 0
+  #       for: 48h
+  #       labels:
+  #         send_resolved: "false"
+  #       annotations:
+  #         title: Pending Upgrades
+  #         description: "There are updates to install. To see these updates, run: apt list --upgradable"
