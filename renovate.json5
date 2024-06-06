@@ -96,9 +96,6 @@
     {
       matchPackagePatterns: [".*\\/renovate"],
       customChangelogUrl: "https://github.com/renovatebot/renovate",
-      matchUpdateTypes: ["patch"],
-      automerge: true,
-      ignoreTests: true,
     },
     /* authelia */
     {
@@ -271,6 +268,7 @@
       prBodyNotes: "[ChangeLog](https://github.com/jgraph/drawio/blob/dev/ChangeLog)",
       matchUpdateTypes: ["patch"],
       automerge: true,
+      ignoreTests: true,
     },
     /* omada */
     {
