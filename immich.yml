@@ -48,8 +48,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-server"
-        image: ghcr.io/immich-app/immich-server:v1.105.1
-        command: ["start.sh", "immich"]
+        image: ghcr.io/immich-app/immich-server:v1.106.4
         env: &immich_shared_env
           DB_HOSTNAME: "{{ _postgres_hostname }}"
           DB_PORT: "{{ _postgres_port | string }}"
@@ -64,9 +63,22 @@
           UPLOAD_LOCATION: "/usr/src/app/upload"
 
           LOG_LEVEL: "log"
+
+          NVIDIA_DRIVER_CAPABILITIES: all
+          TZ: "{{ common_timezone }}"
         volumes:
           - &immich_upload_volume "{{ common_directory_photos }}/Immich:/usr/src/app/upload"
           - &immich_localtime_volume /etc/localtime:/etc/localtime:ro
+        device_requests:
+          - driver: nvidia
+            count: -1
+            device_ids: []
+            options: {}
+            capabilities:
+              - - gpu
+                - video
+                - compute
+                - utility
         traefik:
           - port: 3001
             rule: Host(`{{ application }}.{{ common_tld }}`)
@@ -85,37 +97,12 @@
               6362326364633466656238633135313362303033306136336337
             fields: '["photos", "videos", "storage"]'
 
-    - name: Create microservices container
-      ansible.builtin.include_role:
-        name: docker_container
-      vars:
-        name: "{{ application }}-microservices"
-        image: ghcr.io/immich-app/immich-server:v1.105.1
-        command: ["start.sh", "microservices"]
-        device_requests:
-          - driver: nvidia
-            count: -1
-            device_ids: []
-            options: {}
-            capabilities:
-              - - gpu
-                - video
-                - compute
-                - utility
-        env:
-          <<: *immich_shared_env
-          NVIDIA_DRIVER_CAPABILITIES: all
-          TZ: "{{ common_timezone }}"
-        volumes:
-          - *immich_upload_volume
-          - *immich_localtime_volume
-
     - name: Create machine-learning container
       ansible.builtin.include_role:
         name: docker_container
       vars:
         name: "{{ application }}-machine-learning"
-        image: ghcr.io/immich-app/immich-machine-learning:v1.105.1-cuda
+        image: ghcr.io/immich-app/immich-machine-learning:v1.106.4-cuda
         device_requests:
           - driver: nvidia
             count: -1
