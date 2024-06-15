@@ -1,0 +1,12 @@
+---
+
+# https://www.home-assistant.io/integrations/rest_command/
+
+bravia_set_picture_mode:
+  url: http://living-room-tv.{{ common_local_tld }}/sony/video
+  verify_ssl: false
+  method: POST
+  headers:
+    X-Auth-PSK: "0000"
+  content_type: application/json
+  payload: '{"method":"setPictureQualitySettings","params":[{"settings":[{"value":"{% raw %}{{ pictureMode }}{% endraw %}","target":"pictureMode"}]}],"id":40,"version":"1.0"}'
