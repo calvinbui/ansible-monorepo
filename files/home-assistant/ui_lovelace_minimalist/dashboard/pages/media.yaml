@@ -33,7 +33,8 @@ cards:
         scale: '100'
         app_launch_1: plex
         app_launch_2: smart-tube-next
-        app_launch_3: function-find-my-remote
+        app_launch_3: moonlight-game-streaming
+        app_launch_4: function-find-my-remote
 
   -
     type: vertical-stack
