@@ -11,7 +11,8 @@ modules:
         - 200
       fail_if_ssl: false
       fail_if_not_ssl: false
-      preferred_ip_protocol: "ipv4"
+      preferred_ip_protocol: ip4
+      ip_protocol_fallback: false
       tls_config:
         insecure_skip_verify: true
 
@@ -34,22 +35,29 @@ modules:
     prober: icmp
     timeout: 5s
     icmp:
-      preferred_ip_protocol: "ip4"
+      preferred_ip_protocol: ip4
+      ip_protocol_fallback: false
 
   tcp_tls:
     prober: tcp
     tcp:
       tls: true
+      preferred_ip_protocol: ip4
+      ip_protocol_fallback: false
 
   tcp_port:
     prober: tcp
     tcp:
       tls: false
+      preferred_ip_protocol: ip4
+      ip_protocol_fallback: false
 
   dns_over_tls:
     prober: dns
     dns:
       dns_over_tls: true
       transport_protocol: tcp
+      preferred_ip_protocol: ip4
+      ip_protocol_fallback: false
       query_name: {{ common_tld }}
       query_type: A
