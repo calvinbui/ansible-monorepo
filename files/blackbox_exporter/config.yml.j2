@@ -52,7 +52,8 @@ modules:
       preferred_ip_protocol: ip4
       ip_protocol_fallback: false
 
-  dns_over_tls:
+  {% for service in ["dns.quad9.net", "dot.seby.io", "p0.freedns.controld.com"] %}
+  dns_over_tls_{{ service }}:
     prober: dns
     dns:
       dns_over_tls: true
@@ -61,3 +62,7 @@ modules:
       ip_protocol_fallback: false
       query_name: {{ common_tld }}
       query_type: A
+      tls_config:
+        server_name: {{ service }}
+
+  {% endfor %}

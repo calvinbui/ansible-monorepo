@@ -4,21 +4,37 @@
 scrape_configs:
   - job_name: blackbox_dns_over_tls
     metrics_path: /probe
-    params:
-      module: [dns_over_tls]
     static_configs:
       - targets:
-          # dns.quad9.net
-          - 9.9.9.9
-          - 149.112.112.112
+          - dns.quad9.net:9.9.9.9
+          - dns.quad9.net:149.112.112.112
 
-          # dot.sb
-          - 185.222.222.222
-          - 45.11.45.11
+          - dot.seby.io:45.76.113.31
+          # - dot.seby.io:139.99.222.72 # not working
+
+          - p0.freedns.controld.com:76.76.2.11
     relabel_configs:
+      # Populate domain label with domain portion of __address__
       - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__param_target]
+        regex: (.*):.*$
+        replacement: dns_over_tls_$1
+        target_label: domain
+
+      # Populate instance label with dns server IP portion of __address__
+      - source_labels: [__address__]
+        regex: .*:(.*)$
+        replacement: $1
         target_label: instance
+
+      # Populate module URL parameter with domain portion of __address__
+      # This is a parameter passed to the blackbox exporter
+      - source_labels: [domain]
+        target_label: __param_module
+
+      # Populate target URL parameter with dns server IP
+      - source_labels: [instance]
+        target_label: __param_target
+
+      # Populate __address__ with the address of the blackbox exporter to hit
       - target_label: __address__
         replacement: {{ application }}.{{ docker_network.name }}:9115

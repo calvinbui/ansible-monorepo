@@ -102,6 +102,9 @@
       notify: Reload Unbound
       loop:
         -
+          address: 45.76.113.31
+          hostname: dot.seby.io
+        -
           domain: plex.direct
           address: 1.1.1.1
           hostname: cloudflare-dns.com
@@ -110,15 +113,12 @@
           address: 1.0.0.1
           hostname: cloudflare-dns.com
         -
+          address: 76.76.2.11
+          hostname: p1.freedns.controld.com
+        -
           address: 9.9.9.9
           hostname: dns.quad9.net
         -
           address: 149.112.112.112
           hostname: dns.quad9.net
-        -
-          address: 185.222.222.222
-          hostname: dot.sb
-        -
-          address: 45.11.45.11
-          hostname: dot.sb
       tags: unbound
