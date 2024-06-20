@@ -47,7 +47,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-onlyoffice"
-        image: onlyoffice/documentserver:8.0.1
+        image: onlyoffice/documentserver:8.1.0
         volumes:
           - "{{ config_directory }}/onlyoffice/logs:/var/log/onlyoffice"
           - "{{ config_directory }}/onlyoffice/data:/var/www/onlyoffice/Data"
