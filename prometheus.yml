@@ -62,7 +62,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: quay.io/prometheus/prometheus:v2.52.0
+        image: quay.io/prometheus/prometheus:v2.53.0
         command:
           - --config.file=/etc/prometheus/prometheus.yml
 
