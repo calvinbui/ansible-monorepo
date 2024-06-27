@@ -51,9 +51,17 @@ cards:
         header: false
         card_mod:
           style: |
-            /* hide temperatures */
-            .sensors {
-              display: none !important;
+            /* move sensors below temp  */
+            section.body {
+              grid-auto-flow: row !important;
+
+              .sensors {
+                grid-row-start: 2;
+
+                .sensor-heading {
+                  padding-right: 0px;
+                }
+              }
             }
 
             /* hide headings */
