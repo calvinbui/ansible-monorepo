@@ -61,8 +61,7 @@ cards:
         showCalendarName: true
 
         showLocation: true
-        showMonth: true
-        showWeekDay: true
+        eventDateFormat: ddd DD MMM
         showHours: true
         showLoader: true
         showDate: true
