@@ -398,30 +398,6 @@ cards:
             format: precision2
             styles: *entity_style
 
-      -
-        type: custom:multiple-entity-row
-        entity: sensor.grid_power_import_daily_peak
-        name: Shoulder (kWh)
-        icon: mdi:transmission-tower-export
-        show_state: false
-        entities:
-          - entity: sensor.grid_power_import_daily_shoulder
-            name: Today
-            unit: false
-            format: precision2
-            styles: *entity_style
-          - entity: sensor.grid_power_import_daily_shoulder
-            attribute: last_period
-            name: Yesterday
-            unit: false
-            format: precision2
-            styles: *entity_style
-          - entity: sensor.grid_power_import_monthly_shoulder
-            name: Month
-            unit: false
-            format: precision2
-            styles: *entity_style
-
   # Solar
   -
     view_layout:
