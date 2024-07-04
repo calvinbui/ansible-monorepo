@@ -12,7 +12,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: nicolargo/glances:ubuntu-3.4.0.5-full
+        image: nicolargo/glances:ubuntu-4.1.2.1-full
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock:ro
           - /etc/os-release:/etc/os-release:ro
