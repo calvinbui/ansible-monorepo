@@ -1,0 +1,216 @@
+---
+
+# there's no need to support multiple emails yet, but everything is in place for it.
+
+- hosts: homelab
+
+  vars:
+    application: mbsync
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+
+    - name: Create config
+      ansible.builtin.copy:
+        content: |
+          IMAPAccount {{ email_backups[0].username }}
+          Host {{ email_backups[0].server }}
+          User {{ email_backups[0].username }}
+          Pass {{ email_backups[0].password }}
+          AuthMechs LOGIN
+          SSLType IMAPS
+
+          IMAPStore {{ email_backups[0].username }}-remote
+          Account {{ email_backups[0].username }}
+
+          MaildirStore {{ email_backups[0].username }}-local
+          Path /mail/{{ email_backups[0].username }}/
+          Inbox /mail/{{ email_backups[0].username }}/Inbox
+          SubFolders Verbatim
+
+          Channel {{ email_backups[0].username }}
+          Far :{{ email_backups[0].username }}-remote:
+          Near :{{ email_backups[0].username }}-local:
+          Patterns *
+          Create Near
+          Expunge Near
+          SyncState *
+          Sync Pull
+        dest: "{{ config_directory }}/mbsync.rc"
+        mode: "0644"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: ghcr.io/jakewharton/mbsync:1.4.1
+        env:
+          CRON: "23 * * * *"
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_group_id | string }}"
+        volumes:
+          - "{{ config_directory }}:/config"
+          - "{{ common_directory_backup }}/emails:/mail"
+
+- hosts: homelab
+
+  vars:
+    application: dovecot
+
+    docker_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart
+      community.docker.docker_container:
+        name: "{{ application }}"
+        restart: true
+        comparisons:
+          '*': ignore
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+      loop:
+        - "{{ config_directory }}/conf"
+        - "{{ config_directory }}/users"
+
+    - name: Create config
+      ansible.builtin.copy:
+        content: |
+          protocols = imap
+          mail_location = maildir:/srv/mail/%u:LAYOUT=fs:INBOX=/srv/mail/%u/Inbox
+
+          log_path = /var/log/dovecot.log
+          info_log_path = /var/log/dovecot-info.log
+
+          ssl = no
+          disable_plaintext_auth = no
+
+          auth_verbose = yes
+          auth_mechanisms = plain
+
+          passdb {
+            driver = passwd-file
+            args = /etc/dovecot/passwd
+          }
+
+          userdb {
+            driver = static
+            args = uid=vmail gid=vmail home=/home/vmail/%u
+          }
+
+          # https://doc.dovecot.org/configuration_manual/namespace/
+          # manually subscribe as needed
+          namespace inbox {
+            inbox = yes
+
+            mailbox Drafts {
+              special_use = \Drafts
+            }
+
+            mailbox Sent {
+              special_use = \Sent
+            }
+
+            mailbox "Sent Messages" {
+              special_use = \Sent
+            }
+
+            mailbox Spam {
+              special_use = \Junk
+            }
+
+            mailbox Trash {
+              special_use = \Trash
+            }
+
+            mailbox "Deleted Messages" {
+              special_use = \Trash
+            }
+          }
+        dest: "{{ config_directory }}/conf/dovecot.conf"
+        mode: "0644"
+      notify: Restart
+
+    # https://doc.dovecot.org/configuration_manual/authentication/passwd_file/
+    - name: Create virtual users
+      ansible.builtin.copy:
+        content: |
+          {{ email_backups[0].username }}:{SHA512}{{ email_backups[0].password | hash('sha512') }}::::::
+        dest: "{{ config_directory }}/conf/passwd"
+        mode: "0644"
+      notify: Restart
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: dovecot/dovecot:2.3.21
+        volumes:
+          - "{{ config_directory }}/conf:/etc/dovecot"
+          - "{{ config_directory }}/users:/home/vmail"
+          - "{{ common_directory_backup }}/emails:/srv/mail"
+
+- hosts: homelab
+
+  vars:
+    application: roundcube
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+
+    - name: Create postgres container
+      ansible.builtin.import_role:
+        name: postgres
+      vars:
+        postgres_version: 16
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          65323235376430663531333139346432323762313139366334633539393136306362643665633263
+          3136636239656239306431393035306539616438393931640a393162663635656434323765383830
+          32643937636636613165653635353435613932386635343038363333623563316666643733316132
+          3233363365616463350a656435346433613633363236333963356538326139313634656535643634
+          66373966613338613736633362373566353862366631336465626533393737393131
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: roundcube/roundcubemail:1.6.7-apache
+        env:
+          ROUNDCUBEMAIL_DEFAULT_HOST: dovecot.{{ docker_network.name }}
+          ROUNDCUBEMAIL_DEFAULT_PORT: "143"
+
+          ROUNDCUBEMAIL_DB_TYPE: "pgsql"
+          ROUNDCUBEMAIL_DB_HOST: "{{ _postgres_hostname }}"
+          ROUNDCUBEMAIL_DB_PORT: "{{ _postgres_port | string }}"
+          ROUNDCUBEMAIL_DB_USER: "{{ _postgres_username }}"
+          ROUNDCUBEMAIL_DB_PASSWORD: "{{ _postgres_password }}"
+          ROUNDCUBEMAIL_DB_NAME: "{{ _postgres_database }}"
+        traefik:
+          - port: 80
+        homepage:
+          group: Backups
+          weight: 300
+          description: "Email backups"
