@@ -1,2 +1,2 @@
-FROM rmannibucau/drone-plugin-mattermost:latest
+FROM calvinbui/drone-mattermost:latest
 LABEL skip.prune=true
