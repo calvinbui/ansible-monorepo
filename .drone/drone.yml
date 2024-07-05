@@ -39,12 +39,11 @@ steps:
   - name: mattermost failure notification
     image: calvinbui/drone-mattermost:localhost
     settings:
-      url:
+      base:
         from_secret: mattermost_url
       token:
         from_secret: mattermost_token
-      team: nguoi-dep
-      channel: home-lab-alerts
+      channelId: zdxyd363bpbqd86ytcbfem6m8y
       template: |
         👎 **{{ repo.name }} ({{ build.branch }}) #{{ build.number }}**
         {{ commit.message.title }} - {{ commit.author.name }} ([{{ truncate commit 7 }}]({{commit.link}}))
