@@ -233,7 +233,7 @@
               -
                 evt.Meta.http_status == '403' && evt.Parsed.traefik_router_name startsWith 'mattermost' && (evt.Meta.http_path contains '/api/v4/')
               -
-                evt.Meta.http_status == '403' && evt.Parsed.traefik_router_name startsWith 'home-assistant' && (evt.Meta.http_path contains '/api/calendars/' || evt.Meta.http_path contains '/api/camera_proxy_stream/')
+                evt.Meta.http_status == '403' && evt.Parsed.traefik_router_name startsWith 'home-assistant' && (evt.Meta.http_path contains '/api/calendars/' || evt.Meta.http_path contains '/api/camera_proxy_stream/' || evt.Meta.http_path contains '/api/webhook/' || evt.Meta.http_path contains '/auth/token')
               -
                 evt.Meta.http_status == '403' && evt.Parsed.traefik_router_name startsWith 'qbittorrent' && (evt.Meta.http_path contains '/favicon.ico' || evt.Meta.http_path contains '/api/v2/')
               -
