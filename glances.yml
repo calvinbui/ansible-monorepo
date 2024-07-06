@@ -30,9 +30,6 @@
             options: {}
             capabilities:
               - - gpu
-                - video
-                - compute
-                - utility
         homepage:
           group: Monitoring
           weight: 250
