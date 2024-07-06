@@ -36,3 +36,4 @@
           description: "System monitoring"
           widget:
             metric: info
+            version: 4
