@@ -14,7 +14,7 @@ layout:
     "(max-width: 800px)":
       grid-template-columns: 100%
       grid-template-areas: |
-        "bins"
+        "bins-laundry-dishwasher"
         "vacuum"
 
 cards:
