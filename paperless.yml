@@ -88,14 +88,14 @@
         name: docker_container
       vars:
         name: "{{ application }}-gotenberg"
-        image: gotenberg/gotenberg:7.10.2
+        image: gotenberg/gotenberg:8.8.0
 
     - name: Create webserver container
       ansible.builtin.include_role:
         name: docker_container
       register: _paperless_container
       vars:
-        image: ghcr.io/paperless-ngx/paperless-ngx:2.10.2
+        image: ghcr.io/paperless-ngx/paperless-ngx:2.11.0
         volumes:
           - "{{ config_directory }}/data:/usr/src/paperless/data"
           - "{{ config_directory }}/media:/usr/src/paperless/media"
