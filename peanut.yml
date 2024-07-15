@@ -12,7 +12,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: brandawg93/peanut:2.5.2
+        image: brandawg93/peanut:2.6.0
         env:
           NUT_HOST: "{{ nut_host }}"
         traefik:
