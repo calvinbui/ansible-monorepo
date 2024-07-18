@@ -15,9 +15,14 @@ http:
               - '*.{{ common_tld }}'
 
   middlewares:
+    compression:
+      compress:
+        defaultEncoding: zstd
+
     redirect:
       redirectScheme:
         scheme: https
+
     security-headers:
       headers:
         stsIncludeSubdomains: true
