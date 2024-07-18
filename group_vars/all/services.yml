@@ -86,6 +86,7 @@ services:
         monitor: true
         widget:
           type: opnsense
+          version: v2
           url: https://opnsense-web.{{ common_local_tld }}
           username: !vault |
             $ANSIBLE_VAULT;1.1;AES256
