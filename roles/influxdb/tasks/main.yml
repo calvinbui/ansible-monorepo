@@ -41,9 +41,9 @@
         "homepage.name": "{{ influxdb_homepage.name | default(omit) }}",
         "homepage.group": "{{ influxdb_homepage.group | default(omit) }}",
         "homepage.description": "{{ influxdb_homepage.description | default(omit) }}",
-        "homepage.href": "{{ influxdb_homepage.href | default("https://" + influxdb_name + "." + common_tld) }}",
+        "homepage.href": "{{ influxdb_homepage.href | default("https://" + influxdb_name + "." + common_tld) if influxdb_homepage.enable else omit }}",
         "homepage.weight": "{{ influxdb_homepage.weight | default(omit) }}",
-        "homepage.icon": "/icons/influxdb.svg",
+        "homepage.icon": "{{ "/icons/influxdb.svg" if influxdb_homepage.enable else omit }}",
 
         "traefik.enable": "{{ influxdb_homepage.enable | default(false) | string }}",
         "traefik.http.routers.{{ influxdb_name }}-secure.entrypoints": "web-secure",
