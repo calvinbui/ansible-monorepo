@@ -82,3 +82,5 @@
           group: Home Automation
           weight: 150
           description: "Control ESP8266/ESP32 devices"
+          widget:
+            fields: '["online", "offline_alt"]'

@@ -42,7 +42,7 @@ access_control:
   default_policy: deny
   rules:
     -
-      domain_regex: "^(bazarr|glances|nzbget|peanut|prometheus|prowlarr|qbittorrent|radarr|scrutiny|sonarr|sonarr-anime).({{ common_local_tld }}|{{ common_tld }})$"
+      domain_regex: "^(bazarr|esphome|glances|nzbget|peanut|prometheus|prowlarr|qbittorrent|radarr|scrutiny|sonarr|sonarr-anime).({{ common_local_tld }}|{{ common_tld }})$"
       policy: bypass
       networks: ['{{ networks.pub.prefix}}.251/32']
     -
