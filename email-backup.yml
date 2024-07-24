@@ -18,6 +18,15 @@
         group: "{{ common_root_group }}"
         mode: "0771"
 
+    - name: Create backup folder
+      ansible.builtin.file:
+        path: "{{ common_directory_backup }}/emails/{{ item.username }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0700"
+      loop: "{{ email_backups }}"
+
     - name: Create config
       ansible.builtin.copy:
         content: |
