@@ -142,6 +142,10 @@
               special_use = \Junk
             }
 
+            mailbox Spam {
+              special_use = \Junk
+            }
+
             mailbox Trash {
               special_use = \Trash
             }
