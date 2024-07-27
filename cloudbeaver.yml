@@ -17,3 +17,7 @@
           - "{{ config_directory }}:/opt/cloudbeaver/workspace"
         traefik:
           - port: 8978
+        homepage:
+          group: Remote Access
+          weight: 600
+          description: "Cloud Database Manager"
