@@ -12,7 +12,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: dbeaver/cloudbeaver:24.1.2
+        image: dbeaver/cloudbeaver:24.1.3
         volumes:
           - "{{ config_directory }}:/opt/cloudbeaver/workspace"
         traefik:
