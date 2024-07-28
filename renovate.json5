@@ -227,11 +227,6 @@
       matchPackagePatterns: ["nginx"],
       prBodyNotes: "[CHANGES](https://nginx.org/en/CHANGES)",
     },
-    /* joplin */
-    {
-      matchPackagePatterns: ["joplin\\/server"],
-      prBodyNotes: "[changelog_server.md](https://github.com/laurent22/joplin/blob/dev/readme/about/changelog/server.md)",
-    },
     /* alertmanager */
     {
       matchPackagePatterns: [".*\\/alertmanager"],
