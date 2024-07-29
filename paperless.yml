@@ -95,7 +95,7 @@
         name: docker_container
       register: _paperless_container
       vars:
-        image: ghcr.io/paperless-ngx/paperless-ngx:2.11.1
+        image: ghcr.io/paperless-ngx/paperless-ngx:2.11.2
         volumes:
           - "{{ config_directory }}/data:/usr/src/paperless/data"
           - "{{ config_directory }}/media:/usr/src/paperless/media"
