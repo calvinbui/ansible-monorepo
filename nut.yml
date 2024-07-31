@@ -96,6 +96,7 @@
         user: root
         state: present
         key: "{{ item }}"
+        comment: homelab
       loop:
         - https://github.com/calvinbui.keys
         - "{{ hostvars['homelab.' + common_local_tld]['__homelab_public_key']['content'] | b64decode }}"

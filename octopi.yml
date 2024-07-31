@@ -54,6 +54,7 @@
         user: "{{ item }}"
         state: present
         key: https://github.com/calvinbui.keys
+        comment: github keys
       loop:
         - root
         - "{{ common_user }}"

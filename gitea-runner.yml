@@ -76,6 +76,7 @@
         user: "{{ common_user }}"
         state: present
         key: "{{ gitea_ssh_public_key }}"
+        comment: gitea-runner
       tags:
         - ssh
 
@@ -142,5 +143,6 @@
         user: "{{ ssh_user[inventory_hostname.split('.')[0]] }}"
         state: present
         key: "{{ hostvars['homelab.' + common_local_tld]['gitea_ssh_public_key'] }}"
+        comment: gitea-runner
       tags:
         - ssh

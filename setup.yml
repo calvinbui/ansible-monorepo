@@ -48,6 +48,7 @@
         user: "{{ item }}"
         state: present
         key: https://github.com/calvinbui.keys
+        comment: github keys
       loop:
         - root
         - "{{ common_user }}"
@@ -63,6 +64,7 @@
         user: "root"
         state: present
         key: "{{ _setup_root_ssh_key.public_key }}"
+        comment: root self-ssh
 
     - name: Generate user OpenSSH keypair
       community.crypto.openssh_keypair:
@@ -77,6 +79,7 @@
         user: "{{ common_user }}"
         state: present
         key: "{{ _setup_user_ssh_key.public_key }}"
+        comment: user self-ssh
 
     - name: Disable motd files
       ansible.builtin.file:

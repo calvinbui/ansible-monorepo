@@ -64,6 +64,7 @@
         user: "{{ common_user }}"
         state: present
         key: "{{ drone_ssh_public_key }}"
+        comment: drone
       tags:
         - ssh
 
@@ -181,6 +182,7 @@
         user: root
         state: present
         key: "{{ hostvars['homelab.' + common_local_tld]['drone_ssh_public_key'] }}"
+        comment: drone
       tags:
         - ssh
 
@@ -192,5 +194,6 @@
         user: pi
         state: present
         key: "{{ hostvars['homelab.' + common_local_tld]['drone_ssh_public_key'] }}"
+        comment: drone
       tags:
         - ssh
