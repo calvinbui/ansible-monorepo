@@ -67,7 +67,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/esphome/esphome:2024.7.2
+        image: ghcr.io/esphome/esphome:2024.7.3
         env:
         volumes:
           - "{{ config_directory }}:/config"
