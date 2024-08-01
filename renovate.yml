@@ -39,7 +39,7 @@
           '{
             "chadburn.enabled": "true",
             "chadburn.job-exec.{{ application }}-cron.schedule": "0 17 * * *",
-            "chadburn.job-exec.{{ application }}-cron.command": "/usr/local/bin/docker-entrypoint.sh renovate",
+            "chadburn.job-exec.{{ application }}-cron.command": "/usr/local/sbin/renovate-entrypoint.sh renovate",
             "chadburn.job-exec.{{ application }}-cron.user": "ubuntu",
             "chadburn.job-exec.{{ application }}-cron.tty": "true",
             "chadburn.job-exec.{{ application }}-cron.no-overlap": "true"
