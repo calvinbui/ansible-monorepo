@@ -1,0 +1,58 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: ownfoil
+
+    docker_network: "{{ networks.iot }}"
+
+  handlers:
+    - name: Restart
+      community.docker.docker_container:
+        name: "{{ application }}"
+        restart: true
+        comparisons:
+          '*': ignore
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Create settings.yaml
+      ansible.builtin.copy:
+        content: |
+          library:
+            paths:
+            - /games
+          shop:
+            encrypt: false
+            motd: Welcome to your own shop!
+            public: true
+          titles:
+            language: en
+            region: US
+            valid_keys: true
+        dest: "{{ config_directory }}/settings.yaml"
+        mode: "0644"
+
+    - name: Copy prod.keys
+      ansible.builtin.copy:
+        src: "{{ files_directory }}/prod.keys"
+        dest: "{{ config_directory }}/keys.txt"
+        mode: "0644"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: a1ex4/ownfoil:latest
+        volumes:
+          - "{{ config_directory }}:/app/config"
+          - "{{ common_directory_games }}/Switch/Games:/games:ro"
+        ipv4_address: "{{ docker_network.prefix }}.250"
