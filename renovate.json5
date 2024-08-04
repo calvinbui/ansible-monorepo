@@ -68,24 +68,24 @@
     {
       matchPackagePatterns: [".*\\/umami"],
       versioning: "regex:^postgresql-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$",
-      customChangelogUrl: "https://github.com/umami-software/umami",
+      sourceUrl: "https://github.com/umami-software/umami",
       prBodyNotes: "[Release](https://github.com/umami-software/umami/releases)",
     },
     /* minio */
     {
       matchPackagePatterns: [".*\\/minio"],
       versioning: "regex:^RELEASE\\.(?<major>\\d+)-(?<minor>\\d+)-(?<patch>\\d+)T(?<build>.*)Z$",
-      customChangelogUrl: "https://github.com/minio/minio",
+      sourceUrl: "https://github.com/minio/minio",
     },
     /* bazarr */
     {
       matchPackagePatterns: [".*\\/bazarr"],
-      customChangelogUrl: "https://github.com/morpheus65535/bazarr",
+      sourceUrl: "https://github.com/morpheus65535/bazarr",
     },
     /* prometheus */
     {
       matchPackagePatterns: [".*\\/prometheus"],
-      customChangelogUrl: "https://github.com/prometheus/prometheus",
+      sourceUrl: "https://github.com/prometheus/prometheus",
     },
     /* prowlarr */
     {
@@ -95,132 +95,122 @@
     /* renovate */
     {
       matchPackagePatterns: [".*\\/renovate"],
-      customChangelogUrl: "https://github.com/renovatebot/renovate",
+      sourceUrl: "https://github.com/renovatebot/renovate",
     },
     /* authelia */
     {
       matchPackagePatterns: [".*\\/authelia"],
-      customChangelogUrl: "https://github.com/authelia/authelia",
+      sourceUrl: "https://github.com/authelia/authelia",
     },
     /* qbittorrent */
     {
       matchPackagePatterns: [".*\\/qbittorrent"],
-      customChangelogUrl: "https://github.com/qbittorrent/qBittorrent",
+      sourceUrl: "https://github.com/qbittorrent/qBittorrent",
       prBodyNotes: "[Changelog](https://github.com/qbittorrent/qBittorrent/blob/v{{newMajor}}_{{newMinor}}_x/Changelog)",
     },
     /* portainer */
     {
       matchPackagePatterns: [".*\\/portainer-[c|e]e"],
-      customChangelogUrl: "https://github.com/portainer/portainer",
+      sourceUrl: "https://github.com/portainer/portainer",
     },
     /* outline */
     {
       matchPackagePatterns: ["outlinewiki\\/outline"],
-      customChangelogUrl: "https://github.com/outline/outline",
+      sourceUrl: "https://github.com/outline/outline",
     },
     /* tautulli */
     {
       matchPackagePatterns: [".*\\/tautulli"],
-      customChangelogUrl: "https://github.com/Tautulli/Tautulli",
+      sourceUrl: "https://github.com/Tautulli/Tautulli",
     },
     /* overseerr */
     {
       matchPackagePatterns: ["sctx\\/overseerr"],
-      customChangelogUrl: "https://github.com/sct/overseerr",
+      sourceUrl: "https://github.com/sct/overseerr",
     },
     /* vscode */
     {
       matchPackagePatterns: [".*\\/code-server"],
-      customChangelogUrl: "https://github.com/coder/code-server",
-    },
-    /* libretranslate */
-    {
-      matchPackagePatterns: [".*\\/libretranslate"],
-      customChangelogUrl: "https://github.com/LibreTranslate/LibreTranslate",
+      sourceUrl: "https://github.com/coder/code-server",
     },
     /* nextcloud */
     {
       matchPackagePatterns: ["nextcloud"],
-      customChangelogUrl: "https://github.com/nextcloud/server",
+      sourceUrl: "https://github.com/nextcloud/server",
       prBodyNotes: "[Changelog](https://nextcloud.com/changelog/)",
     },
     /* chadburn */
     {
       matchPackagePatterns: [".*\\/chadburn"],
-      customChangelogUrl: "https://github.com/PremoWeb/Chadburn",
+      sourceUrl: "https://github.com/PremoWeb/Chadburn",
     },
     /* grafana */
     {
       matchPackagePatterns: [".*\\/grafana"],
-      customChangelogUrl: "https://github.com/grafana/grafana",
+      sourceUrl: "https://github.com/grafana/grafana",
     },
     /* mattermost */
     {
       matchPackagePatterns: [".*\\/mattermost-(team|enterprise)-edition"],
-      customChangelogUrl: "https://github.com/mattermost/mattermost-server",
+      sourceUrl: "https://github.com/mattermost/mattermost-server",
       prBodyNotes: "[Mattermost changelog](https://docs.mattermost.com/deploy/mattermost-changelog.html)",
     },
     /* onlyoffice */
     {
       matchPackagePatterns: ["onlyoffice\\/documentserver"],
-      customChangelogUrl: "https://github.com/ONLYOFFICE/DocumentServer",
+      sourceUrl: "https://github.com/ONLYOFFICE/DocumentServer",
     },
     /* eufy-security-ws */
     {
       matchPackagePatterns: ["bropat\\/eufy-security-ws"],
-      customChangelogUrl: "https://github.com/bropat/eufy-security-ws",
+      sourceUrl: "https://github.com/bropat/eufy-security-ws",
     },
     /* changedetection.io */
     {
       matchPackagePatterns: [".*\\/changedetection.io"],
       versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.?(?<patch>\\d+)?\\.?(?<build>\\d+)?$",
-      customChangelogUrl: "https://github.com/dgtlmoon/changedetection.io",
+      sourceUrl: "https://github.com/dgtlmoon/changedetection.io",
     },
     /* watchtower */
     {
       matchPackagePatterns: ["containrrr\\/watchtower"],
-      customChangelogUrl: "https://github.com/containrrr/watchtower",
+      sourceUrl: "https://github.com/containrrr/watchtower",
     },
     /* cadvisor */
     {
       matchPackagePatterns: [".*\\/cadvisor"],
-      customChangelogUrl: "https://github.com/google/cadvisor",
+      sourceUrl: "https://github.com/google/cadvisor",
     },
     /* psitransfer */
     {
       matchPackagePatterns: ["psitrax\\/psitransfer"],
-      customChangelogUrl: "https://github.com/psi-4ward/psitransfer",
-    },
-    /* ldap-user-manager */
-    {
-      matchPackagePatterns: ["wheelybird\\/ldap-user-manager"],
-      customChangelogUrl: "https://github.com/wheelybird/ldap-user-manager",
+      sourceUrl: "https://github.com/psi-4ward/psitransfer",
     },
     /* node_exporter */
     {
       matchPackagePatterns: [".*\\/node(-|_)exporter"],
-      customChangelogUrl: "https://github.com/prometheus/node_exporter",
+      sourceUrl: "https://github.com/prometheus/node_exporter",
     },
     /* blackbox_exporter */
     {
       matchPackagePatterns: [".*\\/blackbox(-|_)exporter"],
-      customChangelogUrl: "https://github.com/prometheus/blackbox_exporter",
+      sourceUrl: "https://github.com/prometheus/blackbox_exporter",
     },
     /* privatebin */
     {
       matchPackagePatterns: ["privatebin\\/.*"],
-      customChangelogUrl: "https://github.com/PrivateBin/PrivateBin",
+      sourceUrl: "https://github.com/PrivateBin/PrivateBin",
     },
     /* actualbudget */
     {
       matchPackagePatterns: [".*\\/actual-server"],
-      customChangelogUrl: "https://github.com/actualbudget/actual-server",
+      sourceUrl: "https://github.com/actualbudget/actual-server",
       prBodyNotes: "[releases.md](https://github.com/actualbudget/docs/blob/master/docs/releases.md)",
     },
     /* borgmatic */
     {
       matchPackagePatterns: [".*\\/borgmatic"],
-      customChangelogUrl: "https://github.com/borgmatic-collective/borgmatic",
+      sourceUrl: "https://github.com/borgmatic-collective/borgmatic",
     },
     /* nginx */
     {
@@ -230,7 +220,7 @@
     /* alertmanager */
     {
       matchPackagePatterns: [".*\\/alertmanager"],
-      customChangelogUrl: "https://github.com/prometheus/alertmanager",
+      sourceUrl: "https://github.com/prometheus/alertmanager",
     },
     /* radarr */
     {
@@ -241,25 +231,25 @@
     /* gotenberg */
     {
       matchPackagePatterns: [".*\\/gotenberg"],
-      customChangelogUrl: "https://github.com/gotenberg/gotenberg",
+      sourceUrl: "https://github.com/gotenberg/gotenberg",
     },
     /* languagetool */
     {
       matchPackagePatterns: [".*\\/.*languagetool"],
-      customChangelogUrl: "https://github.com/silvio/docker-languagetool",
+      sourceUrl: "https://github.com/silvio/docker-languagetool",
       prBodyNotes: "[CHANGES](https://github.com/languagetool-org/languagetool/blob/master/languagetool-standalone/CHANGES.md)",
     },
     /* scrutiny */
     {
       matchPackagePatterns: [".*\\/scrutiny"],
       versioning: "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-omnibus$",
-      customChangelogUrl: "https://github.com/AnalogJ/scrutiny",
+      sourceUrl: "https://github.com/AnalogJ/scrutiny",
       prBodyNotes: "[Releases](https://github.com/AnalogJ/scrutiny/releases)",
     },
     /* drawio */
     {
       matchPackagePatterns: [".*\\/drawio"],
-      customChangelogUrl: "https://github.com/jgraph/drawio",
+      sourceUrl: "https://github.com/jgraph/drawio",
       prBodyNotes: "[ChangeLog](https://github.com/jgraph/drawio/blob/dev/ChangeLog)",
       matchUpdateTypes: ["patch"],
       automerge: true,
@@ -283,13 +273,8 @@
     {
       matchPackagePatterns: [".*\\/dcgm-exporter"],
       versioning: "loose",
-      customChangelogUrl: "https://github.com/NVIDIA/dcgm-exporter",
+      sourceUrl: "https://github.com/NVIDIA/dcgm-exporter",
       prBodyNotes: "[GitHub Releases](https://github.com/NVIDIA/dcgm-exporter/releases)\n[DCGM Changelog](https://docs.nvidia.com/datacenter/dcgm/latest/release-notes/changelog.html)",
-    },
-    /* zigbee2mqtt */
-    {
-      matchPackagePatterns: [".*\\/zigbee2mqtt"],
-      customChangelogUrl: "https://github.com/Koenkk/zigbee2mqtt",
     },
     /* sonarr */
     {
@@ -300,28 +285,23 @@
     /* pairdrop */
     {
       matchPackagePatterns: [".*\\/pairdrop"],
-      customChangelogUrl: "https://github.com/schlagmichdoch/PairDrop",
+      sourceUrl: "https://github.com/schlagmichdoch/PairDrop",
     },
     /* esphome */
     {
       matchPackagePatterns: [".*\\/esphome"],
-      customChangelogUrl: "https://github.com/esphome/esphome",
+      sourceUrl: "https://github.com/esphome/esphome",
     },
     /* browserless */
     {
       matchPackagePatterns: ["browserless\\/chrome"],
-      prBodyNotes: "[CHANGELOG.md](https://github.com/browserless/chrome/blob/master/CHANGELOG.md)",
+      prBodyNotes: "[CHANGELOG.md](https://github.com/browserless/chrome/blob/main/CHANGELOG.md)",
     },
     /* collabora */
     {
       matchPackagePatterns: ["collabora\\/code"],
       versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)\\.1$",
       prBodyNotes: "[Release Notes](https://www.collaboraoffice.com/code-{{newMajor}}-{{#if (containsString currentVersion '.0')}}0{{/if}}{{newMinor}}-release-notes/)",
-    },
-    /* bing-rewards */
-    {
-      matchPackagePatterns: [".*\\/bing-rewards"],
-      prBodyNotes: "[CHANGELOG.md](https://bitbucket.org/bing-rewards/bing-rewards/src/master/CHANGELOG.md#:~:text={{prettyNewVersion}})",
     },
     /* apache tika */
     {
@@ -332,12 +312,12 @@
     {
       groupName: "Immich",
       matchPackagePatterns: [".*\\/immich-.*"],
-      customChangelogUrl: "https://github.com/immich-app/immich",
+      sourceUrl: "https://github.com/immich-app/immich",
     },
     /* wizarr */
     {
       matchPackagePatterns: [".*\\/wizarr"],
-      customChangelogUrl: "https://github.com/Wizarrrr/wizarr",
+      sourceUrl: "https://github.com/Wizarrrr/wizarr",
     },
     /* mosquitto */
     {
@@ -347,38 +327,33 @@
     /* typesense */
     {
       matchPackagePatterns: [".*\\/typesense"],
-      customChangelogUrl: "https://github.com/typesense/typesense",
+      sourceUrl: "https://github.com/typesense/typesense",
     },
     /* castsponsorskip */
     {
       matchPackagePatterns: [".*\\/castsponsorskip"],
-      customChangelogUrl: "https://github.com/gabe565/CastSponsorSkip",
+      sourceUrl: "https://github.com/gabe565/CastSponsorSkip",
     },
     /* cloudbeaver */
     {
       matchPackagePatterns: ["dbeaver\\/cloudbeaver"],
-      customChangelogUrl: "https://github.com/dbeaver/dbeaver",
+      sourceUrl: "https://github.com/dbeaver/dbeaver",
     },
     /* notify_push */
     {
       matchPackagePatterns: [".*\\/notify_push"],
-      customChangelogUrl: "https://github.com/nextcloud/notify_push",
+      sourceUrl: "https://github.com/nextcloud/notify_push",
     },
     /* thanos */
     {
       matchPackagePatterns: [".*\\/thanos"],
-      customChangelogUrl: "https://github.com/thanos-io/thanos",
+      sourceUrl: "https://github.com/thanos-io/thanos",
     },
     /* calibre */
     {
       matchPackagePatterns: [".*\\/calibre"],
-      customChangelogUrl: "https://github.com/kovidgoyal/calibre",
+      sourceUrl: "https://github.com/kovidgoyal/calibre",
       prBodyNotes: "[What's new](https://calibre-ebook.com/whats-new)",
-    },
-    /* rustdesk */
-    {
-      matchPackagePatterns: [".*\\/rustdesk-server"],
-      versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-?(?<build>\\d+)?$",
     },
     /* ubuntu */
     {
@@ -394,12 +369,12 @@
     /* mealie */
     {
       matchPackagePatterns: [".*\\/mealie"],
-      customChangelogUrl: "https://github.com/mealie-recipes/mealie",
+      sourceUrl: "https://github.com/mealie-recipes/mealie",
     },
     /* audiobookshelf */
     {
       matchPackagePatterns: [".*\\/audiobookshelf"],
-      customChangelogUrl: "https://github.com/advplyr/audiobookshelf",
+      sourceUrl: "https://github.com/advplyr/audiobookshelf",
     },
     /* act_runner */
     {
