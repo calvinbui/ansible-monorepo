@@ -390,6 +390,7 @@
     {
       matchPackagePatterns: ["roundcube\\/roundcubemail"],
       sourceUrl: "https://github.com/roundcube/roundcubemail",
+      versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-apache$",
     },
   ],
 
