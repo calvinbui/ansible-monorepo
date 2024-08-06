@@ -381,6 +381,16 @@
       matchPackagePatterns: [".*\\/act_runner"],
       prBodyNotes: "[Releases](https://gitea.com/gitea/act_runner/releases)",
     },
+    /* zigbee2mqtt */
+    {
+      matchPackagePatterns: ["koenkk\\/zigbee2mqtt"],
+      sourceUrl: "https://github.com/Koenkk/zigbee2mqtt",
+    },
+    /* roundcubemail */
+    {
+      matchPackagePatterns: ["roundcube\\/roundcubemail"],
+      sourceUrl: "https://github.com/roundcube/roundcubemail",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
