@@ -210,7 +210,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: roundcube/roundcubemail:1.6.7-apache
+        image: roundcube/roundcubemail:1.6.8-apache
         env:
           ROUNDCUBEMAIL_DEFAULT_HOST: dovecot.{{ docker_network.name }}
           ROUNDCUBEMAIL_DEFAULT_PORT: "143"
