@@ -56,3 +56,11 @@
           - "{{ config_directory }}:/app/config"
           - "{{ common_directory_games }}/Switch/Games:/games:ro"
         ipv4_address: "{{ docker_network.prefix }}.250"
+        homepage:
+          name: Ownfoil
+          group: Gaming
+          icon: /icons/tinfoil.png
+          description: Nintendo Switch Games
+          href: http://tinfoil.{{ common_local_tld }}:8465
+          weight: 900
+          monitor: true
