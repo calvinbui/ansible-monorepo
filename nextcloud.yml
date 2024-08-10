@@ -46,7 +46,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: nextcloud:29.0.4
+        image: &_nextcloud_image nextcloud:29.0.4
         volumes:
           - "{{ config_directory }}/app:/var/www/html"
         env:
@@ -66,7 +66,7 @@
 
           # these values need to be updated manually afterwards in config.php
           NEXTCLOUD_TRUSTED_DOMAINS: "{{ application }} {{ application }}.{{ docker_network.name }} {{ application }}.{{ common_local_tld }} {{ application }}.{{ common_tld }}"
-          TRUSTED_PROXIES: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] | string }}"
+          TRUSTED_PROXIES: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] | string }} {{ docker_network.subnet }}"
           OVERWRITEPROTOCOL: "https"
 
           REDIS_HOST: "{{ _redis_hostname }}"
@@ -313,17 +313,6 @@
         - 'OC\\Preview\\TIFF'
         - 'OC\\Preview\\Movie'
 
-    - name: Create notify_push container
-      ansible.builtin.include_role:
-        name: docker_container
-      vars:
-        name: "{{ application }}-notify-push"
-        image: icewind1991/notify_push:0.6.11
-        env:
-          NEXTCLOUD_URL: "https://{{ application }}.{{ common_tld }}"
-          DATABASE_URL: "{{ _postgres_url }}"
-          REDIS_URL: "{{ _redis_url }}"
-
     - name: Install notify_push app
       community.docker.docker_container_exec:
         container: "{{ application }}"
@@ -332,6 +321,41 @@
       register: _command_result
       failed_when: "'Could not download app' in _command_result.stdout"
       changed_when: "'already installed' not in _command_result.stdout"
+      retries: 3
+      delay: 2
+
+    - name: Create nextcloud notify-push container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-notify-push"
+        image: *_nextcloud_image
+        entrypoint:
+          - /var/www/html/custom_apps/notify_push/bin/x86_64/notify_push
+          - /var/www/html/config/config.php
+        env:
+          NEXTCLOUD_URL: "http://{{ application }}.{{ docker_network.name }}" # don't go through the proxy to contact the nextcloud server
+        volumes:
+          - "{{ config_directory }}/app:/var/www/html:ro"
+        traefik:
+          - port: 7867
+            rule: Host(`{{ application }}.{{ common_tld }}`) && PathPrefix(`/push`)
+            middlewares:
+              - "{{ application }}-notify-push-stripprefix"
+        labels:
+          '{
+            "traefik.http.middlewares.{{ application }}-notify-push-stripprefix.stripprefix.prefixes": "/push"
+          }'
+
+    - name: Configure notify_push
+      community.docker.docker_container_exec:
+        container: "{{ application }}"
+        user: www-data
+        command: "php occ notify_push:setup https://{{ application }}.{{ common_tld }}/push"
+      register: _command_result
+      failed_when: "'configuration saved' not in _command_result.stdout"
+      changed_when: false
+      until: _command_result is success
       retries: 3
       delay: 2
 
