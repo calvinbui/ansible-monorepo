@@ -342,6 +342,8 @@
             rule: Host(`{{ application }}.{{ common_tld }}`) && PathPrefix(`/push`)
             middlewares:
               - "{{ application }}-notify-push-stripprefix"
+        blackbox:
+          path: /push/test/remote/1.2.3.4
         labels:
           '{
             "traefik.http.middlewares.{{ application }}-notify-push-stripprefix.stripprefix.prefixes": "/push"
