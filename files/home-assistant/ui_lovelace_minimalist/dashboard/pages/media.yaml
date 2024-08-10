@@ -49,7 +49,7 @@ cards:
             state: unavailable
         card:
           type: custom:upcoming-media-card
-          entity: sensor.plex_recently_added
+          entity: sensor.plex_plex_recently_added
           title: Recently Added to Plex
           max: '4'
           image_style: fanart
