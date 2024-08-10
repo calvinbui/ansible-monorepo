@@ -31,8 +31,8 @@
           VPN_SERVICE_PROVIDER: custom
           VPN_TYPE: wireguard
 
-          VPN_ENDPOINT_IP: "{{ lookup('community.general.dig', item.server + '.') }}"
-          VPN_ENDPOINT_PORT: "51820"
+          WIREGUARD_ENDPOINT_IP: "{{ lookup('community.general.dig', item.server + '.') }}"
+          WIREGUARD_ENDPOINT_PORT: "51820"
           WIREGUARD_PUBLIC_KEY: "{{ item.public_key }}"
           WIREGUARD_PRIVATE_KEY: "{{ item.private_key }}"
           WIREGUARD_ADDRESSES: "{{ item.address }}/32"
