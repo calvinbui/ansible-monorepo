@@ -42,93 +42,6 @@
           3231366665366137380a323932633634396132376331363030613835616435626332303732303731
           39396138663536663432663664386264386333623437616237643630663831353533
 
-    - name: Create onlyoffice container
-      ansible.builtin.include_role:
-        name: docker_container
-      vars:
-        name: "{{ application }}-onlyoffice"
-        image: onlyoffice/documentserver:8.1.1
-        volumes:
-          - "{{ config_directory }}/onlyoffice/logs:/var/log/onlyoffice"
-          - "{{ config_directory }}/onlyoffice/data:/var/www/onlyoffice/Data"
-          - "{{ config_directory }}/onlyoffice/lib:/var/lib/onlyoffice"
-          - "{{ config_directory }}/onlyoffice/rabbitmq:/var/lib/rabbitmq"
-          - "{{ config_directory }}/onlyoffice/redis:/var/lib/redis"
-          - "{{ config_directory }}/onlyoffice/db:/var/lib/postgresql"
-        env:
-          JWT_ENABLED: "true"
-          JWT_SECRET: &onlyoffice_jwt_secret !vault |
-            $ANSIBLE_VAULT;1.1;AES256
-            62613932646635633462646366396438636165303466366338363166323132613938336334363633
-            6465333735656137653439313233636566636330363461380a616231323438333336356233386561
-            36336638383239666262346166393839396466353833306138386636333130333131313966313666
-            6361663336343432610a333138353763353731393061613036336433613733626230396234356330
-            33356564396233646537353237663533646133386534663166633664343966306464
-
-          USE_UNAUTHORIZED_STORAGE: "true"
-
-          ALLOW_META_IP_ADDRESS: "tru"
-          ALLOW_PRIVATE_IP_ADDRESS: "true"
-
-        traefik:
-          - port: 80
-            rule: Host(`onlyoffice.{{ common_tld }}`)
-            middlewares:
-              - "{{ application }}-onlyoffice-sslheaders"
-        labels:
-          '{
-            "traefik.http.middlewares.{{ application }}-onlyoffice-sslheaders.headers.customrequestheaders.X-Forwarded-Proto": "https"
-          }'
-
-    - name: Create collabora container
-      ansible.builtin.include_role:
-        name: docker_container
-      vars:
-        name: "{{ application }}-collabora"
-        image: collabora/code:24.04.6.1.1
-        capabilities:
-          - MKNOD
-        env:
-          aliasgroup1: "https://{{ application }}.{{ common_tld }}:443"
-          server_name: "collabora.{{ common_tld }}"
-          dictionaries: "en_GB en_US"
-          extra_params: "--o:ssl.enable=false --o:ssl.termination=true"
-        traefik:
-          - port: 9980
-            rule: Host(`collabora.{{ common_tld }}`)
-
-    - name: Create imaginary container
-      ansible.builtin.include_role:
-        name: docker_container
-      vars:
-        name: "{{ application }}-imaginary"
-        image: h2non/imaginary:1.2.4
-        command: -enable-url-source
-
-    - name: Create notify_push container
-      ansible.builtin.include_role:
-        name: docker_container
-      vars:
-        name: "{{ application }}-notify-push"
-        image: icewind1991/notify_push:0.6.11
-        env:
-          NEXTCLOUD_URL: "https://{{ application }}.{{ common_tld }}"
-          DATABASE_URL: "{{ _postgres_url }}"
-          REDIS_URL: "{{ _redis_url }}"
-
-    - name: Create elasticsearch container
-      ansible.builtin.include_role:
-        name: elasticsearch
-      vars:
-        elasticsearch_version: 8.10.2
-        elasticsearch_password: !vault |
-            $ANSIBLE_VAULT;1.1;AES256
-            62333932303063376439386235313739336262613362303033396536326233366235616563623337
-            3563386563366661623539346161623265353636376637630a356131643361383236346434616536
-            39376566333961386464383061386365386532663237656161353233343965616261663166366463
-            3030616430653433360a643763383535376230633438386461353136666365636165636334323662
-            3961
-
     - name: Create nextcloud container
       ansible.builtin.include_role:
         name: docker_container
@@ -169,10 +82,6 @@
           PHP_MEMORY_LIMIT: "10000M"
           PHP_UPLOAD_LIMIT: "10000M"
           APACHE_BODY_LIMIT: "0"
-        traefik:
-          - port: 80
-            middlewares:
-              - "{{ application }}-dav"
         homepage:
           group: Favourites
           weight: 100
@@ -195,6 +104,10 @@
             fields: '["numshares"]'
         blackbox:
           path: /status.php
+        traefik:
+          - port: 80
+            middlewares:
+              - "{{ application }}-dav"
         labels:
           # 33 is www-data
           '{
@@ -220,6 +133,44 @@
       changed_when: "'already installed' not in _command_result.stdout"
       retries: 3
       delay: 2
+
+    - name: Create onlyoffice container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-onlyoffice"
+        image: onlyoffice/documentserver:8.1.1
+        volumes:
+          - "{{ config_directory }}/onlyoffice/logs:/var/log/onlyoffice"
+          - "{{ config_directory }}/onlyoffice/data:/var/www/onlyoffice/Data"
+          - "{{ config_directory }}/onlyoffice/lib:/var/lib/onlyoffice"
+          - "{{ config_directory }}/onlyoffice/rabbitmq:/var/lib/rabbitmq"
+          - "{{ config_directory }}/onlyoffice/redis:/var/lib/redis"
+          - "{{ config_directory }}/onlyoffice/db:/var/lib/postgresql"
+        env:
+          JWT_ENABLED: "true"
+          JWT_SECRET: &onlyoffice_jwt_secret !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            62613932646635633462646366396438636165303466366338363166323132613938336334363633
+            6465333735656137653439313233636566636330363461380a616231323438333336356233386561
+            36336638383239666262346166393839396466353833306138386636333130333131313966313666
+            6361663336343432610a333138353763353731393061613036336433613733626230396234356330
+            33356564396233646537353237663533646133386534663166633664343966306464
+
+          USE_UNAUTHORIZED_STORAGE: "true"
+
+          ALLOW_META_IP_ADDRESS: "tru"
+          ALLOW_PRIVATE_IP_ADDRESS: "true"
+
+        traefik:
+          - port: 80
+            rule: Host(`onlyoffice.{{ common_tld }}`)
+            middlewares:
+              - "{{ application }}-onlyoffice-sslheaders"
+        labels:
+          '{
+            "traefik.http.middlewares.{{ application }}-onlyoffice-sslheaders.headers.customrequestheaders.X-Forwarded-Proto": "https"
+          }'
 
     - name: Configure onlyoffice app
       community.docker.docker_container_exec:
@@ -265,6 +216,23 @@
           name: customizationTheme
           value: "theme-light"
 
+    - name: Create collabora container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-collabora"
+        image: collabora/code:24.04.6.1.1
+        capabilities:
+          - MKNOD
+        env:
+          aliasgroup1: "https://{{ application }}.{{ common_tld }}:443"
+          server_name: "collabora.{{ common_tld }}"
+          dictionaries: "en_GB en_US"
+          extra_params: "--o:ssl.enable=false --o:ssl.termination=true"
+        traefik:
+          - port: 9980
+            rule: Host(`collabora.{{ common_tld }}`)
+
     # - name: Install nextcloud office app
     #   community.docker.docker_container_exec:
     #     container: "{{ application }}"
@@ -296,6 +264,14 @@
     #     -
     #       name: wopi_allowlist
     #       value: "192.168.0.0/16"
+
+    - name: Create imaginary container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-imaginary"
+        image: h2non/imaginary:1.2.4
+        command: -enable-url-source
 
     - name: Add imaginary url to config
       community.docker.docker_container_exec:
@@ -337,6 +313,17 @@
         - 'OC\\Preview\\TIFF'
         - 'OC\\Preview\\Movie'
 
+    - name: Create notify_push container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-notify-push"
+        image: icewind1991/notify_push:0.6.11
+        env:
+          NEXTCLOUD_URL: "https://{{ application }}.{{ common_tld }}"
+          DATABASE_URL: "{{ _postgres_url }}"
+          REDIS_URL: "{{ _redis_url }}"
+
     - name: Install notify_push app
       community.docker.docker_container_exec:
         container: "{{ application }}"
@@ -347,6 +334,19 @@
       changed_when: "'already installed' not in _command_result.stdout"
       retries: 3
       delay: 2
+
+    - name: Create elasticsearch container
+      ansible.builtin.include_role:
+        name: elasticsearch
+      vars:
+        elasticsearch_version: 8.10.2
+        elasticsearch_password: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            62333932303063376439386235313739336262613362303033396536326233366235616563623337
+            3563386563366661623539346161623265353636376637630a356131643361383236346434616536
+            39376566333961386464383061386365386532663237656161353233343965616261663166366463
+            3030616430653433360a643763383535376230633438386461353136666365636165636334323662
+            3961
 
     - name: Install fulltextsearch app
       community.docker.docker_container_exec:
