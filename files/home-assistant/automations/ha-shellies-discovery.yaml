@@ -1,26 +1,30 @@
 ---
 
-# https://github.com/bieniu/ha-shellies-discovery#minimal-configuration
+# https://github.com/bieniu/ha-shellies-discovery?tab=readme-ov-file#custom-configuration-example
+
 - id: shellies_announce
-  alias: Shellies Announce
+  alias: 'Shellies Announce'
   trigger:
     - platform: homeassistant
       event: start
     - platform: time_pattern
-      hours: /1
+      hours: "/1"  # Modifying this if you are using Shelly Motion can drain your device's battery quickly.
   action:
     service: mqtt.publish
     data:
       topic: shellies/command
       payload: announce
 
-- id: shellies_discovery
-  alias: Shellies Discovery
+- id: 'shellies_discovery'
+  alias: 'Shellies Discovery'
   mode: queued
   max: 999
   trigger:
     platform: mqtt
     topic: shellies/announce
+  condition:
+    - condition: template
+      value_template: "{{ trigger.payload_json.gen is not defined }}"
   action:
     service: python_script.shellies_discovery
     data:
