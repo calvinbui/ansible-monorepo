@@ -48,7 +48,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-server"
-        image: ghcr.io/immich-app/immich-server:v1.111.0
+        image: ghcr.io/immich-app/immich-server:v1.112.1
         env: &immich_shared_env
           DB_HOSTNAME: "{{ _postgres_hostname }}"
           DB_PORT: "{{ _postgres_port | string }}"
@@ -102,7 +102,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-machine-learning"
-        image: ghcr.io/immich-app/immich-machine-learning:v1.111.0-cuda
+        image: ghcr.io/immich-app/immich-machine-learning:v1.112.1-cuda
         device_requests:
           - driver: nvidia
             count: -1
