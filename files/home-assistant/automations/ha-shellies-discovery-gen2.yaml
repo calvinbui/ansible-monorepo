@@ -14,6 +14,11 @@
       - shellyplus1pm-upstairshallway
       - shellyplus1pm-masterbedroom
   action:
+    - delay:
+        hours: 0
+        minutes: 1
+        seconds: 0
+        milliseconds: 0
     - repeat:
         for_each: "{{ device_ids }}"
         sequence:
