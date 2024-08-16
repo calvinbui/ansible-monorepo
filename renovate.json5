@@ -154,6 +154,7 @@
       matchPackagePatterns: [".*\\/mattermost-(team|enterprise)-edition"],
       sourceUrl: "https://github.com/mattermost/mattermost-server",
       prBodyNotes: "[Mattermost changelog](https://docs.mattermost.com/deploy/mattermost-changelog.html)",
+      versioning: "github-releases",
     },
     /* onlyoffice */
     {
@@ -180,6 +181,7 @@
     {
       matchPackagePatterns: [".*\\/cadvisor"],
       sourceUrl: "https://github.com/google/cadvisor",
+      versioning: "github-releases",
     },
     /* psitransfer */
     {
