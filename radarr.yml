@@ -59,7 +59,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: lscr.io/linuxserver/radarr:version-5.8.3.8933
+        image: lscr.io/linuxserver/radarr:version-5.9.1.9070
         volumes:
           - "{{ config_directory }}/config:/config"
           - "{{ common_directory_storage }}:{{ common_mounted_directory }}"
