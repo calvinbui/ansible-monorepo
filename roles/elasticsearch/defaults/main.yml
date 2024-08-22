@@ -4,3 +4,5 @@ elasticsearch_directory: "{{ config_directory }}/elasticsearch"
 
 elasticsearch_name: "{{ application }}-elasticsearch"
 elasticsearch_password: "changeme"
+
+elasticsearch_environment: {}
