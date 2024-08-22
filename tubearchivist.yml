@@ -1,0 +1,97 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: tubearchivist
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Create redis container
+      ansible.builtin.include_role:
+        name: redis
+      vars:
+        redis_image: redis/redis-stack
+        redis_version: 7.4.0-v0
+
+    - name: Create elasticsearch container
+      ansible.builtin.include_role:
+        name: elasticsearch
+      vars:
+        elasticsearch_version: 8.14.3
+        elasticsearch_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          62396636303039353662653331663264303536626130666565643738366364653734363233633966
+          6264383033373965303937653662623236323133663265350a353965346136623430333065343234
+          33623338333836633037343761333738343361393630356530663635613430326264306331643266
+          6264316463333536620a373861646339646362366533656235323531653762653436336165323564
+          38333634613138316535653434343562643162353634323631623130303936396531
+        elasticsearch_environment:
+          ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+          ES_SETTING_XPACK_SECURITY_ENABLED: "true"
+          ES_SETTING_PATH_REPO: "/usr/share/elasticsearch/data/snapshot"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: bbilly1/tubearchivist:v0.4.10
+        env:
+          HOST_UID: "{{ common_user_id | string }}"
+          HOST_GID: "{{ common_group_id | string }}"
+
+          TA_HOST: "https://{{ application }}.{{ common_tld }}"
+
+          TA_USERNAME: "{{ common_user }}"
+          TA_PASSWORD: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            65353062633834323734373966613565373266633333363531303739613038396133653231346138
+            3833346131633164633330666230343930303065636564620a633330666438373437643239373966
+            34626536363437376431313039326665306231333934663538353132356634313864346639326465
+            3166356161366163390a363636376366636662636138666336646665313233353961313733353835
+            6334
+
+          # prevents the browser extension from working and breaks existing users
+          TA_ENABLE_AUTH_PROXY: "true"
+          TA_AUTH_PROXY_USERNAME_HEADER: "HTTP_REMOTE_USER"
+          TA_AUTH_PROXY_LOGOUT_URL: "https://authelia.{{ common_tld }}/logout"
+
+          TZ: "{{ common_timezone }}"
+
+          ES_URL: "http://{{ _elasticsearch_hostname }}:{{ _elasticsearch_port }}"
+          ELASTIC_USERNAME: "elastic"
+          ELASTIC_PASSWORD: "{{ _elasticsearch_password }}"
+
+          REDIS_HOST: "{{ _redis_hostname }}"
+          REDIS_PORT: "{{ _redis_port | string }}"
+
+          ENABLE_CAST: "true"
+        volumes:
+          - "{{ config_directory }}/youtube:/youtube"
+          - "{{ config_directory }}/cache:/cache"
+        traefik:
+          - port: 8000
+            auth: page
+        homepage:
+          name: Tube Archivist
+          group: Backups
+          weight: 200
+          description: "YouTube Backups"
+          widget:
+            key: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              37316636306334656636323362636630356565316666313930663162313761376633393465386461
+              3264393063353238376536636366393033653335363135320a353364323032346563346532333263
+              37373661336163333662303265313639656664636465663631303438303262616561656463356361
+              6261323936376132360a636131383930336132616230616465333864616434613732666331313638
+              35643330326363343034323866613432333934656161623739366663366635363934323530633933
+              3136653762303735643530666665363036663763653562316162
