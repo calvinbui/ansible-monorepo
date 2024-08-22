@@ -11,7 +11,7 @@
 - name: Create Redis container
   community.docker.docker_container:
     name: "{{ redis_name }}"
-    image: "redis:{{ redis_version }}"
+    image: "{{ redis_image }}:{{ redis_version }}"
 
     state: started
 
@@ -22,7 +22,7 @@
     network_mode: "{{ docker_network.name | default('omit') }}"
     networks_cli_compatible: "{{ redis_networks_cli_compatible | default(true) }}"
 
-    command: "redis-server --requirepass {{ redis_password }} {{ redis_command }}"
+    command: "{{ 'redis-server --requirepass ' + redis_password if redis_password != '' else omit }}"
 
     env:
       TZ: "{{ common_timezone }}"

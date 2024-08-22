@@ -1,6 +1,6 @@
 ---
 
+redis_image: redis
 redis_name: "{{ application }}-redis"
 redis_directory: "{{ config_directory }}/redis"
-redis_password: "changeme"
-redis_command: ""
+redis_password: ""
