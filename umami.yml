@@ -46,6 +46,7 @@
           DATABASE_URL: "{{ _postgres_url }}"
           DISABLE_TELEMETRY: "1"
           DISABLE_UPDATES: "1"
+        init: true # prevent zombie
         traefik:
           -
             name: "{{ application }}-private"

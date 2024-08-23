@@ -125,6 +125,7 @@
 
     container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
     command_handling: "{{ command_handling | default('correct') }}"
+    init: "{{ init | default(omit) }}"
 
     healthcheck: "{{ healthcheck | default(omit) }}"
 
