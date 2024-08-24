@@ -33,7 +33,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/umami-software/umami:postgresql-v2.12.1
+        image: ghcr.io/umami-software/umami:postgresql-v2.13.1
         # https://umami.is/docs/environment-variables
         env:
           APP_SECRET: !vault |
