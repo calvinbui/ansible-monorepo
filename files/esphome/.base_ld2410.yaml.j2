@@ -1,0 +1,39 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
+---
+
+# https://esphome.io/components/esphome.html
+esphome:
+  name: $name
+  friendly_name: $friendly_name
+
+logger:
+  baud_rate: 0
+
+uart:
+  id: ld2410_uart
+  tx_pin: GPIO15 # SS 15
+  rx_pin: GPIO13 # MOSI 13
+  baud_rate: 256000
+  parity: NONE
+  stop_bits: 1
+
+ld2410:
+  uart_id: ld2410_uart
+  throttle: 1500ms
+  id: ld2410_comp
+
+switch:
+  - platform: ld2410
+    engineering_mode:
+      name: "Engineering Mode"
+    bluetooth:
+      name: "Control Bluetooth"
+
+binary_sensor:
+  - platform: ld2410
+    has_target:
+      name: Presence
+    has_moving_target:
+      name: Moving Target
+    has_still_target:
+      name: Still Target

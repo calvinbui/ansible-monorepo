@@ -1,0 +1,16 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
+---
+
+# https://esphome.io/guides/configuration-types.html#substitutions
+substitutions:
+  name: presence-detector-04
+  friendly_name: Presence Detector 04
+
+# https://esphome.io/guides/configuration-types.html#packages
+packages:
+  d1mini: !include .common_d1mini.yaml
+  wifi: !include .common_wifi.yaml
+  ota: !include .common_ota.yaml
+  web_server: !include .common_web_server.yaml
+  api: !include .common_api.yaml
+  device_base: !include .base_ld2410.yaml
