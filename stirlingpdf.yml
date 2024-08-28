@@ -1,0 +1,53 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: stirlingpdf
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: ghcr.io/stirling-tools/s-pdf:0.28.3-fat
+        env:
+          DOCKER_ENABLE_SECURITY: "true"
+          INSTALL_BOOK_AND_ADVANCED_HTML_OPS: "true"
+          LANGS: "{{ common_language_iso_639 }}_{{ common_country_iso_3166 }}"
+
+          SECURITY_ENABLELOGIN: "true"
+          SECURITY_LOGINMETHOD: "oauth2"
+          SECURITY_OAUTH2_ENABLED: "true"
+          SECURITY_OAUTH2_ISSUER: "https://authelia.{{ common_tld }}"
+          SECURITY_OAUTH2_AUTOCREATEUSER: "true"
+          SECURITY_OAUTH2_CLIENTID: "{{ application }}"
+          SECURITY_OAUTH2_CLIENTSECRET: "{{ ldap_oidc_apps.stirlingpdf.secret }}"
+          SECURITY_OAUTH2_USEASUSERNAME: "preferred_username"
+          SECURITY_OAUTH2_SCOPES: "openid,profile,email"
+          SECURITY_OAUTH2_PROVIDER: "Authelia"
+
+          SYSTEM_DEFAULTLOCALE: "{{ common_language_iso_639 }}-{{ common_country_iso_3166 }}"
+          SYSTEM_SHOWUPDATE: "false"
+
+          METRICS_ENABLED: "false"
+        volumes:
+          - "{{ config_directory }}/trainingData:/usr/share/tessdata"
+          - "{{ config_directory }}/extraConfigs:/configs"
+        traefik:
+          - port: 8080
+        homepage:
+          name: Stirling PDF
+          group: Documents
+          weight: 600
+          description: Manage PDF files
