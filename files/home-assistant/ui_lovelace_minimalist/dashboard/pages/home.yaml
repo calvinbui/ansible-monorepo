@@ -44,6 +44,12 @@ cards:
               ulm_card_person_entity: person.tammy
               ulm_card_person_icon: mdi:face-agent
             <<: *person_card
+          -
+            entity: person.ella
+            variables:
+              ulm_card_person_entity: person.ella
+              ulm_card_person_icon: mdi:face-woman-shimmer
+            <<: *person_card
       -
         name: 📅 Calendar
         <<: *title_card
