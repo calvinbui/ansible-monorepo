@@ -1,0 +1,17 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
+---
+
+# Lolin D1 Mini v4 USB-C with HiLink LD2410B
+
+# https://esphome.io/components/packages.html
+packages:
+  d1mini: !include .common_d1mini.yaml
+  wifi: !include .common_wifi.yaml
+  ota: !include .common_ota.yaml
+  api: !include .common_api.yaml
+  device_base: !include .base_ld2410.yaml
+
+# https://esphome.io/components/uart.html
+uart:
+  tx_pin: GPIO15 # SS 15
+  rx_pin: GPIO13 # MOSI 13
