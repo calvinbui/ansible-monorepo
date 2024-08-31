@@ -179,13 +179,6 @@ cards:
           ulm_card_input_boolean_name: Foyer
         <<: *input_boolean_card
 
-      -
-        entity: input_boolean.garage_downlights_motion_detection_automations
-        variables:
-          ulm_card_input_boolean_name: Garage
-        <<: *input_boolean_card
-
-
   - type: vertical-stack
     view_layout:
       grid-area: schedule
