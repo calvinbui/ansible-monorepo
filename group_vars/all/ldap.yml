@@ -74,7 +74,7 @@ ldap_oidc_apps:
 
   immich:
     redirect_uris:
-      - "app.immich:/"
+      - "app.immich:///oauth-callback"
       - "https://immich.{{ common_tld }}/auth/login"
       - "https://immich.{{ common_tld }}/user-settings"
     secret: !vault |
