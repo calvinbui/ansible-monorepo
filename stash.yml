@@ -1,0 +1,48 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: stash
+
+    stash_data: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      61393735303061663133336539623336316463616632643264343035656366336166353232393062
+      3230653339363139666535343036353166303835393863330a363665316135346536656466623339
+      38323230363434323637383831623633323738336333313166346664316363613839646266393965
+      3932636135363563620a396564313931643264336566303434616265316136653434306366363239
+      39336465636166323735636434653231636236623061393835353932366331353533373537623236
+      3932626432363466373961336639313835626566666664306430
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: stashapp/stash:v0.26.2
+        env:
+          STASH_STASH: /data/
+          STASH_CACHE: /cache/
+          STASH_GENERATED: /generated/
+          STASH_METADATA: /metadata/
+        volumes:
+          - "{{ config_directory }}/config:/root/.stash"
+          - "{{ stash_data }}:/data"
+          - "{{ config_directory }}/metadata:/metadata"
+          - "{{ config_directory }}/cache:/cache"
+          - "{{ config_directory }}/blobs:/blobs"
+          - "{{ config_directory }}/generated:/generated"
+
+          - /etc/localtime:/etc/localtime:ro
+        traefik:
+          - port: 9999
