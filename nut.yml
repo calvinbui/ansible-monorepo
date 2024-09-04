@@ -15,17 +15,16 @@
     nut_max_retry: 3
 
     nut_ups_devices:
-      - |
-        [cyberpower]
-          driver = usbhid-ups
-          port = auto
-          ignorelb
-          pollinterval = 15
-          override.battery.charge.low = 20
-          override.battery.charge.warning = 40
-          override.battery.runtime.low = 300
-          override.ups.delay.start = 120
-          override.ups.delay.shutdown = 120
+      cyberpower: |
+        driver = usbhid-ups
+        port = auto
+        ignorelb
+        pollinterval = 15
+        override.battery.charge.low = 20
+        override.battery.charge.warning = 40
+        override.battery.runtime.low = 300
+        override.ups.delay.start = 120
+        override.ups.delay.shutdown = 120
 
     nut_ups_listen: |
       LISTEN 127.0.0.1 3493
