@@ -37,10 +37,11 @@
         name: "{{ item }}"
         state: restarted
         enabled: true
-      with_items:
-        - nut-driver
-        - nut-monitor
-        - nut-server
+      loop: >-
+        {{
+          ['nut-monitor', 'nut-server'] +
+          (nut_ups_devices | dict2items | map(attribute='key') | map('string') | map('regex_replace', '^', 'nut-driver@') | list)
+        }}
 
   tasks:
     - name: Update apt cache
