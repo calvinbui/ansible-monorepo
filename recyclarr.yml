@@ -20,7 +20,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/recyclarr/recyclarr:7.2.2
+        image: ghcr.io/recyclarr/recyclarr:7.2.3
         volumes:
           - "{{ config_directory }}:/config"
         env:
