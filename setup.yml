@@ -102,7 +102,6 @@
           - build-essential
           - neovim
           - htop
-          - iftop
           - nano
           - tree
           - unzip
@@ -127,7 +126,6 @@
           - iotop
           - powertop
           - mc
-          - nethogs
           - ffmpeg
         state: present
 
@@ -194,7 +192,8 @@
         name: "{{ item.name }}"
         value: "{{ item.value }}"
       loop:
-        - name: fs.inotify.max_user_instances
+        - # Increase inotify watch limits to fix too many open files
+          name: fs.inotify.max_user_instances
           value: 256
 
     - name: Ubuntu Pro subscription
