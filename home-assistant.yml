@@ -100,19 +100,6 @@
       ansible.builtin.wait_for:
         path: "{{ home_assistant_configuration }}"
 
-    - name: Configure default settings
-      yedit: # noqa fqcn[action]
-        src: "{{ home_assistant_configuration }}"
-        key: "{{ item.key }}"
-        value: "{{ item.value }}"
-      notify: Restart
-      loop: "{{ _ha_config | dict2items }}"
-      vars:
-        _ha_config:
-          http.use_x_forwarded_for: true
-          http.trusted_proxies:
-            - "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] | string }}"
-
     - name: Configure integrations
       tags:
         - integrations
