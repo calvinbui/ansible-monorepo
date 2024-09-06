@@ -13,6 +13,7 @@
   ansible.posix.sysctl:
     name: vm.max_map_count
     value: 262144
+    sysctl_file: /etc/sysctl.d/99-elasticsearch.conf
 
 - name: Create Elasticsearch container
   community.docker.docker_container:

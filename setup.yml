@@ -191,6 +191,7 @@
       ansible.posix.sysctl:
         name: "{{ item.name }}"
         value: "{{ item.value }}"
+        sysctl_file: /etc/sysctl.d/99-ansible-setup.conf
       loop:
         - # Increase inotify watch limits to fix too many open files
           name: fs.inotify.max_user_instances
