@@ -1,0 +1,76 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: lubelogger
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Download init.sql
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/hargata/lubelog/main/init.sql
+        dest: "{{ config_directory }}/init.sql"
+        mode: "0644"
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+
+    - name: Create postgres container
+      ansible.builtin.import_role:
+        name: postgres
+      vars:
+        postgres_version: 16
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          38616237633732653936653966303535353631633334643037303663656334356437626438636665
+          3464656637373865376261376466643736636262613738370a383665653366333534313930333130
+          36333566323333643835653937633839363262356231663432353739353237356334363533633966
+          6461343735613431350a626162343736313736343437356137323430373165376436393032663838
+          35663632343534373838346532363761656665343034316632386632653966306530
+        postgres_directory_extra:
+          - "{{ config_directory }}/init.sql:/docker-entrypoint-initdb.d/init.sql:ro"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: ghcr.io/hargata/lubelogger:v1.3.6
+        env:
+          LC_ALL: "{{ common_language_iso_639 }}_{{ common_country_iso_3166 }}.UTF-8"
+          LANG: "{{ common_language_iso_639 }}_{{ common_country_iso_3166 }}.UTF-8"
+
+          MailConfig__EmailServer: "{{ common_email_server }}"
+          MailConfig__EmailFrom: "{{ application }}{{ common_email_to }}"
+          MailConfig__Port: "{{ common_email_port | string }}"
+          MailConfig__Username: "{{ common_email_username }}"
+          MailConfig__Password: "{{ common_email_password }}"
+
+          LOGGING__LOGLEVEL__DEFAULT: Error
+
+          POSTGRES_CONNECTION: "Host={{ _postgres_hostname }};Username={{ _postgres_username }};Password={{ _postgres_password }};Database={{ _postgres_database }};"
+        volumes:
+          - "{{ config_folder }}/config:/App/config"
+          - "{{ config_folder }}/data:/App/data"
+          - "{{ config_folder }}/translations:/App/wwwroot/translations"
+          - "{{ config_folder }}/documents:/App/wwwroot/documents"
+          - "{{ config_folder }}/images:/App/wwwroot/images"
+          - "{{ config_folder }}/temp:/App/wwwroot/temp"
+          - "{{ config_folder }}/log:/App/log"
+          - "{{ config_folder }}/keys:/root/.aspnet/DataProtection-Keys"
+        traefik:
+          - port: 8080
+            auth: page
+        homepage:
+          name: LubeLogger
+          group: Tools
+          weight: 300
+          description: "Vehicle maintenance and mileage tracker"
