@@ -37,7 +37,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/nzbgetcom/nzbget:v24.2
+        image: ghcr.io/nzbgetcom/nzbget:v24.3
         volumes:
           - "{{ config_directory }}:/config"
           - "{{ common_directory_download }}:{{ common_mounted_directory_download }}"
