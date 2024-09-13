@@ -30,7 +30,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: plexinc/pms-docker:1.40.5.8921-836b34c27
+        image: plexinc/pms-docker:1.41.0.8992-8463ad060
         ipv4_address: "{{ docker_network.prefix }}.253"
         env:
           PLEX_UID: "{{ common_user_id | string }}"
