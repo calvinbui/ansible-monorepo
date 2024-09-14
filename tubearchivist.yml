@@ -27,7 +27,7 @@
       ansible.builtin.include_role:
         name: elasticsearch
       vars:
-        elasticsearch_version: 8.14.3
+        elasticsearch_version: 8.15.1
         elasticsearch_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           62396636303039353662653331663264303536626130666565643738366364653734363233633966
@@ -36,7 +36,6 @@
           6264316463333536620a373861646339646362366533656235323531653762653436336165323564
           38333634613138316535653434343562643162353634323631623130303936396531
         elasticsearch_environment:
-          ES_JAVA_OPTS: "-Xms1g -Xmx1g"
           ES_SETTING_XPACK_SECURITY_ENABLED: "true"
           ES_SETTING_PATH_REPO: "/usr/share/elasticsearch/data/snapshot"
 
