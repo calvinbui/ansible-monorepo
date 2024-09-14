@@ -196,6 +196,9 @@
         - # Increase inotify watch limits to fix too many open files
           name: fs.inotify.max_user_instances
           value: 256
+        - # Disable swap
+          name: vm.swappiness
+          value: 0
 
     - name: Ubuntu Pro subscription
       block:
