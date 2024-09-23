@@ -95,10 +95,20 @@
       ansible.builtin.wait_for:
         path: "{{ config_directory }}/config/config.xml"
 
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
+      changed_when: false
+
     - name: Install lxml
-      ansible.builtin.pip:
-        name: lxml
-        executable: pip3
+      ansible.builtin.apt:
+        name: python3-lxml
+        state: present
+      register: result
+      until: result is success
+      retries: 5
+      delay: 5
 
     - name: Configure
       community.general.xml:
