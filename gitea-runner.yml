@@ -84,7 +84,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: gitea/act_runner:0.2.10
+        image: gitea/act_runner:0.2.11
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock
           - "{{ config_directory }}/data:/data"
