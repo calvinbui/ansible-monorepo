@@ -92,6 +92,10 @@
               friendly_name: "Aqara Temperature & Humidity Sensor - Garage"
             "0x00158d0009775449":
               friendly_name: "Aqara Temperature & Humidity Sensor - Large Rear Bedroom"
+
+            "0x00158d000af2c512":
+              friendly_name: "Aqara Wireless Mini Switch - Garage"
+              legacy: false
         dest: "{{ config_directory }}/data/configuration.yaml"
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
