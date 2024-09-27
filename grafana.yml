@@ -103,7 +103,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: grafana/grafana:11.2.0
+        image: grafana/grafana:11.2.1
         env:
           GF_SERVER_ROOT_URL: "https://grafana.{{ common_tld }}"
           GF_SERVER_ENABLE_GZIP: "true"
