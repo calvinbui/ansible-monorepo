@@ -4,7 +4,7 @@
 - name: Find icon file extension
   ansible.builtin.find:
     path: "files/homepage/icons"
-    patterns: "^{{ application }}.(png|svg|jpg|jpeg)"
+    patterns: "^{{ application }}.(png|svg|jpg|jpeg|webp)"
     file_type: file
     use_regex: true
   register: _homepage_icons_local
