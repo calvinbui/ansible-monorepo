@@ -31,19 +31,34 @@ cards:
           template: card_title
       -
         type: markdown
-        title: Time
         content: |
+          | Area | Time |
+          |------|------|
           {% for g in home_assistant_gardening.systems %}
-          {{ g.name }}: {% raw %}{{ '2000-01-01T{% endraw %}{{ g.time }}'{% raw %} | as_timestamp() | timestamp_custom("%I:%M %p") }}{% endraw %}
+          | {{ g.name }} | {% raw %}{{ '2000-01-01T{% endraw %}{{ g.time }}'{% raw %} | as_timestamp() | timestamp_custom("%I:%M %p") }}{% endraw %} |
+          {% endfor %}
 
-          {% endfor %}
-      -
-        type: markdown
-        title: Seasons
-        content: |
+          | Season | Active Days |
+          |--------|-------------|
           {% for k, v in home_assistant_gardening.schedule.items() %}
-          {{ k | title }}: {{ v | join(", ") }}
+          | {{ k | title }} | {{ v | join(", ") }} |
           {% endfor %}
+        card_mod:
+          style:
+            ha-markdown:
+              $:
+                ha-markdown-element: |
+                  table {
+                      width: 100%;
+                      border-collapse: collapse;
+                      margin: 20px 0;
+                  }
+
+                  th, td {
+                      padding: 12px;
+                      text-align: left;
+                      border: 1px solid #dddddd;
+                  }
       -
         name: ⚙️ Automations
         <<: *title_card
