@@ -28,7 +28,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: tautulli/tautulli:v2.14.5
+        image: tautulli/tautulli:v2.14.6
         env:
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_root_group | string }}"
