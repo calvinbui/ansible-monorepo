@@ -2,12 +2,12 @@
 
 # https://github.com/oziee/ha-solcast-solar#basic-ha-automation-to-manual-poll-solcast-api-data
 - id: solcast_update_forecast
-  alias: Solar - Update Forecast
+  alias: Solar - Update Forecast At Midnight
   description: New API call Solcast
-  trigger:
-    - platform: time_pattern
-      minutes: /45
-  action:
-    - service: solcast_solar.update_forecasts
+  triggers:
+    - trigger: time
+      at: "00:00:00"
+  actions:
+    - action: solcast_solar.update_forecasts
       data: {}
   mode: single
