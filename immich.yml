@@ -80,7 +80,7 @@
                 - compute
                 - utility
         traefik:
-          - port: 3001
+          - port: 2283
             rule: Host(`{{ application }}.{{ common_tld }}`)
         homepage:
           group: Favourites
