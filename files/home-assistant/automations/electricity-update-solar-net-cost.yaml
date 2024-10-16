@@ -6,12 +6,11 @@
 - id: electricity_update_solar_net_cost
   alias: Electricity - Update Solar Net Cost
   description: ""
-  trigger:
+  triggers:
     - platform: time
       at: "00:05:00"
-  condition: []
-  action:
-    - service: input_number.set_value
+  actions:
+    - action: input_number.set_value
       data:
         value: |
           {{
