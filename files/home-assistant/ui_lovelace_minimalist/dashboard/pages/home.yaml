@@ -31,25 +31,37 @@ cards:
         type: vertical-stack
         cards:
           -
-            entity: person.calvin
-            variables:
-              ulm_card_person_entity: person.calvin
-              ulm_card_person_icon: mdi:emoticon-tongue
-            <<: &person_card
-              type: 'custom:button-card'
-              template: custom_card_calvin_person
+            type: horizontal-stack
+            cards:
+              -
+                entity: person.calvin
+                variables:
+                  ulm_card_person_entity: person.calvin
+                  ulm_card_person_icon: mdi:emoticon-tongue
+                <<: &person_card
+                  type: 'custom:button-card'
+                  template: custom_card_calvin_person
+              -
+                entity: person.tammy
+                variables:
+                  ulm_card_person_entity: person.tammy
+                  ulm_card_person_icon: mdi:face-agent
+                <<: *person_card
           -
-            entity: person.tammy
-            variables:
-              ulm_card_person_entity: person.tammy
-              ulm_card_person_icon: mdi:face-agent
-            <<: *person_card
-          -
-            entity: person.ella
-            variables:
-              ulm_card_person_entity: person.ella
-              ulm_card_person_icon: mdi:face-woman-shimmer
-            <<: *person_card
+            type: horizontal-stack
+            cards:
+              -
+                entity: person.my
+                variables:
+                  ulm_card_person_entity: person.my
+                  ulm_card_person_icon: mdi:emoticon-cool
+                <<: *person_card
+              -
+                entity: person.ella
+                variables:
+                  ulm_card_person_entity: person.ella
+                  ulm_card_person_icon: mdi:face-woman-shimmer
+                <<: *person_card
       -
         name: 📅 Calendar
         <<: *title_card
