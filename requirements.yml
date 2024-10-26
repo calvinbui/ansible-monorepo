@@ -2,4 +2,4 @@
 
 collections:
   - name: ansibleguy.opnsense
-    version: 1.2.10
+    version: 1.2.11
