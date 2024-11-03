@@ -258,7 +258,7 @@
 
     - name: Prompt to go through startup process
       ansible.builtin.pause:
-        prompt: "Go through the setup process https://{{ application }}.{{ common_tld }} save the config first"
+        prompt: "Go through the setup process https://{{ application }}.{{ common_local_tld }} save the config first"
       when: _octoprint_config_ready.result != "black"
 
     - name: Configure OctoPrint
