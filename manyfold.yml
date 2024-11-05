@@ -1,0 +1,102 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: manyfold
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create folders
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      loop:
+        - "{{ config_directory }}"
+        - "{{ config_directory }}/app"
+
+    - name: Create redis container
+      ansible.builtin.include_role:
+        name: redis
+      vars:
+        redis_version: 7
+        redis_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          31393133663238636634653436653136643131646662306464376363303830623332656237313631
+          3662626135653931343433366161393964383532366162340a333063656339663462363739643563
+          34653363663663633938333132303634313261616465656166343663323637646230306161383963
+          3666623664356462640a383132316163633365393139663062346464313263646136626532643366
+          64356139626430353833666466633966346464356330393439623234383664613062
+
+    - name: Create postgres container
+      ansible.builtin.import_role:
+        name: postgres
+      vars:
+        postgres_version: 16
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          66326438666432373937396234613039643939613134643633333834623037323534383532313730
+          6632366530343164373935653035616238663963646265360a336136616366626263386231636334
+          37646664376437653835653964633635396362316661623738386134356135303735316461663562
+          3431633463353163660a383733646333356666363139383133393563653339626163323637666264
+          39373135396564303832656432313962386134626238346336333865316665306331
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: ghcr.io/manyfold3d/manyfold:0.86.0
+        volumes:
+          - "{{ config_directory }}/app:/libraries"
+        env:
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_root_group | string }}"
+
+          SECRET_KEY_BASE: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            35353266306566373933373932633464323966613533383663646231343663396437363032633564
+            3533393966343566373130626139396665636630366162640a613939323661643163396631366432
+            65336132343438663663653236323063316564623764626634613963623064666535336335343364
+            3637643038653738300a303834366464336161343262383732323066353431653662303531633939
+            64356236363035656538666339303031306231633266613133616362616438626631
+
+          REDIS_URL: "{{ _redis_url }}"
+
+          DATABASE_ADAPTER: postgresql
+          DATABASE_URL: "{{ _postgres_url }}"
+
+          OIDC_CLIENT_ID: "{{ application }}"
+          OIDC_CLIENT_SECRET: "{{ ldap_oidc_apps.manyfold.secret }}"
+          OIDC_ISSUER: "https://authelia.{{ common_tld }}"
+          OIDC_NAME: Authelia
+          FORCE_OIDC: "enabled"
+
+          SMTP_SERVER: "{{ common_email_server }}"
+          SMTP_USERNAME: "{{ common_email_username }}"
+          SMTP_PASSWORD: "{{ common_email_password }}"
+          SMTP_FROM_ADDRESS: "{{ application }}{{ common_email_to }}"
+
+          PUBLIC_HOSTNAME: "{{ application }}.{{ common_tld }}"
+          PUBLIC_PORT: "443"
+          HTTPS_ONLY: "enabled"
+        security_opts:
+          - no-new-privileges:true
+        cap_drop:
+          - ALL
+        capabilities:
+          - CHOWN
+          - DAC_OVERRIDE
+          - SETUID
+          - SETGID
+        traefik:
+          - port: 3214
+        homepage:
+          group: 3D Printing
+          weight: 500
+          description: "3D Print Files"
+        blackbox:
+          path: /health
