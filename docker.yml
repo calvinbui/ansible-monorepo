@@ -22,12 +22,13 @@
         cache_valid_time: 600
       changed_when: false
 
-    # Based on https://docs.docker.com/engine/installation/linux/ubuntu/
+    # Based on https://docs.docker.com/engine/install/ubuntu/
     - name: Uninstall old versions
       ansible.builtin.apt:
         name:
           - docker.io
           - docker-compose
+          - docker-compose-v2
           - docker-doc
           - podman-docker
           - containerd
@@ -137,7 +138,9 @@
         content: |
           {
             "dns": ["192.168.1.1"],
-            "live-restore": true
+            "live-restore": true,
+            "ipv6": false,
+            "experimental": false
           }
         dest: "/etc/docker/daemon.json"
         owner: "root"
