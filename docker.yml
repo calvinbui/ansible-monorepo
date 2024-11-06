@@ -107,9 +107,8 @@
         append: true
 
     - name: Install docker pip package
-      ansible.builtin.pip:
-        name: docker
-        executable: pip3
+      ansible.builtin.apt:
+        name: python3-docker
 
     - name: Create Docker networks
       community.docker.docker_network:

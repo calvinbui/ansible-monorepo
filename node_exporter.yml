@@ -26,9 +26,8 @@
       register: _scripts_dir
 
     - name: Install prometheus_client python package
-      ansible.builtin.pip:
-        name: prometheus_client
-        executable: pip3
+      ansible.builtin.apt:
+        name: python3-prometheus-client
 
     - name: Clone node-exporter-textfile-collector-scripts repo
       ansible.builtin.git:
