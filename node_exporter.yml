@@ -107,7 +107,7 @@
           - "--no-collector.xfs"
         pid_mode: host
         capabilities:
-          - sys_time
+          - SYS_TIME
         volumes:
           - "/:/host:ro,rslave"
           - "{{ _textfiles_folder.path }}:/textfiles"

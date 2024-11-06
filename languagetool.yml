@@ -155,7 +155,7 @@
       vars:
         image: silviof/docker-languagetool:6.4
         cap_drop:
-          - all
+          - ALL
         env:
           EXTRAOPTIONS: "-Xmx2g -Xms1g --premiumAlways"
         volumes:
