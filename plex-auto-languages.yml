@@ -1,0 +1,69 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: plex-auto-languages
+
+    docker_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart
+      community.docker.docker_container:
+        name: "{{ application }}"
+        restart: true
+        comparisons:
+          '*': ignore
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+
+    - name: Create config
+      ansible.builtin.copy:
+        content: |
+          plexautolanguages:
+            update_level: "season"
+            update_strategy: "all"
+
+            trigger_on_play: true
+            trigger_on_scan: true
+            trigger_on_activity: false
+
+            refresh_library_on_scan: true
+
+            ignore_labels:
+              - PAL_IGNORE
+
+            plex:
+              url: "http://plex.{{ networks.pub.name }}:32400"
+              token: "{{ home_assistant_integrations.plex_token }}"
+
+            scheduler:
+              enable: true
+              schedule_time: "04:30"
+
+            notifications:
+              enable: false
+
+            debug: false
+        dest: "{{ config_directory }}/config.yaml"
+        owner: "{{ common_user_id }}"
+        group: "{{ common_group_id }}"
+        mode: "0740"
+      notify: Restart
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: remirigal/plex-auto-languages:v1.2.3
+        volumes:
+          - "{{ config_directory }}:/config"
+        env:
+          TZ: "{{ common_timezone }}"
