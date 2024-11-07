@@ -34,7 +34,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: lobehub/lobe-chat-database:v1.26.17
+        image: lobehub/lobe-chat-database:v1.28.3
         env:
           APP_URL: "https://{{ application }}.{{ common_tld }}"
 
