@@ -65,6 +65,7 @@
           OIDC_AUTH_ENABLED: "true"
           OIDC_CONFIGURATION_URL: "https://authelia.{{ common_tld }}/.well-known/openid-configuration"
           OIDC_CLIENT_ID: "{{ application }}"
+          OIDC_CLIENT_SECRET: "{{ ldap_oidc_apps.mealie.secret }}"
           OIDC_PROVIDER_NAME: "Authelia"
         volumes:
           - "{{ config_directory }}/data:/app/data"
