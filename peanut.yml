@@ -7,14 +7,43 @@
 
     docker_network: "{{ networks.user }}"
 
+  handlers:
+    - name: Restart
+      community.docker.docker_container:
+        name: "{{ application }}"
+        restart: true
+        comparisons:
+          '*': ignore
+
   tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+
+    - name: Create config file
+      ansible.builtin.copy:
+        dest: "{{ config_directory }}/settings.yml"
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
+        content: |
+          NUT_HOST: "{{ nut_host }}"
+          NUT_PORT: 3493
+          WEB_HOST: 0.0.0.0
+          WEB_PORT: 8080
+      notify: Restart
+
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
       vars:
         image: brandawg93/peanut:3.3.0
-        env:
-          NUT_HOST: "{{ nut_host }}"
+        volumes:
+          - "{{ config_directory }}:/config"
         traefik:
           - port: 8080
             auth: page
