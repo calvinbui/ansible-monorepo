@@ -392,6 +392,11 @@
       sourceUrl: "https://github.com/roundcube/roundcubemail",
       versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-apache$",
     },
+    /* tubearchivist */
+    {
+      matchPackagePatterns: ["bbilly1\\/tubearchivist"],
+      sourceUrl: "https://github.com/tubearchivist/tubearchivist",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
