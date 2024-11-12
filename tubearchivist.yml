@@ -43,7 +43,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: bbilly1/tubearchivist:v0.4.10
+        image: bbilly1/tubearchivist:v0.4.11
         env:
           HOST_UID: "{{ common_user_id | string }}"
           HOST_GID: "{{ common_group_id | string }}"
