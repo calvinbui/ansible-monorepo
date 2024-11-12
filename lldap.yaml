@@ -44,7 +44,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/lldap/lldap:v0.5.0
+        image: ghcr.io/lldap/lldap:v0.6.0
         env:
           UID: "{{ common_user_id | string }}"
           GID: "{{ common_group_id |string }}"
