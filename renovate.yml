@@ -20,8 +20,8 @@
       ansible.builtin.file:
         path: "{{ config_directory }}"
         state: directory
-        owner: "{{ common_user }}"
-        group: "{{ common_root_group }}"
+        owner: "12021"
+        group: "{{ common_group_id }}"
         mode: "0771"
 
     - name: Create container
@@ -40,7 +40,7 @@
             "chadburn.enabled": "true",
             "chadburn.job-exec.{{ application }}-cron.schedule": "0 17 * * *",
             "chadburn.job-exec.{{ application }}-cron.command": "/usr/local/sbin/renovate-entrypoint.sh renovate",
-            "chadburn.job-exec.{{ application }}-cron.user": "ubuntu",
+            "chadburn.job-exec.{{ application }}-cron.user": "12021",
             "chadburn.job-exec.{{ application }}-cron.tty": "true",
             "chadburn.job-exec.{{ application }}-cron.no-overlap": "true"
           }'
@@ -114,4 +114,4 @@
             6461316338386437323364323936393230333563646638666331
 
           LOG_LEVEL: debug
-          RENOVATE_LOG_FILE: /tmp/renovate.log
+          LOG_FILE: /tmp/renovate.log
