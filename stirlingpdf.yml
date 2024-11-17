@@ -20,7 +20,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/stirling-tools/s-pdf:0.33.0-fat
+        image: ghcr.io/stirling-tools/s-pdf:0.33.1-fat
         env:
           DOCKER_ENABLE_SECURITY: "true"
           INSTALL_BOOK_AND_ADVANCED_HTML_OPS: "true"
