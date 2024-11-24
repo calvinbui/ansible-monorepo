@@ -18,7 +18,7 @@
           - /etc/localtime:/etc/localtime:ro
         env:
           TZ: "{{ common_timezone }}"
-          WATCHTOWER_SCHEDULE: "0 30 17 * * *"
+          WATCHTOWER_SCHEDULE: "0 0 4 * * *"
           WATCHTOWER_CLEANUP: "true"
           WATCHTOWER_REMOVE_VOLUMES: "true"
           # WATCHTOWER_NOTIFICATIONS: "slack"
