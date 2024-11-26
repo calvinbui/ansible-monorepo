@@ -75,13 +75,6 @@ cards:
           ulm_card_generic_swap_name: Washing Machine
           ulm_card_generic_swap_icon: "mdi:washing-machine"
       -
-        type: 'custom:button-card'
-        template: card_generic_swap
-        entity: input_boolean.dryer_running
-        variables:
-          ulm_card_generic_swap_name: Dryer
-          ulm_card_generic_swap_icon: "mdi:tumble-dryer"
-      -
         type: custom:button-card
         template: card_title
         name: 🧼 Dishwasher
