@@ -33,3 +33,7 @@
         traefik:
           - port: 8945
             auth: page
+        homepage:
+          group: Tools
+          weight: 15-
+          description: "YouTube Downloader"
