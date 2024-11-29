@@ -1,0 +1,259 @@
+'''
+Script for Pyscript
+
+Adjust the email, password, and device ID below. Device ID can be grabbed using script above.
+'''
+
+import requests
+import json
+import urllib
+from datetime import datetime as dt
+import uuid
+import secrets
+
+EMAIL = "{{ home_assistant_integrations.pyscript.snoo.email }}"
+PASSWORD = "{{ home_assistant_integrations.pyscript.snoo.password }}"
+DEVICE_ID = "{{ home_assistant_integrations.pyscript.snoo.device_id }}"
+
+
+class SnooStates:
+    BASELINE = "BASELINE"
+    LEVEL_1 = "LEVEL1"
+    LEVEL_2 = "LEVEL2"
+    LEVEL_3 = "LEVEL3"
+    LEVEL_4 = "LEVEL4"
+    STOP = "ONLINE"
+    PRETIMOUT = "PRETIMEOUT"
+    TIMEOUT = "TIMEOUT"
+
+
+aws_auth_url = 'https://cognito-idp.us-east-1.amazonaws.com/ '
+snoo_auth_url = 'https://api-us-east-1-prod.happiestbaby.com/us/me/v10/pubnub/authorize'
+snoo_devices_url = 'https://api-us-east-1-prod.happiestbaby.com/hds/me/v11/devices'
+snoo_data_url = 'https://happiestbaby.pubnubapi.com'
+snoo_data_endpoint = 'v2/subscribe/sub-c-97bade2a-483d-11e6-8b3b-02ee2ddab7fe'
+snoo_data_activity_endpoint_base = 'ActivityState'
+snoo_data_activity_endpoint_end = '0'
+snoo_data_activity_params = 'pnsdk=PubNub-Kotlin%2F7.4.0&heartbeat=300&requestid=e1848ef4-48dd-4f87-8c25-e47a83bfef16&state=%7B%7D&uuid=android_64c021f0e9a56700282ddda6_66455cf5-d26e-43dd-a7c6-45a13dbc3192&tr=24'
+
+aws_auth_hdr = {
+    'x-amz-target': 'AWSCognitoIdentityProviderService.InitiateAuth',
+    'accept-language': 'US',
+    'content-type': 'application/x-amz-json-1.1',
+    'accept-encoding': 'gzip',
+    'user-agent': 'okhttp/4.12.0',
+    'accept': 'application/json',
+}
+snoo_auth_hdr = {
+    'accept-language': 'US',
+    'content-type': 'application/json; charset=UTF-8',
+    'accept-encoding': 'gzip',
+    'user-agent': 'okhttp/4.12.0',
+    'accept': 'application/json',
+}
+snoo_data_hdr = {
+    'connection': 'keep-alive',
+    'accept-encoding': 'gzip',
+    'user-agent': 'okhttp/4.12.0'
+}
+
+aws_auth_data = {
+    "AuthParameters": {
+        "PASSWORD": PASSWORD,
+        "USERNAME": EMAIL,
+    },
+    "AuthFlow": "USER_PASSWORD_AUTH",
+    "ClientId": "6kqofhc8hm394ielqdkvli0oea",
+}
+snoo_auth_data = {
+    "advertiserId": "",
+    "appVersion": "1.8.7",
+    "device": "panther",
+    "deviceHasGSM": True,
+    "locale": "en",
+    "os": "Android",
+    "osVersion": "14",
+    "platform": "Android",
+    "timeZone": "America/New_York",
+    "userCountry": "US",
+    "vendorId": "eyqurgwYQSqmnExnzyiLO5"
+}
+
+aws_auth_data = json.dumps(aws_auth_data)
+snoo_auth_data = json.dumps(snoo_auth_data)
+
+
+def _encode(data):
+    return urllib.parse.quote_plus(data)
+
+
+def generate_snoo_auth_headers(amz_token):
+    hdrs = snoo_auth_hdr.copy()
+    hdrs['authorization'] = f'Bearer {amz_token}'
+    return hdrs
+
+
+def generate_snoo_data_url(device_id, snoo_token):
+    if device_id is float:
+        device_id = str(int(device_id))  # Convert to int first in case device ID is float)
+    device_id = device_id
+    # snoo_token = _encode(snoo_token)
+
+    ts = int(dt.now().timestamp() * 10_000_000)  # Timestamp in data URL is seconds multiplied by 10^10
+    req_uuid = uuid.uuid1()
+    dev_uuid = uuid.uuid1()
+    app_dev_id_len = 24
+    n = app_dev_id_len * 3 // 4  # base64, needed to ensure output len equals app_dev_id_len
+    app_dev_id = secrets.token_urlsafe(n)  # Randomly generate app dev ID
+
+    # A lot of the params/endpoints seem random but these seem to be consistent between every call.
+    # I'm not sure where they come from.
+
+    url = f'https://happiestbaby.pubnubapi.com/v2/history/sub-key/sub-c-97bade2a-483d-11e6-8b3b-02ee2ddab7fe/channel/ActivityState.{device_id}?pnsdk=PubNub-Kotlin%2F7.4.0&l_pub=0.064&auth={snoo_token}&requestid={req_uuid}&include_token=true&count=1&include_meta=false&reverse=false&uuid=android_{app_dev_id}_{dev_uuid}'
+    return url
+
+
+def generate_snoo_start_url(device_id, snoo_token):
+    if device_id is float:
+        device_id = str(int(device_id))  # Convert to int first in case device ID is float)
+    device_id = device_id
+
+    ts = int(dt.now().timestamp() * 10_000_000)  # Timestamp in data URL is seconds multiplied by 10^10
+    req_uuid = uuid.uuid1()
+    dev_uuid = uuid.uuid1()
+    app_dev_id_len = 24
+    n = app_dev_id_len * 3 // 4  # base64, needed to ensure output len equals app_dev_id_len
+    app_dev_id = secrets.token_urlsafe(n)  # Randomly generate app dev ID
+    url = f'https://happiestbaby.pubnubapi.com/publish/pub-c-699074b0-7664-4be2-abf8-dcbb9b6cd2bf/sub-c-97bade2a-483d-11e6-8b3b-02ee2ddab7fe/0/ControlCommand.{device_id}/0/%7B%22command%22:%22start_snoo%22%7D?pnsdk=PubNub-Kotlin%2F7.4.0&l_hist=0.088&l_pub=0.055&auth={snoo_token}&requestid={req_uuid}&seqn=2&uuid={app_dev_id}_{dev_uuid}'
+    return url
+
+
+def _generate_snoo_state_url(snoo_state, device_id, snoo_token):
+    if device_id is float:
+        device_id = str(int(device_id))  # Convert to int first in case device ID is float)
+    device_id = device_id
+
+    ts = int(dt.now().timestamp() * 10_000_000)  # Timestamp in data URL is seconds multiplied by 10^10
+    req_uuid = uuid.uuid1()
+    dev_uuid = uuid.uuid1()
+    app_dev_id_len = 24
+    n = app_dev_id_len * 3 // 4  # base64, needed to ensure output len equals app_dev_id_len
+    app_dev_id = secrets.token_urlsafe(n)  # Randomly generate app dev ID
+    url = f'https://happiestbaby.pubnubapi.com/publish/pub-c-699074b0-7664-4be2-abf8-dcbb9b6cd2bf/sub-c-97bade2a-483d-11e6-8b3b-02ee2ddab7fe/0/ControlCommand.{device_id}/0/%7B%22command%22:%22go_to_state%22,%22state%22:%22{snoo_state}%22,%22ts%22:1720195293855%7D?pnsdk=PubNub-Kotlin%2F7.4.0&l_hist=0.068&l_pub=0.099&auth={snoo_token}&requestid={req_uuid}&seqn=2&uuid={app_dev_id}_{dev_uuid}'
+    return url
+
+
+def auth_amazon():
+    r = task.executor(requests.post, aws_auth_url, data=aws_auth_data, headers=aws_auth_hdr)
+    resp = r.json()
+    result = resp['AuthenticationResult']
+    return result
+
+
+def auth_snoo(id_token):
+    hdrs = generate_snoo_auth_headers(id_token)
+    r = task.executor(requests.post, snoo_auth_url, data=snoo_auth_data, headers=hdrs)
+    return r
+
+
+def authorize():
+    amz = auth_amazon()
+    access = amz['AccessToken']
+    _id = amz['IdToken']
+    ref = amz['RefreshToken']
+    snoo = auth_snoo(_id)
+    snoo_token = snoo.json()['snoo']['token']
+    return {'aws': {'access': access, 'id': _id, 'refresh': ref}, 'snoo': snoo_token}
+
+
+def get_devices(id_token):
+    hdrs = generate_snoo_auth_headers(id_token)
+    r = task.executor(requests.get, snoo_devices_url, headers=hdrs)
+    resp = r.json()
+    devs = resp['snoo']
+    return devs
+
+
+def get_data(device_id, id_token, snoo_token):
+    devs = get_devices(id_token)
+    url = generate_snoo_data_url(device_id, snoo_token)
+    r = task.executor(requests.get, url, headers=snoo_data_hdr, timeout=5)
+    return r.json()
+
+
+def get_all_snoo_data():
+    result = []
+    auth = authorize()
+    id_token = auth['aws']['id']
+    devs = get_devices(id_token)
+    snoo_token = auth['snoo']
+    for dev in devs:
+        dev_id = dev['serialNumber']
+        data = get_data(dev_id, id_token, snoo_token)
+        result.append(data)
+    return result
+
+
+def go_to_state(state, device_id, snoo_token):
+    url = _generate_snoo_state_url(state, device_id, snoo_token)
+    r = task.executor(requests.get, url, headers=snoo_data_hdr, timeout=5)
+    return r
+
+
+@service(supports_response="always")
+def get_snoo_status():
+    """yaml
+name: Get Snoo Level
+description: Gets the level for the Snoo
+"""
+    auth = authorize()
+    id_token = auth['aws']['id']
+    snoo_token = auth['snoo']
+    data = get_data(DEVICE_ID, id_token, snoo_token)
+    state = data[0][0]['message']['state_machine']['state']
+    return {'result': state}
+
+
+@service(supports_response="always")
+def set_snoo_level(level):
+    """yaml
+name: Set Snoo Level
+description: Sets the level for the Snoo
+fields:
+    level:
+        description: Level to set the Snoo
+        required: true
+        selector:
+            select:
+                options:
+                    - label: Baseline
+                      value: BASELINE
+                    - label: Baseline
+                      value: WEANINGBASELINE
+                    - label: Pre-Timeout
+                      value: PRETIMEOUT
+                    - label: Timeout
+                      value: TIMEOUT
+                    - label: Level 1
+                      value: LEVEL1
+                    - label: Level 2
+                      value: LEVEL2
+                    - label: Level 3
+                      value: LEVEL3
+                    - label: Level 4
+                      value: LEVEL4
+                    - label: Start
+                      value: LEVEL1
+                    - label: Stop
+                      value: ONLINE
+    """
+    auth = authorize()
+    snoo_token = auth['snoo']
+    id_token = auth['aws']['id']
+    # devs = get_devices(id_token)
+    # dev_id = devs[0]['serialNumber']
+    result = go_to_state(level, DEVICE_ID, snoo_token)
+    status = result.status_code
+    data = result.json()
+    url = result.url
+    return {'result': status, 'data': data, 'url': url}

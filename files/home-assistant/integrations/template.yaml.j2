@@ -595,4 +595,86 @@
       {% set days = states('sensor.solar_days_until_breakeven') | float(0) %}
       {% set nice_remaining_days = today_at() + timedelta(days=days) %}
       {{ nice_remaining_days.strftime('%d %b %Y') }}
+
+
+# Snoo
+-
+  trigger:
+    -
+      platform: time_pattern
+      minutes: /5
+    -
+      platform: event
+      event_type: REFRESH_SNOO
+    -
+      platform: event
+      event_type: event_template_reloaded
+  action:
+    -
+      service: pyscript.get_snoo_status
+      response_variable: snoo_status
+  sensor:
+    -
+      unique_id: snoo_status
+      name: Snoo Status
+      state: >-
+        {% set result = snoo_status.result %}
+        {{ result }}
+-
+  sensor:
+    -
+      unique_id: snoo_states
+      name: Snoo States
+      state: "OK"
+      attributes:
+        states: >-
+          {% set result = {
+              'BASELINE': 'Baseline',
+              'WEANING_BASELINE': 'Baseline',
+              'LEVEL1': 'Level 1',
+              'LEVEL2': 'Level 2',
+              'LEVEL3': 'Level 3',
+              'LEVEL4': 'Level 4',
+              'ONLINE': 'Off',
+              'PRETIMEOUT': 'Pre-Timeout',
+              'TIMEOUT': 'Timeout'
+            }
+          %}
+          {{ result }}
+        states_inv: >-
+          {% set result = {
+              'Baseline': 'BASELINE',
+              'Weaning Baseline': 'WEANING_BASELINE',
+              'Off': 'ONLINE',
+              'Level 1': 'LEVEL1',
+              'Level 2': 'LEVEL2',
+              'Level 3': 'LEVEL3',
+              'Level 4': 'LEVEL4',
+              'Pre-Timeout': 'PRETIMEOUT',
+              'Timeout': 'TIMEOUT'
+            }
+          %}
+          {{ result }}
+-
+  select:
+    -
+      unique_id: kai_snoo
+      name: "Kai's Snoo"
+      state: >-
+        {% set opts = state_attr('sensor.snoo_states','states') %}
+        {% set state = states('sensor.snoo_status') %}
+        {% set result = opts.get(state) %}
+        {{ result }}
+      options: >-
+        {% set result = state_attr('sensor.snoo_states','states_inv').keys() | list %}
+        {{ result }}
+      select_option:
+        - service: pyscript.set_snoo_level
+          data:
+            level: >-
+              {% set opts = state_attr('sensor.snoo_states','states_inv') %}
+              {% set result = opts[option] %}
+              {{ result }}
+        - event: REFRESH_SNOO
+
 {%- endraw %}

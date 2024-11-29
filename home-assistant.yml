@@ -299,3 +299,20 @@
       notify: Restart
       register: _command_result
       changed_when: "'HACS directory already exist' not in _command_result.stdout"
+
+    - name: Create pyscript folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}/config/pyscript/"
+        state: directory
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+
+    - name: Copy pyscript scripts
+      ansible.builtin.template:
+        src: "{{ item }}"
+        dest: "{{ config_directory }}/config/pyscript/{{ item | basename | regex_replace('\\.j2$', '') }}"
+        mode: "0644"
+      notify: Restart
+      with_fileglob:
+        - "{{ files_directory }}/pyscript/*"
