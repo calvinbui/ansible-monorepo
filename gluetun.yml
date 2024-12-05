@@ -9,11 +9,55 @@
 
     gluetun_servers:
       -
+        provider: privado
+        country: australia
         city: sydney
-        ip: 246
+        user: &privado_user !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          36616137646432666331386331643365366437643236353136326638643165373837353932303232
+          3663636231336361633930383937623135633565363563390a396165343063613031383730653737
+          64636337663139376134663239626365343263646238663365646166623265643232353836613530
+          6639333231383637640a633530666161316333356566656634333034366135366637336530613165
+          3331
+        password: &privado_password !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          33303564336262323132613564366339343337646231636637383061366238626363326636373663
+          3039353536666139376366626634353531383838326238390a343466343838363263336432363435
+          37626437323732353433363937653166623865333366626137633561633839616663653538623637
+          3365343139303939620a613337393939633738313565386532656331636663313565656135656162
+          3563
       -
+        provider: privado
+        country: new zealand
+        city: auckland
+        user: *privado_user
+        password: *privado_password
+      -
+        provider: purevpn
+        country: australia
+        city: sydney
+        user: &purevpn_user !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          62346339393763643733393830616139636137393164313733346137633565366434653131663930
+          6136623161323136396531373438386637663035323265660a333530316334663263646536616335
+          36363734363761613738626237653635316533313765386462616661356339653734396335633033
+          6536323665356134380a653764666636306433363463623137633636633236353034623837323066
+          37316165396464373335626166636238626532326563393264303266366436393632
+        password: &purevpn_password !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          62393664336230376333623064666433343136356639643465643238333030396233366636376239
+          6234343761303133336562626164643265306361323337610a363031353463356230396138303964
+          35353939326231623063363937656637666434663863313134636337336434623561393133643435
+          6638306234303835350a616339333836376164653434303562313065383633633163646436623361
+          6434
+        config: true
+      -
+        provider: purevpn
+        country: australia
         city: perth
-        ip: 243
+        user: *purevpn_user
+        password: *purevpn_password
+        config: true
 
   tasks:
     - name: Create config folder
@@ -26,41 +70,36 @@
 
     - name: Copy config
       ansible.builtin.template:
-        src: "{{ files_directory }}/{{ item.city }}.ovpn"
+        src: "{{ files_directory }}/{{ item.provider }}-{{ item.city }}.ovpn"
         dest: "{{ config_directory }}/"
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
         mode: "0440"
       loop: "{{ gluetun_servers }}"
+      when: item.config is true
 
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        name: "{{ application }}-{{ item.city }}"
+        name: "{{ application }}-{{ item.provider }}-{{ item.city }}"
         image: ghcr.io/qdm12/gluetun:v3.39.1
-        ipv4_address: "{{ docker_network.prefix }}.{{ item.ip }}"
         capabilities:
           - NET_ADMIN
+        devices:
+          - /dev/net/tun:/dev/net/tun
         volumes:
           - "{{ config_directory }}:/gluetun"
         env:
-          VPN_SERVICE_PROVIDER: custom
-          OPENVPN_USER: !vault |
-            $ANSIBLE_VAULT;1.1;AES256
-            62346339393763643733393830616139636137393164313733346137633565366434653131663930
-            6136623161323136396531373438386637663035323265660a333530316334663263646536616335
-            36363734363761613738626237653635316533313765386462616661356339653734396335633033
-            6536323665356134380a653764666636306433363463623137633636633236353034623837323066
-            37316165396464373335626166636238626532326563393264303266366436393632
-          OPENVPN_PASSWORD: !vault |
-            $ANSIBLE_VAULT;1.1;AES256
-            62393664336230376333623064666433343136356639643465643238333030396233366636376239
-            6234343761303133336562626164643265306361323337610a363031353463356230396138303964
-            35353939326231623063363937656637666434663863313134636337336434623561393133643435
-            6638306234303835350a616339333836376164653434303562313065383633633163646436623361
-            6434
-          OPENVPN_CUSTOM_CONFIG: "/gluetun/{{ item.city }}.ovpn"
+          VPN_SERVICE_PROVIDER: "{{ 'custom' if item.provider == 'purevpn' else item.provider }}"
+
+          OPENVPN_USER: "{{ item.user }}"
+          OPENVPN_PASSWORD: "{{ item.password }}"
+
+          SERVER_COUNTRIES: "{{ item.country if not item.config else omit }}"
+          SERVER_CITIES: "{{ item.city if not item.config else omit }}"
+
+          OPENVPN_CUSTOM_CONFIG: "{{ '/gluetun/' + item.provider + '-' + item.city + '.ovpn' if item.config else omit }}"
 
           HTTPPROXY: "on"
           HTTPPROXY_STEALTH: "on"
@@ -73,4 +112,6 @@
           UPDATER_PERIOD: "0"
 
           TZ: "{{ common_timezone }}"
+        comparisons:
+          env: strict
       loop: "{{ gluetun_servers }}"
