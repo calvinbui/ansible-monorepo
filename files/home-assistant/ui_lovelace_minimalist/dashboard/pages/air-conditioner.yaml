@@ -43,9 +43,9 @@ cards:
           hvac:
             _name: Mode
             heat_cool:
-              name: Auto
+              name: auto
             fan_only:
-              name: Fan
+              name: fan
           fan:
             _name: Fan
         header: false
@@ -78,6 +78,10 @@ cards:
 
               /* left to right, instead of up to down */
               grid-auto-flow: row !important;
+
+              .mode-item {
+                text-transform: capitalize;
+              }
             }
 
             /* hvac mode columns */
