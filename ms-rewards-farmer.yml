@@ -1,0 +1,61 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: ms-rewards-farmer
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Clone
+      ansible.builtin.git:
+        repo: "https://github.com/neve360/MS-Rewards-Farmer.git"
+        version: Docker
+        dest: "{{ config_directory }}"
+        update: true
+      register: _ms_rewards_farmer_repo_updated
+
+    - name: Build image
+      community.docker.docker_image:
+        name: "{{ application }}"
+        build:
+          path: "{{ config_directory }}"
+          dockerfile: Dockerfile
+          pull: true
+        source: build
+        state: present
+        force_source: "{{ true if _ms_rewards_farmer_repo_updated.changed else false }}"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: "{{ application }}"
+        env:
+          USERNAME: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            38633862613733336133633837303337343632313261363638643035633964303166343765653239
+            3862393935316636633032396134333466363263353262650a633236336234633139363936353038
+            30383438636161313464626665623065653831393739386134376639393339363332323630643831
+            3063313731656663660a343064326566396261663138303932383637393962386366346134383634
+            33373739366337616265303432386562636334336331366263396533333930346534
+          PASSWORD: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            32613639376165373330356464373232623365343264343065386565313733316131313130323132
+            3566626363633431643531376237326633653763336334380a623333336439393035383066633132
+            39653930383535303366653436353431663935653434373766643638656262376163633338306566
+            3531623232643265340a353863386436333366333033623236343138373461653761623862633434
+            34363735373237656138653064663737313635353661303766323831366135353230
+          GEOLOCATION: "{{ common_country_iso_3166 }}"
+          LANG: "{{ common_language_iso_639 }}"
+        labels:
+          com.centurylinklabs.watchtower.enable: "false"
