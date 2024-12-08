@@ -47,15 +47,6 @@ cards:
                   ulm_card_person_entity: person.tammy
                   ulm_card_person_icon: mdi:face-agent
                 <<: *person_card
-          -
-            type: horizontal-stack
-            cards:
-              -
-                entity: person.my
-                variables:
-                  ulm_card_person_entity: person.my
-                  ulm_card_person_icon: mdi:emoticon-cool
-                <<: *person_card
       -
         name: 📅 Calendar
         <<: *title_card
