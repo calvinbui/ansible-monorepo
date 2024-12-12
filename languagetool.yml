@@ -157,7 +157,7 @@
         cap_drop:
           - ALL
         env:
-          EXTRAOPTIONS: "-Xmx2g -Xms1g --premiumAlways"
+          EXTRAOPTIONS: "-Xmx2g -Xms1g"
         volumes:
           - "{{ config_directory }}/ngrams/:/ngrams"
           - "{{ config_directory }}/config.properties:/LanguageTool/config.properties"
