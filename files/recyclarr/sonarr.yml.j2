@@ -134,6 +134,36 @@ sonarr:
           - 06d66ab109d4d2eddb2794d21526d140 # Retags
           # - 1b3994c551cbb92a2c781af061f4ab44 # Scene
           - 9b64dff695c2115facf1b6ea59c9bd07 # x265 (no HDR/DV)
+      -
+        # Add HDR to 1080p. Not sure why it doesn't exist.
+        # Boost DV HDR10+ and DV HDR10
+        assign_scores_to:
+          - name: 1080p
+            score: 1600
+        trash_ids:
+          - 2b239ed870daba8126a53bd5dc8dc1c8 # DV HDR10+
+      -
+        assign_scores_to:
+          - name: 1080p
+            score: 1550
+        trash_ids:
+          - 7878c33f1963fefb3d6c8657d46c2f0a # DV HDR10
+      -
+        assign_scores_to:
+          - name: 1080p
+        trash_ids:
+          # - 2b239ed870daba8126a53bd5dc8dc1c8 # DV HDR10+
+          # - 7878c33f1963fefb3d6c8657d46c2f0a # DV HDR10
+          - 6d0d8de7b57e35518ac0308b0ddf404e # DV
+          - 1f733af03141f068a540eec352589a89 # DV HLG
+          - 27954b0a80aab882522a88a4d9eae1cd # DV SDR
+          - a3d82cbef5039f8d295478d28a887159 # HDR10+
+          - 3497799d29a085e2ac2df9d468413c94 # HDR10
+          - 3e2c4e748b64a1a1118e0ea3f4cf6875 # HDR
+          - bb019e1cd00f304f80971c965de064dc # HDR (undefined)
+          - 2a7e3be05d3861d6df7171ec74cad727 # PQ
+          - 17e889ce13117940092308f48b48b45b # HLG
+
 
       # ▞▀▖▗▌ ▞▀▖▞▀▖
       #  ▗▘ ▌ ▙▄ ▌▞▌▛▀▖
@@ -143,11 +173,24 @@ sonarr:
       # https://trash-guides.info/Sonarr/sonarr-setup-quality-profiles/#web-2160p
       -
         # All HDR Formats
+        # Boost DV HDR10+ and DV HDR10
+        assign_scores_to:
+          - name: 4K
+            score: 1600
+        trash_ids:
+          - 2b239ed870daba8126a53bd5dc8dc1c8 # DV HDR10+
+      -
+        assign_scores_to:
+          - name: 4K
+            score: 1550
+        trash_ids:
+          - 7878c33f1963fefb3d6c8657d46c2f0a # DV HDR10
+      -
         assign_scores_to:
           - name: 4K
         trash_ids:
-          - 2b239ed870daba8126a53bd5dc8dc1c8 # DV HDR10+
-          - 7878c33f1963fefb3d6c8657d46c2f0a # DV HDR10
+          # - 2b239ed870daba8126a53bd5dc8dc1c8 # DV HDR10+
+          # - 7878c33f1963fefb3d6c8657d46c2f0a # DV HDR10
           - 6d0d8de7b57e35518ac0308b0ddf404e # DV
           - 1f733af03141f068a540eec352589a89 # DV HLG
           - 27954b0a80aab882522a88a4d9eae1cd # DV SDR
