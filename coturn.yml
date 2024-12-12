@@ -50,7 +50,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/coturn/coturn:4.6.2
+        image: ghcr.io/coturn/coturn:4.6.3
         tmpfs:
           - /var/lib/coturn:rw,mode=01777
         volumes:
