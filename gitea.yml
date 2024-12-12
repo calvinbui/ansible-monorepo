@@ -53,6 +53,15 @@
           USER_GID: "{{ common_group_id | string }}"
 
           # https://docs.gitea.com/next/administration/config-cheat-sheet
+          GITEA__repository__DEFAULT_BRANCH: "master"
+          GITEA__repository__FORCE_PRIVATE: "true"
+          GITEA__repository__DEFAULT_PRIVATE: "true"
+          GITEA__repository__DISABLED_REPO_UNITS: "repo.ext_issues,repo.wiki,repo.ext_wiki,repo.projects,repo.packages"
+          GITEA__repository__DEFAULT_REPO_UNITS: "repo.code,repo.pulls,repo.actions"
+          GITEA__repository__DISABLE_STARS: "true"
+
+          GITEA__markdown__ENABLE_MATH: "false"
+
           GITEA__server__DOMAIN: "{{ application }}.{{ common_tld }}"
           GITEA__server__ROOT_URL: "https://{{ application }}.{{ common_tld }}"
           GITEA__server__OFFLINE_MODE: "true"
@@ -61,13 +70,6 @@
           GITEA__server__LFS_START_SERVER: "false"
           GITEA__server__MINIMUM_KEY_SIZE_CHECK: "true"
           GITEA__server__LANDING_PAGE: "/user/login"
-
-          GITEA__repository__DEFAULT_BRANCH: "master"
-          GITEA__repository__FORCE_PRIVATE: "true"
-          GITEA__repository__DEFAULT_PRIVATE: "true"
-          GITEA__repository__DISABLED_REPO_UNITS: "repo.ext_issues,repo.wiki,repo.ext_wiki,repo.projects,repo.packages"
-          GITEA__repository__DEFAULT_REPO_UNITS: "repo.code,repo.pulls,repo.actions"
-          GITEA__repository__DISABLE_STARS: "true"
 
           GITEA__database__DB_TYPE: postgres
           GITEA__database__HOST: "{{ _postgres_hostname }}:{{ _postgres_port | string }}"
