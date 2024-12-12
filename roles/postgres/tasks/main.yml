@@ -71,3 +71,8 @@
   ansible.builtin.set_fact:
     _postgres_url: "postgres://{{ _postgres_username }}:{{ _postgres_password }}@{{ _postgres_hostname }}:{{ _postgres_port }}/{{ _postgres_database }}"
     _postgresql_url: "postgresql://{{ _postgres_username }}:{{ _postgres_password }}@{{ _postgres_hostname }}:{{ _postgres_port }}/{{ _postgres_database }}"
+
+- name: Wait for postgres to come up
+  ansible.builtin.pause:
+    seconds: 10
+  when: postgres_container.changed
