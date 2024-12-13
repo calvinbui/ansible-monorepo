@@ -49,7 +49,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/manyfold3d/manyfold:0.91.1
+        image: ghcr.io/manyfold3d/manyfold:0.91.2
         volumes:
           - "{{ config_directory }}/app:/libraries"
         env:
