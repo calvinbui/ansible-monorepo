@@ -25,7 +25,7 @@ import re
 import requests
 import logging
 from base64 import b64encode
-from datetime import datetime
+import datetime
 import xml.etree.ElementTree as etree
 from urllib.parse import urlparse
 
@@ -153,8 +153,8 @@ class IPMIUpdater:
         status = status[0]
         has_cert = bool(int(status.get('CERT_EXIST')))
         if has_cert:
-            valid_from = datetime.strptime(status.get('VALID_FROM'), r"%b %d %H:%M:%S %Y")
-            valid_until = datetime.strptime(status.get('VALID_UNTIL'), r"%b %d %H:%M:%S %Y")
+            valid_from = datetime.datetime.strptime(status.get('VALID_FROM'), r"%b %d %H:%M:%S %Y")
+            valid_until = datetime.datetime.strptime(status.get('VALID_UNTIL'), r"%b %d %H:%M:%S %Y")
 
         return {
             'has_cert': has_cert,
@@ -273,7 +273,7 @@ class IPMIX9Updater(IPMIUpdater):
         self.session.mount('https://', IPMIX9Updater.TLSv1HttpAdapter())
 
     def _get_op_data(self, op, r):
-        timestamp = datetime.utcnow().strftime('%a %d %b %Y %H:%M:%S GMT')
+        timestamp = datetime.datetime.now(datetime.UTC).strftime('%a %d %b %Y %H:%M:%S GMT')
 
         data = {
             'time_stamp': timestamp  # 'Thu Jul 12 2018 19:52:48 GMT+0300 (FLE Daylight Time)'
@@ -335,7 +335,7 @@ class IPMIX10Updater(IPMIUpdater):
         self.use_b64encoded_login = False
 
     def _get_op_data(self, op, r):
-        timestamp = datetime.utcnow().strftime('%a %d %b %Y %H:%M:%S GMT')
+        timestamp = datetime.datetime.now(datetime.UTC).strftime('%a %d %b %Y %H:%M:%S GMT')
 
         data = {
             'time_stamp': timestamp  # 'Thu Jul 12 2018 19:52:48 GMT+0300 (FLE Daylight Time)'
@@ -387,11 +387,11 @@ class IPMIX11Updater(IPMIUpdater):
         ]
 
 def parse_valid_until(pem):
-    from datetime import datetime
+    import datetime
     from OpenSSL import crypto as c
     with open(pem, 'rb') as fh:
         cert = c.load_certificate(c.FILETYPE_PEM, fh.read())
-    return datetime.strptime(cert.get_notAfter().decode('utf8'), "%Y%m%d%H%M%SZ")
+    return datetime.datetime.strptime(cert.get_notAfter().decode('utf8'), "%Y%m%d%H%M%SZ")
 
 def create_updater(args):
     session = requests.session()
