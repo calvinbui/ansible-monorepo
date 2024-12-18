@@ -42,12 +42,12 @@
         relay-1: light
         relay-1-name: Downlights
 
-      shellyswitch25-4c752534d9a4:
-        device_name: Shelly 2.5 - Dining Room
-        relay-0: light
-        relay-0-name: Downlights
-        relay-1: light
-        relay-1-name: LEDs
+      # shellyswitch25-4c752534d9a4:
+      #   device_name: Shelly 2.5 - Dining Room
+      #   relay-0: light
+      #   relay-0-name: Downlights
+      #   relay-1: light
+      #   relay-1-name: LEDs
 
       shellyswitch25-4c752532e5f4:
         device_name: Shelly 2.5 - Living Room

@@ -14,6 +14,7 @@
       - shellyplus1pm-alfresco
       - shellyplus1pm-upstairshallway
       - shellyplus1pm-masterbedroom
+      - shellyplus2pm-dining
   action:
     - delay:
         hours: 0
