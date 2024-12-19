@@ -1,0 +1,60 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: emqx
+
+    docker_network: "{{ networks.iot }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}/data"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: emqx/emqx:5.8.3
+        env:
+          # https://docs.emqx.com/en/emqx/v5.8.3/hocon
+          EMQX_NODE__NAME: "{{ application }}@{{ application }}.{{ common_local_tld }}"
+          EMQX_NODE__COOKIE: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            33343535653932613365623134323362306339613937366433303037333266346161366430383939
+            3064613732343262306666393765326531386636303230350a613766636434613733313664353530
+            38343731643166643962363131663766346532666237616139326661643562643061626334633863
+            3732356666366236660a316433363835303135643432343539663963356134363862613262646164
+            65623635663034333861326665313238306162386137363461313761343936633231373661386436
+            3433383935303362303537323834333534666134613330333131
+
+          EMQX_AUTHENTICATION__1__MECHANISM: "password_based"
+          EMQX_AUTHENTICATION__1__BACKEND: "built_in_database"
+          EMQX_AUTHENTICATION__1__PASSWORD_HASH_ALGORITHM__NAME: "bcrypt"
+          EMQX_AUTHENTICATION__1__PASSWORD_HASH_ALGORITHM__SALT_ROUNDS: "5"
+
+          EMQX_LOG__FILE__ENABLE: "false"
+
+          EMQX_TELEMETRY__ENABLE: "false"
+
+          EMQX_DASHBOARD__DEFAULT_PASSWORD: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            36376533313637396164653965613930663762636535626234363130653362666237343137316264
+            6534396634643531333330613066396666396366326462320a313839396639626164373137313661
+            38363030653233616434323262353234626563383731613436313536333866353666333734666130
+            6633646432353133330a663135363966323962313935306234313533353463313736356462636535
+            30616635643437356566303535313663616466396437643838636437653964353233
+        volumes:
+          - "{{ config_directory }}:/opt/emqx/data"
+        ipv4_address: "{{ docker_network.prefix }}.247"
+        homepage:
+          name: EMQX
+          group: Home Automation
+          weight: 125
+          description: "MQTT Broker"
+          href: http://{{ application }}.{{ common_local_tld }}:18083
