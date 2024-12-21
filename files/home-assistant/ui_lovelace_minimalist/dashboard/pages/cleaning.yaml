@@ -77,10 +77,10 @@ cards:
               var name = "Washing Machine";
 
               switch(states['sensor.bosch_wax32k41au_68a40e43fa03_bsh_common_status_operationstate'].state) {
-                case "BSH.Common.EnumType.OperationState.Run":
+                case "Running":
                   name += ` - ${program}`;
                   break;
-                case "BSH.Common.EnumType.OperationState.Finished":
+                case "Finished":
                   name += ` - Finished`;
                   break;
               };
@@ -94,7 +94,7 @@ cards:
           icon: mdi:washing-machine
           name: '${ name() }'
           entity: sensor.bosch_wax32k41au_68a40e43fa03_bsh_common_status_operationstate
-          active_state: BSH.Common.EnumType.OperationState.Run
+          active_state: Running
           end_time:
             entity: sensor.bosch_wax32k41au_68a40e43fa03_bsh_common_option_remainingprogramtime
           text_width: 4em
