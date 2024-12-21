@@ -142,11 +142,11 @@
           Server1.Notes: ''
 
           Server2.Active: 'yes'
-          Server2.Name: 'Easynews US'
-          Server2.Level: '1'
+          Server2.Name: 'Easynews'
+          Server2.Level: '0'
           Server2.Optional: 'no'
-          Server2.Group: '1'
-          Server2.Host: 'secure-us.news.easynews.com'
+          Server2.Group: '0'
+          Server2.Host: 'news.easynews.com'
           Server2.Port: '563'
           Server2.Username: &easynews_username !vault |
             $ANSIBLE_VAULT;1.1;AES256
@@ -171,107 +171,73 @@
           Server2.Notes: ''
 
           Server3.Active: 'yes'
-          Server3.Name: 'Easynews EU'
-          Server3.Level: '1'
+          Server3.Name: 'Tweaknews'
+          Server3.Level: '0'
           Server3.Optional: 'no'
-          Server3.Group: '2'
-          Server3.Host: 'secure-eu.news.easynews.com'
+          Server3.Group: '0'
+          Server3.Host: 'newshosting.tweaknews.eu'
           Server3.Port: '563'
-          Server3.Username: *easynews_username
-          Server3.Password: *easynews_password
-          Server3.JoinGroup: 'no'
-          Server3.Encryption: 'yes'
-          Server3.Cipher: 'AES128-SHA'
-          Server3.Connections: '60'
-          Server3.Retention: ''
-          Server3.IpVersion: 'ipv4'
-          Server3.Notes: ''
-
-          Server4.Active: 'yes'
-          Server4.Name: 'Tweaknews'
-          Server4.Level: '1'
-          Server4.Optional: 'no'
-          Server4.Group: '3'
-          Server4.Host: 'newshosting.tweaknews.eu'
-          Server4.Port: '563'
-          Server4.Username: !vault |
+          Server3.Username: !vault |
             $ANSIBLE_VAULT;1.1;AES256
             35396334303934633161313365636539383534666164333664386663363737386238393630363636
             6438383236646332656234306335393333313961353838660a343932636135353139303639663765
             65316564643431656637313133643165666230346266346239366164623732313034333263343535
             3861373064663464340a396430343061656338363135373838666532643832396164363334383337
             6665
-          Server4.Password: *newshosting_password
-          Server4.JoinGroup: 'no'
-          Server4.Encryption: 'yes'
-          Server4.Cipher: 'AES128-SHA'
-          Server4.Connections: '40'
-          Server4.Retention: '4200'
-          Server4.IpVersion: 'ipv4'
-          Server4.Notes: ''
+          Server3.Password: *newshosting_password
+          Server3.JoinGroup: 'no'
+          Server3.Encryption: 'yes'
+          Server3.Cipher: 'AES128-SHA'
+          Server3.Connections: '40'
+          Server3.Retention: '4200'
+          Server3.IpVersion: 'ipv4'
+          Server3.Notes: ''
 
-          Server5.Active: 'yes'
-          Server5.Name: 'Blocknews US'
-          Server5.Level: '2'
-          Server5.Optional: 'no'
-          Server5.Group: '4'
-          Server5.Host: 'usnews.blocknews.net'
-          Server5.Port: '563'
-          Server5.Username: &blocknews_username !vault |
+          Server4.Active: 'yes'
+          Server4.Name: 'Blocknews US'
+          Server4.Level: '1'
+          Server4.Optional: 'no'
+          Server4.Group: '0'
+          Server4.Host: 'usnews.blocknews.net'
+          Server4.Port: '563'
+          Server4.Username: &blocknews_username !vault |
             $ANSIBLE_VAULT;1.1;AES256
             62663232306238393433666262366163343837373638633365643734313030646337393863306630
             6265386262356261333531356565346134343638633731320a613863633236386661363638353561
             65623136663161613335383764653233366462366539313734303635353566363331623733643736
             3261353936303336620a656235623765376136623238613765613630656262366632383939313435
             3839
-          Server5.Password: &blocknews_password !vault |
+          Server4.Password: &blocknews_password !vault |
             $ANSIBLE_VAULT;1.1;AES256
             34396362353562643230303564663732353735366662326366336664636665626263336130306364
             3965393063626433363335353231306666303666636564300a613131373565343364386338396537
             39353366343737373830643932613737643238343438623530613936633034613034316431326666
             3538623233303930350a346637656361616436323063333235383361353331656232353735396564
             38643661353262383031323966363039353534363032666530336563393035393266
+          Server4.JoinGroup: 'no'
+          Server4.Encryption: 'yes'
+          Server4.Cipher: 'AES128-SHA'
+          Server4.Connections: '100'
+          Server4.Retention: '5186'
+          Server4.IpVersion: 'ipv4'
+          Server4.Notes: ''
+
+          Server5.Active: 'yes'
+          Server5.Name: 'Blocknews EU'
+          Server5.Level: '1'
+          Server5.Optional: 'no'
+          Server5.Group: '0'
+          Server5.Host: 'eunews.blocknews.net'
+          Server5.Port: '563'
+          Server5.Username: *blocknews_username
+          Server5.Password: *blocknews_password
           Server5.JoinGroup: 'no'
           Server5.Encryption: 'yes'
           Server5.Cipher: 'AES128-SHA'
-          Server5.Connections: '15'
+          Server5.Connections: '100'
           Server5.Retention: '5186'
           Server5.IpVersion: 'ipv4'
           Server5.Notes: ''
-
-          Server6.Active: 'yes'
-          Server6.Name: 'Blocknews EU'
-          Server6.Level: '2'
-          Server6.Optional: 'no'
-          Server6.Group: '5'
-          Server6.Host: 'eunews.blocknews.net'
-          Server6.Port: '563'
-          Server6.Username: *blocknews_username
-          Server6.Password: *blocknews_password
-          Server6.JoinGroup: 'no'
-          Server6.Encryption: 'yes'
-          Server6.Cipher: 'AES128-SHA'
-          Server6.Connections: '15'
-          Server6.Retention: '5186'
-          Server6.IpVersion: 'ipv4'
-          Server6.Notes: ''
-
-          Server7.Active: 'yes'
-          Server7.Name: 'Blocknews EU2'
-          Server7.Level: '2'
-          Server7.Optional: 'no'
-          Server7.Group: '6'
-          Server7.Host: 'eunews2.blocknews.net'
-          Server7.Port: '563'
-          Server7.Username: *blocknews_username
-          Server7.Password: *blocknews_password
-          Server7.JoinGroup: 'no'
-          Server7.Encryption: 'yes'
-          Server7.Cipher: 'AES128-SHA'
-          Server7.Connections: '15'
-          Server7.Retention: '5186'
-          Server7.IpVersion: 'ipv4'
-          Server7.Notes: ''
 
           # SECURITY
           ControlUsername: ''
