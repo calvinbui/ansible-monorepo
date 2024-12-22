@@ -58,6 +58,8 @@ session:
     - domain: {{ common_tld }}
       authelia_url: "https://authelia.{{ common_tld }}"
       default_redirection_url: "https://{{ common_tld }}"
+      expiration: "24h"
+      remember_me: "30d"
   redis:
     host: {{ _redis_hostname }}
     port: {{ _redis_port }}
@@ -148,3 +150,6 @@ identity_providers:
           - authorization_code
         {% endif %}
       {% endfor %}
+
+ntp:
+  address: "ntp.{{ common_tld }}"
