@@ -121,7 +121,7 @@
 
           DEBUG: "False"
 
-          SITE_USES_HTTPS: "False"
+          SITE_USES_HTTPS: "True"
           SITE_IS_PUBLIC: "False"
           SOCIAL_LOGIN: "False"
 
@@ -134,6 +134,14 @@
           ACCOUNT_ALLOW_SIGN_UP: "False"
           WEBPACK_LOADER_ENABLED: "False"
 
+          DJANGO_SECRET_KEY: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            63346166666432343230313334626363366563653939393165373430386365353938373036623665
+            3964303736366161396661643135613936306462393233360a386136333930346466303964303637
+            65343632613436336431343535393232613434386334653736653136623038333362666365373864
+            6331663432366334380a623739636130366264343133313236323466313961613233356662623263
+            30343133326136633133303236613165303436333165373434353436393462323463626263356239
+            3266376561333337353632303564663966366466646666313335
         labels:
           com.centurylinklabs.watchtower.enable: "false"
 
@@ -151,3 +159,10 @@
         env: *web_env
         labels:
           com.centurylinklabs.watchtower.enable: "false"
+
+    - name: Add site to django
+      community.docker.docker_container_exec:
+        container: "{{ application }}-web"
+        command: "./manage.py site --add {{ application }}.{{ common_tld }}"
+      register: _command_result
+      changed_when: "'already exists' not in _command_result.stdout"
