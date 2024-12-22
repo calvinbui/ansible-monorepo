@@ -81,6 +81,12 @@
         src: /root/.ssh/id_ed25519.pub
       register: __homelab_public_key
 
+    - name: Add nut to msmtp group to send emails
+      ansible.builtin.user:
+        name: nut
+        groups: msmtp
+        append: yes
+
 - hosts: nvr
 
   handlers:

@@ -49,7 +49,7 @@
         dest: /etc/msmtprc
         owner: root
         group: msmtp
-        mode: "600"
+        mode: "640"
         content: |
           defaults
           auth           on
@@ -75,7 +75,7 @@
         dest: /etc/aliases
         owner: root
         group: msmtp
-        mode: "600"
+        mode: "640"
         content: |
           # Send root to
           root: homelab-root-user{{ common_email_to }}
