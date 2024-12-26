@@ -85,7 +85,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-{{ item.provider }}-{{ item.city }}"
-        image: ghcr.io/qdm12/gluetun:v3.39.1
+        image: ghcr.io/qdm12/gluetun:v3.40.0
         capabilities:
           - NET_ADMIN
         devices:
