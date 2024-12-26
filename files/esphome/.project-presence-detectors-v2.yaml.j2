@@ -1,0 +1,19 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
+---
+
+# ESP32 C3 Super Mini with HiLink LD2410B
+
+# https://esphome.io/components/packages.html
+packages:
+  esp32c3: !include .common_esp32-c3-supermini.yaml
+  wifi: !include .common_wifi.yaml
+  ota: !include .common_ota.yaml
+  api: !include .common_api.yaml
+  device_base: !include .base_ld2410.yaml
+  btproxy: !include .common_bt_proxy.yaml
+  btproxyc3: !include .common_bt_proxy-c3.yaml
+
+# https://esphome.io/components/uart.html
+uart:
+  rx_pin: GPIO20
+  tx_pin: GPIO21
