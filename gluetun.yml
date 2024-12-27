@@ -10,7 +10,6 @@
     gluetun_servers:
       -
         provider: privado
-        country: australia
         city: sydney
         user: &privado_user !vault |
           $ANSIBLE_VAULT;1.1;AES256
@@ -26,17 +25,13 @@
           37323731396630363337366465383864316461363837346239653865356263626630623762346331
           6638376265333530370a323630356235313433633838653036393938326437656238613334616463
           30396333326135333536616362653935623463616663316565646133373234626664
-        config: false
       -
         provider: privado
-        country: new zealand
         city: auckland
         user: *privado_user
         password: *privado_password
-        config: false
       -
         provider: purevpn
-        country: australia
         city: sydney
         user: &purevpn_user !vault |
           $ANSIBLE_VAULT;1.1;AES256
@@ -52,14 +47,11 @@
           35353939326231623063363937656637666434663863313134636337336434623561393133643435
           6638306234303835350a616339333836376164653434303562313065383633633163646436623361
           6434
-        config: true
       -
         provider: purevpn
-        country: australia
         city: perth
         user: *purevpn_user
         password: *purevpn_password
-        config: true
 
   tasks:
     - name: Create config folder
@@ -78,7 +70,6 @@
         group: "{{ common_root_group }}"
         mode: "0440"
       loop: "{{ gluetun_servers }}"
-      when: item.config is true
 
     - name: Create container
       ansible.builtin.include_role:
@@ -93,15 +84,12 @@
         volumes:
           - "{{ config_directory }}:/gluetun"
         env:
-          VPN_SERVICE_PROVIDER: "{{ 'custom' if item.provider == 'purevpn' else item.provider }}"
+          VPN_SERVICE_PROVIDER: "custom"
 
           OPENVPN_USER: "{{ item.user }}"
           OPENVPN_PASSWORD: "{{ item.password }}"
 
-          SERVER_COUNTRIES: "{{ item.country if not item.config else omit }}"
-          SERVER_CITIES: "{{ item.city if not item.config else omit }}"
-
-          OPENVPN_CUSTOM_CONFIG: "{{ '/gluetun/' + item.provider + '-' + item.city + '.ovpn' if item.config else omit }}"
+          OPENVPN_CUSTOM_CONFIG: "{{ '/gluetun/' + item.provider + '-' + item.city + '.ovpn' }}"
 
           HTTPPROXY: "on"
           HTTPPROXY_STEALTH: "on"
