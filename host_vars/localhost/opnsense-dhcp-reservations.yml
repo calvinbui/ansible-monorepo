@@ -1,0 +1,590 @@
+---
+
+opnsense_dhcp_reservations:
+  -
+    ip: 192.168.1.2
+    subnet: 192.168.1.0/24
+    mac: ac:84:c6:2c:dd:12
+    hostname: switch
+  -
+    ip: 192.168.1.3
+    subnet: 192.168.1.0/24
+    mac: ff:ff:ff:ff:ff:03
+    hostname: homelab
+  -
+    ip: 192.168.1.4
+    subnet: 192.168.1.0/24
+    mac: ac:1f:6b:4c:0f:93
+    hostname: homelab-ipmi
+  -
+    ip: 192.168.2.1
+    subnet: 192.168.2.0/24
+    mac: ff:00:ff:00:ff:00
+    hostname: opnsense-web
+  -
+    ip: 192.168.2.2
+    subnet: 192.168.2.0/24
+    mac: 80:cc:9c:9f:51:58
+    hostname: switch-study
+    description: "In Calvin's Room"
+  -
+    ip: 192.168.2.4
+    subnet: 192.168.2.0/24
+    mac: 3c:2a:f4:05:73:24
+    hostname: printer
+  -
+    ip: 192.168.2.5
+    subnet: 192.168.2.0/24
+    mac: e8:48:b8:9b:64:1a
+    hostname: wifi-downstairs-common
+  -
+    ip: 192.168.2.6
+    subnet: 192.168.2.0/24
+    mac: e8:48:b8:9b:64:20
+    hostname: wifi-front-bedrooms
+  -
+    ip: 192.168.2.7
+    subnet: 192.168.2.0/24
+    mac: e8:48:b8:9b:64:12
+    hostname: wifi-rear-bedrooms
+  -
+    ip: 192.168.2.8
+    subnet: 192.168.2.0/24
+    mac: 10:27:f5:66:ae:2a
+    hostname: wifi-foyer
+  -
+    ip: 192.168.2.10
+    subnet: 192.168.2.0/24
+    mac: 70:85:c2:5c:89:61
+    hostname: CALVIN-PC
+  -
+    ip: 192.168.2.252
+    subnet: 192.168.2.0/24
+    mac: ff:00:ff:00:f2:52
+    hostname: omada
+  -
+    ip: 192.168.2.253
+    subnet: 192.168.2.0/24
+    mac: ff:00:ff:00:f2:53
+    hostname: time-machine
+  -
+    ip: 192.168.2.254
+    subnet: 192.168.2.0/24
+    mac: ff:00:ff:00:f2:54
+    hostname: prometheus
+  -
+    ip: 192.168.3.2
+    subnet: 192.168.3.0/24
+    mac: 68:d7:9a:62:7d:2f
+    hostname: nvr-ge
+    description: "ethernet"
+  -
+    ip: 192.168.3.3
+    subnet: 192.168.3.0/24
+    mac: 68:d7:9a:62:7d:30
+    hostname: nvr
+    description: "over sfp+"
+  -
+    ip: 192.168.3.4
+    subnet: 192.168.3.0/24
+    mac: 78:45:58:2f:1a:12
+    hostname: g3-flex-outdoor-side
+  -
+    ip: 192.168.3.5
+    subnet: 192.168.3.0/24
+    mac: 78:45:58:2f:19:4b
+    hostname: g3-flex-upstairs-hallway
+  -
+    ip: 192.168.3.6
+    subnet: 192.168.3.0/24
+    mac: 78:45:58:2f:1a:a1
+    hostname: g3-flex-backyard
+  -
+    ip: 192.168.3.7
+    subnet: 192.168.3.0/24
+    mac: 78:45:58:2f:19:ea
+    hostname: g3-flex-driveway
+  -
+    ip: 192.168.3.8
+    subnet: 192.168.3.0/24
+    mac: 78:45:58:2f:19:6a
+    hostname: g3-flex-foyer
+  -
+    ip: 192.168.3.9
+    subnet: 192.168.3.0/24
+    mac: 78:45:58:2f:1a:32
+    hostname: g3-flex-front-bedrooms
+  -
+    ip: 192.168.3.10
+    subnet: 192.168.3.0/24
+    mac: 78:45:58:2f:19:63
+    hostname: g3-flex-downstairs-common
+  -
+    ip: 192.168.3.11
+    subnet: 192.168.3.0/24
+    mac: 78:45:58:2f:19:ab
+    hostname: g3-flex-garage
+  -
+    ip: 192.168.3.12
+    subnet: 192.168.3.0/24
+    mac: 78:45:58:2f:19:dd
+    hostname: g3-flex-rear-balcony
+  -
+    ip: 192.168.3.21
+    subnet: 192.168.3.0/24
+    mac: e4:5f:01:ae:ff:fb
+    hostname: octopi
+    description: Ethernet
+  -
+    ip: 192.168.3.22
+    subnet: 192.168.3.0/24
+    mac: e4:5f:01:ae:ff:fc
+    hostname: octopi-wifi
+  -
+    ip: 192.168.3.23
+    subnet: 192.168.3.0/24
+    mac: 28:ee:52:74:47:e8
+    hostname: kasa-kp303-01
+    description: "3D Printer"
+  -
+    ip: 192.168.3.24
+    subnet: 192.168.3.0/24
+    mac: 5c:a6:e6:25:57:30
+    hostname: kasa-kp115-01
+    description: "Meross Garage Door"
+  -
+    ip: 192.168.3.25
+    subnet: 192.168.3.0/24
+    mac: 5c:a6:e6:25:56:7a
+    hostname: kasa-kp115-02
+    description: Charger
+  -
+    ip: 192.168.3.28
+    subnet: 192.168.3.0/24
+    mac: 5c:a6:e6:25:53:6d
+    hostname: kasa-kp115-05
+    description: Dishwasher
+  -
+    ip: 192.168.3.29
+    subnet: 192.168.3.0/24
+    mac: 28:ee:52:74:52:3c
+    hostname: kasa-kp105-01
+    description: "Solar Inverter Bridges"
+  -
+    ip: 192.168.3.30
+    subnet: 192.168.3.0/24
+    mac: dc:f5:05:09:70:1e
+    hostname: daikin
+  -
+    ip: 192.168.3.31
+    subnet: 192.168.3.0/24
+    mac: b0:4a:39:2a:49:4e
+    hostname: roborock-upstairs
+  -
+    ip: 192.168.3.32
+    subnet: 192.168.3.0/24
+    mac: b0:4a:39:2a:49:3a
+    hostname: roborock-downstairs
+  -
+    ip: 192.168.3.33
+    subnet: 192.168.3.0/24
+    mac: 40:2f:86:96:ff:2e
+    hostname: fridge
+  -
+    ip: 192.168.3.34
+    subnet: 192.168.3.0/24
+    mac: 68:a4:0e:43:fa:03
+    hostname: washing-machine
+  -
+    ip: 192.168.3.35
+    subnet: 192.168.3.0/24
+    mac: 48:e1:e9:7b:49:8d
+    hostname: garage-door
+  -
+    ip: 192.168.3.36
+    subnet: 192.168.3.0/24
+    mac: 00:04:63:78:28:a9
+    hostname: alarm-wifi
+    description: "Bosch B426M Module"
+  -
+    ip: 192.168.3.37
+    subnet: 192.168.3.0/24
+    mac: 70:4a:0e:bc:b3:48
+    hostname: alarm-panel
+    description: "bosch 5\" touchscreen"
+  -
+    ip: 192.168.3.38
+    subnet: 192.168.3.0/24
+    mac: 04:17:b6:3c:b7:a9
+    hostname: lock-front-door
+  -
+    ip: 192.168.3.39
+    subnet: 192.168.3.0/24
+    mac: 8c:85:80:f6:9f:bf
+    hostname: eufy-homebase-lan
+    description: "Connects to Eufy Dual Camera Wi-Fi Doorbell"
+  -
+    ip: 192.168.3.40
+    subnet: 192.168.3.0/24
+    mac: 8e:85:80:07:16:f3
+    hostname: eufy-homebase-wifi
+    description: "Connects to Eufy Dual Camera Wi-Fi Doorbell"
+  -
+    ip: 192.168.3.41
+    subnet: 192.168.3.0/24
+    mac: ec:71:db:9b:42:f3
+    hostname: reolink-doorbell
+    description: "Reolink Video Doorbell PoE"
+  -
+    ip: 192.168.3.42
+    subnet: 192.168.3.0/24
+    mac: 40:ca:63:29:07:b7
+    hostname: air-purifier-upstairs
+    description: "Samsung AX7000"
+  -
+    ip: 192.168.3.43
+    subnet: 192.168.3.0/24
+    mac: 88:57:1d:1f:9b:f7
+    hostname: air-purifier-downstairs
+  -
+    ip: 192.168.3.44
+    subnet: 192.168.3.0/24
+    mac: 18:de:50:a4:93:64
+    hostname: breville-electric-blanket-calvin
+  -
+    ip: 192.168.3.45
+    subnet: 192.168.3.0/24
+    mac: 18:de:50:a4:93:f2
+    hostname: breville-electric-blanket-tammy
+  -
+    ip: 192.168.3.46
+    subnet: 192.168.3.0/24
+    mac: b8:5f:b0:33:e7:37
+    hostname: solar-inverter-1
+    description: SUN2000-TA2220047934
+  -
+    ip: 192.168.3.47
+    subnet: 192.168.3.0/24
+    mac: b8:5f:b0:33:e7:29
+    hostname: solar-inverter-2
+    description: SUN2000-TA2220043168
+  -
+    ip: 192.168.3.48
+    subnet: 192.168.3.0/24
+    mac: 94:83:c4:1b:8e:7c
+    hostname: solar-inverter-bridge-1
+    description: "GL.iNET Mango"
+  -
+    ip: 192.168.3.49
+    subnet: 192.168.3.0/24
+    mac: 94:83:c4:1b:8d:b7
+    hostname: solar-inverter-bridge-2
+    description: "GL.iNet Mango"
+  -
+    ip: 192.168.3.50
+    subnet: 192.168.3.0/24
+    mac: 0e:fc:70:f9:f6:0a
+    hostname: wall-tablet-dining
+  -
+    ip: 192.168.3.51
+    subnet: 192.168.3.0/24
+    mac: a2:ae:3c:a7:72:65
+    hostname: wall-tablet-foyer
+  -
+    ip: 192.168.3.52
+    subnet: 192.168.3.0/24
+    mac: 6e:5b:f0:cd:a1:e9
+    hostname: wall-tablet-upstairs-hallway
+  -
+    ip: 192.168.3.55
+    subnet: 192.168.3.0/24
+    mac: f4:f5:d8:da:7e:16
+    hostname: google-home-tammy-study
+  -
+    ip: 192.168.3.56
+    subnet: 192.168.3.0/24
+    mac: 30:fd:38:0c:01:f6
+    hostname: google-home-garage
+  -
+    ip: 192.168.3.57
+    subnet: 192.168.3.0/24
+    mac: 20:1f:3b:98:6f:e0
+    hostname: google-home-dining
+  -
+    ip: 192.168.3.58
+    subnet: 192.168.3.0/24
+    mac: 20:1f:3b:ae:62:d0
+    hostname: google-home-calvins-study
+  -
+    ip: 192.168.3.59
+    subnet: 192.168.3.0/24
+    mac: ac:67:84:3c:4b:f7
+    hostname: google-home-tammys-study
+  -
+    ip: 192.168.3.60
+    subnet: 192.168.3.0/24
+    mac: 80:cc:9c:9f:51:cc
+    hostname: switch-bedroom
+    description: "Netgear GS305E"
+  -
+    ip: 192.168.3.61
+    subnet: 192.168.3.0/24
+    mac: 5c:85:7e:39:a1:d0
+    hostname: living-room-tv
+    description: "Sony XR83A90J via USB3 Ethernet Adapter"
+  -
+    ip: 192.168.3.62
+    subnet: 192.168.3.0/24
+    mac: 48:b0:2d:64:1e:b6
+    hostname: nvidia-shield-tv-living-room
+    description: "NVIDIA Shield TV Pro"
+  -
+    ip: 192.168.3.63
+    subnet: 192.168.3.0/24
+    mac: 74:84:69:29:60:6a
+    hostname: nintendo-switch-dock
+  -
+    ip: 192.168.3.64
+    subnet: 192.168.3.0/24
+    mac: 74:84:69:22:39:d5
+    hostname: nintendo-switch-wifi
+  -
+    ip: 192.168.3.66
+    subnet: 192.168.3.0/24
+    mac: d4:ad:fc:2c:af:fa
+    hostname: govee-dreamview-t1
+  -
+    ip: 192.168.3.67
+    subnet: 192.168.3.0/24
+    mac: dc:4f:22:2c:5f:3b
+    hostname: megadesk-calvin
+  -
+    ip: 192.168.3.68
+    subnet: 192.168.3.0/24
+    mac: 84:f3:eb:22:4c:76
+    hostname: megadesk-tammy
+  -
+    ip: 192.168.3.69
+    subnet: 192.168.3.0/24
+    mac: 00:06:78:cf:5e:63
+    hostname: denon-x3800h
+  -
+    ip: 192.168.3.70
+    subnet: 192.168.3.0/24
+    mac: 80:cc:9c:8f:44:10
+    hostname: switch-living
+    description: "Netgear GS308E"
+  -
+    ip: 192.168.3.71
+    subnet: 192.168.3.0/24
+    mac: d8:1f:12:ea:bc:3a
+    hostname: karaoke-powerboard
+    description: "Arlec Smart Powerboard"
+  -
+    ip: 192.168.3.72
+    subnet: 192.168.3.0/24
+    mac: 02:4b:5c:2d:1c:33
+    hostname: linktap-gateway-1
+  -
+    ip: 192.168.3.73
+    subnet: 192.168.3.0/24
+    mac: 00:e0:4c:36:16:7a
+    hostname: chromecast-master-bedroom
+  -
+    ip: 192.168.3.79
+    subnet: 192.168.3.0/24
+    mac: d0:73:d5:2d:05:fd
+    hostname: lifx-a19
+    description: "living room lamp"
+  -
+    ip: 192.168.3.80
+    subnet: 192.168.3.0/24
+    mac: 44:17:93:94:32:64
+    hostname: shelly-master-bedroom
+    description: "Plus 1PM"
+  -
+    ip: 192.168.3.81
+    subnet: 192.168.3.0/24
+    mac: 44:17:93:d4:64:6c
+    hostname: shelly-upstairs-hallway
+    description: "Plus 1PM"
+  -
+    ip: 192.168.3.82
+    subnet: 192.168.3.0/24
+    mac: 44:17:93:94:2e:24
+    hostname: shelly-garage
+    description: "Plus 1PM"
+  -
+    ip: 192.168.3.83
+    subnet: 192.168.3.0/24
+    mac: b0:a7:32:48:59:60
+    hostname: shelly-dining
+    description: "Plus 2PM"
+  -
+    ip: 192.168.3.84
+    subnet: 192.168.3.0/24
+    mac: 4c:75:25:32:f9:79
+    hostname: shelly-kitchen
+    description: "2.5"
+  -
+    ip: 192.168.3.85
+    subnet: 192.168.3.0/24
+    mac: 7c:87:ce:65:d8:a0
+    hostname: shelly-alfresco
+    description: "Plus 1PM"
+  -
+    ip: 192.168.3.86
+    subnet: 192.168.3.0/24
+    mac: 4c:75:25:32:e5:f4
+    hostname: shelly-living
+    description: "2.5"
+  -
+    ip: 192.168.3.87
+    subnet: 192.168.3.0/24
+    mac: 4c:75:25:34:24:2d
+    hostname: shelly-downstairs-hallway
+    description: "2.5"
+  -
+    ip: 192.168.3.101
+    subnet: 192.168.3.0/24
+    mac: 64:e8:33:bb:47:24
+    hostname: presence-detector-01
+    description: "master bedroom"
+  -
+    ip: 192.168.3.102
+    subnet: 192.168.3.0/24
+    mac: e4:b3:23:c0:4d:80
+    hostname: presence-detector-02
+    description: kitchen
+  -
+    ip: 192.168.3.103
+    subnet: 192.168.3.0/24
+    mac: e4:b3:23:c0:50:0c
+    hostname: presence-detector-03
+    description: "dining room"
+  -
+    ip: 192.168.3.104
+    subnet: 192.168.3.0/24
+    mac: e4:b3:23:c2:ca:84
+    hostname: presence-detector-04
+    description: "living room"
+  -
+    ip: 192.168.3.105
+    subnet: 192.168.3.0/24
+    mac: e4:b3:23:c2:cd:4c
+    hostname: presence-detector-05
+    description: garage
+  -
+    ip: 192.168.3.106
+    subnet: 192.168.3.0/24
+    mac: 64:e8:33:b9:93:c8
+    hostname: presence-detector-06
+    description: "calvin's study"
+  -
+    ip: 192.168.3.107
+    subnet: 192.168.3.0/24
+    mac: 64:e8:33:b9:b8:38
+    hostname: presence-detector-07
+    description: "tammy's study"
+  -
+    ip: 192.168.3.120
+    subnet: 192.168.3.0/24
+    mac: a4:97:5c:99:0f:54
+    hostname: leapfrog-monitor
+  -
+    ip: 192.168.3.121
+    subnet: 192.168.3.0/24
+    mac: a4:97:5c:99:0f:42
+    hostname: leapfrog-camera-cot
+  -
+    ip: 192.168.3.122
+    subnet: 192.168.3.0/24
+    mac: a4:97:5c:99:0f:4c
+    hostname: leapfrog-camera-downstairs
+  -
+    ip: 192.168.3.123
+    subnet: 192.168.3.0/24
+    mac: 44:b2:95:80:df:72
+    hostname: snoo
+  -
+    ip: 192.168.3.247
+    subnet: 192.168.3.0/24
+    mac: ff:00:ff:00:f2:47
+    hostname: emqx
+    description: "MQTT broker"
+  -
+    ip: 192.168.3.248
+    subnet: 192.168.3.0/24
+    mac: ff:00:ff:00:f2:48
+    hostname: calibre
+  -
+    ip: 192.168.3.249
+    subnet: 192.168.3.0/24
+    mac: ff:00:ff:00:f2:49
+    hostname: go2rtc
+  -
+    ip: 192.168.3.250
+    subnet: 192.168.3.0/24
+    mac: ff:00:ff:00:f2:50
+    hostname: tinfoil
+    description: ownfoil
+  -
+    ip: 192.168.3.251
+    subnet: 192.168.3.0/24
+    mac: ff:00:ff:00:f2:51
+    hostname: wake-on-lan-proxy-listen
+  -
+    ip: 192.168.3.252
+    subnet: 192.168.3.0/24
+    mac: ff:00:ff:00:f2:52
+    hostname: adguard
+  -
+    ip: 192.168.3.253
+    subnet: 192.168.3.0/24
+    mac: ff:00:ff:00:f2:53
+    hostname: home-assistant
+  -
+    ip: 192.168.3.254
+    subnet: 192.168.3.0/24
+    mac: ff:00:ff:00:f2:54
+    hostname: mosquitto
+  -
+    ip: 192.168.4.247
+    subnet: 192.168.4.0/24
+    mac: ff:00:ff:00:f2:47
+    hostname: jdownloader
+  -
+    ip: 192.168.4.248
+    subnet: 192.168.4.0/24
+    mac: ff:00:ff:00:f2:48
+    hostname: changedetection
+  -
+    ip: 192.168.4.249
+    subnet: 192.168.4.0/24
+    mac: ff:00:ff:00:f2:49
+    hostname: authentik
+  -
+    ip: 192.168.4.250
+    subnet: 192.168.4.0/24
+    mac: ff:00:ff:00:f2:50
+    hostname: crowdsec-traefik-bouncer
+  -
+    ip: 192.168.4.251
+    subnet: 192.168.4.0/24
+    mac: ff:00:ff:00:f2:51
+    hostname: homepage
+  -
+    ip: 192.168.4.252
+    subnet: 192.168.4.0/24
+    mac: ff:00:ff:00:f2:52
+    hostname: qbittorrent
+  -
+    ip: 192.168.4.253
+    subnet: 192.168.4.0/24
+    mac: ff:00:ff:00:f2:53
+    hostname: plex
+  -
+    ip: 192.168.4.254
+    subnet: 192.168.4.0/24
+    mac: ff:00:ff:00:f2:54
+    hostname: authelia

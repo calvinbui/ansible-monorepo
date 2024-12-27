@@ -45,6 +45,10 @@
       ansibleguy.opnsense.reload:
         target: monit
 
+    - name: Reload KEA
+      ansibleguy.opnsense.reload:
+        target: kea
+
   tasks:
     - name: Install Packages
       ansibleguy.opnsense.package:
@@ -122,3 +126,13 @@
           address: 149.112.112.112
           hostname: dns.quad9.net
       tags: unbound
+
+    - name: KEA - DHCP Leases
+      ansibleguy.opnsense.dhcp_reservation:
+        ip: "{{ item.ip }}"
+        mac: "{{ item.mac }}"
+        subnet: "{{ item.subnet }}"
+        hostname: "{{ item.hostname }}"
+        description: "{{ item.description | default(omit) }}"
+      loop: "{{ opnsense_dhcp_reservations }}"
+      notify: Reload KEA
