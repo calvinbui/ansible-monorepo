@@ -80,7 +80,7 @@
         homepage:
           name: ESPHome
           group: Home Automation
-          weight: 150
+          weight: 200
           description: "Control ESP8266/ESP32 devices"
           widget:
             fields: '["online", "offline_alt"]'
