@@ -126,6 +126,13 @@ services:
   - group: Home Automation
     items:
       -
+        name: SLZB-06M
+        icon: /icons/smlight.png
+        description: Zigbee Coordinator
+        url: "http://slzb-06m.{{ common_local_tld }}"
+        weight: 150
+        monitor: true
+      -
         name: Dining Room Tablet
         icon: /icons/fully-kiosk-browser.png
         description: Fully Kiosk Browser

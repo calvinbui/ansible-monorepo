@@ -161,7 +161,7 @@
       # OTHER
       #
       -
-        port: "45"
+        port: "44"
         description: "homelab-ethernet"
         trunk:
           - "{{ networks.mgmt.name }}"
@@ -170,9 +170,13 @@
           - "{{ networks.pub.name }}"
           - "{{ networks.granny.name }}"
       -
-        port: "46"
+        port: "45"
         description: "homelab-ipmi"
         access: "{{ networks.mgmt.vlan }}"
+      -
+        port: "46"
+        description: "zigbee-router"
+        access: "{{ networks.iot.vlan }}"
       -
         port: "47"
         description: "alarm"

@@ -269,6 +269,12 @@ opnsense_dhcp_reservations:
     hostname: solar-inverter-2
     description: SUN2000-TA2220043168
   -
+    ip: 192.168.3.48
+    subnet: 192.168.3.0/24
+    mac: 14:2b:2f:d5:c3:3b
+    hostname: slzb-06m
+    description: zigbee coordinator
+  -
     ip: 192.168.3.50
     subnet: 192.168.3.0/24
     mac: 0e:fc:70:f9:f6:0a
