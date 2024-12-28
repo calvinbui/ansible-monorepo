@@ -40,3 +40,11 @@ esp32_ble_tracker:
     window:   300ms  # default 30ms - how long to actually "listen" in each interval. Reduce this if device is unstable.
     # If the device cannot keep up or becomes unstable, reduce the "window" setting. This may be
     # required if your device is controlling other sensors or doing PWM for lights etc.
+
+sensor:
+  - platform: uptime
+    # The uptime sensor is extremely helpful to know if your device is rebooting
+    # when it shouldn't be. This might indicate your interval-to-window timing is
+    # too tight, and the window needs to be reduced.
+    name: "Uptime Sensor"
+    update_interval: 60s
