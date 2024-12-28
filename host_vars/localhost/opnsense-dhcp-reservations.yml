@@ -169,7 +169,7 @@ opnsense_dhcp_reservations:
     subnet: 192.168.3.0/24
     mac: 28:ee:52:74:52:3c
     hostname: kasa-kp105-01
-    description: "Solar Inverter Bridges"
+    description: "Dryer"
   -
     ip: 192.168.3.30
     subnet: 192.168.3.0/24
@@ -268,18 +268,6 @@ opnsense_dhcp_reservations:
     mac: b8:5f:b0:33:e7:29
     hostname: solar-inverter-2
     description: SUN2000-TA2220043168
-  -
-    ip: 192.168.3.48
-    subnet: 192.168.3.0/24
-    mac: 94:83:c4:1b:8e:7c
-    hostname: solar-inverter-bridge-1
-    description: "GL.iNET Mango"
-  -
-    ip: 192.168.3.49
-    subnet: 192.168.3.0/24
-    mac: 94:83:c4:1b:8d:b7
-    hostname: solar-inverter-bridge-2
-    description: "GL.iNet Mango"
   -
     ip: 192.168.3.50
     subnet: 192.168.3.0/24
