@@ -363,7 +363,7 @@
     /* glances */
     {
       matchPackagePatterns: [".*\\/glances"],
-      versioning: "regex:^ubuntu-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)-full$",
+      versioning: "regex:^ubuntu-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.?(?<build>\\d+)?-full$",
       prBodyNotes: "[Releases](https://github.com/nicolargo/glances/releases)",
     },
     /* mealie */
