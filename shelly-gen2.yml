@@ -1,0 +1,212 @@
+---
+
+# https://shelly-api-docs.shelly.cloud/gen2/
+
+- hosts: localhost
+
+  become: false
+  gather_facts: false
+
+  vars:
+    application: shelly
+
+    shelly_common_config:
+      wifi:
+        ap:
+          enable: false
+
+      ble:
+        enable: true
+        rpc:
+          enable: false
+        observer:
+          enable: false
+
+      cloud:
+        enable: false
+
+      mqtt:
+        enable: false
+
+      sys:
+        device:
+          eco_mode: true
+          profile: switch
+        location:
+          tz: "{{ common_timezone }}"
+          lat: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            66343438383939623664633733383335623834336236373231303032633761373266343734636631
+            6561623833616665663764333266663032346262386362320a626562313663353361653734363930
+            34363566313334633065313662316238383934333434393462303165393739353363326264306265
+            3362643039346539300a316638393035363263303765646637643338386135663066656539656136
+            6334
+          lon: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            66353736323232323565353663653063376538323464646432386564643636393863363739633161
+            3431643965313739333633666530303165383035376631310a393261633666336362646334333431
+            63363135666438366436663561653532376130663865343632316265643733613363336237343139
+            6330396139326535630a393537616535636336363930353863363131393936343637373030346238
+            3739
+        ui_data:
+          consumption_types:
+            - light
+            - light # still works if there isnt a 2nd relay
+        sntp:
+          server: "ntp.{{ common_tld }}"
+
+      auth:
+        user: admin
+        pass: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          66316233303431343838383838393464613036313039383361303463623162396363633465353665
+          3938376639306261373561386666613531316362646431640a663637326563306636633235613834
+          32333262663839326564633430363233643965303065316535643561663762336438353935323233
+          6364326566613166310a653664396261373963306631653366636130326437663936623961663961
+          63326632336535386362373330373764333232643933343763303139383831386163
+
+      relay:
+        in_mode: flip
+        initial_state: restore_last
+
+    shelly_devices:
+      -
+        ip: "{{ networks.iot.prefix }}.80"
+        device_id: shellyplus1pm-441793943264
+        settings:
+          sys:
+            device:
+              name: Master Bedroom
+        relay:
+          - name: Master Bedroom Downlights
+      -
+        ip: "{{ networks.iot.prefix }}.81"
+        device_id: shellyplus1pm-441793d4646c
+        settings:
+          sys:
+            device:
+              name: Upstairs Hallway
+        relay:
+          - name: Upstairs Hallway Downlights
+      -
+        ip: "{{ networks.iot.prefix }}.82"
+        device_id: shellyplus1pm-441793942e24
+        settings:
+          sys:
+            device:
+              name: Garage
+        relay:
+          - name: Garage Downlights
+      -
+        ip: "{{ networks.iot.prefix }}.83"
+        device_id: shellyplus2pm-b0a732485960
+        settings:
+          sys:
+            device:
+              name: Dining Room
+        relay:
+          - name: Dining Room Downlights
+          - name: Dining Room LEDs
+      -
+        ip: "{{ networks.iot.prefix }}.85"
+        device_id: shellyplus1pm-7c87ce65d8a0
+        settings:
+          sys:
+            device:
+              name: Alfresco
+        relay:
+          - name: Alfresco Downlights
+
+  tasks:
+    - name: Set auth
+      ansible.builtin.uri:
+        url: "http://{{ item.ip }}/rpc"
+        method: POST
+        body_format: json
+        body:
+          id: 1
+          method: Shelly.SetAuth
+          params:
+            user: "{{ shelly_common_config.auth.user }}"
+            realm: "{{ item.device_id }}"
+            ha1: "{{ [shelly_common_config.auth.user, item.device_id, shelly_common_config.auth.pass] | join(':') | hash('sha256') }}"
+        url_username: "{{ shelly_common_config.auth.user }}"
+        url_password: "{{ shelly_common_config.auth.pass }}"
+      loop: "{{ shelly_devices }}"
+
+    - name: Configure settings
+      ansible.builtin.uri:
+        url: "http://{{ item.0.ip }}/rpc"
+        method: POST
+        body_format: json
+        body:
+          id: 1
+          method: "{{ item.1.method }}"
+          params:
+            config: "{{ shelly_common_config[item.1.config_key] | combine((item.0.settings[item.1.config_key] | default({})), recursive=True) }}"
+        url_username: "{{ shelly_common_config.auth.user }}"
+        url_password: "{{ shelly_common_config.auth.pass }}"
+      loop: "{{ shelly_devices | product(config_methods) | list }}"
+      register: _shelly_gen2_results
+      vars:
+        config_methods:
+          -
+            method: WiFi.SetConfig
+            config_key: wifi
+          -
+            method: BLE.SetConfig
+            config_key: ble
+          -
+            method: Cloud.SetConfig
+            config_key: cloud
+          -
+            method: MQTT.SetConfig
+            config_key: mqtt
+          -
+            method: Sys.SetConfig
+            config_key: sys
+
+    - name: Configure relays
+      ansible.builtin.uri:
+        url: "http://{{ item.0.ip }}/rpc"
+        method: POST
+        body_format: json
+        body:
+          id: 1
+          method: Switch.SetConfig
+          params:
+            id: "{{ item.1 }}"
+            config: "{{ item.0.relay[item.1] | combine(shelly_common_config.relay) }}"
+        url_username: "{{ shelly_common_config.auth.user }}"
+        url_password: "{{ shelly_common_config.auth.pass }}"
+      loop: "{{ shelly_devices | product(range(2)) | list }}"
+      register: _shelly_gen2_relay
+      when: "item.0.relay is defined and item.0.relay[item.1] is defined"
+      failed_when: "'error' in _shelly_gen2_relay.json"
+      tags:
+        - relay
+
+    - name: Set fact for devices requiring restart
+      ansible.builtin.set_fact:
+        devices_to_restart: >-
+          {{
+            shelly_devices | selectattr('ip', 'in',
+              _shelly_gen2_results.results |
+              selectattr('json.result.restart_required', 'true') |
+              map(attribute='item.0.ip') |
+              unique |
+              list
+            )
+          }}
+
+    - name: Restart devices if required
+      ansible.builtin.uri:
+        url: "http://{{ item.ip }}/rpc"
+        method: POST
+        body_format: json
+        body:
+          id: 1
+          method: Shelly.Reboot
+        url_username: "{{ shelly_common_config.auth.user }}"
+        url_password: "{{ shelly_common_config.auth.pass }}"
+      loop: "{{ devices_to_restart }}"
