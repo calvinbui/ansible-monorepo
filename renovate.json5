@@ -340,11 +340,6 @@
       matchPackagePatterns: [".*\\/castsponsorskip"],
       sourceUrl: "https://github.com/gabe565/CastSponsorSkip",
     },
-    /* cloudbeaver */
-    {
-      matchPackagePatterns: ["dbeaver\\/cloudbeaver"],
-      sourceUrl: "https://github.com/dbeaver/dbeaver",
-    },
     /* notify_push */
     {
       matchPackagePatterns: [".*\\/notify_push"],
