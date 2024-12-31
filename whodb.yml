@@ -1,0 +1,22 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: whodb
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: clidey/whodb
+        traefik:
+          - port: 8080
+        homepage:
+          name: WhoDB
+          group: Remote Access
+          weight: 600
+          description: Database Management
