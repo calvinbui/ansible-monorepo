@@ -30,7 +30,7 @@
         env:
           TOKEN: "{{ changedetection_browserless_token }}"
           CONCURRENT: "10"
-          TIMEOUT: "30000"
+          TIMEOUT: "60000"
 
     - name: Create "{{ application }}" container
       ansible.builtin.include_role:
