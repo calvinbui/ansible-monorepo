@@ -1,0 +1,65 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: opengist
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}/app"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+
+    - name: Create postgres container
+      ansible.builtin.import_role:
+        name: postgres
+      vars:
+        postgres_version: 16
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          35633730396366343161643138663861386362363533656336343832626338333961376533306165
+          3232356139316339396239313136396534346339616335610a363961366131393335306438386266
+          30656535323866346630373461333566613531626430343861383363383936646239653537623137
+          3431663666643165330a323863623832653038613933653032353431613865653938336633373938
+          39623264396561373063343235613831323963613363373538333061643130323763
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: ghcr.io/thomiceli/opengist:1.8.4
+        volumes:
+          - "{{ config_directory }}/app:/opengist"
+        env:
+          OG_EXTERNAL_URL: "https://{{ application }}.{{ common_tld }}"
+
+          OG_SECRET_KEY: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            39306462323161356564383961616564363738316162396135356364303566626362643265373732
+            3238643332333838633465346430633662616138313731300a616336616130313065643932623861
+            35653032623261636234366339636133616264663037653035616636623065323066356636666133
+            6464363432663232380a303831336161643964313338343832373335373731333430303930653434
+            37633134616638323165343163613733363037353963613664653834373631336630666439613062
+            64313933373362353464393831643563396165313363376466363830656362623338363636353530
+            34343265376136393339616333326266656235343162616363653938663531323661646431346631
+            61643763363030306164
+
+          OG_DB_URI: "{{ _postgres_url }}"
+
+          OG_SSH_GIT_ENABLED: "false"
+
+          OG_OIDC_DISCOVERY_URL: "https://authelia.{{ common_tld }}/.well-known/openid-configuration"
+          OG_OIDC_CLIENT_KEY: "{{ application }}"
+          OG_OIDC_SECRET: "{{ ldap_oidc_apps.opengist.secret }}"
+        traefik:
+          - port: 6157
+        homepage:
+          group: Programming
+          weight: 200
+          description: "Code Snippets"
