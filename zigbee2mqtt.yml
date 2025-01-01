@@ -5,6 +5,17 @@
   vars:
     application: zigbee2mqtt
 
+    zigbee2mqtt_network_encryption_key: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      61666439643862663836633134383736373162666336633533343632386230646336373434303934
+      3936356634616537313931303566653736333463363464660a636137626330366562343838313263
+      64623733313937623466396364353663303763326461316438373639626166306366386638653064
+      3731366164616334640a336465383736666138623738646561356164333131383138376135326634
+      65626236626436393266326230646665363538323537356138336333393436613731363234313135
+      31356635376437623566313036643933386132633462363332373835656237633534626263663663
+      34653166383166663239633230363733663464366365396437343166313462393636306130363035
+      36353063656461383265
+
     docker_network: "{{ networks.iot }}"
 
   handlers:
@@ -30,12 +41,13 @@
           homeassistant: true
 
           mqtt:
-            server: mqtt://mosquitto.{{ docker_network.name }}:1883
-            user: "{{ application }}"
+            server: mqtt://emqx.{{ docker_network.name }}:1883
+            user: {{ application }}
             password: "{{ _zigbee2mqtt_mqtt_password }}"
 
           serial:
-            port: /dev/ttyACM0
+            port: tcp://slzb-06m.{{ common_local_tld }}:6638
+            adapter: ember
 
           frontend:
             url: https://zigbee2mqtt.{{ common_tld }}
@@ -44,58 +56,80 @@
 
           advanced:
             last_seen: ISO_8601_local
+            transmit_power: 20
+            network_key: {{ zigbee2mqtt_network_encryption_key }}
+
+            # prepare for v2
+            homeassistant_legacy_entity_attributes: false
+            homeassistant_legacy_triggers: false
+            legacy_api: false
+            legacy_availability_payload: false
+
+          # prepare for v2
+          device_options:
+            legacy: false
 
           devices:
             "0xf082c0fffeff36d8":
-              friendly_name: "IKEA TRADFRI Control Outlet - Fridge"
+              friendly_name: "Fridge Power Outlet"
             "0xf082c0fffeff2db9":
-              friendly_name: "IKEA TRADFRI Control Outlet - Upstairs Bathroom"
+              friendly_name: "Upstairs Bathroom Power Outlet"
             "0x3425b4fffef75348":
-              friendly_name: "IKEA TRADFRI Control Outlet - Master Bedroom"
+              friendly_name: "Master Bedroom Power Outlet"
             "0x2c1165fffec421d2":
-              friendly_name: "IKEA TRADFRI Signal Repeater - Large Rear Bedroom"
+              friendly_name: "Large Rear Bedroom Power Repeater"
 
             "0x00158d0008e0193f":
-              friendly_name: "Aqara Water Leak Sensor - Ensuite Sink"
+              friendly_name: "Ensuite Sink Water Leak Sensor"
             "0x00158d0008dff09e":
-              friendly_name: "Aqara Water Leak Sensor - Laundry Sink"
+              friendly_name: "Laundry Sink Water Leak Sensor"
             "0x00158d0008e0197e":
-              friendly_name: "Aqara Water Leak Sensor - Downstairs Bathroom Sink"
+              friendly_name: "Downstairs Bathroom Sink Water Leak Sensor"
             "0x00158d0008e017e4":
-              friendly_name: "Aqara Water Leak Sensor - Kitchen Sink"
+              friendly_name: "Kitchen Sink Water Leak Sensor"
             "0x00158d0008dfc9c4":
-              friendly_name: "Aqara Water Leak Sensor - Upstairs Bathroom Sink"
+              friendly_name: "Upstairs Bathroom Sink Water Leak Sensor"
             "0x00158d0008dfe057":
-              friendly_name: "Aqara Water Leak Sensor - Fridge"
+              friendly_name: "Fridge Water Leak Sensor"
             "0x00158d0008e036d2":
-              friendly_name: "Aqara Water Leak Sensor - Dishwasher"
+              friendly_name: "Dishwasher Water Leak Sensor"
             "0x00158d0008dff08b":
-              friendly_name: "Aqara Water Leak Sensor - Laundry Machine"
+              friendly_name: "Laundry Machine Water Leak Sensor"
 
             "0x00158d000977530f":
-              friendly_name: "Aqara Temperature & Humidity Sensor - Calvin's Study"
+              friendly_name: "Calvin's Study Temperature & Humidity Sensor"
             "0x00158d0009777d8b":
-              friendly_name: "Aqara Temperature & Humidity Sensor - Laundry"
+              friendly_name: "Laundry Temperature & Humidity Sensor"
             "0x00158d000977533c":
-              friendly_name: "Aqara Temperature & Humidity Sensor - Living Room"
+              friendly_name: "Living Room Temperature & Humidity Sensor"
             "0x00158d000977531f":
-              friendly_name: "Aqara Temperature & Humidity Sensor - Downstairs Bathroom"
-            "0x00158d0009777cfe":
-              friendly_name: "Aqara Temperature & Humidity Sensor - Master Bedroom"
-            "0x00158d0009775385":
-              friendly_name: "Aqara Temperature & Humidity Sensor - Ensuite"
-            "0x00158d0009777a80":
-              friendly_name: "Aqara Temperature & Humidity Sensor - Tammy's Study"
+              friendly_name: "Downstairs Bathroom Temperature & Humidity Sensor"
             "0x00158d000977539c":
-              friendly_name: "Aqara Temperature & Humidity Sensor - Upstairs Bathroom"
+              friendly_name: "Upstairs Bathroom Temperature & Humidity Sensor"
             "0x00158d0009777cd8":
-              friendly_name: "Aqara Temperature & Humidity Sensor - Garage"
+              friendly_name: "Garage Temperature & Humidity Sensor"
             "0x00158d0009775449":
-              friendly_name: "Aqara Temperature & Humidity Sensor - Large Rear Bedroom"
+              friendly_name: "Large Rear Bedroom Temperature & Humidity Sensor"
+
+            "0x00158d008b63b0a9":
+              friendly_name: "Master Bedroom Temperature & Humidity Sensor"
+            "0x00158d008b6450b9":
+              friendly_name: "Ensuite Temperature & Humidity Sensor"
+            "0x00158d008b619299":
+              friendly_name: "Tammy's Study Temperature & Humidity Sensor"
+            "0x00158d008b617c95":
+              friendly_name: "Small Rear Bedroom Temperature & Humidity Sensor"
+
+            # being replaced
+            # "0x00158d0009777cfe":
+            #   friendly_name: "Master Bedroom Temperature & Humidity Sensor"
+            # "0x00158d0009775385":
+            #   friendly_name: "Ensuite Temperature & Humidity Sensor"
+            # "0x00158d0009777a80":
+            #   friendly_name: "Tammy's Study Temperature & Humidity Sensor"
 
             "0x00158d000af2c512":
-              friendly_name: "Aqara Wireless Mini Switch - Garage"
-              legacy: false
+              friendly_name: "Garage Switch"
         dest: "{{ config_directory }}/data/configuration.yaml"
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
