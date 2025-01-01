@@ -190,7 +190,7 @@
           ansible.builtin.include_role:
             name: docker_container
           vars:
-            name: "govee2mqtt"
+            name: govee2mqtt
             image: ghcr.io/wez/govee2mqtt:latest
             env:
               GOVEE_EMAIL: govee{{ common_email_to }}
@@ -210,7 +210,7 @@
                 39663838646335623339326136623861646633626461376233373935636134393830343532623966
                 6338613462656433343035393333663239323331316563303266
 
-              GOVEE_MQTT_HOST: mosquitto.{{ docker_network.name }}
+              GOVEE_MQTT_HOST: emqx.{{ docker_network.name }}
               GOVEE_MQTT_PORT: "1883"
               GOVEE_MQTT_USER: "govee2mqtt"
               GOVEE_MQTT_PASSWORD: !vault |
