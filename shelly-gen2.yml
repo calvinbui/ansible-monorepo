@@ -70,15 +70,15 @@
         initial_state: restore_last
 
     shelly_devices:
-      -
-        ip: "{{ networks.iot.prefix }}.80"
-        device_id: shellyplus1pm-441793943264
-        settings:
-          sys:
-            device:
-              name: Master Bedroom
-        relay:
-          - name: Master Bedroom Downlights
+      # -
+      #   ip: "{{ networks.iot.prefix }}.80"
+      #   device_id: shellyplus1pm-441793943264
+      #   settings:
+      #     sys:
+      #       device:
+      #         name: Master Bedroom
+      #   relay:
+      #     - name: Master Bedroom Downlights
       -
         ip: "{{ networks.iot.prefix }}.81"
         device_id: shellyplus1pm-441793d4646c

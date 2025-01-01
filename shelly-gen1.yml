@@ -68,6 +68,16 @@
 
     shelly_devices:
       -
+        ip: "{{ networks.iot.prefix }}.80"
+        device_id: shellyswitch25-4C752534D9A4
+        settings:
+          name: Master Bedroom
+        relays:
+          0:
+            name: Master Bedroom Balcony
+          1:
+            name: Master Bedroom Downlights
+      -
         ip: "{{ networks.iot.prefix }}.84"
         device_id: shellyswitch25-4C752532F979
         settings:
