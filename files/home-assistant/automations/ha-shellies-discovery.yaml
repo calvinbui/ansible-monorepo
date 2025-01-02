@@ -1,6 +1,6 @@
 ---
 
-# https://github.com/bieniu/ha-shellies-discovery?tab=readme-ov-file#custom-configuration-example
+# https://github.com/bieniu/ha-shellies-discovery?tab=readme-ov-file#minimal-configuration
 
 - id: shellies_announce
   alias: 'Shellies Announce'
@@ -36,28 +36,28 @@
       host: '{{ trigger.payload_json.ip }}'
 
       shellyswitch25-4c752532f979:
-        device_name: Shelly 2.5 - Kitchen
+        device_name: Kitchen Lights
         relay-0: light
         relay-0-name: LEDs
         relay-1: light
         relay-1-name: Downlights
 
-      # shellyswitch25-4c752534d9a4:
-      #   device_name: Shelly 2.5 - Dining Room
-      #   relay-0: light
-      #   relay-0-name: Downlights
-      #   relay-1: light
-      #   relay-1-name: LEDs
+      shellyswitch25-4c752534d9a4:
+        device_name: Master Bedroom Lights
+        relay-0: light
+        relay-0-name: Balcony
+        relay-1: light
+        relay-1-name: Downlights
 
       shellyswitch25-4c752532e5f4:
-        device_name: Shelly 2.5 - Living Room
+        device_name: Living Room Lights
         relay-0: light
         relay-0-name: LEDs
         relay-1: light
         relay-1-name: Downlights
 
       shellyswitch25-4c752534242d:
-        device_name: Shelly 2.5 - Downstairs Hallway
+        device_name: Downstairs Hallway Lights
         relay-0: light
         relay-0-name: Downlights
         relay-1: light

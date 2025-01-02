@@ -41,7 +41,16 @@
         coiot_enable: true
         coiot_peer: "{{ networks.iot.prefix }}.253:5683"
 
-        mqtt_enable: false
+        mqtt_enable: true
+        mqtt_user: "{{ application }}"
+        mqtt_pass: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          63353232656130316634376436343737363236373961633031386632306330646539303131653731
+          3337363731303838313465656463376363396162336632610a373330363164356333353233653565
+          61636439663362383736316462303264613830376138633036636261346139376139373962343837
+          3934383839366233340a643663346533653935613135663662333033356666386637613966643061
+          35383235656430383535643263666135376332336364613332616163333037643863
+        mqtt_server: "emqx.{{ common_local_tld }}:1883"
 
       settings_ap:
         enabled: false
@@ -71,7 +80,7 @@
         ip: "{{ networks.iot.prefix }}.80"
         device_id: shellyswitch25-4C752534D9A4
         settings:
-          name: Master Bedroom
+          name: Master Bedroom Lights
         relays:
           0:
             name: Master Bedroom Balcony
@@ -81,7 +90,7 @@
         ip: "{{ networks.iot.prefix }}.84"
         device_id: shellyswitch25-4C752532F979
         settings:
-          name: Kitchen
+          name: Kitchen Lights
         relays:
           0:
             name: Kitchen LEDs
@@ -91,7 +100,7 @@
         ip: "{{ networks.iot.prefix }}.86"
         device_id: shellyswitch25-4C752532E5F4
         settings:
-          name: Living Room
+          name: Living Room Lights
         relays:
           0:
             name: Living Room LEDs
@@ -101,7 +110,7 @@
         ip: "{{ networks.iot.prefix }}.87"
         device_id: shellyswitch25-4C752534242D
         settings:
-          name: Downstairs Hallway
+          name: Downstairs Hallway Lights
         relays:
           0:
             name: Downstairs Hallway Downlights
