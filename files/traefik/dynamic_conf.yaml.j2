@@ -16,7 +16,9 @@ http:
 
   middlewares:
     compression:
-      compress: {}
+      compress:
+        excludedContentTypes:
+          - text/event-stream
 
     redirect:
       redirectScheme:
