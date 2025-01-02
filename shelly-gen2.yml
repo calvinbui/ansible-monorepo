@@ -26,7 +26,16 @@
         enable: false
 
       mqtt:
-        enable: false
+        enable: true
+        user: "{{ application }}"
+        pass: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          63353232656130316634376436343737363236373961633031386632306330646539303131653731
+          3337363731303838313465656463376363396162336632610a373330363164356333353233653565
+          61636439663362383736316462303264613830376138633036636261346139376139373962343837
+          3934383839366233340a643663346533653935613135663662333033356666386637613966643061
+          35383235656430383535643263666135376332336364613332616163333037643863
+        server: "emqx.{{ common_local_tld }}:1883"
 
       sys:
         device:
@@ -71,51 +80,51 @@
 
     shelly_devices:
       # -
-      #   ip: "{{ networks.iot.prefix }}.80"
+      #   ip:
       #   device_id: shellyplus1pm-441793943264
       #   settings:
       #     sys:
       #       device:
-      #         name: Master Bedroom
+      #         name:
       #   relay:
-      #     - name: Master Bedroom Downlights
+      #     - name:
       -
         ip: "{{ networks.iot.prefix }}.81"
         device_id: shellyplus1pm-441793d4646c
         settings:
           sys:
             device:
-              name: Upstairs Hallway
+              name: Upstairs Hallway Lights
         relay:
-          - name: Upstairs Hallway Downlights
+          - name: Downlights
       -
         ip: "{{ networks.iot.prefix }}.82"
         device_id: shellyplus1pm-441793942e24
         settings:
           sys:
             device:
-              name: Garage
+              name: Garage Lights
         relay:
-          - name: Garage Downlights
+          - name: Downlights
       -
         ip: "{{ networks.iot.prefix }}.83"
         device_id: shellyplus2pm-b0a732485960
         settings:
           sys:
             device:
-              name: Dining Room
+              name: Dining Room Lights
         relay:
-          - name: Dining Room Downlights
-          - name: Dining Room LEDs
+          - name: Downlights
+          - name: LEDs
       -
         ip: "{{ networks.iot.prefix }}.85"
         device_id: shellyplus1pm-7c87ce65d8a0
         settings:
           sys:
             device:
-              name: Alfresco
+              name: Alfresco Lights
         relay:
-          - name: Alfresco Downlights
+          - name: Downlights
 
   tasks:
     - name: Set auth
@@ -151,6 +160,9 @@
       vars:
         config_methods:
           -
+            method: Sys.SetConfig
+            config_key: sys
+          -
             method: WiFi.SetConfig
             config_key: wifi
           -
@@ -162,9 +174,6 @@
           -
             method: MQTT.SetConfig
             config_key: mqtt
-          -
-            method: Sys.SetConfig
-            config_key: sys
 
     - name: Configure relays
       ansible.builtin.uri:

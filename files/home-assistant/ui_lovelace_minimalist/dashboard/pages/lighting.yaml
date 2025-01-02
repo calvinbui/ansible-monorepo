@@ -39,7 +39,7 @@ cards:
           type: custom:button-card
           template: card_title
       -
-        entity: light.living_room_downlights
+        entity: light.living_room_lights_downlights
         <<: &lighting_card_switch
           type: custom:button-card
           template: card_light
@@ -50,6 +50,8 @@ cards:
                   return 'Downlights';
                 } else if (entity.entity_id.includes('leds')) {
                   return 'LEDs';
+                } else if (entity.entity_id.includes('balcony')) {
+                  return 'Balcony';
                 } else {
                   return entity.name;
                 }
@@ -63,7 +65,7 @@ cards:
                 }
               {% endif %}
       -
-        entity: light.living_room_leds
+        entity: light.living_room_lights_leds
         <<: *lighting_card_switch
 
   - type: vertical-stack
@@ -74,10 +76,10 @@ cards:
         name: 🍳 Kitchen
         <<: *lighting_card_title
       -
-        entity: light.kitchen_downlights
+        entity: light.kitchen_lights_downlights
         <<: *lighting_card_switch
       -
-        entity: light.kitchen_leds
+        entity: light.kitchen_lights_leds
         <<: *lighting_card_switch
 
   - type: vertical-stack
@@ -88,10 +90,10 @@ cards:
         name: 🍴 Dining
         <<: *lighting_card_title
       -
-        entity: light.dining_room_downlights
+        entity: light.dining_room_lights_downlights
         <<: *lighting_card_switch
       -
-        entity: light.dining_room_leds
+        entity: light.dining_room_lights_leds
         <<: *lighting_card_switch
 
   - type: vertical-stack
@@ -102,10 +104,10 @@ cards:
         name: 👟 Downstairs Hallway
         <<: *lighting_card_title
       -
-        entity: light.downstairs_hallway_downlights
+        entity: light.downstairs_hallway_lights_downlights
         <<: *lighting_card_switch
       -
-        entity: light.downstairs_hallway_leds
+        entity: light.downstairs_hallway_lights_leds
         <<: *lighting_card_switch
 
   - type: vertical-stack
@@ -116,7 +118,7 @@ cards:
         name: 🚗 Garage
         <<: *lighting_card_title
       -
-        entity: light.garage_downlights
+        entity: light.garage_lights_downlights
         <<: *lighting_card_switch
 
   - type: vertical-stack
@@ -127,7 +129,7 @@ cards:
         name: 🚀 Upstairs Hallway
         <<: *lighting_card_title
       -
-        entity: light.upstairs_hallway_downlights
+        entity: light.upstairs_hallway_lights_downlights
         <<: *lighting_card_switch
 
   - type: vertical-stack
@@ -138,7 +140,10 @@ cards:
         name: 🛏️ Master Bedroom
         <<: *lighting_card_title
       -
-        entity: light.master_bedroom_downlights
+        entity: light.master_bedroom_lights_downlights
+        <<: *lighting_card_switch
+      -
+        entity: light.master_bedroom_lights_balcony
         <<: *lighting_card_switch
 
 
@@ -150,7 +155,7 @@ cards:
         name: 🌱 Alfresco
         <<: *lighting_card_title
       -
-        entity: light.alfresco_downlights
+        entity: light.alfresco_lights_downlights
         <<: *lighting_card_switch
 
   - type: vertical-stack
