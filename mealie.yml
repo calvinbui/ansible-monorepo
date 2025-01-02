@@ -76,6 +76,7 @@
           weight: 200
           description: Recipe management
           widget:
+            version: 2
             key: !vault |
               $ANSIBLE_VAULT;1.1;AES256
               30356534623433393034656664363439393730613638386461663937666636643264663838613561
