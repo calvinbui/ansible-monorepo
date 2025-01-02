@@ -35,5 +35,5 @@
             auth: page
         homepage:
           group: Tools
-          weight: 15-
+          weight: 250
           description: "YouTube Downloader"
