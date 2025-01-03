@@ -57,6 +57,11 @@
     homepage: "{{ homepage_config }}"
     blackbox:
       path: /ping
+    healthcheck:
+      test: "curl -f http://localhost:8989/ping || exit 1"
+      start_period: 5s
+      interval: 5s
+      retries: 5
 
 - name: Wait for config
   ansible.builtin.wait_for:

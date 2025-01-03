@@ -82,7 +82,7 @@
           widget:
             key: "{{ prowlarr_api_key }}"
         healthcheck:
-          test: "curl -f http://localhost:9696/ || exit 1"
+          test: "curl -f http://localhost:9696/ping || exit 1"
           start_period: 5s
           interval: 5s
           retries: 3
