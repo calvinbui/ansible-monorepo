@@ -30,10 +30,8 @@
     volumes: "{{ redis_directory }}:/data"
 
     healthcheck:
-      test: "redis-cli ping"
-      interval: 10s
-      timeout: 30s
-      retries: 3
+      test:
+        - NONE
 
     labels:
       traefik.enable: "false"
