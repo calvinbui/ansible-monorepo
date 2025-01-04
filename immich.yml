@@ -87,6 +87,7 @@
           weight: 150
           description: "Photo & Video Backup"
           widget:
+            version: 2
             key: !vault |
               $ANSIBLE_VAULT;1.1;AES256
               35353165356338663039616161303033663337316662353462346437383838303563323433643730
