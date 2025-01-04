@@ -41,4 +41,4 @@
 
     - name: Reminder
       ansible.builtin.debug:
-        msg: Create an smb password using `sudo smbpasswd calvin`
+        msg: Create an smb password using `sudo smbpasswd -a calvin`
