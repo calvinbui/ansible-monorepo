@@ -11,32 +11,9 @@ identity_validation:
     jwt_secret: "{{ authelia_jwt_secret }}"
 
 authentication_backend:
-  password_reset:
-    disable: false
-  refresh_interval: 1m
-  ldap:
-    implementation: custom
-    address: ldap://lldap.{{ docker_network.name }}:3890
-    timeout: 5s
-    start_tls: false
-
-    base_dn: "{{ ldap_base_dn }}"
-
-    additional_users_dn: ou=people
-    users_filter: "(&({username_attribute}={input})(objectClass=person))"
-
-
-    additional_groups_dn: ou=groups
-    groups_filter: "(member={dn})"
-
-    attributes:
-      username: uid
-      display_name: displayName
-      mail: mail
-      group_name: cn
-
-    user: "uid={{ ldap_username }},ou=people,{{ ldap_base_dn }}"
-    password: "{{ ldap_password}}"
+  file:
+    path: /config/users.yml
+    watch: true
 
 access_control:
   default_policy: deny
@@ -110,7 +87,7 @@ identity_providers:
         - "https://mealie.{{ common_tld }}"
 
     clients:
-      {% for k, v in ldap_oidc_apps.items() %}
+      {% for k, v in oidc_auth.items() %}
       - client_id: {{ k }}
         client_name: {{ k | title }}
         {% if 'secret' in v %}

@@ -108,7 +108,7 @@
           FILE_STORAGE_IMPORT_MAX_SIZE: "512000000"
 
           OIDC_CLIENT_ID: "{{ application }}"
-          OIDC_CLIENT_SECRET: "{{ ldap_oidc_apps.outline.secret }}"
+          OIDC_CLIENT_SECRET: "{{ oidc_auth.outline.secret }}"
           OIDC_AUTH_URI: "https://authelia.{{ common_tld }}/api/oidc/authorization"
           OIDC_TOKEN_URI: "https://authelia.{{ common_tld }}/api/oidc/token"
           OIDC_USERINFO_URI: "https://authelia.{{ common_tld }}/api/oidc/userinfo"

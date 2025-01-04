@@ -56,7 +56,7 @@
 
           OG_OIDC_DISCOVERY_URL: "https://authelia.{{ common_tld }}/.well-known/openid-configuration"
           OG_OIDC_CLIENT_KEY: "{{ application }}"
-          OG_OIDC_SECRET: "{{ ldap_oidc_apps.opengist.secret }}"
+          OG_OIDC_SECRET: "{{ oidc_auth.opengist.secret }}"
         traefik:
           - port: 6157
         homepage:

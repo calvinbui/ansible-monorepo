@@ -70,7 +70,7 @@
           DATABASE_URL: "{{ _postgres_url }}"
 
           OIDC_CLIENT_ID: "{{ application }}"
-          OIDC_CLIENT_SECRET: "{{ ldap_oidc_apps.manyfold.secret }}"
+          OIDC_CLIENT_SECRET: "{{ oidc_auth.manyfold.secret }}"
           OIDC_ISSUER: "https://authelia.{{ common_tld }}"
           OIDC_NAME: Authelia
           FORCE_OIDC: "enabled"

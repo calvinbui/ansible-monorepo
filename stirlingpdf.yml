@@ -32,7 +32,7 @@
           SECURITY_OAUTH2_ISSUER: "https://authelia.{{ common_tld }}"
           SECURITY_OAUTH2_AUTOCREATEUSER: "true"
           SECURITY_OAUTH2_CLIENTID: "{{ application }}"
-          SECURITY_OAUTH2_CLIENTSECRET: "{{ ldap_oidc_apps.stirlingpdf.secret }}"
+          SECURITY_OAUTH2_CLIENTSECRET: "{{ oidc_auth.stirlingpdf.secret }}"
           SECURITY_OAUTH2_USEASUSERNAME: "preferred_username"
           SECURITY_OAUTH2_SCOPES: "openid,profile,email"
           SECURITY_OAUTH2_PROVIDER: "Authelia"

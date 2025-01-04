@@ -131,6 +131,15 @@
         validate: "docker run --rm --name {{ application }}_config_check -v %s:/tmp/config.yml --entrypoint authelia ghcr.io/authelia/authelia:latest validate-config --config /tmp/config.yml"
       notify: Restart
 
+    - name: Template users
+      ansible.builtin.template:
+        src: "{{ files_directory }}/users.yml.j2"
+        dest: "{{ config_directory }}/authelia/users.yml"
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0444"
+      notify: Restart
+
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container

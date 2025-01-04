@@ -50,7 +50,7 @@
           MINIO_IDENTITY_OPENID_COMMENT: "authelia"
           MINIO_IDENTITY_OPENID_CONFIG_URL: "https://authelia.{{ common_tld }}/.well-known/openid-configuration"
           MINIO_IDENTITY_OPENID_CLIENT_ID: "{{ application }}"
-          MINIO_IDENTITY_OPENID_CLIENT_SECRET: "{{ ldap_oidc_apps.minio.secret }}"
+          MINIO_IDENTITY_OPENID_CLIENT_SECRET: "{{ oidc_auth.minio.secret }}"
           MINIO_IDENTITY_OPENID_DISPLAY_NAME: "Authelia"
           MINIO_IDENTITY_OPENID_CLAIM_PREFIX: "authelia"
           MINIO_IDENTITY_OPENID_SCOPES: "openid,profile,email"

@@ -440,7 +440,7 @@
           lost_password_link: "disabled"
           oidc_login_provider_url: "https://authelia.{{ common_tld }}"
           oidc_login_client_id: "{{ application }}"
-          oidc_login_client_secret: "{{ ldap_oidc_apps.nextcloud.secret }}"
+          oidc_login_client_secret: "{{ oidc_auth.nextcloud.secret }}"
           oidc_login_auto_redirect: false
           oidc_login_end_session_redirect: false
           oidc_login_button_text: "Log in with Authelia"

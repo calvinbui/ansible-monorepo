@@ -60,7 +60,7 @@
             6566366139396537323436613634616330643037643066643162
           NEXT_AUTH_SSO_PROVIDERS: "authelia"
           AUTH_AUTHELIA_ID: "{{ application }}"
-          AUTH_AUTHELIA_SECRET: "{{ ldap_oidc_apps.lobechat.secret }}"
+          AUTH_AUTHELIA_SECRET: "{{ oidc_auth.lobechat.secret }}"
           AUTH_AUTHELIA_ISSUER: "https://authelia.{{ common_tld }}"
 
           S3_ACCESS_KEY_ID: "Zj6owhhQcfvPN6bqiyqQ"

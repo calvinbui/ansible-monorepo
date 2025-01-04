@@ -123,7 +123,7 @@
           GF_AUTH_GENERIC_OAUTH_NAME: Authelia
           GF_AUTH_GENERIC_OAUTH_ICON: signin
           GF_AUTH_GENERIC_OAUTH_CLIENT_ID: "{{ application }}"
-          GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET: "{{ ldap_oidc_apps.grafana.secret }}"
+          GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET: "{{ oidc_auth.grafana.secret }}"
           GF_AUTH_GENERIC_OAUTH_SCOPES: openid profile email
           GF_AUTH_GENERIC_OAUTH_EMPTY_SCOPES: "false"
           GF_AUTH_GENERIC_OAUTH_AUTH_URL: "https://authelia.{{ common_tld }}/api/oidc/authorization"

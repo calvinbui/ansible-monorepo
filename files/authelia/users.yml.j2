@@ -1,0 +1,15 @@
+#jinja2: lstrip_blocks: "true", trim_blocks: "false"
+---
+
+users:
+  calvin:
+    displayname: calvin
+    password: $argon2id$v=19$m=65536,t=3,p=4$RJliBsy6/GY3N3gtyW8APA$7YPVRGilHERiJqMuCNpDmw/ILKqFIJ/WRsEjQK/Zwhw
+    groups:
+      - people
+
+  tammy:
+    displayname: tammy
+    password: $argon2id$v=19$m=65536,t=3,p=4$fO7snTpr/tF6D2d8xlQbXg$+D6PnZ/4jcgL42/Bk08qHPfmFab6RkSQZZB++VZ+Tr0
+    groups:
+      - people

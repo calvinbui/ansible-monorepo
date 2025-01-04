@@ -21,7 +21,7 @@
               "provider_id": "authelia",
               "name": "Authelia",
               "client_id": "{{ application }}",
-              "secret": "{{ ldap_oidc_apps.paperless.secret }}",
+              "secret": "{{ oidc_auth.paperless.secret }}",
               "settings": {
                 "server_url": "https://authelia.{{ common_tld }}"
               }
