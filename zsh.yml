@@ -11,14 +11,12 @@
       version: v1.18.0
 
     zsh_plugins:
-      - name: autojump
       - name: docker
-      - name: git
       - name: fast-syntax-highlighting
-        repo: https://github.com/zdharma/fast-syntax-highlighting
+        repo: https://github.com/zdharma-continuum/fast-syntax-highlighting
         update: true
       - name: history-search-multi-word
-        repo: https://github.com/zdharma/history-search-multi-word
+        repo: https://github.com/zdharma-continuum/history-search-multi-word
         update: true
       - name: zsh-autosuggestions
         repo: https://github.com/zsh-users/zsh-autosuggestions
