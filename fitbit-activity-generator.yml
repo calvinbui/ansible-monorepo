@@ -16,31 +16,12 @@
         group: "{{ common_group }}"
         mode: "0771"
 
-    - name: Clone
-      ansible.builtin.git:
-        repo: "https://github.com/calvinbui/fitbit-activity-generator.git"
-        version: master
-        dest: "{{ config_directory }}/repo"
-        update: true
-      register: _fitbit_activity_generator_repo_updated
-
-    - name: Build image
-      community.docker.docker_image:
-        name: "{{ application }}"
-        build:
-          path: "{{ config_directory }}/repo"
-          dockerfile: Dockerfile
-          pull: true
-        source: build
-        state: present
-        force_source: "{{ true if _fitbit_activity_generator_repo_updated.changed else false }}"
-
     - name: Create Calvin's container
       ansible.builtin.include_role:
         name: docker_container
       vars:
         name: "{{ application }}-calvin"
-        image: "{{ application }}"
+        image: ghcr.io/calvinbui/fitbit-activity-generator:master
         volumes:
           - "{{ config_directory }}/calvin.json:/usr/src/app/token.json"
         env:
@@ -64,7 +45,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-tammy"
-        image: "{{ application }}"
+        image: ghcr.io/calvinbui/fitbit-activity-generator:master
         env:
           CLIENT_ID: "23RG37"
           CLIENT_SECRET: !vault |
