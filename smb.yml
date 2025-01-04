@@ -39,11 +39,6 @@
         mode: "0440"
       notify: Restart
 
-    - name: Allow in firewall
-      community.general.ufw:
-        name: samba
-        rule: allow
-
     - name: Reminder
       ansible.builtin.debug:
         msg: Create an smb password using `sudo smbpasswd calvin`
