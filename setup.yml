@@ -31,6 +31,16 @@
         cache_valid_time: 600
       changed_when: false
 
+    - name: Configure APT install behavior
+      copy:
+        dest: /etc/apt/apt.conf.d/99no-recommends-or-suggests
+        content: |
+          APT::Install-Suggests "false";
+          APT::Install-Recommends "false";
+        mode: 0644
+        owner: root
+        group: root
+
     - name: Install pip3 and setuptools
       ansible.builtin.apt:
         name: "{{ item }}"
