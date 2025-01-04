@@ -94,7 +94,7 @@
             "0x00158d0008e036d2":
               friendly_name: "Dishwasher Water Leak Sensor"
             "0x00158d0008dff08b":
-              friendly_name: "Laundry Machine Water Leak Sensor"
+              friendly_name: "Washing Machine Water Leak Sensor"
 
             "0x00158d000977530f":
               friendly_name: "Calvin's Study Temperature & Humidity Sensor"
