@@ -131,4 +131,4 @@ identity_providers:
       {% endfor %}
 
 ntp:
-  address: "ntp.{{ common_tld }}"
+  address: "udp://ntp.{{ common_tld }}:123"
