@@ -132,6 +132,8 @@ identity_providers:
         {% if k in ["outline"] %}
           - offline_access
         token_endpoint_auth_method: client_secret_post
+        response_types:
+          - code
         {% endif %}
         {% if k in ["mealie", "nextcloud", "beszel"] %}
           - groups
