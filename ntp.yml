@@ -19,18 +19,16 @@
           - /run/chrony:rw,mode=1750
           - /var/lib/chrony:rw,mode=1750
         env:
+          # https://netfuture.ch/public-nts-server-list/
+          ENABLE_NTS: "true"
           NTP_SERVERS: |-
             {{
               [
-                "ntp0.cs.mu.OZ.AU",
-                "ntp1.cs.mu.OZ.AU",
-                "0.au.pool.ntp.org",
-                "1.au.pool.ntp.org",
-                "2.au.pool.ntp.org",
-                "3.au.pool.ntp.org",
+                "time.cloudflare.com",
               ] | join(',')
             }}
           LOG_LEVEL: "0"
+          TZ: "{{ common_timezone }}"
         traefik:
           - port: 123
             type: udp
