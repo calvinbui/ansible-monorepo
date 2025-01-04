@@ -3,3 +3,7 @@
 collections:
   - name: ansibleguy.opnsense
     version: 1.2.12
+
+roles:
+  - name: mrlesmithjr.netplan
+    version: v0.4.2

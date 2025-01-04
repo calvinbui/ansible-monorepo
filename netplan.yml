@@ -1,0 +1,52 @@
+---
+
+- hosts: homelab
+
+  any_errors_fatal: true
+
+  roles:
+    -
+      role: mrlesmithjr.netplan
+
+      netplan_config_file: /etc/netplan/ens3f0.yaml
+
+      netplan_renderer: networkd
+
+      netplan_configuration:
+        network:
+          version: 2
+          ethernets:
+            ens3f0:
+              dhcp4: false
+              dhcp6: false
+              link-local:
+                - ipv4
+          vlans:
+            ens3f0.10:
+              addresses:
+                - "{{ networks.mgmt.prefix }}.3/24"
+              routes:
+                - to: default
+                  via: "{{ networks.mgmt.prefix }}.1"
+              id: 10
+              link: ens3f0
+              link-local:
+                - ipv4
+              nameservers:
+                addresses:
+                  - "{{ networks.mgmt.dns }}"
+            ens3f0.20:
+              id: 20
+              link: ens3f0
+              link-local:
+                - ipv4
+            ens3f0.30:
+              id: 30
+              link: ens3f0
+              link-local:
+                - ipv4
+            ens3f0.40:
+              id: 40
+              link: ens3f0
+              link-local:
+                - ipv4
