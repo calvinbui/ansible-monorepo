@@ -31,8 +31,9 @@
         group: "{{ common_root_group }}"
         mode: "0644"
         content: |
-          NUT_HOST: "{{ nut_host }}"
-          NUT_PORT: 3493
+          NUT_SERVERS:
+            - HOST: "{{ nut_host }}"
+              PORT: 3493
           WEB_HOST: 0.0.0.0
           WEB_PORT: 8080
       notify: Restart
