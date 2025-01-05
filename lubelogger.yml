@@ -57,20 +57,53 @@
           LOGGING__LOGLEVEL__DEFAULT: Error
 
           POSTGRES_CONNECTION: "Host={{ _postgres_hostname }};Username={{ _postgres_username }};Password={{ _postgres_password }};Database={{ _postgres_database }};"
+
+          LUBELOGGER_ALLOWED_FILE_EXTENSIONS: "*"
+
+          OpenIDConfig__Name: "authelia"
+          OpenIDConfig__ClientId: "{{ application }}"
+          OpenIDConfig__ClientSecret: "{{ oidc_auth.lubelogger.secret }}"
+          OpenIDConfig__AuthURL: "https://authelia.{{ common_tld }}/api/oidc/authorization"
+          OpenIDConfig__TokenURL: "https://authelia.{{ common_tld }}/api/oidc/token"
+          OpenIDConfig__RedirectURL: "{{ oidc_auth.lubelogger.redirect_uris[0] }}"
+          OpenIDConfig__Scope: "openid profile email"
+          OpenIDConfig__ValidateState: "true"
+          OpenIDConfig__UsePKCE: "true"
+          OpenIDConfig__DisableRegularLogin: "true"
+          OpenIDConfig__LogOutURL: "https://authelia.{{ common_tld }}/application/o/{{ application }}/end-session/"
         volumes:
-          - "{{ config_folder }}/config:/App/config"
-          - "{{ config_folder }}/data:/App/data"
-          - "{{ config_folder }}/translations:/App/wwwroot/translations"
-          - "{{ config_folder }}/documents:/App/wwwroot/documents"
-          - "{{ config_folder }}/images:/App/wwwroot/images"
-          - "{{ config_folder }}/temp:/App/wwwroot/temp"
-          - "{{ config_folder }}/log:/App/log"
-          - "{{ config_folder }}/keys:/root/.aspnet/DataProtection-Keys"
+          - "{{ config_directory }}/config:/App/config"
+          - "{{ config_directory }}/data:/App/data"
+          - "{{ config_directory }}/translations:/App/wwwroot/translations"
+          - "{{ config_directory }}/documents:/App/wwwroot/documents"
+          - "{{ config_directory }}/images:/App/wwwroot/images"
+          - "{{ config_directory }}/temp:/App/wwwroot/temp"
+          - "{{ config_directory }}/log:/App/log"
+          - "{{ config_directory }}/keys:/root/.aspnet/DataProtection-Keys"
         traefik:
           - port: 8080
-            auth: page
         homepage:
           name: LubeLogger
           group: Tools
           weight: 300
           description: "Vehicle maintenance and mileage tracker"
+
+    - name: Configure
+      json_patch: # noqa fqcn[action]
+        src: "{{ config_directory }}/config/userConfig.json"
+        pretty: true
+        operations:
+          - op: add
+            path: "{{ item.key }}"
+            value: "{{ item.value }}"
+      loop: "{{ _lubelogger_configuration | dict2items }}"
+      vars:
+        _lubelogger_configuration:
+          UseSystemColorMode: true
+          UseMPG: false
+
+          EnableAuth: true
+          DisableRegistration: true
+
+          EnableRootUserOIDC: true
+          DefaultReminderEmail: "{{ common_user }}{{ common_email_to }}"

@@ -106,13 +106,13 @@ identity_providers:
           - openid
           - profile
           - email
-        {% if k in ["outline"] %}
+        {% if k in ["lubelogger", "outline"] %}
           - offline_access
         token_endpoint_auth_method: client_secret_post
         response_types:
           - code
         {% endif %}
-        {% if k in ["mealie", "nextcloud", "beszel"] %}
+        {% if k in ["beszel", "lubelogger", "mealie", "nextcloud"] %}
           - groups
         require_pkce: true
         pkce_challenge_method: 'S256'
