@@ -40,7 +40,7 @@
           TM_GID=1000
       loop:
         -
-          name: calvin
+          name: "{{ common_user }}"
           password: &_time_machine_password !vault |
             $ANSIBLE_VAULT;1.1;AES256
             66313365336139376338616435316366353261316261346339646466356463363931386462646565

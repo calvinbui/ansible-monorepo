@@ -2,10 +2,10 @@
 ---
 
 users:
-  calvin:
-    displayname: calvin
+  {{ common_user }}:
+    displayname: {{ common_user }}
     password: $argon2id$v=19$m=65536,t=3,p=4$RJliBsy6/GY3N3gtyW8APA$7YPVRGilHERiJqMuCNpDmw/ILKqFIJ/WRsEjQK/Zwhw
-    email: calvin{{ common_email_to }}
+    email: "{{ common_user }}{{ common_email_to }}"
     groups:
       - people
 
