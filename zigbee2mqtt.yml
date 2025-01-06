@@ -148,7 +148,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: koenkk/zigbee2mqtt:1.42.0
+        image: koenkk/zigbee2mqtt:2.0.0
         env:
           TZ: "{{ common_timezone }}"
         volumes:
