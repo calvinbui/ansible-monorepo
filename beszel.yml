@@ -20,7 +20,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: henrygd/beszel:0.9.0
+        image: henrygd/beszel:0.9.1
         env:
           DISABLE_PASSWORD_AUTH: "true" # required for homepage widget
           USER_CREATION: "true"
@@ -56,7 +56,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-agent"
-        image: henrygd/beszel-agent:0.9.0
+        image: henrygd/beszel-agent:0.9.1
         env:
           PORT: "45876"
           KEY: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBbV3AtlViGClA6vs5U8p2luctcfdyGHJ6X+H2hhXMpw"
