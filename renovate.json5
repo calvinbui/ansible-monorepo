@@ -393,6 +393,12 @@
       matchPackagePatterns: ["bbilly1\\/tubearchivist"],
       sourceUrl: "https://github.com/tubearchivist/tubearchivist",
     },
+    /* beszel */
+    {
+      groupName: "beszel",
+      matchPackagePatterns: [".*\\/beszel.*"],
+      sourceUrl: "https://github.com/henrygd/beszel",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
