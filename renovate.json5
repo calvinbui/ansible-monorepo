@@ -298,12 +298,6 @@
       matchPackagePatterns: ["browserless\\/chrome"],
       prBodyNotes: "[CHANGELOG.md](https://github.com/browserless/chrome/blob/main/CHANGELOG.md)",
     },
-    /* collabora */
-    {
-      matchPackagePatterns: ["collabora\\/code"],
-      versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)\\.1$",
-      prBodyNotes: "[Release Notes](https://www.collaboraoffice.com/code-{{newMajor}}-{{#if (containsString currentVersion '.0')}}0{{/if}}{{newMinor}}-release-notes/)",
-    },
     /* apache tika */
     {
       matchPackagePatterns: [".*\\/tika"],
@@ -387,11 +381,6 @@
       matchPackagePatterns: ["roundcube\\/roundcubemail"],
       sourceUrl: "https://github.com/roundcube/roundcubemail",
       versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-apache$",
-    },
-    /* tubearchivist */
-    {
-      matchPackagePatterns: ["bbilly1\\/tubearchivist"],
-      sourceUrl: "https://github.com/tubearchivist/tubearchivist",
     },
     /* beszel */
     {
