@@ -22,40 +22,24 @@ groups:
           description: "The device {{ $labels.device }} mounted at {{ $labels.mountpoint }} is read-only"
       -
         alert: Disk Space
-        expr: (node_filesystem_size_bytes - node_filesystem_free_bytes)/node_filesystem_size_bytes > 0.95
+        expr: ((node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes < 5 and ON (instance, device, mountpoint) node_filesystem_readonly == 0)
         for: 5m
         annotations:
           title: "Disk Space"
           description: "The device {{ $labels.device }} mounted at {{ $labels.mountpoint }} is almost full"
       -
         alert: Inodes
-        expr: node_filesystem_files_free / node_filesystem_files * 100 < 10 and ON (instance, device, mountpoint) node_filesystem_readonly == 0
+        expr: (node_filesystem_files_free{fstype!="msdosfs"} / node_filesystem_files{fstype!="msdosfs"} * 100 < 10 and ON (instance, device, mountpoint) node_filesystem_readonly == 0)
         for: 2m
         annotations:
           title: Host out of inodes
           description: "Disk is almost running out of available inodes (< 10% left)"
-      -
-        alert: RAID Inactive
-        expr: node_md_state{state="inactive"} > 0
-        for: 0m
-        annotations:
-          title: Host RAID array got inactive
-          description: "RAID array {{ $labels.device }} is in degraded state due to one or more disks failures. Number of spare drives is insufficient to fix issue automatically."
-      -
-        alert: RAID Disk Failure
-        expr: node_md_disks{state="failed"} > 0
-        for: 2m
-        labels:
-          severity: warning
-        annotations:
-          title: Host RAID disk failure
-          description: "At least one device in RAID array on {{ $labels.instance }} failed. Array {{ $labels.md_device }} needs attention and possibly a disk swap"
 
   - name: node_memory
     rules:
       -
         alert: Memory Usage
-        expr: (node_memory_MemTotal_bytes-node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.90
+        expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10)
         for: 5m
         annotations:
           title: "Memory Usage"
@@ -72,8 +56,8 @@ groups:
     rules:
       -
         alert: CPU Load
-        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[10m])) * 100) > 80
-        for: 0m
+        expr: (sum by (instance) (avg by (mode, instance) (rate(node_cpu_seconds_total{mode!="idle"}[2m]))) > 0.8)
+        for: 10m
         annotations:
           title: Host high CPU load
           description: "CPU load is > 80%"
@@ -86,14 +70,14 @@ groups:
           description: "CPU steal is > 10%. A noisy neighbor is killing performance"
       -
         alert: CPU Temps
-        expr: node_hwmon_temp_celsius > 75
+        expr: ((node_hwmon_temp_celsius * ignoring(label) group_left(instance, job, node, sensor) node_hwmon_sensor_label{label!="tctl"} > 75))
         for: 5m
         annotations:
           title: Host physical component too hot
           description: "Physical hardware component too hot"
       -
         alert: CPU Temp Critical
-        expr: node_hwmon_temp_crit_alarm_celsius == 1
+        expr: ((node_hwmon_temp_crit_alarm_celsius == 1) or (node_hwmon_temp_alarm == 1))
         for: 0m
         annotations:
           title: Host node overtemperature alarm

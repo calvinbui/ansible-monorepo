@@ -1,0 +1,11 @@
+---
+
+groups:
+  - name: zfs
+    rules:
+      - alert: ZfsOfflinePool
+        expr: node_zfs_zpool_state{state!="online"} > 0
+        for: 1m
+        annotations:
+          summary: ZFS offline pool
+          description: "A ZFS zpool is in a unexpected state: {{ $labels.state }}.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
