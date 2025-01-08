@@ -40,6 +40,8 @@
         volumes:
           - "{{ common_directory }}/prometheus/data:/prometheus-data"
           - "{{ config_directory }}/data:/thanos-data"
+        metrics:
+          - port: 10902
 
     - name: Create store container
       ansible.builtin.include_role:
@@ -54,6 +56,8 @@
         volumes:
           - "{{ config_directory }}/store:/store"
           - "{{ config_directory }}/data:/thanos-data:ro"
+        metrics:
+          - port: 10902
 
     - name: Create compactor container
       ansible.builtin.include_role:
@@ -74,6 +78,8 @@
         volumes:
           - "{{ config_directory }}/compactor:/compactor"
           - "{{ config_directory }}/data:/thanos-data"
+        metrics:
+          - port: 10902
 
     - name: Create query container
       ansible.builtin.include_role:
@@ -89,6 +95,8 @@
 
           - --alert.query-url=https://{{ application }}.{{ common_tld }}
           - --query.auto-downsampling
+        metrics:
+          - port: 10902
 
     - name: Create query-frontend container
       ansible.builtin.include_role:
@@ -107,6 +115,8 @@
           group: Monitoring
           weight: 400
           description: "Prometheus long-term storage"
+        metrics:
+          - port: 10902
 
     - name: Create bucket container
       ansible.builtin.include_role:
@@ -131,3 +141,5 @@
           weight: 401
           description: "Web interface for remote storage bucket"
           href: "https://{{ application }}-bucket.{{ common_tld }}"
+        metrics:
+          - port: 10902
