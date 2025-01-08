@@ -20,9 +20,10 @@
       ansible.builtin.file:
         path: "{{ config_directory }}"
         state: directory
-        owner: "12021"
+        owner: 12021
         group: "{{ common_group_id }}"
-        mode: "0771"
+        mode: "0751"
+        recurse: true
 
     - name: Create container
       ansible.builtin.include_role:
