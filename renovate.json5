@@ -205,7 +205,7 @@
     {
       matchPackagePatterns: [".*\\/actual-server"],
       sourceUrl: "https://github.com/actualbudget/actual-server",
-      prBodyNotes: "[releases.md](https://github.com/actualbudget/docs/blob/master/docs/releases.md)",
+      prBodyNotes: "[Release Notes](https://actualbudget.org/docs/releases/)",
     },
     /* borgmatic */
     {
