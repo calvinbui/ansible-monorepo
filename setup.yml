@@ -93,12 +93,13 @@
 
     - name: Disable motd files
       ansible.builtin.file:
-        path: "{{ item }}"
+        path: "/etc/update-motd.d/{{ item }}"
         mode: "-x"
       loop:
-        - /etc/update-motd.d/60-unminimize
-        - /etc/update-motd.d/50-motd-news
-        - /etc/update-motd.d/10-help-text
+        - 10-help-text
+        - 50-motd-news
+        - 60-unminimize
+        - 91-contract-ua-esm-status
 
     - name: No password sudo
       community.general.sudoers:
