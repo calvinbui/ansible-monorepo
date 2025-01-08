@@ -5,6 +5,11 @@
   vars:
     application: "languagetool"
 
+    languagetool_ngrams:
+      lang: en
+      version: "20150817"
+      checksum: md5:ee56b280af45daf8e68fe0d69dd0914d
+
     docker_network: "{{ networks.pub }}"
 
   handlers:
@@ -32,27 +37,56 @@
         group: 101
         mode: "0771"
 
+    - name: Check if ngrams-versions.txt exists
+      ansible.builtin.stat:
+        path: "{{ config_directory }}/ngram-version.txt"
+      register: __ngram_file_stat
+
+    - name: Read contents of ngrams-versions.txt if it exists
+      ansible.builtin.slurp:
+        src: "{{ config_directory }}/ngram-version.txt"
+      register: __ngram_version_encoded
+
+    - name: Decode and set ngrams_versions variable
+      ansible.builtin.set_fact:
+        __ngram_version: "{{ __ngram_version_encoded.content | b64decode }}"
+      when: __ngram_file_stat.stat.exists
+
     - name: Download ngrams
       ansible.builtin.get_url:
-        url: "https://languagetool.org/download/ngram-data/ngrams-{{ item.lang }}-{{ item.version }}.zip"
-        dest: "{{ config_directory }}/ngrams-{{ item.lang }}-{{ item.version }}.zip"
+        url: "https://languagetool.org/download/ngram-data/ngrams-{{ languagetool_ngrams.lang }}-{{ languagetool_ngrams.version }}.zip"
+        dest: "{{ config_directory }}/ngrams-{{ languagetool_ngrams.lang }}-{{ languagetool_ngrams.version }}.zip"
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
         mode: "0644"
-        checksum: "{{ item.checksum }}"
-      loop:
-        - lang: en
-          version: "20150817"
-          checksum: md5:ee56b280af45daf8e68fe0d69dd0914d
+        checksum: "{{ languagetool_ngrams.checksum }}"
       register: _ngrams
+      when: not __ngram_file_stat.stat.exists or
+            __ngram_version != ("ngrams-" + languagetool_ngrams.lang + "-" + languagetool_ngrams.version)
 
     - name: Unarchive ngrams
       ansible.builtin.unarchive:
         src: "{{ item.dest }}.zip"
         dest: "{{ config_directory }}/ngrams/"
-        creates: "{{ config_directory }}/ngrams/{{ item.item.lang }}"
+        creates: "{{ config_directory }}/ngrams/{{ item.languagetool_ngrams.lang }}"
         remote_src: true
       loop: "{{ _ngrams.results }}"
+      when: not __ngram_file_stat.stat.exists or
+            __ngram_version != ("ngrams-" + languagetool_ngrams.lang + "-" + languagetool_ngrams.version)
+
+    - name: Update ngram.txt
+      ansible.builtin.copy:
+        content: "ngrams-{{ languagetool_ngrams.lang }}-{{ languagetool_ngrams.version }}"
+        dest: "{{ config_directory }}/ngram-version.txt"
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
+      when: _ngrams.changed
+
+    - name: Delete ngrams archive
+      ansible.builtin.file:
+        path: "{{ config_directory }}/ngrams-{{ languagetool_ngrams.lang }}-{{ languagetool_ngrams.version }}.zip"
+        state: absent
 
     - name: Download ngram-lang-detect
       ansible.builtin.get_url:
