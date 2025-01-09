@@ -295,7 +295,7 @@
     },
     /* browserless */
     {
-      matchPackagePatterns: ["browserless\\/chrome"],
+      matchPackagePatterns: ["browserless\\/chrom.*"],
       prBodyNotes: "[CHANGELOG.md](https://github.com/browserless/chrome/blob/main/CHANGELOG.md)",
     },
     /* apache tika */
