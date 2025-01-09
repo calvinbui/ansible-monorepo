@@ -41,7 +41,7 @@
           homeassistant: true
 
           mqtt:
-            server: mqtt://emqx.{{ docker_network.name }}:1883
+            server: mqtt://{{ mqtt_host }}:{{ mqtt_port }}
             user: {{ application }}
             password: "{{ _zigbee2mqtt_mqtt_password }}"
 
