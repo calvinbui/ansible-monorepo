@@ -30,10 +30,16 @@
       ansible.builtin.copy:
         content: |
           [files]
-          comment = ZFS - files
-          path = {{ common_directory_storage }}
-          read only = no
-          browseable = yes
+            path = {{ common_directory_storage }}
+            valid users = {{ common_user }}
+            read only = no
+            browseable = yes
+
+          [paperless]
+            path = {{ common_directory }}/paperless/consume
+            valid users = {{ common_user }}, paperless
+            read only = no
+            browseable = yes
         dest: /etc/samba/smb.conf
         validate: "testparm %s --suppress-prompt"
         mode: "0440"

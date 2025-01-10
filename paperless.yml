@@ -35,10 +35,11 @@
   tasks:
     - name: Create FTP user
       ansible.builtin.user:
-        name: "{{ application }}"
+        name: "{{ users.paperless.username }}"
         create_home: false
-        home: "{{ config_directory }}/consume"
-        password: "$6$kmVZak.N77fAA.op$p84WnShU1IZhSZzAEsfecN4e3COs5N4Pp.tR8XtDVjAIOQHNabFjSbbBzSjx3oim/efOEW20bueoQcKYFTf.D1"
+        home: "{{ users.paperless.home }}"
+        password: "{{ users.paperless.password | string | password_hash('sha512') }}"
+        update_password: on_create
         password_expire_max: -1
       register: _paperless_user
 
