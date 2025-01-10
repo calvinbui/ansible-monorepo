@@ -121,7 +121,7 @@
           GITEA__picture__DISABLE_GRAVATAR: "true"
           GITEA__picture__ENABLE_FEDERATED_AVATAR: "false"
 
-          GITEA__log__MODE: "console,file"
+          GITEA__log__MODE: "console"
           GITEA__log__logger.access.MODE: ""
           GITEA__log__logger.router.MODE: ""
           GITEA__log__logger.xorm.MODE: ""

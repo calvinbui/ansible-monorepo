@@ -95,8 +95,6 @@
 
           DATABASE_URL: "{{ _postgres_url }}"
 
-          LOG_FILE: /data/vaultwarden.log
-
           LOGIN_RATELIMIT_MAX_BURST: "2"
           LOGIN_RATELIMIT_SECONDS: "600"
         volumes:

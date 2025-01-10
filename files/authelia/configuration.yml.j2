@@ -63,13 +63,6 @@ notifier:
     sender: "{{ application }}{{ common_email_to }}"
     disable_require_tls: "{{ 'false' if common_email_protocol=='tls' else 'true' }}"
 
-log:
-  level: debug
-  format: json
-  file_path: /var/log/authelia/authelia.log
-  keep_stdout: true
-
-
 identity_providers:
   oidc:
     jwks:

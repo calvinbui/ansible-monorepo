@@ -58,63 +58,6 @@
             - /var/log/traefik/traefik.log
           labels:
             type: traefik
-          ---
-          filenames:
-            - /var/log/authelia.log
-          labels:
-            type: authelia
-          ---
-          filenames:
-            - /var/log/gitea.log
-          labels:
-            type: gitea
-          ---
-          filenames:
-            - /var/log/home-assistant.log
-          labels:
-            type: home-assistant
-          ---
-          filenames:
-            - /var/log/nextcloud.log
-          labels:
-            type: nextcloud
-          ---
-          filenames:
-            - /var/log/samba/log.*
-          labels:
-            type: smb
-          ---
-          filenames:
-            - /var/log/auth.log
-            - /var/log/kern.log
-            - /var/log/syslog
-          labels:
-            type: syslog
-          ---
-          filenames:
-            - /var/log/vsftpd.log
-          labels:
-            type: vsftpd
-          ---
-          filenames:
-            - /var/log/prowlarr.txt
-          labels:
-            type: Prowlarr
-          ---
-          filenames:
-            - /var/log/sonarr.txt
-          labels:
-            type: Sonarr
-          ---
-          filenames:
-            - /var/log/radarr.txt
-          labels:
-            type: Radarr
-          ---
-          filenames:
-            - /var/log/vaultwarden.log
-          labels:
-            type: Vaultwarden
         dest: "{{ config_directory }}/acquis.yaml"
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
@@ -259,21 +202,7 @@
           COLLECTIONS: |-
             {{
               [
-                "crowdsecurity/home-assistant",
-                "crowdsecurity/iptables",
-                "crowdsecurity/linux-lpe",
-                "crowdsecurity/linux",
-                "crowdsecurity/nextcloud",
-                "crowdsecurity/smb",
-                "crowdsecurity/sshd",
                 "crowdsecurity/traefik",
-                "crowdsecurity/vsftpd",
-                "Dominic-Wagner/vaultwarden",
-                "LePresidente/authelia",
-                "LePresidente/gitea",
-                "schiz0phr3ne/prowlarr",
-                "schiz0phr3ne/radarr",
-                "schiz0phr3ne/sonarr",
               ] | join(' ')
             }}
 

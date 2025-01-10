@@ -150,7 +150,6 @@
           TZ: "{{ common_timezone }}"
         volumes:
           - "{{ config_directory }}/authelia:/config"
-          - "{{ config_directory }}/logs:/var/log/authelia"
         traefik:
           - port: 9091
         homepage:
