@@ -66,6 +66,22 @@
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_root_group | string }}"
           TZ: "{{ common_timezone }}"
+
+          PROWLARR__APP__INSTANCENAME: "{{ application | replace('-', ' ') | title }}"
+          PROWLARR__APP__LAUNCHBROWSER: "False"
+          PROWLARR__AUTH__APIKEY: "{{ prowlarr_api_key }}"
+          PROWLARR__AUTH__METHOD: "External"
+          PROWLARR__LOG__ANALYTICSENABLED: "False"
+          PROWLARR__LOG__LEVEL: "Info"
+
+          # https://wiki.servarr.com/prowlarr/postgres-setup
+          PROWLARR__POSTGRES__HOST: "{{ _postgres_hostname }}"
+          PROWLARR__POSTGRES__PORT: "{{ _postgres_port | string }}"
+          PROWLARR__POSTGRES__MAINDB: "{{ _postgres_database }}"
+          PROWLARR__POSTGRES__LOGDB: "{{ application }}-log"
+          PROWLARR__POSTGRES__USER: "{{ _postgres_username }}"
+          PROWLARR__POSTGRES__PASSWORD: "{{ _postgres_password }}"
+
         traefik:
           -
             port: 9696
@@ -90,43 +106,3 @@
           path: /ping
         labels:
           autoheal: "true"
-
-    - name: Wait for config
-      ansible.builtin.wait_for:
-        path: "{{ config_directory }}/config/config.xml"
-
-    - name: Update apt cache
-      ansible.builtin.apt:
-        update_cache: true
-        cache_valid_time: 86400
-      changed_when: false
-
-    - name: Install lxml
-      ansible.builtin.apt:
-        name: python3-lxml
-        state: present
-      register: result
-      until: result is success
-      retries: 5
-      delay: 5
-
-    - name: Configure
-      community.general.xml:
-        path: "{{ config_directory }}/config/config.xml"
-        xpath: "/Config/{{ item.key }}"
-        value: "{{ item.value | string }}"
-        pretty_print: true
-      loop: "{{ _prowlarr_config | dict2items }}"
-      notify: Restart
-      vars:
-        _prowlarr_config:
-          ApiKey: "{{ prowlarr_api_key }}"
-          LaunchBrowser: "False"
-          AnalyticsEnabled: "False"
-          PostgresHost: "{{ _postgres_hostname }}"
-          PostgresPort: "{{ _postgres_port }}"
-          PostgresMainDb: "{{ _postgres_database }}"
-          PostgresLogDb: "{{ application }}-log"
-          PostgresUser: "{{ _postgres_username }}"
-          PostgresPassword: "{{ _postgres_password }}"
-          AuthenticationMethod: "External"

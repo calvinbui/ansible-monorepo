@@ -67,6 +67,21 @@
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_root_group | string }}"
           TZ: "{{ common_timezone }}"
+
+          RADARR__APP__INSTANCENAME: "{{ application | replace('-', ' ') | title }}"
+          RADARR__APP__LAUNCHBROWSER: "False"
+          RADARR__AUTH__APIKEY: "{{ radarr_api_key }}"
+          RADARR__AUTH__METHOD: "External"
+          RADARR__LOG__ANALYTICSENABLED: "False"
+          RADARR__LOG__LEVEL: "Info"
+
+          # https://wiki.servarr.com/radarr/postgres-setup
+          RADARR__POSTGRES__HOST: "{{ _postgres_hostname }}"
+          RADARR__POSTGRES__PORT: "{{ _postgres_port | string }}"
+          RADARR__POSTGRES__MAINDB: "{{ _postgres_database }}"
+          RADARR__POSTGRES__LOGDB: "{{ application }}-log"
+          RADARR__POSTGRES__USER: "{{ _postgres_username }}"
+          RADARR__POSTGRES__PASSWORD: "{{ _postgres_password }}"
         traefik:
           - port: 7878
             auth: page
@@ -92,45 +107,3 @@
           path: /ping
         labels:
           autoheal: "true"
-
-    - name: Wait for config
-      ansible.builtin.wait_for:
-        path: "{{ config_directory }}/config/config.xml"
-
-    - name: Update apt cache
-      ansible.builtin.apt:
-        update_cache: true
-        cache_valid_time: 86400
-      changed_when: false
-
-    - name: Install lxml
-      ansible.builtin.apt:
-        name: python3-lxml
-        state: present
-      register: result
-      until: result is success
-      retries: 5
-      delay: 5
-
-    - name: Configure config.xml
-      community.general.xml:
-        path: "{{ config_directory }}/config/config.xml"
-        xpath: "/Config/{{ item.key }}"
-        value: "{{ item.value | string }}"
-        pretty_print: true
-      loop: "{{ _radarr_config | dict2items }}"
-      notify: Restart
-      vars:
-        _radarr_config:
-          ApiKey: "{{ radarr_api_key }}"
-          LaunchBrowser: "False"
-          AnalyticsEnabled: "False"
-          AuthenticationMethod: "External"
-
-          # https://wiki.servarr.com/radarr/postgres-setup
-          PostgresHost: "{{ _postgres_hostname }}"
-          PostgresPort: "{{ _postgres_port }}"
-          PostgresMainDb: "{{ _postgres_database }}"
-          PostgresLogDb: "{{ application }}-log"
-          PostgresUser: "{{ _postgres_username }}"
-          PostgresPassword: "{{ _postgres_password }}"

@@ -44,6 +44,22 @@
       PUID: "{{ common_user_id | string }}"
       PGID: "{{ common_root_group | string }}"
       TZ: "{{ common_timezone }}"
+
+      SONARR__APP__INSTANCENAME: "{{ application | replace('-', ' ') | title }}"
+      SONARR__APP__LAUNCHBROWSER: "False"
+      SONARR__AUTH__APIKEY: "{{ sonarr_api_key }}"
+      SONARR__AUTH__METHOD: "External"
+      SONARR__LOG__ANALYTICSENABLED: "False"
+      SONARR__LOG__LEVEL: "Info"
+
+      # https://wiki.servarr.com/sonarr/postgres-setup
+      SONARR__POSTGRES__HOST: "{{ _postgres_hostname }}"
+      SONARR__POSTGRES__PORT: "{{ _postgres_port | string }}"
+      SONARR__POSTGRES__MAINDB: "{{ _postgres_database }}"
+      SONARR__POSTGRES__LOGDB: "{{ application }}-log"
+      SONARR__POSTGRES__USER: "{{ _postgres_username }}"
+      SONARR__POSTGRES__PASSWORD: "{{ _postgres_password }}"
+
     traefik:
       -
         port: 8989
@@ -62,46 +78,3 @@
       start_period: 5s
       interval: 5s
       retries: 5
-
-- name: Wait for config
-  ansible.builtin.wait_for:
-    path: "{{ config_directory }}/config/config.xml"
-
-- name: Update apt cache
-  ansible.builtin.apt:
-    update_cache: true
-    cache_valid_time: 86400
-  changed_when: false
-
-- name: Install lxml
-  ansible.builtin.apt:
-    name: python3-lxml
-    state: present
-  register: result
-  until: result is success
-  retries: 5
-  delay: 5
-
-- name: Configure
-  community.general.xml:
-    path: "{{ config_directory }}/config/config.xml"
-    xpath: "/Config/{{ item.key }}"
-    value: "{{ item.value | string }}"
-    pretty_print: true
-  loop: "{{ _sonarr_config | dict2items }}"
-  notify: Restart
-  vars:
-    _sonarr_config:
-      ApiKey: "{{ sonarr_api_key }}"
-      LaunchBrowser: "False"
-      AnalyticsEnabled: "False"
-      AuthenticationMethod: "External"
-      InstanceName: "{{ application | replace('-', ' ') | title }}"
-
-      # https://wiki.servarr.com/sonarr/postgres-setup
-      PostgresHost: "{{ _postgres_hostname }}"
-      PostgresPort: "{{ _postgres_port }}"
-      PostgresMainDb: "{{ _postgres_database }}"
-      PostgresLogDb: "{{ application }}-log"
-      PostgresUser: "{{ _postgres_username }}"
-      PostgresPassword: "{{ _postgres_password }}"
