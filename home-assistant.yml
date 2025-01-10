@@ -211,7 +211,7 @@
                 6338613462656433343035393333663239323331316563303266
 
               GOVEE_MQTT_HOST: "{{ mqtt_host }}"
-              GOVEE_MQTT_PORT: "{{ mqtt_port }}"
+              GOVEE_MQTT_PORT: "{{ mqtt_port | string }}"
               GOVEE_MQTT_USER: "govee2mqtt"
               GOVEE_MQTT_PASSWORD: !vault |
                 $ANSIBLE_VAULT;1.1;AES256
