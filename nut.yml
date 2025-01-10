@@ -47,7 +47,7 @@
     - name: Update apt cache
       ansible.builtin.apt:
         update_cache: true
-        cache_valid_time: 600
+        cache_valid_time: 86400
       changed_when: false
 
     - name: Install
@@ -110,7 +110,7 @@
     - name: Update apt cache
       ansible.builtin.apt:
         update_cache: true
-        cache_valid_time: 600
+        cache_valid_time: 86400
       changed_when: false
 
     - name: Install nut
