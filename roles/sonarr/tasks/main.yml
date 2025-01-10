@@ -78,3 +78,5 @@
       start_period: 5s
       interval: 5s
       retries: 5
+    labels:
+      autoheal: "true"
