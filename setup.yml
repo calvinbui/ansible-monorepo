@@ -25,6 +25,11 @@
       ansible.builtin.hostname:
         name: "homelab.{{ common_local_tld }}"
 
+    - name: Disable password expiration
+      ansible.builtin.user:
+        name: "{{ common_user }}"
+        password_expire_max: -1
+
     - name: Update apt cache
       ansible.builtin.apt:
         update_cache: true
