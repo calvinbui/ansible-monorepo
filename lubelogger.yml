@@ -72,13 +72,7 @@
           OpenIDConfig__DisableRegularLogin: "true"
           OpenIDConfig__LogOutURL: "https://authelia.{{ common_tld }}/application/o/{{ application }}/end-session/"
         volumes:
-          - "{{ config_directory }}/config:/App/config"
           - "{{ config_directory }}/data:/App/data"
-          - "{{ config_directory }}/translations:/App/wwwroot/translations"
-          - "{{ config_directory }}/documents:/App/wwwroot/documents"
-          - "{{ config_directory }}/images:/App/wwwroot/images"
-          - "{{ config_directory }}/temp:/App/wwwroot/temp"
-          - "{{ config_directory }}/log:/App/log"
           - "{{ config_directory }}/keys:/root/.aspnet/DataProtection-Keys"
         traefik:
           - port: 8080
@@ -90,7 +84,7 @@
 
     - name: Configure
       json_patch: # noqa fqcn[action]
-        src: "{{ config_directory }}/config/userConfig.json"
+        src: "{{ config_directory }}/data/config/userConfig.json"
         pretty: true
         operations:
           - op: add
