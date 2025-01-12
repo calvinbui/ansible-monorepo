@@ -249,20 +249,7 @@
 
           - "{{ config_directory }}/my-whitelists.yaml:/etc/crowdsec/parsers/s02-enrich/my-whitelists.yaml"
 
-          - "{{ common_directory }}/authelia/logs/authelia.log:/var/log/authelia.log:ro"
-          - "{{ common_directory }}/bitwarden/bitwarden/vaultwarden.log:/var/log/vaultwarden.log"
-          - "{{ common_directory }}/gitea/data/gitea/log/gitea.log:/var/log/gitea.log:ro"
-          - "{{ common_directory }}/home-assistant/config/home-assistant.log:/var/log/home-assistant.log:ro"
-          - "{{ common_directory }}/nextcloud/app/data/nextcloud.log:/var/log/nextcloud.log:ro"
-          - "{{ common_directory }}/prowlarr/config/logs/prowlarr.txt:/var/log/prowlarr.txt:ro"
-          - "{{ common_directory }}/radarr/config/logs/radarr.txt:/var/log/radarr.txt:ro"
-          - "{{ common_directory }}/sonarr/config/logs/sonarr.txt:/var/log/sonarr.txt:ro"
           - "{{ common_directory }}/traefik/logs:/var/log/traefik:ro"
-          - /var/log/auth.log:/var/log/auth.log:ro
-          - /var/log/kern.log:/var/log/kern.log:ro
-          - /var/log/samba/:/var/log/samba/:ro
-          - /var/log/syslog:/var/log/syslog:ro
-          - /var/log/vsftpd.log:/var/log/vsftpd.log:ro
         labels:
           '{
             "chadburn.enabled": "true",
