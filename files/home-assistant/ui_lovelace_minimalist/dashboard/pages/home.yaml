@@ -81,9 +81,6 @@ cards:
             entity: calendar.personal
             name: Calvin
           -
-            entity: calendar.calvin_s_facebook
-            name: Calvin's Facebook
-          -
             entity: calendar.tammy_nguyen013_gmail_com
             name: Tammy
           -
