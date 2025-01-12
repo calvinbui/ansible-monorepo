@@ -116,6 +116,7 @@
     networks_cli_compatible: "{{ networks_cli_compatible | default(true) }}"
 
     security_opts: "{{ security_opts | default(omit) }}"
+    sysctls: "{{ sysctls | default(omit) }}"
     capabilities: "{{ capabilities | default(omit) }}"
     cap_drop: "{{ cap_drop | default(omit) }}"
     pid_mode: "{{ pid_mode | default(omit) }}"
