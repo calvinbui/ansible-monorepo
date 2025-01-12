@@ -33,7 +33,7 @@ session:
   secret: "{{ authelia_session_secret }}"
   cookies:
     - domain: {{ common_tld }}
-      authelia_url: "https://authelia.{{ common_tld }}"
+      authelia_url: "{{ oidc_base_url }}"
       default_redirection_url: "https://{{ common_tld }}"
       expiration: "24h"
       remember_me: "30d"

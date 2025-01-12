@@ -389,12 +389,12 @@
         _nextcloud_oidc_config:
           allow_user_to_change_display_name: false
           lost_password_link: "disabled"
-          oidc_login_provider_url: "https://authelia.{{ common_tld }}"
+          oidc_login_provider_url: "{{ oidc_base_url }}"
           oidc_login_client_id: "{{ application }}"
           oidc_login_client_secret: "{{ oidc_auth.nextcloud.secret }}"
           oidc_login_auto_redirect: false
           oidc_login_end_session_redirect: false
-          oidc_login_button_text: "Log in with Authelia"
+          oidc_login_button_text: "Log in with {{ oidc_provider | title }}"
           oidc_login_hide_password_form: true
           oidc_login_use_id_token: true
           oidc_login_attributes id: "preferred_username"

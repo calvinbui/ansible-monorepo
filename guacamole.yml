@@ -73,10 +73,10 @@
           POSTGRESQL_USER: "{{ _postgres_username }}"
           POSTGRESQL_PASSWORD: "{{ _postgres_password }}"
 
-          OPENID_AUTHORIZATION_ENDPOINT: "https://authelia.{{ common_tld }}/api/oidc/authorization?state=1234abcedfdhf"
+          OPENID_AUTHORIZATION_ENDPOINT: "{{ oidc_auth_url }}?state=1234abcedfdhf"
           OPENID_CLIENT_ID: "{{ application }}"
-          OPENID_ISSUER: "https://authelia.{{ common_tld }}"
-          OPENID_JWKS_ENDPOINT: "https://authelia.{{ common_tld }}/jwks.json"
+          OPENID_ISSUER: "{{ oidc_base_url }}"
+          OPENID_JWKS_ENDPOINT: "{{ oidc_jwks_url }}"
           OPENID_SCOPE: openid profile email
           OPENID_REDIRECT_URI: "https://{{ application }}.{{ common_tld }}"
           OPENID_USERNAME_CLAIM_TYPE: preferred_username

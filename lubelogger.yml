@@ -60,17 +60,17 @@
 
           LUBELOGGER_ALLOWED_FILE_EXTENSIONS: "*"
 
-          OpenIDConfig__Name: "authelia"
+          OpenIDConfig__Name: "{{ oidc_provider }}"
           OpenIDConfig__ClientId: "{{ application }}"
           OpenIDConfig__ClientSecret: "{{ oidc_auth.lubelogger.secret }}"
-          OpenIDConfig__AuthURL: "https://authelia.{{ common_tld }}/api/oidc/authorization"
-          OpenIDConfig__TokenURL: "https://authelia.{{ common_tld }}/api/oidc/token"
+          OpenIDConfig__AuthURL: "{{ oidc_auth_url }}"
+          OpenIDConfig__TokenURL: "{{ oidc_token_url }}"
           OpenIDConfig__RedirectURL: "{{ oidc_auth.lubelogger.redirect_uris[0] }}"
           OpenIDConfig__Scope: "openid profile email"
           OpenIDConfig__ValidateState: "true"
           OpenIDConfig__UsePKCE: "true"
           OpenIDConfig__DisableRegularLogin: "true"
-          OpenIDConfig__LogOutURL: "https://authelia.{{ common_tld }}/application/o/{{ application }}/end-session/"
+          OpenIDConfig__LogOutURL: "{{ oidc_signout_url  }}"
         volumes:
           - "{{ config_directory }}/data:/App/data"
           - "{{ config_directory }}/keys:/root/.aspnet/DataProtection-Keys"

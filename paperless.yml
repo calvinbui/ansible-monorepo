@@ -18,12 +18,12 @@
         "openid_connect": {
           "APPS": [
             {
-              "provider_id": "authelia",
-              "name": "Authelia",
+              "provider_id": "{{ oidc_provider }}",
+              "name": "{{ oidc_provider | title }}",
               "client_id": "{{ application }}",
               "secret": "{{ oidc_auth.paperless.secret }}",
               "settings": {
-                "server_url": "https://authelia.{{ common_tld }}"
+                "server_url": "{{ oidc_base_url }}"
               }
             }
           ]

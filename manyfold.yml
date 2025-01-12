@@ -71,8 +71,8 @@
 
           OIDC_CLIENT_ID: "{{ application }}"
           OIDC_CLIENT_SECRET: "{{ oidc_auth.manyfold.secret }}"
-          OIDC_ISSUER: "https://authelia.{{ common_tld }}"
-          OIDC_NAME: Authelia
+          OIDC_ISSUER: "{{ oidc_base_url }}"
+          OIDC_NAME: "{{ oidc_provider | title }}"
           FORCE_OIDC: "enabled"
 
           SMTP_SERVER: "{{ common_email_server }}"

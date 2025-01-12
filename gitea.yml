@@ -91,7 +91,7 @@
 
           GITEA__openid__ENABLE_OPENID_SIGNIN: "false"
           GITEA__openid__ENABLE_OPENID_SIGNUP: "true"
-          GITEA__openid__WHITELISTED_URIS: "authelia.{{ common_tld }}"
+          GITEA__openid__WHITELISTED_URIS: "{{ oidc_base_url }}"
           GITEA__service__DISABLE_REGISTRATION: "true"
           GITEA__service__ALLOW_ONLY_EXTERNAL_REGISTRATION: "true"
           GITEA__service__NO_REPLY_ADDRESS: "noreply.{{ application }}"
@@ -148,24 +148,24 @@
         blackbox:
           path: /api/healthz
 
-    - name: Add authelia source
+    - name: Add OIDC source
       community.docker.docker_container_exec:
         container: "{{ application }}"
         user: 1000
         command: >-
           gitea admin auth add-oauth
-            --name Authelia
+            --name {{ oidc_provider | title }}
             --provider openidConnect
             --key {{ application }}
             --secret {{ oidc_auth.gitea.secret }}
-            --auto-discover-url https://authelia.{{ common_tld }}/.well-known/openid-configuration
+            --auto-discover-url {{ oidc_discovery_url }}
       register: _command_result
       failed_when:
         - ('Command error' in _command_result.stderr)
         - ('login source already exists' not in _command_result.stderr)
       changed_when: ('login source already exists' not in _command_result.stderr)
 
-    - name: Get Authelia source ID
+    - name: Get OIDC source ID
       community.docker.docker_container_exec:
         container: "{{ application }}"
         user: 1000
@@ -178,18 +178,18 @@
       ansible.builtin.set_fact:
         _gitea_auth_id: "{{ _gitea_auth_sources.stdout_lines[1] | split('\t') | first }}"
 
-    - name: Update Authelia source
+    - name: Update OIDC source
       community.docker.docker_container_exec:
         container: "{{ application }}"
         user: 1000
         command: >-
           gitea admin auth update-oauth
             --id {{ _gitea_auth_id }}
-            --name Authelia
+            --name {{ oidc_provider | title }}
             --provider openidConnect
             --key {{ application }}
             --secret {{ oidc_auth.gitea.secret }}
-            --auto-discover-url https://authelia.{{ common_tld }}/.well-known/openid-configuration
+            --auto-discover-url {{ oidc_discovery_url }}
       register: _command_result
       failed_when: ('Command error' in _command_result.stderr)
       changed_when: true # nothing is returned so we'll always assume changed
