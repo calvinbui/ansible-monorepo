@@ -67,6 +67,9 @@ cards:
       -
         entity: light.living_room_lights_leds
         <<: *lighting_card_switch
+      -
+        entity: light.lamp
+        <<: *lighting_card_switch
 
   - type: vertical-stack
     view_layout:
