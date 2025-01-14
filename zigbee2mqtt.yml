@@ -117,6 +117,9 @@
 
             '0x00158d000af2c512':
               friendly_name: Garage Switch
+
+            '0x00158d008afd5a2c':
+              friendly_name: Under Stairs Door Sensor
         dest: "{{ config_directory }}/configuration.yaml"
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
