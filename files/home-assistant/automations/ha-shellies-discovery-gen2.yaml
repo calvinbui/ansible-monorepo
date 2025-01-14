@@ -15,6 +15,7 @@
       - shellyplus1pm-441793942e24 # Garage Lights
       - shellyplus2pm-b0a732485960 # Dining Room Lights
       - shellyplus1pm-7c87ce65d8a0 # Alfresco Lights
+      - shellyplus1pm-441793943264 # Under Stairs
   actions:
     - delay:
         hours: 0

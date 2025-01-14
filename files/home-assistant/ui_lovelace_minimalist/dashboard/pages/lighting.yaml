@@ -109,6 +109,9 @@ cards:
       -
         entity: light.downstairs_hallway_lights_leds
         <<: *lighting_card_switch
+      -
+        entity: light.under_stairs_light
+        <<: *lighting_card_switch
 
   - type: vertical-stack
     view_layout:
@@ -145,7 +148,6 @@ cards:
       -
         entity: light.master_bedroom_lights_balcony
         <<: *lighting_card_switch
-
 
   - type: vertical-stack
     view_layout:
