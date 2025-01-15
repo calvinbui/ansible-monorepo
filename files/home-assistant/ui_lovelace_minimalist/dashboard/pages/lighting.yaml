@@ -115,6 +115,8 @@ cards:
       -
         entity: light.under_stairs_light
         <<: *lighting_card_switch
+        variables:
+          ulm_card_light_name: Under Stairs
 
   - type: vertical-stack
     view_layout:

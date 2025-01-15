@@ -81,15 +81,6 @@
 
     shelly_devices:
       -
-        ip: "{{ networks.iot.prefix }}.88"
-        device_id: shellyplus1pm-441793943264
-        settings:
-          sys:
-            device:
-              name: Under Stairs
-        relay:
-          - name: Light
-      -
         ip: "{{ networks.iot.prefix }}.81"
         device_id: shellyplus1pm-441793d4646c
         settings:
@@ -126,6 +117,15 @@
               name: Alfresco Lights
         relay:
           - name: Downlights
+      -
+        ip: "{{ networks.iot.prefix }}.88"
+        device_id: shellyplus1pm-441793943264
+        settings:
+          sys:
+            device:
+              name: Under Stairs Lights
+        relay:
+          - name: Light
       -
         ip: "{{ networks.iot.prefix }}.89"
         device_id: shellyplus2pm-b0a732484988
