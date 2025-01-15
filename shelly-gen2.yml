@@ -126,6 +126,16 @@
               name: Alfresco Lights
         relay:
           - name: Downlights
+      -
+        ip: "{{ networks.iot.prefix }}.89"
+        device_id: shellyplus2pm-b0a732484988
+        settings:
+          sys:
+            device:
+              name: Laundry Lights
+        relay:
+          - name: Fan
+          - name: Downlights
 
   tasks:
     - name: Set auth

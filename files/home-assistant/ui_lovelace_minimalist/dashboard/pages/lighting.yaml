@@ -10,7 +10,7 @@ layout:
   grid-template-areas: |
     ". room1   room2    room3    room4    ."
     ". room5   room6    room7    room8    ."
-    ". motion  schedule .        .        ."
+    ". room9   motion   schedule .        ."
 
   mediaquery:
     "(max-width: 800px)":
@@ -161,6 +161,20 @@ cards:
         <<: *lighting_card_title
       -
         entity: light.alfresco_lights_downlights
+        <<: *lighting_card_switch
+
+  - type: vertical-stack
+    view_layout:
+      grid-area: room9
+    cards:
+      -
+        name: 🧺 Laundry
+        <<: *lighting_card_title
+      -
+        entity: light.laundry_lights_downlights
+        <<: *lighting_card_switch
+      -
+        entity: light.laundry_lights_fan
         <<: *lighting_card_switch
 
   - type: vertical-stack

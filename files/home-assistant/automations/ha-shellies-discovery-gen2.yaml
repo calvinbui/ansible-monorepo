@@ -16,6 +16,7 @@
       - shellyplus2pm-b0a732485960 # Dining Room Lights
       - shellyplus1pm-7c87ce65d8a0 # Alfresco Lights
       - shellyplus1pm-441793943264 # Under Stairs
+      - shellyplus2pm-b0a732484988 # Laundry Lights
   actions:
     - delay:
         hours: 0
