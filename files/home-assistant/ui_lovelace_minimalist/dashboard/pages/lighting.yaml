@@ -24,6 +24,7 @@ layout:
         "room6"
         "room7"
         "room8"
+        "room9"
         "motion"
         "schedule"
 
@@ -52,10 +53,29 @@ cards:
                   return 'LEDs';
                 } else if (entity.entity_id.includes('balcony')) {
                   return 'Balcony';
+                } else if (entity.entity_id.includes('fan')) {
+                  return 'Fan';
                 } else {
                   return entity.name;
                 }
               ]]]
+            ulm_card_light_icon: >-
+              [[[
+                if (entity.entity_id.includes('downlights')) {
+                  return 'mdi:light-recessed';
+                } else if (entity.entity_id.includes('leds')) {
+                  return 'mdi:led-strip-variant';
+                } else if (entity.entity_id.includes('balcony')) {
+                  return 'mdi:balcony';
+                } else if (entity.entity_id.includes('fan')) {
+                  return 'mdi:fan';
+                } else if (entity.entity_id.includes('lamp')) {
+                  return 'mdi:floor-lamp';
+                } else {
+                  return 'mdi:lightbulb';
+                }
+              ]]]
+
           card_mod:
             style: |
               {% if is_state(config.entity, "on") %}
