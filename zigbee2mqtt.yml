@@ -59,15 +59,19 @@
             {% endfor %}
 
           devices:
+            # E1603/E1702/E1708
             '0xf082c0fffeff36d8':
               friendly_name: Fridge Power Outlet
             '0xf082c0fffeff2db9':
               friendly_name: Upstairs Bathroom Power Outlet
             '0x3425b4fffef75348':
               friendly_name: Master Bedroom Power Outlet
+
+            # E1746
             '0x2c1165fffec421d2':
               friendly_name: Large Rear Bedroom Power Repeater
 
+            # SJCGQ11LM
             '0x00158d0008e0193f':
               friendly_name: Ensuite Sink Water Leak Sensor
             '0x00158d0008dff09e':
@@ -85,6 +89,7 @@
             '0x00158d0008dff08b':
               friendly_name: Washing Machine Water Leak Sensor
 
+            # WSDCGQ11LM
             '0x00158d000977530f':
               friendly_name: Calvin's Study Temperature & Humidity Sensor
             '0x00158d0009777d8b':
@@ -115,11 +120,36 @@
             # '0x00158d0009777a80':
             #   friendly_name: Tammy's Study Temperature & Humidity Sensor
 
+            # WXKG11LM
             '0x00158d000af2c512':
               friendly_name: Garage Switch
 
+            # MCCGQ11LM
             '0x00158d008afd5a2c':
               friendly_name: Under Stairs Door Sensor
+            '0x00158d008afd2d56':
+              friendly_name: Alfresco Sliding Door Sensor
+            '0x00158d008afd75f9':
+              friendly_name: Garage Door Sensor
+            '0x00158d008afd5a6a':
+              friendly_name: Calvin's Study Sliding Door Sensor
+            '0x00158d008afd762c':
+              friendly_name: Large Rear Bedroom Sliding Door Sensor
+            '0x00158d008afd59d2':
+              friendly_name: Small Rear Bedroom Sliding Door Sensor
+            '0x00158d008afd1ebf':
+              friendly_name: Master Bedroom Sliding Door Sensor
+
+            # MCCGQ14LM
+            '0x54ef441001115982':
+              friendly_name: Laundry Door Sensor
+            '0x54ef441000de6bd0':
+              friendly_name: Upstairs Bathroom Door Sensor
+            '0x54ef4410011165e0':
+              friendly_name: Ensuite Door Sensor
+            '0x54ef44100111591d':
+              friendly_name: Downstairs Bathroom Door Sensor
+
         dest: "{{ config_directory }}/configuration.yaml"
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
