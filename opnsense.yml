@@ -106,9 +106,6 @@
       notify: Reload Unbound
       loop:
         -
-          address: 45.76.113.31
-          hostname: dot.seby.io
-        -
           domain: plex.direct
           address: 1.1.1.1
           hostname: cloudflare-dns.com
