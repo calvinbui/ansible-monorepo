@@ -131,5 +131,6 @@
         subnet: "{{ item.subnet }}"
         hostname: "{{ item.hostname }}"
         description: "{{ item.description | default(omit) }}"
+        reload: false
       loop: "{{ opnsense_dhcp_reservations }}"
       notify: Reload KEA
