@@ -10,7 +10,8 @@ layout:
   grid-template-areas: |
     ". room1   room2    room3    room4    ."
     ". room5   room6    room7    room8    ."
-    ". room9   motion   schedule .        ."
+    ". room9   room10   room11   room12   ."
+    ". motion  schedule .        .        ."
 
   mediaquery:
     "(max-width: 800px)":
@@ -25,6 +26,9 @@ layout:
         "room7"
         "room8"
         "room9"
+        "room10"
+        "room11"
+        "room12"
         "motion"
         "schedule"
 
@@ -198,6 +202,45 @@ cards:
       -
         entity: light.laundry_lights_fan
         <<: *lighting_card_switch
+
+  - type: vertical-stack
+    view_layout:
+      grid-area: room10
+    cards:
+      -
+        name: 🛁 Upstairs Bathroom
+        <<: *lighting_card_title
+      -
+        entity: light.upstairs_bathroom_lights_leds
+        <<: *lighting_card_switch
+      -
+        entity: light.upstairs_bathroom_lights_fan
+        <<: *lighting_card_switch
+
+  - type: vertical-stack
+    view_layout:
+      grid-area: room11
+    cards:
+      -
+        name: 👩 Tammy's Study
+        <<: *lighting_card_title
+      -
+        entity: light.tammy_s_study_lights_downlights
+        <<: *lighting_card_switch
+
+  - type: vertical-stack
+    view_layout:
+      grid-area: room12
+    cards:
+      -
+        name: 🪜 Stairs
+        <<: *lighting_card_title
+      # -
+      #   entity:
+      #   <<: *lighting_card_switch
+      # -
+      #   entity:
+      #   <<: *lighting_card_switch
 
   - type: vertical-stack
     view_layout:

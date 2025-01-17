@@ -17,6 +17,9 @@
       - shellyplus1pm-7c87ce65d8a0 # Alfresco Lights
       - shellyplus1pm-441793943264 # Under Stairs Lights
       - shellyplus2pm-b0a732484988 # Laundry Lights
+      - shellyplus2pm-b0a7324852fc # Ensuite Lights
+      - shelly1pmminig3-e4b32316c17c # Tammy's Study Lights
+      - shellyplus2pm-b0a732487ecc # Upstairs Bathroom Lights
   actions:
     - delay:
         hours: 0
