@@ -112,13 +112,12 @@
               friendly_name: Tammy's Study Temperature & Humidity Sensor
             '0x00158d008b617c95':
               friendly_name: Small Rear Bedroom Temperature & Humidity Sensor
-            # being replaced
-            # '0x00158d0009777cfe':
-            #   friendly_name: Master Bedroom Temperature & Humidity Sensor
-            # '0x00158d0009775385':
-            #   friendly_name: Ensuite Temperature & Humidity Sensor
-            # '0x00158d0009777a80':
-            #   friendly_name: Tammy's Study Temperature & Humidity Sensor
+            '0x00158d0009777cfe':
+              friendly_name: Kitchen Temperature & Humidity Sensor
+            '0x00158d0009775385':
+              friendly_name: Foyer Temperature & Humidity Sensor
+            '0x00158d0009777a80':
+              friendly_name: Dining Room Temperature & Humidity Sensor
 
             # WXKG11LM
             '0x00158d000af2c512':

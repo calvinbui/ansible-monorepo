@@ -125,9 +125,19 @@ cards:
         type: horizontal-stack
         cards:
           -
-            primary: Living Room
+            primary: Downstairs Common
             secondary: |
-              {{ states('sensor.living_room_temperature_humidity_sensor_temperature') | int }}°C / {{ states('sensor.living_room_temperature_humidity_sensor_humidity') | int }}%
+              {% set temps = [
+                states('sensor.living_room_temperature_humidity_sensor_temperature') | float,
+                states('sensor.dining_room_temperature_humidity_sensor_temperature') | float,
+                states('sensor.kitchen_temperature_humidity_sensor_temperature') | float
+              ] %}
+              {% set humidity = [
+                states('sensor.living_room_temperature_humidity_sensor_humidity') | float,
+                states('sensor.dining_room_temperature_humidity_sensor_humidity') | float,
+                states('sensor.kitchen_temperature_humidity_sensor_humidity') | float
+              ] %}
+              {{ (temps | sum / temps | length) | round(0) }}°C / {{ (humidity | sum / humidity | length) | round(0) }}%
             icon: mdi:theater
             entity: switch.daikin_ac_living
             <<: &air_conditioning_room
@@ -250,5 +260,17 @@ cards:
             name: Temperature
             format: precision0
           - entity: sensor.upstairs_bathroom_temperature_humidity_sensor_humidity
+            name: Humidity
+            format: precision0
+      -
+        <<: *temp_row
+        name: Foyer
+        icon: mdi:shoe-sneaker
+        entity: sensor.foyer_temperature_humidity_sensor_battery
+        entities:
+          - entity: sensor.foyer_temperature_humidity_sensor_temperature
+            name: Temperature
+            format: precision0
+          - entity: sensor.foyer_temperature_humidity_sensor_humidity
             name: Humidity
             format: precision0
