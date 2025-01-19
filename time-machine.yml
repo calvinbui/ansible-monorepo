@@ -93,9 +93,10 @@
         volumes:
           - "{{ common_directory_backup }}/Time Machine:/opt"
           - "{{ config_directory }}/users:/users"
-          - "{{ config_directory }}/var-lib-samba:/var/lib/samba"
-          - "{{ config_directory }}/var-cache-samba:/var/cache/samba"
-          - "{{ config_directory }}/run-samba:/run/samba"
+        tmpfs:
+          - /var/lib/samba:rw,mode=01777
+          - /var/cache/samba:rw,mode=01777
+          - /run/samba:rw,mode=01777
         network:
           - name: "{{ docker_network.name }}"
             ipv4_address: "{{ networks.user.prefix }}.253"
