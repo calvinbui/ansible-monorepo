@@ -36,7 +36,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/dgtlmoon/changedetection.io:0.48.06
+        image: ghcr.io/dgtlmoon/changedetection.io:0.49.0
         ipv4_address: "{{ docker_network.prefix }}.248"
         volumes:
           - "{{ config_directory }}:/datastore"
