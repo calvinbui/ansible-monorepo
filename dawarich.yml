@@ -1,0 +1,116 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: dawarich
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create folders
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      loop:
+        - "{{ config_directory }}"
+        - "{{ config_directory }}/app"
+
+    - name: Create redis container
+      ansible.builtin.include_role:
+        name: redis
+      vars:
+        redis_version: 7
+        redis_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          33636134663364653963623839613539396132393238343637366466373261666236396535363664
+          3763656237383030663563653462313566376639666465370a366332313962623230303232666563
+          63656233613733656162663739636133313834386136666336303334363462306462373037353865
+          3632393830646539330a363733363764666436383935303633616538333761623537393433663434
+          36333739333236616337393330386361313064363031626138383664653061653335
+
+    - name: Create postgres container
+      ansible.builtin.import_role:
+        name: postgres
+      vars:
+        postgres_version: 17
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          66333831366630393834323565363161383838636330386332613437306635636435373261373462
+          3539313333353163353064653363653532323236323830340a353531323536626532333534633232
+          35663539643238643631616431663866623466396435636530326466393539646532353130363162
+          6132333263326434360a326633663530386433376637636136616532383430323431643435386638
+          32616336386432643832623431306633623838386431303638663636656163366563
+
+    # - name: Create photon container
+    #   ansible.builtin.include_role:
+    #     name: docker_container
+    #   vars:
+    #     name: "{{ application }}-photon"
+    #     image: ghcr.io/calvinbui/photon-docker:master
+    #     volumes:
+    #       - "{{ config_directory }}/photon:/photon/photon_data"
+
+    - name: Create app container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: freikin/dawarich:0.21.2
+        entrypoint: dev-entrypoint.sh
+        command:
+          - bin/dev
+        volumes:
+          - "{{ config_directory }}/app/gems:/usr/local/bundle/gems"
+          - "{{ config_directory }}/app/public:/var/app/public"
+          - "{{ config_directory }}/app/watched:/var/app/tmp/imports/watched"
+        env: &_dawarich_env
+          APPLICATION_HOST: "{{ application }}.{{ common_tld }}"
+          APPLICATION_HOSTS: "{{ application }}.{{ common_tld }}"
+          APPLICATION_PROTOCOL: https
+
+          DATABASE_HOST: "{{ _postgres_hostname }}"
+          DATABASE_PORT: "{{ _postgres_port | string }}"
+          DATABASE_NAME: "{{ _postgres_database }}"
+          DATABASE_USERNAME: "{{ _postgres_username }}"
+          DATABASE_PASSWORD: "{{ _postgres_password }}"
+
+          REDIS_URL: "{{ _redis_url }}"
+
+          RAILS_ENV: development
+
+          PHOTON_API_HOST: photon.komoot.io
+          PHOTON_API_USE_HTTPS: "true"
+
+          TIME_ZONE: "{{ common_timezone }}"
+
+          DISTANCE_UNIT: km
+          MIN_MINUTES_SPENT_IN_CITY: "15"
+
+          ENABLE_TELEMETRY: "false"
+          PROMETHEUS_EXPORTER_ENABLED: "false"
+
+          BACKGROUND_PROCESSING_CONCURRENCY: "10"
+        traefik:
+          - port: 3000
+        homepage:
+          group: Tools
+          weight: 125
+          description: Location History
+
+    - name: Create sidekiq container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-sidekiq"
+        image: freikin/dawarich:0.21.2
+        entrypoint: dev-entrypoint.sh
+        command:
+          - sidekiq
+        volumes:
+          - "{{ config_directory }}/app/sidekiq-gems:/usr/local/bundle/gems"
+          - "{{ config_directory }}/app/public:/var/app/public"
+          - "{{ config_directory }}/app/watched:/var/app/tmp/imports/watched"
+        env: *_dawarich_env
