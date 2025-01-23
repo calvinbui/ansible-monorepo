@@ -165,6 +165,17 @@
         relay:
           - name: LEDs
           - name: Fan
+      -
+        ip: "{{ networks.iot.prefix }}.93"
+        device_id: shellyplus2pm-fce8c0ff3c24
+        settings:
+          sys:
+            device:
+              name: Downstairs Bathroom Lights
+        relay:
+          - name: Fan
+          - name: LEDs
+
   tasks:
     - name: Set auth
       ansible.builtin.uri:

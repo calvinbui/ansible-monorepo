@@ -469,6 +469,12 @@ opnsense_dhcp_reservations:
     hostname: shelly-upstairs-bathroom
     description: "Plus 2PM"
   -
+    ip: 192.168.3.93
+    subnet: 192.168.3.0/24
+    mac: fc:e8:c0:ff:3c:24
+    hostname: shelly-downstairs-bathroom
+    description: "Plus 2PM"
+  -
     ip: 192.168.3.101
     subnet: 192.168.3.0/24
     mac: 64:e8:33:bb:47:24
