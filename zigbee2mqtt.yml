@@ -42,6 +42,7 @@
           serial:
             port: tcp://slzb-06m.{{ common_local_tld }}:6638
             adapter: ember
+            rtscts: false
 
           frontend:
             enabled: true
@@ -148,6 +149,10 @@
               friendly_name: Ensuite Door Sensor
             '0x54ef44100111591d':
               friendly_name: Downstairs Bathroom Door Sensor
+
+            # DJT11LM
+            '0x00158d000af0bac2':
+              friendly_name: Mailbox Vibration Sensor
 
         dest: "{{ config_directory }}/configuration.yaml"
         owner: "{{ common_root_id }}"
