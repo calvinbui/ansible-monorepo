@@ -175,23 +175,23 @@
         relay:
           - name: Fan
           - name: LEDs
-      # -
-      #   ip: "{{ networks.iot.prefix }}.94"
-      #   device_id:
-      #   settings:
-      #     sys:
-      #       device:
-      #         name: Stairway Lights
-      #   relay:
-      #     - name: Chandelier
-      #     - name: Staircase
+      -
+        ip: "{{ networks.iot.prefix }}.94"
+        device_id: shellyplus2pm-8813bfd2f81c
+        settings:
+          sys:
+            device:
+              name: Stairway Lights
+        relay:
+          - name: Chandelier
+          - name: Staircase
       -
         ip: "{{ networks.iot.prefix }}.95"
         device_id: shelly1pmminig3-8cbfea922594
         settings:
           sys:
             device:
-              name: Walk-In Downlights
+              name: Walk-In Lights
         relay:
           - name: Downlights
       -
