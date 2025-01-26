@@ -175,13 +175,46 @@
         relay:
           - name: Fan
           - name: LEDs
+      -
+        ip: "{{ networks.iot.prefix }}.94"
+        device_id: shellyplus2pm-8813bfd2f81c
+        settings:
+          sys:
+            device:
+              name: Stairway Lights
+        relay:
+          - name: Chandelier
+          - name: Staircase
+      -
+        ip: "{{ networks.iot.prefix }}.95"
+        device_id: shelly1pmminig3-8cbfea922594
+        settings:
+          sys:
+            device:
+              name: Walk-In Lights
+        relay:
+          - name: Downlights
+      -
+        ip: "{{ networks.iot.prefix }}.96"
+        device_id: shelly1pmminig3-e4b323181ba0
+        settings:
+          sys:
+            device:
+              name: Calvin's Study Lights
+        relay:
+          - name: Downlights
+
+  module_defaults:
+    ansible.builtin.uri:
+      method: POST
+      body_format: json
+      url_username: "{{ shelly_common_config.auth.user }}"
+      url_password: "{{ shelly_common_config.auth.pass }}"
 
   tasks:
     - name: Set auth
       ansible.builtin.uri:
         url: "http://{{ item.ip }}/rpc"
-        method: POST
-        body_format: json
         body:
           id: 1
           method: Shelly.SetAuth
@@ -189,22 +222,16 @@
             user: "{{ shelly_common_config.auth.user }}"
             realm: "{{ item.device_id }}"
             ha1: "{{ [shelly_common_config.auth.user, item.device_id, shelly_common_config.auth.pass] | join(':') | hash('sha256') }}"
-        url_username: "{{ shelly_common_config.auth.user }}"
-        url_password: "{{ shelly_common_config.auth.pass }}"
       loop: "{{ shelly_devices }}"
 
     - name: Configure settings
       ansible.builtin.uri:
         url: "http://{{ item.0.ip }}/rpc"
-        method: POST
-        body_format: json
         body:
           id: 1
           method: "{{ item.1.method }}"
           params:
             config: "{{ shelly_common_config[item.1.config_key] | combine((item.0.settings[item.1.config_key] | default({})), recursive=True) }}"
-        url_username: "{{ shelly_common_config.auth.user }}"
-        url_password: "{{ shelly_common_config.auth.pass }}"
       loop: "{{ shelly_devices | product(config_methods) | list }}"
       register: _shelly_gen2_results
       vars:
@@ -228,16 +255,12 @@
     - name: Configure relays
       ansible.builtin.uri:
         url: "http://{{ item.0.ip }}/rpc"
-        method: POST
-        body_format: json
         body:
           id: 1
           method: Switch.SetConfig
           params:
             id: "{{ item.1 }}"
             config: "{{ item.0.relay[item.1] | combine(shelly_common_config.relay) }}"
-        url_username: "{{ shelly_common_config.auth.user }}"
-        url_password: "{{ shelly_common_config.auth.pass }}"
       loop: "{{ shelly_devices | product(range(2)) | list }}"
       register: _shelly_gen2_relay
       when: "item.0.relay is defined and item.0.relay[item.1] is defined"
@@ -261,11 +284,7 @@
     - name: Restart devices if required
       ansible.builtin.uri:
         url: "http://{{ item.ip }}/rpc"
-        method: POST
-        body_format: json
         body:
           id: 1
           method: Shelly.Reboot
-        url_username: "{{ shelly_common_config.auth.user }}"
-        url_password: "{{ shelly_common_config.auth.pass }}"
       loop: "{{ devices_to_restart }}"

@@ -475,6 +475,24 @@ opnsense_dhcp_reservations:
     hostname: shelly-downstairs-bathroom
     description: "Plus 2PM"
   -
+    ip: 192.168.3.94
+    subnet: 192.168.3.0/24
+    mac: 88:13:bf:d2:f8:1c
+    hostname: shelly-stairway
+    description: "Plus 2PM"
+  -
+    ip: 192.168.3.95
+    subnet: 192.168.3.0/24
+    mac: 8c:bf:ea:92:25:94
+    hostname: shelly-walk-in
+    description: "1PM Mini Gen3"
+  -
+    ip: 192.168.3.96
+    subnet: 192.168.3.0/24
+    mac:  e4:b3:23:18:1b:a0
+    hostname: shelly-calvins-study
+    description: "1PM Mini Gen3"
+  -
     ip: 192.168.3.101
     subnet: 192.168.3.0/24
     mac: 64:e8:33:bb:47:24
