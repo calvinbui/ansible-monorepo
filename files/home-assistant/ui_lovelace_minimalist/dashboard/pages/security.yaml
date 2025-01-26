@@ -170,8 +170,56 @@ cards:
               ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
             <<: *alarm_sensor_status
           -
+            entity: binary_sensor.presence_detector_06_presence
+            variables:
+              ulm_card_binary_sensor_alert_name: Calvin's Study
+              ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
+            <<: *alarm_sensor_status
+      -
+        type: horizontal-stack
+        cards:
+          -
+            entity: binary_sensor.presence_detector_07_presence
+            variables:
+              ulm_card_binary_sensor_alert_name: Tammy's Study
+              ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
+            <<: *alarm_sensor_status
+
+          -
             entity: binary_sensor.reolink_video_doorbell_poe_motion
             variables:
               ulm_card_binary_sensor_alert_name: Front Door
               ulm_card_binary_sensor_alert_icon: mdi:doorbell-video
+            <<: *alarm_sensor_status
+      -
+        type: horizontal-stack
+        cards:
+          -
+            entity: binary_sensor.laundry_occupancy_sensor_occupancy
+            variables:
+              ulm_card_binary_sensor_alert_name: Laundry
+              ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
+            <<: *alarm_sensor_status
+
+          -
+            entity: binary_sensor.ensuite_occupancy_sensor_occupancy
+            variables:
+              ulm_card_binary_sensor_alert_name: Ensuite
+              ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
+            <<: *alarm_sensor_status
+      -
+        type: horizontal-stack
+        cards:
+          -
+            entity: binary_sensor.downstairs_bathroom_occupancy_sensor_occupancy
+            variables:
+              ulm_card_binary_sensor_alert_name: Downstair's Bathroom
+              ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
+            <<: *alarm_sensor_status
+
+          -
+            entity: binary_sensor.upstairs_bathroom_occupancy_sensor_occupancy
+            variables:
+              ulm_card_binary_sensor_alert_name: Upstairs Bathroom
+              ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
             <<: *alarm_sensor_status
