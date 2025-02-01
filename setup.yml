@@ -125,6 +125,7 @@
           - nano
           - tree
           - unzip
+          - unrar
           - ncdu
           - curl
           - wget
