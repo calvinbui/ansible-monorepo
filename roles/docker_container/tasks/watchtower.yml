@@ -18,4 +18,4 @@
 
 - name: "Add to Watchtower labels"
   ansible.builtin.set_fact:
-    watchtower_labels: "{{ watchtower_labels | combine({'com.centurylinklabs.watchtower.depends-on': watchtower_depends_on|join(',')}) }}"
+    watchtower_labels: "{{ watchtower_labels | combine({'com.centurylinklabs.watchtower.depends-on': watchtower_depends_on | join(',')}) }}"

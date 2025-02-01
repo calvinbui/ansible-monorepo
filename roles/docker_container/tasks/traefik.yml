@@ -6,7 +6,7 @@
 
 - name: "Add additional HTTPS middlewares"
   ansible.builtin.set_fact:
-    route_middlewares: "{{ route_middlewares + route.middlewares|default([]) }}"
+    route_middlewares: "{{ route_middlewares + route.middlewares | default([]) }}"
 
 - name: Add forward auth
   when:

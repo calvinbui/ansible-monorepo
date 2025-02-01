@@ -117,64 +117,47 @@
           1:
             name: Downstairs Hallway LEDs
 
+  module_defaults:
+    ansible.builtin.uri:
+      method: POST
+      body_format: form-urlencoded
+      url_username: "{{ shelly_common_config.settings_login.username }}"
+      url_password: "{{ shelly_common_config.settings_login.password }}"
+
   tasks:
     - name: Configure settings
       ansible.builtin.uri:
         url: "http://{{ item.ip }}/settings"
-        method: POST
-        body_format: form-urlencoded
         body: "{{ shelly_common_config.settings | combine(item.settings) }}"
-        url_username: "{{ shelly_common_config.settings_login.username }}"
-        url_password: "{{ shelly_common_config.settings_login.password }}"
       loop: "{{ shelly_devices }}"
 
     - name: Configure WiFi AP
       ansible.builtin.uri:
         url: "http://{{ item.ip }}/settings/ap"
-        method: POST
-        body_format: form-urlencoded
         body: "{{ shelly_common_config.settings_ap }}"
-        url_username: "{{ shelly_common_config.settings_login.username }}"
-        url_password: "{{ shelly_common_config.settings_login.password }}"
       loop: "{{ shelly_devices }}"
 
     - name: Configure login
       ansible.builtin.uri:
         url: "http://{{ item.ip }}/settings/login"
-        method: POST
-        body_format: form-urlencoded
         body: "{{ shelly_common_config.settings_login }}"
-        url_username: "{{ shelly_common_config.settings_login.username }}"
-        url_password: "{{ shelly_common_config.settings_login.password }}"
       loop: "{{ shelly_devices }}"
 
     - name: Configure cloud
       ansible.builtin.uri:
         url: "http://{{ item.ip }}/settings/cloud"
-        method: POST
-        body_format: form-urlencoded
         body: "{{ shelly_common_config.settings_cloud }}"
-        url_username: "{{ shelly_common_config.settings_login.username }}"
-        url_password: "{{ shelly_common_config.settings_login.password }}"
       loop: "{{ shelly_devices }}"
 
     - name: Configure relay 0
       ansible.builtin.uri:
         url: "http://{{ item.ip }}/settings/relay/0"
-        method: POST
-        body_format: form-urlencoded
         body: "{{ shelly_common_config.relay | combine(item.relays.0) }}"
-        url_username: "{{ shelly_common_config.settings_login.username }}"
-        url_password: "{{ shelly_common_config.settings_login.password }}"
       loop: "{{ shelly_devices }}"
 
     - name: Configure relay 1
       ansible.builtin.uri:
         url: "http://{{ item.ip }}/settings/relay/1"
-        method: POST
-        body_format: form-urlencoded
         body: "{{ shelly_common_config.relay | combine(item.relays.1) }}"
-        url_username: "{{ shelly_common_config.settings_login.username }}"
-        url_password: "{{ shelly_common_config.settings_login.password }}"
       loop: "{{ shelly_devices }}"
       when: item.relays.1

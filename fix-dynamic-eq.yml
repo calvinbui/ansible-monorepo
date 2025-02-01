@@ -45,6 +45,6 @@
           - start
           - --
           - -f
-          - "{{ query('community.dns.lookup', 'denon-x3800h.' + common_local_tld ) | first }}"
+          - "{{ query('community.dns.lookup', 'denon-x3800h.' + common_local_tld) | first }}"
         volumes:
           - "{{ config_directory }}:/usr/src/app/rew"

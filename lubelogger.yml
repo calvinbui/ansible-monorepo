@@ -70,7 +70,7 @@
           OpenIDConfig__ValidateState: "true"
           OpenIDConfig__UsePKCE: "true"
           OpenIDConfig__DisableRegularLogin: "true"
-          OpenIDConfig__LogOutURL: "{{ oidc_signout_url  }}"
+          OpenIDConfig__LogOutURL: "{{ oidc_signout_url }}"
         volumes:
           - "{{ config_directory }}/data:/App/data"
           - "{{ config_directory }}/keys:/root/.aspnet/DataProtection-Keys"

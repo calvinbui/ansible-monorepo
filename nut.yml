@@ -85,7 +85,7 @@
       ansible.builtin.user:
         name: nut
         groups: msmtp
-        append: yes
+        append: true
 
 - hosts: nvr
 

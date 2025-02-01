@@ -37,12 +37,12 @@
       changed_when: false
 
     - name: Configure APT install behavior
-      copy:
+      ansible.builtin.copy:
         dest: /etc/apt/apt.conf.d/99no-recommends-or-suggests
         content: |
           APT::Install-Suggests "false";
           APT::Install-Recommends "false";
-        mode: 0644
+        mode: "0644"
         owner: root
         group: root
 

@@ -9,7 +9,7 @@ postgresdb_password: replaceme
 homepage_config:
   name: "{{ application | replace('-', ' ') | title }}"
   icon: "/icons/sonarr.svg"
-  group: "{{ homepage_group | default('Favourites')}}"
+  group: "{{ homepage_group | default('Favourites') }}"
   weight: "{{ homepage_weight | default('400') }}"
   description: "{{ homepage_description | default('Manage and download TV shows') }}"
   widget:

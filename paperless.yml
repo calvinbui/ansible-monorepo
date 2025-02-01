@@ -145,8 +145,8 @@
           PAPERLESS_EMAIL_HOST_USER: "{{ common_email_username }}"
           PAPERLESS_EMAIL_FROM: "{{ application }}{{ common_email_to }}"
           PAPERLESS_EMAIL_HOST_PASSWORD: "{{ common_email_password }}"
-          PAPERLESS_EMAIL_USE_TLS: "{{ 'true' if common_email_protocol=='tls' else 'false' }}"
-          PAPERLESS_EMAIL_USE_SSL: "{{ 'false' if common_email_protocol=='tls' else 'true' }}"
+          PAPERLESS_EMAIL_USE_TLS: "{{ 'true' if common_email_protocol == 'tls' else 'false' }}"
+          PAPERLESS_EMAIL_USE_SSL: "{{ 'false' if common_email_protocol == 'tls' else 'true' }}"
         traefik:
           - port: 8000
         homepage:
