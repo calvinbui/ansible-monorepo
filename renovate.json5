@@ -62,14 +62,14 @@
     {
       matchPackagePatterns: [".*\\/pms-docker"],
       versioning: "loose",
-      prBodyNotes: "[Release Notes](https://forums.plex.tv/t/plex-media-server/30447)",
+      changelogUrl: "https://forums.plex.tv/t/plex-media-server/30447",
     },
     /* umami */
     {
       matchPackagePatterns: [".*\\/umami"],
       versioning: "regex:^postgresql-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$",
       sourceUrl: "https://github.com/umami-software/umami",
-      prBodyNotes: "[Release](https://github.com/umami-software/umami/releases)",
+      changelogUrl: "https://github.com/umami-software/umami/releases",
     },
     /* minio */
     {
@@ -90,7 +90,7 @@
     /* prowlarr */
     {
       matchPackagePatterns: [".*\\/prowlarr"],
-      prBodyNotes: "[Releases](https://github.com/Prowlarr/Prowlarr/releases)",
+      changelogUrl: "https://github.com/Prowlarr/Prowlarr/releases",
     },
     /* renovate */
     {
@@ -106,7 +106,7 @@
     {
       matchPackagePatterns: [".*\\/qbittorrent"],
       sourceUrl: "https://github.com/qbittorrent/qBittorrent",
-      prBodyNotes: "[Changelog](https://github.com/qbittorrent/qBittorrent/blob/v{{newMajor}}_{{newMinor}}_x/Changelog)",
+      changelogUrl: "https://github.com/qbittorrent/qBittorrent/blob/v{{newMajor}}_{{newMinor}}_x/Changelog",
     },
     /* portainer */
     {
@@ -137,7 +137,7 @@
     {
       matchPackagePatterns: ["nextcloud"],
       sourceUrl: "https://github.com/nextcloud/server",
-      prBodyNotes: "[Changelog](https://nextcloud.com/changelog/)",
+      changelogUrl: "https://nextcloud.com/changelog/",
     },
     /* chadburn */
     {
@@ -153,7 +153,7 @@
     {
       matchPackagePatterns: [".*\\/mattermost-(team|enterprise)-edition"],
       sourceUrl: "https://github.com/mattermost/mattermost-server",
-      prBodyNotes: "[Mattermost changelog](https://docs.mattermost.com/about/mattermost-v{{newMajor}}-changelog.html)",
+      changelogUrl: "https://docs.mattermost.com/about/mattermost-v{{newMajor}}-changelog.html",
     },
     /* onlyoffice */
     {
@@ -205,7 +205,7 @@
     {
       matchPackagePatterns: [".*\\/actual-server"],
       sourceUrl: "https://github.com/actualbudget/actual-server",
-      prBodyNotes: "[Release Notes](https://actualbudget.org/docs/releases/)",
+      changelogUrl: "(https://actualbudget.org/docs/releases/",
     },
     /* borgmatic */
     {
@@ -215,7 +215,7 @@
     /* nginx */
     {
       matchPackagePatterns: ["nginx"],
-      prBodyNotes: "[CHANGES](https://nginx.org/en/CHANGES)",
+      changelogUrl: "https://nginx.org/en/CHANGES",
     },
     /* alertmanager */
     {
@@ -226,7 +226,7 @@
     {
       matchPackagePatterns: [".*\\/radarr"],
       versioning: "regex:^version-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)$",
-      prBodyNotes: "[Releases](https://github.com/Radarr/Radarr/releases)",
+      changelogUrl: "https://github.com/Radarr/Radarr/releases",
     },
     /* gotenberg */
     {
@@ -237,26 +237,26 @@
     {
       matchPackagePatterns: [".*\\/.*languagetool"],
       sourceUrl: "https://github.com/silvio/docker-languagetool",
-      prBodyNotes: "[CHANGES](https://github.com/languagetool-org/languagetool/blob/master/languagetool-standalone/CHANGES.md)",
+      changelogUrl: "https://github.com/languagetool-org/languagetool/blob/master/languagetool-standalone/CHANGES.md",
     },
     /* scrutiny */
     {
       matchPackagePatterns: [".*\\/scrutiny"],
       versioning: "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-omnibus$",
       sourceUrl: "https://github.com/AnalogJ/scrutiny",
-      prBodyNotes: "[Releases](https://github.com/AnalogJ/scrutiny/releases)",
+      changelogUrl: "https://github.com/AnalogJ/scrutiny/releases",
     },
     /* drawio */
     {
       matchPackagePatterns: [".*\\/drawio"],
       sourceUrl: "https://github.com/jgraph/drawio",
-      prBodyNotes: "[ChangeLog](https://github.com/jgraph/drawio/blob/dev/ChangeLog)",
+      changelogUrl: "https://github.com/jgraph/drawio/blob/dev/ChangeLog",
       matchUpdateTypes: ["major"],
     },
     {
       matchPackagePatterns: [".*\\/drawio"],
       sourceUrl: "https://github.com/jgraph/drawio",
-      prBodyNotes: "[ChangeLog](https://github.com/jgraph/drawio/blob/dev/ChangeLog)",
+      changelogUrl: "https://github.com/jgraph/drawio/blob/dev/ChangeLog",
       matchUpdateTypes: ["minor", "patch"],
       automerge: true,
       ignoreTests: true,
@@ -264,7 +264,7 @@
     /* omada */
     {
       matchPackagePatterns: ["mbentley\\/omada-controller"],
-      prBodyNotes: "[TP-Link Business Community Thread](https://community.tp-link.com/en/business/forum/topic/245226)",
+      changelogUrl: "https://community.tp-link.com/en/business/forum/topic/245226",
     },
     /* guacamole */
     {
@@ -273,7 +273,7 @@
         ".*\\/guacamole",
         ".*\\/guacd",
       ],
-      prBodyNotes: "[{{newVersion}} Release Notes](https://guacamole.apache.org/releases/{{newVersion}})",
+      changelogUrl: "https://guacamole.apache.org/releases/{{newVersion}}",
     },
     /* nvidia dcgm-exporter */
     {
@@ -286,7 +286,7 @@
     {
       matchPackagePatterns: [".*\\/sonarr"],
       versioning: "regex:^version-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)$",
-      prBodyNotes: "[Changes](https://services.sonarr.tv/v1/update/stable/changes?version=4)",
+      changelogUrl: "https://services.sonarr.tv/v1/update/stable/changes?version=4",
     },
     /* esphome */
     {
@@ -296,7 +296,7 @@
     /* browserless */
     {
       matchPackagePatterns: ["browserless\\/chrom.*"],
-      prBodyNotes: "[CHANGELOG.md](https://github.com/browserless/chrome/blob/main/CHANGELOG.md)",
+      changelogUrl: "https://github.com/browserless/chrome/blob/main/CHANGELOG.md",
     },
     /* apache tika */
     {
@@ -313,11 +313,6 @@
     {
       matchPackagePatterns: [".*\\/wizarr"],
       sourceUrl: "https://github.com/Wizarrrr/wizarr",
-    },
-    /* mosquitto */
-    {
-      matchPackagePatterns: ["eclipse-mosquitto"],
-      prBodyNotes: "[ChangeLog.txt](https://github.com/eclipse/mosquitto/blob/master/ChangeLog.txt)",
     },
     /* typesense */
     {
@@ -343,7 +338,7 @@
     {
       matchPackagePatterns: [".*\\/calibre"],
       sourceUrl: "https://github.com/kovidgoyal/calibre",
-      prBodyNotes: "[What's new](https://calibre-ebook.com/whats-new)",
+      changelogUrl: "https://calibre-ebook.com/whats-new",
     },
     /* ubuntu */
     {
@@ -354,7 +349,7 @@
     {
       matchPackagePatterns: [".*\\/glances"],
       versioning: "regex:^ubuntu-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.?(?<build>\\d+)?-full$",
-      prBodyNotes: "[Releases](https://github.com/nicolargo/glances/releases)",
+      changelogUrl: "https://github.com/nicolargo/glances/releases",
     },
     /* mealie */
     {
@@ -369,7 +364,7 @@
     /* act_runner */
     {
       matchPackagePatterns: [".*\\/act_runner"],
-      prBodyNotes: "[Releases](https://gitea.com/gitea/act_runner/releases)",
+      changelogUrl: "https://gitea.com/gitea/act_runner/releases",
     },
     /* zigbee2mqtt */
     {
@@ -390,7 +385,6 @@
     },
     /* dovecot */
     {
-      groupName: "dovecot",
       matchPackagePatterns: [".*\\/dovecot.*"],
       sourceUrl: "https://github.com/dovecot/core",
     },
