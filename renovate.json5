@@ -388,6 +388,12 @@
       matchPackagePatterns: [".*\\/beszel.*"],
       sourceUrl: "https://github.com/henrygd/beszel",
     },
+    /* dovecot */
+    {
+      groupName: "dovecot",
+      matchPackagePatterns: [".*\\/dovecot.*"],
+      sourceUrl: "https://github.com/dovecot/core",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
