@@ -31,6 +31,7 @@
           TOKEN: "{{ changedetection_browserless_token }}"
           CONCURRENT: "10"
           TIMEOUT: "60000"
+        log_driver: none
 
     - name: Create "{{ application }}" container
       ansible.builtin.include_role:
@@ -47,6 +48,7 @@
 
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_group_id | string }}"
+        log_driver: none
         traefik:
           - port: 5000
         homepage:

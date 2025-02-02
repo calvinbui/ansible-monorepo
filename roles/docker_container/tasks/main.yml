@@ -130,9 +130,9 @@
 
     healthcheck: "{{ healthcheck | default(omit) }}"
 
-    log_driver: json-file
+    log_driver: "{{ log_driver | default('json-file') }}"
     log_options:
-      max-size: 1MB
+      max-size: "1m"
       max-file: "1"
 
     interactive: "{{ interactive | default(omit) }}"
