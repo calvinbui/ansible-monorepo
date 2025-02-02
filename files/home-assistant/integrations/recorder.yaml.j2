@@ -3,3 +3,14 @@
 # https://www.home-assistant.io/integrations/recorder
 
 db_url: {{ _postgresql_url }}
+
+exclude:
+  entity_globs:
+    - sensor.*_detection_distance
+    - sensor.*_move_energy
+    - sensor.*_moving_distance
+    - binary_sensor.*_moving_target
+    - binary_sensor.*_presence
+    - sensor.*_still_distance
+    - sensor.*_still_energy
+    - binary_sensor.*_still_target
