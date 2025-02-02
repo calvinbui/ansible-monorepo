@@ -218,7 +218,7 @@ cards:
             <<: *alarm_sensor_status
 
           -
-            entity: binary_sensor.upstairs_bathroom_occupancy_sensor_occupancy
+            entity: binary_sensor.upstairs_bathroom_occupancy_sensors
             variables:
               ulm_card_binary_sensor_alert_name: Upstairs Bathroom
               ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
