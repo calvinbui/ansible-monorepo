@@ -34,10 +34,11 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: lobehub/lobe-chat-database:v1.51.1
+        image: lobehub/lobe-chat-database:v1.51.3
         env:
+          # Deployment
           APP_URL: "https://{{ application }}.{{ common_tld }}"
-
+          DATABASE_URL: "{{ _postgres_url }}"
           KEY_VAULTS_SECRET: !vault |
             $ANSIBLE_VAULT;1.1;AES256
             64616662393936616134366337666237666531323235613761663565663237313164393164666334
@@ -47,8 +48,33 @@
             33353361643731373266333935346633353534346336363837356238613565623333613137646131
             3734306531616634326232306363636565323437383236376535
 
-          DATABASE_URL: "{{ _postgres_url }}"
+          # Advanced
+          FEATURE_FLAGS: |
+            {{
+              [
+                "-openai_api_key",
+                "-openai_proxy_url",
+                "-check_updates",
+                "-welcome_suggest",
+                "-market",
+                "-knowledge_base",
+                "-clerk_sign_up",
+              ] | join(",")
+            }}
 
+          # Model Provider
+          OPENAI_API_KEY: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            38353035343430353935343833333633613963393761316135633364343462343938323630323230
+            6631373539313066363636333139346435316132366639320a333239356539363438633363666364
+            34626534356466326137396364616365386330326330643134333264346362303330613462666436
+            3662386237353266610a366162656561313966363631353534313966393233616430356262333866
+            66613561386661636437356334306565383433623961393833343563656165353839663032653364
+            34313637393364613662633033356335323333303038626662386436373030636664313864356664
+            616566353630626234353839336535656261
+          ENABLED_OLLAMA: "0"
+
+          # Authentication
           NEXTAUTH_URL: "https://{{ application }}.{{ common_tld }}/api/auth"
           NEXT_AUTH_SECRET: !vault |
             $ANSIBLE_VAULT;1.1;AES256
@@ -63,6 +89,7 @@
           AUTH_AUTHELIA_SECRET: "{{ oidc_auth.lobechat.secret }}"
           AUTH_AUTHELIA_ISSUER: "{{ oidc_base_url }}"
 
+          # S3 Storage
           S3_ACCESS_KEY_ID: "Zj6owhhQcfvPN6bqiyqQ"
           S3_SECRET_ACCESS_KEY: !vault |
             $ANSIBLE_VAULT;1.1;AES256
@@ -77,16 +104,8 @@
           S3_PUBLIC_DOMAIN: "https://minio.{{ common_tld }}"
           S3_ENABLE_PATH_STYLE: "1"
 
-          OPENAI_API_KEY: !vault |
-            $ANSIBLE_VAULT;1.1;AES256
-            38353035343430353935343833333633613963393761316135633364343462343938323630323230
-            6631373539313066363636333139346435316132366639320a333239356539363438633363666364
-            34626534356466326137396364616365386330326330643134333264346362303330613462666436
-            3662386237353266610a366162656561313966363631353534313966393233616430356262333866
-            66613561386661636437356334306565383433623961393833343563656165353839663032653364
-            34313637393364613662633033356335323333303038626662386436373030636664313864356664
-            616566353630626234353839336535656261
-          ENABLED_OLLAMA: "0"
+          # Analytics
+          ENABLE_LANGFUSE: "0"
         volumes:
           - "{{ config_directory }}/app:/app/backend/data"
         traefik:
