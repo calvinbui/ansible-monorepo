@@ -60,6 +60,10 @@
             {% endfor %}
 
           devices:
+            # ZBDongle-P
+            '0x00124b002a2e833f':
+              friendly_name: Subwoofer ZBDongle-P Router
+
             # E1603/E1702/E1708
             '0xf082c0fffeff36d8':
               friendly_name: Fridge Power Outlet
