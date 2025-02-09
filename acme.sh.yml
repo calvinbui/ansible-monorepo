@@ -23,10 +23,12 @@
         cache_valid_time: 86400
       changed_when: false
 
-    # https://github.com/Neilpang/acme.sh/wiki/How-to-install
-    - name: Install socat
+    - name: Install dependencies
       ansible.builtin.apt:
-        name: socat
+        name:
+          - ca-certificates
+          - socat
+          - python3-openssl
         state: present
 
     - name: Download Neilpang's acme.sh
