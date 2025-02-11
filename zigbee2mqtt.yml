@@ -162,6 +162,10 @@
             '0x00158d000af0bac2':
               friendly_name: Mailbox Vibration Sensor
 
+            # Moes AM43
+            '0xe406bffffefd7c1c':
+              friendly_name: Calvin's Study Roller Blind
+
         dest: "{{ config_directory }}/configuration.yaml"
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
