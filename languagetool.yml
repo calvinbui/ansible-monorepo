@@ -153,7 +153,7 @@
     - name: Compile FastText in alpine
       community.docker.docker_container:
         name: "{{ application }}-fasttext-compiler"
-        image: alpine:3.21.2
+        image: alpine:3.21.3
         command: /fasttext/build.sh
         volumes:
           - "{{ config_directory }}/fasttext:/fasttext"
