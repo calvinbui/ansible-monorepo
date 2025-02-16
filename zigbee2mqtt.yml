@@ -60,23 +60,27 @@
             {% endfor %}
 
           devices:
-            # ZBDongle-P
+            # Sonoff ZBDongle-P
             '0x00124b002a2e833f':
               friendly_name: Subwoofer ZBDongle-P Router
 
-            # E1603/E1702/E1708
+            # LELLKI WK33 (TS011F_plug_1)
+            '0xa4c138468fc0b4c2':
+              friendly_name: Master Bedroom Power Outlet
+
+            # IKEA TRÅDFRI Control Outlet (E1603/E1702/E1708)
             '0xf082c0fffeff36d8':
               friendly_name: Fridge Power Outlet
             '0xf082c0fffeff2db9':
               friendly_name: Upstairs Bathroom Power Outlet
             '0x3425b4fffef75348':
-              friendly_name: Master Bedroom Power Outlet
+              friendly_name: Calvin's Study Power Outlet
 
-            # E1746
+            # IKEA TRÅDFRI Signal Repeater (E1746)
             '0x2c1165fffec421d2':
               friendly_name: Large Rear Bedroom Power Repeater
 
-            # SJCGQ11LM
+            # Aqara Water Leak Sensor (SJCGQ11LM)
             '0x00158d0008e0193f':
               friendly_name: Ensuite Sink Water Leak Sensor
             '0x00158d0008dff09e':
@@ -94,7 +98,7 @@
             '0x00158d0008dff08b':
               friendly_name: Washing Machine Water Leak Sensor
 
-            # WSDCGQ11LM
+            # Aqara Temperature & Humidity Sensor (WSDCGQ11LM)
             '0x00158d000977530f':
               friendly_name: Calvin's Study Temperature & Humidity Sensor
             '0x00158d0009777d8b':
@@ -124,13 +128,13 @@
             '0x00158d0009777a80':
               friendly_name: Dining Room Temperature & Humidity Sensor
 
-            # WXKG11LM
+            # Aqara Wireless Mini Switch (WXKG11LM)
             '0x00158d000af2c512':
               friendly_name: Garage Switch
             '0x00158d008b3d10f4':
               friendly_name: Dream Feed Switch
 
-            # MCCGQ11LM
+            # Aqara Door and Window (MCCGQ11LM)
             '0x00158d008afd5a2c':
               friendly_name: Under Stairs Door Sensor
             '0x00158d008afd2d56':
@@ -148,7 +152,7 @@
             '0x00158d008afd7625':
               friendly_name: Tammy's Study Cabinet Door Sensor
 
-            # MCCGQ14LM
+            # Aqara Door and Window (MCCGQ14LM)
             '0x54ef441001115982':
               friendly_name: Laundry Door Sensor
             '0x54ef441000de6bd0':
@@ -158,13 +162,19 @@
             '0x54ef44100111591d':
               friendly_name: Downstairs Bathroom Door Sensor
 
-            # DJT11LM
+            # Aqara Smart Vibration Sensor (DJT11LM)
             '0x00158d000af0bac2':
               friendly_name: Mailbox Vibration Sensor
 
-            # Moes AM43
+            # Moes Chain Roller Blind Motor (AM43)
             '0xe406bffffefd7c1c':
               friendly_name: Calvin's Study Roller Blind
+            '0x6cfd22fffeea7ed3':
+              friendly_name: Master Bedroom Left Roller Blind
+
+            # Tuya Solar Rain Sensor (RB-SRAIN01)
+            '0xa4c1386a70f431d1':
+              friendly_name: Garage Window Rain Sensor
 
         dest: "{{ config_directory }}/configuration.yaml"
         owner: "{{ common_root_id }}"
