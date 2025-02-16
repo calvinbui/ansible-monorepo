@@ -144,8 +144,6 @@
           - "{{ config_directory }}/onlyoffice/logs:/var/log/onlyoffice"
           - "{{ config_directory }}/onlyoffice/data:/var/www/onlyoffice/Data"
           - "{{ config_directory }}/onlyoffice/lib:/var/lib/onlyoffice"
-          - "{{ config_directory }}/onlyoffice/rabbitmq:/var/lib/rabbitmq"
-          - "{{ config_directory }}/onlyoffice/redis:/var/lib/redis"
           - "{{ config_directory }}/onlyoffice/db:/var/lib/postgresql"
         env:
           JWT_ENABLED: "true"
