@@ -204,8 +204,8 @@
     /* actualbudget */
     {
       matchPackagePatterns: [".*\\/actual-server"],
-      sourceUrl: "https://github.com/actualbudget/actual-server",
-      changelogUrl: "(https://actualbudget.org/docs/releases/",
+      sourceUrl: "https://github.com/actualbudget/actual",
+      changelogUrl: "https://actualbudget.org/docs/releases/",
     },
     /* borgmatic */
     {
