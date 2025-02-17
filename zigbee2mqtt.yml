@@ -187,7 +187,7 @@
             # Tuya Solar Rain Sensor (RB-SRAIN01)
             '0xa4c1386a70f431d1':
               friendly_name: Garage Window Rain Sensor
-            
+
             # Xiaomi Mijia Thermometer Hygrometer (LYWSD03MMC)
             '0xa4c138f71b1d36c1':
               friendly_name: Thermometer Hygrometer White
