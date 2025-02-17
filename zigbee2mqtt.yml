@@ -18,8 +18,17 @@
   tasks:
     - name: Create config folder
       ansible.builtin.file:
-        path: "{{ config_directory }}/data"
+        path: "{{ config_directory }}"
         state: directory
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+
+    - name: Create OTA config file
+      ansible.builtin.copy:
+        content: |
+          []
+        dest: "{{ config_directory }}/ota.json"
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
         mode: "0771"
@@ -58,6 +67,9 @@
             {% for item in _zigbee2mqtt_network_encryption_key | string | from_json %}
             - {{ item }}
             {% endfor %}
+
+          ota:
+            zigbee_ota_override_index_location: ota.json
 
           devices:
             # Sonoff ZBDongle-P
@@ -175,6 +187,12 @@
             # Tuya Solar Rain Sensor (RB-SRAIN01)
             '0xa4c1386a70f431d1':
               friendly_name: Garage Window Rain Sensor
+            
+            # Xiaomi Mijia Thermometer Hygrometer (LYWSD03MMC)
+            '0xa4c138f71b1d36c1':
+              friendly_name: Thermometer Hygrometer White
+            '0xa4c13804dde65fca':
+              friendly_name: Thermometer Hygrometer Yellow
 
         dest: "{{ config_directory }}/configuration.yaml"
         owner: "{{ common_root_id }}"
