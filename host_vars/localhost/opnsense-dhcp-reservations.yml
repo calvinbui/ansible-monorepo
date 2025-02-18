@@ -385,6 +385,12 @@ opnsense_dhcp_reservations:
     mac: 00:e0:4c:36:16:7a
     hostname: chromecast-master-bedroom
   -
+    ip: 192.168.3.74
+    subnet: 192.168.3.0/24
+    mac: e4:b0:63:c9:76:70	
+    hostname: master-bed-presence
+    description: "elevated sensors king bed"
+  -
     ip: 192.168.3.79
     subnet: 192.168.3.0/24
     mac: d0:73:d5:2d:05:fd
