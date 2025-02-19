@@ -32,7 +32,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: minio/minio:RELEASE.2025-02-07T23-21-09Z
+        image: minio/minio:RELEASE.2025-02-18T16-25-55Z
         command:
           - server
           - --anonymous
