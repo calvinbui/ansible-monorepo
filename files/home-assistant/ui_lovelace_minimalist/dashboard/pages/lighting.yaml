@@ -201,18 +201,18 @@ cards:
       -
         name: 🪜 Stairs
         <<: *lighting_card_title
-      -
-        entity: light.stairway_lights_chandelier
-        <<: *lighting_card_switch
-        variables:
-          ulm_card_light_name: Chandelier
-          ulm_card_light_icon: mdi:chandelier
-      -
-        entity: light.stairway_lights_staircase
-        <<: *lighting_card_switch
-        variables:
-          ulm_card_light_name: Stairs
-          ulm_card_light_icon: mdi:stairs
+      # -
+      #   entity: light.stairway_lights_chandelier
+      #   <<: *lighting_card_switch
+      #   variables:
+      #     ulm_card_light_name: Chandelier
+      #     ulm_card_light_icon: mdi:chandelier
+      # -
+      #   entity: light.stairway_lights_staircase
+      #   <<: *lighting_card_switch
+      #   variables:
+      #     ulm_card_light_name: Stairs
+      #     ulm_card_light_icon: mdi:stairs
 
   - type: vertical-stack
     view_layout:

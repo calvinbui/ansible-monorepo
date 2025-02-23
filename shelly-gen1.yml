@@ -106,16 +106,16 @@
             name: Living Room LEDs
           1:
             name: Living Room Downlights
-      -
-        ip: "{{ networks.iot.prefix }}.87"
-        device_id: shellyswitch25-4C752534242D
-        settings:
-          name: Downstairs Hallway Lights
-        relays:
-          0:
-            name: Downstairs Hallway Downlights
-          1:
-            name: Downstairs Hallway LEDs
+      # -
+      #   ip: "{{ networks.iot.prefix }}.87"
+      #   device_id: shellyswitch25-4C752534242D
+      #   settings:
+      #     name: Downstairs Hallway Lights
+      #   relays:
+      #     0:
+      #       name: Downstairs Hallway Downlights
+      #     1:
+      #       name: Downstairs Hallway LEDs
 
   module_defaults:
     ansible.builtin.uri:

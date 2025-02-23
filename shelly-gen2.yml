@@ -181,10 +181,10 @@
         settings:
           sys:
             device:
-              name: Stairway Lights
+              name: Downstairs Hallway Lights
         relay:
-          - name: Chandelier
-          - name: Staircase
+          - name: LEDs
+          - name: Downlights
       -
         ip: "{{ networks.iot.prefix }}.95"
         device_id: shelly1pmminig3-8cbfea922594

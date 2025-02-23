@@ -56,9 +56,9 @@
         relay-1: light
         relay-1-name: Downlights
 
-      shellyswitch25-4c752534242d:
-        device_name: Downstairs Hallway Lights
-        relay-0: light
-        relay-0-name: Downlights
-        relay-1: light
-        relay-1-name: LEDs
+      # shellyswitch25-4c752534242d:
+      #   device_name: Downstairs Hallway Lights
+      #   relay-0: light
+      #   relay-0-name: Downlights
+      #   relay-1: light
+      #   relay-1-name: LEDs
