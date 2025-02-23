@@ -95,6 +95,8 @@
           GITEA__service__DISABLE_REGISTRATION: "true"
           GITEA__service__ALLOW_ONLY_EXTERNAL_REGISTRATION: "true"
           GITEA__service__NO_REPLY_ADDRESS: "noreply.{{ application }}"
+          GITEA__service__ENABLE_PASSWORD_SIGNIN_FORM: "false"
+          GITEA__service__ENABLE_PASSKEY_AUTHENTICATION: "false"
           GITEA__service__SHOW_REGISTRATION_BUTTON: "false"
           GITEA__oauth2_client__ENABLE_AUTO_REGISTRATION: "true"
           GITEA__oauth2_client__OPENID_CONNECT_SCOPES: "email profile"
