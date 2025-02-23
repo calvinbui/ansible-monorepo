@@ -134,9 +134,9 @@ cards:
         type: horizontal-stack
         cards:
           -
-            entity: binary_sensor.presence_detector_01_presence
+            entity: binary_sensor.play_area_occupancy_sensor_occupancy
             variables:
-              ulm_card_binary_sensor_alert_name: Master Bedroom
+              ulm_card_binary_sensor_alert_name: Play Area
               ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
             <<: *alarm_sensor_status
           -
@@ -184,7 +184,6 @@ cards:
               ulm_card_binary_sensor_alert_name: Tammy's Study
               ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
             <<: *alarm_sensor_status
-
           -
             entity: binary_sensor.reolink_video_doorbell_poe_motion
             variables:
@@ -200,7 +199,6 @@ cards:
               ulm_card_binary_sensor_alert_name: Laundry
               ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
             <<: *alarm_sensor_status
-
           -
             entity: binary_sensor.ensuite_occupancy_sensor_occupancy
             variables:
@@ -216,10 +214,39 @@ cards:
               ulm_card_binary_sensor_alert_name: Downstair's Bathroom
               ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
             <<: *alarm_sensor_status
-
           -
             entity: binary_sensor.upstairs_bathroom_occupancy_sensors
             variables:
               ulm_card_binary_sensor_alert_name: Upstairs Bathroom
               ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
+            <<: *alarm_sensor_status
+      -
+        type: horizontal-stack
+        cards:
+          -
+            entity: binary_sensor.presence_detector_01_presence
+            variables:
+              ulm_card_binary_sensor_alert_name: Master Bedroom
+              ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
+            <<: *alarm_sensor_status
+          # -
+          #   entity:
+          #   variables:
+          #     ulm_card_binary_sensor_alert_name:
+          #     ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
+          #   <<: *alarm_sensor_status
+      -
+        type: horizontal-stack
+        cards:
+          -
+            entity: binary_sensor.master_bed_presence_bed_occupied_left
+            variables:
+              ulm_card_binary_sensor_alert_name: Bed Left
+              ulm_card_binary_sensor_alert_icon: mdi:bed
+            <<: *alarm_sensor_status
+          -
+            entity: binary_sensor.master_bed_presence_bed_occupied_right
+            variables:
+              ulm_card_binary_sensor_alert_name: Bed Right
+              ulm_card_binary_sensor_alert_icon: mdi:bed
             <<: *alarm_sensor_status
