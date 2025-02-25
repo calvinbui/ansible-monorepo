@@ -7,11 +7,11 @@ icon: mdi:flower
 
 cards:
   -
+    entity: plant.monstera
+    battery_sensor: sensor.monstera_plant_sensor_battery
     <<: &gardening_card
       type: custom:flower-card
       show_bars: [moisture, conductivity]
-    entity: plant.monstera
-    battery_sensor: sensor.monstera_plant_sensor_battery
   -
     entity: plant.chilli
     battery_sensor: sensor.chilli_plant_sensor_battery
