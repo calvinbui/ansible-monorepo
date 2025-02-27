@@ -16,7 +16,7 @@
     route_middlewares: "{{ route_middlewares + ['authelia@docker'] }}"
 
 - name: Add compression middleware
-  when: (route.compress is undefined) or (route is defined and route.compress == true)
+  when: (route.compress is undefined) or (route is defined and route.compress == "true")
   ansible.builtin.set_fact:
     route_middlewares: "{{ route_middlewares + ['compression@file'] }}"
 
