@@ -3,6 +3,7 @@
 
 server:
   address: 0.0.0.0:9091
+  read_buffer_size: 10485760
 
 theme: dark
 
@@ -18,8 +19,9 @@ authentication_backend:
 access_control:
   default_policy: deny
   rules:
-    -
-      domain_regex: "^(bazarr|esphome|glances|nzbget|peanut|prometheus|prowlarr|qbittorrent|radarr|scrutiny|sonarr|sonarr-anime|tubearchivist).({{ common_local_tld }}|{{ common_tld }})$"
+    - 
+      # homepage
+      domain_regex: "^(bazarr|calibre-web|esphome|glances|nzbget|peanut|prometheus|prowlarr|qbittorrent|radarr|scrutiny|sonarr|sonarr-anime|tubearchivist).({{ common_local_tld }}|{{ common_tld }})$"
       policy: bypass
       networks: ['{{ networks.pub.prefix}}.251/32']
     -

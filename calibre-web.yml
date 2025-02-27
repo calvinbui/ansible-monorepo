@@ -1,0 +1,58 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: calibre-web
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0711"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: lscr.io/linuxserver/calibre-web:0.6.24
+        env:
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_root_group | string }}"
+          TZ: "{{ common_timezone }}"
+
+          DOCKER_MODS: linuxserver/mods:universal-calibre
+        volumes:
+          - "{{ config_directory }}:/config"
+          - "{{ common_directory }}/calibre/Calibre Library:/books"
+        traefik:
+          - port: 8083
+            compress: false
+            auth: page
+            middleware:
+              - "{{ application }}-headers"
+        homepage:
+          name: Calibre-Web
+          group: Media
+          weight: 599
+          description: "Browse, read and download eBooks"
+          widget:
+            type: calibreweb
+            username: homepage
+            password: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              64666333643939333631616339616162623838396264313466343434373833626465303364643761
+              6130623831336630343361323132633136333638393961660a313139623339326430326231653033
+              30643133373663366233376538643530306136343232626337373433343632313534633261383661
+              3735633934626435650a656262356439333931396438623663653138643231666162386463326239
+              36316438316435653932616331666235326263373834383831386133316535646630
+            fields: '["books", "authors"]'
+        labels:
+          '{
+            "traefik.http.middlewares.{{ application }}-headers.headers.customrequestheaders.X-Scheme": "https"
+          }'
