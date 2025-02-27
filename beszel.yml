@@ -28,6 +28,7 @@
           - "{{ config_directory }}:/beszel_data"
         traefik:
           - port: 8090
+            compress: false
         homepage:
           group: Monitoring
           weight: 260
