@@ -79,6 +79,10 @@
             # LELLKI WK33 (TS011F_plug_1)
             '0xa4c138468fc0b4c2':
               friendly_name: Master Bedroom Power Outlet
+            '0xa4c138a7b8754bcb':
+              friendly_name: Tammy's Study Power Outlet
+            '0xa4c138292d686d5c':
+              friendly_name: Dryer Power Outlet
 
             # IKEA TRÅDFRI Control Outlet (E1603/E1702/E1708)
             '0xf082c0fffeff36d8':
@@ -183,6 +187,10 @@
               friendly_name: Calvin's Study Roller Blind
             '0x6cfd22fffeea7ed3':
               friendly_name: Master Bedroom Left Roller Blind
+            '0xe406bffffe3d3c17':
+              friendly_name: Master Bedroom Right Roller Blind
+            '0xe406bffffefd7988':
+              friendly_name: Master Bedroom Centre Roller Blind
 
             # Tuya Solar Rain Sensor (RB-SRAIN01)
             '0xa4c1386a70f431d1':
