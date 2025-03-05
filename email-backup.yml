@@ -99,27 +99,40 @@
     - name: Create config
       ansible.builtin.copy:
         content: |
-          protocols = imap
-          mail_location = maildir:/srv/mail/%u:LAYOUT=fs:INBOX=/srv/mail/%u/Inbox
+          dovecot_config_version = 2.4.0
+          dovecot_storage_version = 2.4.0
 
-          log_path = /var/log/dovecot.log
-          info_log_path = /var/log/dovecot-info.log
+          protocols = imap
+
+          mail_driver = maildir
+          mail_path = /srv/mail/%{user}
+          mailbox_list_layout = fs
+          mail_inbox_path = /srv/mail/%{user}/Inbox
+
+          log_path = /dev/stdout
+          info_log_path = /dev/stdout
 
           ssl = no
-          disable_plaintext_auth = no
+          auth_allow_cleartext = yes
 
           auth_verbose = yes
           auth_mechanisms = plain
 
-          passdb {
-            driver = passwd-file
-            args = /etc/dovecot/passwd
+          passdb passwd-file {
+            passwd_file_path = /etc/dovecot/passwd
           }
 
-          userdb {
-            driver = static
-            args = uid=vmail gid=vmail home=/home/vmail/%u
+          userdb static {
+            fields {
+              uid = vmail
+              gid = vmail
+              home = /home/vmail/%{user}
+            }
           }
+
+          default_login_user = vmail
+          default_internal_user = vmail
+          default_internal_group = vmail
 
           # https://doc.dovecot.org/configuration_manual/namespace/
           # manually subscribe as needed
@@ -171,7 +184,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: dovecot/dovecot:2.3.21
+        image: dovecot/dovecot:2.4.0
         volumes:
           - "{{ config_directory }}/conf:/etc/dovecot"
           - "{{ config_directory }}/users:/home/vmail"
