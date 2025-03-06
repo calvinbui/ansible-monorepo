@@ -18,22 +18,47 @@
   tasks:
     - name: Create config folder
       ansible.builtin.file:
-        path: "{{ config_directory }}"
+        path: "{{ config_directory }}/config"
         state: directory
         owner: "{{ common_user }}"
         group: "{{ common_root_group }}"
         mode: "0771"
 
+    - name: Create influxdb container
+      ansible.builtin.import_role:
+        name: influxdb
+      vars:
+        influxdb_version: 2.7
+        influxdb_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          33353633316665643762656335666561353834653838366337346166343834346433383462386136
+          3733313064626335643764363433393062306161646136650a633364363861363736653938386634
+          36646266383333376338346236303766376431316138393634636135333236656335303165393838
+          3437363336393037640a643937356432633364316664303265313239643039636339313163376264
+          64666162343564626463626330643330613532653565316163393133656362623831
+        influxdb_token: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          39396630373265653565616137326236373361373262623234316137386264636533613166383435
+          3233313930303737643862343665386265393166626565660a323630336165376563623230376232
+          34326263306535626232633537323739373531643463636330663035623936633265636534363231
+          3831663063646432660a313264623634636163653563393165386235623236313539393933636564
+          65353164613362313634633539333533313765323737353434623432383333313137
+
     - name: Create config file
       ansible.builtin.copy:
-        dest: "{{ config_directory }}/settings.yml"
+        dest: "{{ config_directory }}/config/settings.yml"
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
         mode: "0644"
         content: |
           NUT_SERVERS:
-            - HOST: "{{ nut_host }}"
+            - HOST: {{ nut_host }}
               PORT: 3493
+          INFLUX_HOST: http://{{ _influxdb_hostname }}:{{ _influxdb_port }}
+          INFLUX_TOKEN: {{ _influxdb_token }}
+          INFLUX_ORG: {{ _influxdb_org }}
+          INFLUX_BUCKET: {{ _influxdb_bucket }}
+          INFLUX_INTERVAL: 10
           WEB_HOST: 0.0.0.0
           WEB_PORT: 8080
       notify: Restart
@@ -44,7 +69,7 @@
       vars:
         image: brandawg93/peanut:5.5.0
         volumes:
-          - "{{ config_directory }}:/config"
+          - "{{ config_directory }}/config:/config"
         traefik:
           - port: 8080
             auth: page
