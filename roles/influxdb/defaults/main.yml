@@ -10,5 +10,7 @@ influxdb_password: "changeme"
 influxdb_org: "{{ application }}-org"
 influxdb_bucket: "{{ application }}-bucket"
 
-influxdb_traefik: {}
-influxdb_homepage: {}
+influxdb_traefik:
+  enable: false
+influxdb_homepage:
+  enable: false
