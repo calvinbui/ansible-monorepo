@@ -117,7 +117,6 @@
             src: "{{ item }}"
             dest: "{{ home_assistant_integrations_dir }}/{{ item | basename | regex_replace('\\.j2$', '') }}"
             mode: "0644"
-            validate: "echo checking %s && docker exec {{ application }}/usr/local/bin/hass --script check_config --config /config"
           notify: Restart
           with_fileglob:
             - "{{ files_directory }}/integrations/*"
@@ -131,6 +130,12 @@
           notify: Restart
           with_fileglob:
             - "{{ files_directory }}/integrations/*"
+        
+        - name: Validate configuration
+          community.docker.docker_container_exec:
+            container: "{{ application }}"
+            command:  python -m homeassistant --script check_config --config /config
+          changed_when: false
 
     - name: Install Addons
       block:
