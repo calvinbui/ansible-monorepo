@@ -5,9 +5,4 @@
 day_switch_time: "08:30"
 
 sources:
-  -
-    name: {{ home_assistant_integrations.waste_collection_schedule.source }}
-    args:
-      suburb: {{ home_assistant_integrations.waste_collection_schedule.suburb }}
-      street_name: {{ home_assistant_integrations.waste_collection_schedule.street_name }}
-      street_number: {{ home_assistant_integrations.waste_collection_schedule.street_number }}
+{{ home_assistant_integrations.waste_collection_schedule | to_json(vault_to_text=True) | from_json | to_nice_yaml(indent=2) }}
