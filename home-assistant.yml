@@ -130,7 +130,7 @@
           notify: Restart
           with_fileglob:
             - "{{ files_directory }}/integrations/*"
-        
+
         - name: Validate configuration
           community.docker.docker_container_exec:
             container: "{{ application }}"
