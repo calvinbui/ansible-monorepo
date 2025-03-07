@@ -156,7 +156,7 @@ cards:
           -
             primary: Master Bedroom
             secondary: |
-              {{ states('sensor.master_bedroom_temperature_humidity_sensor_temperature') | int }}°C / {{ states('sensor.master_bedroom_temperature_humidity_sensor_humidity') | int }}%
+              {{ states('sensor.master_bedroom_temperature_humidity_sensor_temperature') | int(0) }}°C / {{ states('sensor.master_bedroom_temperature_humidity_sensor_humidity') | int(0) }}%
             icon: mdi:bed-king
             entity: switch.daikin_ac_master
             <<: *air_conditioning_room
@@ -166,14 +166,14 @@ cards:
           -
             primary: Tammy's Study
             secondary: |
-              {{ states('sensor.tammy_s_study_temperature_humidity_sensor_temperature') | int }}°C / {{ states('sensor.tammy_s_study_temperature_humidity_sensor_humidity') | int }}%
+              {{ states('sensor.tammy_s_study_temperature_humidity_sensor_temperature') | int(0) }}°C / {{ states('sensor.tammy_s_study_temperature_humidity_sensor_humidity') | int(0) }}%
             icon: mdi:face-woman
             entity: switch.daikin_ac_tammy_study
             <<: *air_conditioning_room
           -
             primary: Calvin's Study
             secondary: |
-              {{ states('sensor.calvin_s_study_temperature_humidity_sensor_temperature') | int }}°C / {{ states('sensor.calvin_s_study_temperature_humidity_sensor_humidity') | int }}%
+              {{ states('sensor.calvin_s_study_temperature_humidity_sensor_temperature') | int(0) }}°C / {{ states('sensor.calvin_s_study_temperature_humidity_sensor_humidity') | int(0) }}%
             icon: mdi:face-man
             entity: switch.daikin_ac_calvin_study
             <<: *air_conditioning_room
@@ -183,14 +183,14 @@ cards:
           -
             primary: Large Bedroom
             secondary: |
-              {{ states('sensor.large_rear_bedroom_temperature_humidity_sensor_temperature') | int }}°C / {{ states('sensor.large_rear_bedroom_temperature_humidity_sensor_humidity') | int }}%
+              {{ states('sensor.large_rear_bedroom_temperature_humidity_sensor_temperature') | int(0) }}°C / {{ states('sensor.large_rear_bedroom_temperature_humidity_sensor_humidity') | int(0) }}%
             icon: mdi:bed
             entity: switch.daikin_ac_large_bed
             <<: *air_conditioning_room
           -
             primary: Small Bedroom
             secondary: |
-              {{ states('sensor.large_rear_bedroom_temperature_humidity_sensor_temperature') | int }}°C / {{ states('sensor.large_rear_bedroom_temperature_humidity_sensor_humidity') | int }}%
+              {{ states('sensor.large_rear_bedroom_temperature_humidity_sensor_temperature') | int(0) }}°C / {{ states('sensor.large_rear_bedroom_temperature_humidity_sensor_humidity') | int(0) }}%
             icon: mdi:bed-outline
             entity: switch.daikin_ac_small_bed
             <<: *air_conditioning_room
