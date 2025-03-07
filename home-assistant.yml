@@ -134,7 +134,7 @@
         - name: Validate configuration
           community.docker.docker_container_exec:
             container: "{{ application }}"
-            command:  python -m homeassistant --script check_config --config /config
+            command: python -m homeassistant --script check_config --config /config
           changed_when: false
 
     - name: Install Addons
