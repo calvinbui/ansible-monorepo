@@ -242,6 +242,7 @@
           # SECURITY
           ControlUsername: ''
           ControlPassword: ''
+          UMask: '022'
 
           # CATEGORIES
           Category1.Name: 'Movies'
