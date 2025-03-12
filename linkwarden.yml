@@ -1,0 +1,65 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: linkwarden
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Create postgres container
+      ansible.builtin.import_role:
+        name: postgres
+      vars:
+        postgres_version: 17
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          62623065623633323139333339633361313635616563356138333761313761373230383261623632
+          6135363264333366356436393139353134373536663766300a373039623663326366613831313935
+          33643637656565356537663530306530343637383734363862323431636364626166333562353465
+          3865393432333562370a363937383639363234326132383939393731613965643330383736333466
+          64373634316666383232313636326231633230336264653230386230363636363031
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: ghcr.io/linkwarden/linkwarden:v2.9.3
+        env:
+          NEXTAUTH_URL: "https://{{ application }}.{{ common_tld }}/api/v1/auth"
+          NEXTAUTH_SECRET: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            61376665636136666334393962663833386362326536666665393735393761636166393336396432
+            6532646135613938343937333261336530663164663864650a303430306439363736323034323734
+            30383863313536366132326535353064396637613061303666623435356665373766313536323262
+            3133323031356534660a643730313135626539633330393032396339646637626131353435376335
+            30323738346430303338333239326538326562626239653239326266333630613932
+          DATABASE_URL: "{{ _postgresql_url }}"
+
+          NEXT_PUBLIC_DISABLE_REGISTRATION: "true"
+          NEXT_PUBLIC_CREDENTIALS_ENABLED: "false"
+          DISABLE_NEW_SSO_USERS: "false"
+
+          NEXT_PUBLIC_AUTHELIA_ENABLED: "true"
+          AUTHELIA_CLIENT_ID: "{{ application }}"
+          AUTHELIA_CLIENT_SECRET: "{{ oidc_auth.linkwarden.secret }}"
+          AUTHELIA_WELLKNOWN_URL: "{{ oidc_discovery_url }}"
+        volumes:
+          - "{{ config_directory }}/data:/data/data"
+        traefik:
+          - port: 3000
+        blackbox:
+          path: /api/v1/logins
+        homepage:
+          group: Tools
+          weight: 400
+          description: "Bookmark Manager"
