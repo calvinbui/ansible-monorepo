@@ -45,29 +45,6 @@
           61306432353564653366363434666232343731343437343439306361346561366536643635353864
           3266623034333431363434306365336361333932613164306264
 
-    - name: Create influxdb container
-      tags:
-        - integrations
-      ansible.builtin.import_role:
-        name: influxdb
-      vars:
-        influxdb_version: 2.7
-        influxdb_password: !vault |
-          $ANSIBLE_VAULT;1.1;AES256
-          39383139643961303364626537306531346530373162353465356237386332636239343238633663
-          6134353665323265386338633634393038663665316239390a623663343530666462623031633662
-          37656435353865356539353566656133643339656130623938393639303631303665343431393963
-          6263613830323737390a356566613732656163303430313162303330323330393461653432376166
-          37333531656136633639373735616532663264633030373365623030336239666262
-        influxdb_traefik:
-          enable: "true"
-        influxdb_homepage:
-          enable: "true"
-          name: "Home Assistant InfluxDB"
-          description: "Long term data from devices"
-          group: Home Automation
-          weight: 300
-
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
