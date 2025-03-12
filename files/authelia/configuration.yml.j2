@@ -107,7 +107,7 @@ identity_providers:
         response_types:
           - code
         {% endif %}
-        {% if k in ["beszel", "lubelogger", "mealie", "nextcloud"] %}
+        {% if k in ["lubelogger", "mealie", "nextcloud"] %}
           - groups
         require_pkce: true
         pkce_challenge_method: 'S256'
