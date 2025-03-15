@@ -124,7 +124,7 @@
           main/cacheImages: true
           main/localLogin: false
           main/trustProxy: true
-          main/defaultPermissions: 209731616
+          main/defaultPermissions: 75497504
 
           plex/name: plex
           plex/ip: plex.{{ networks.pub.name }}
