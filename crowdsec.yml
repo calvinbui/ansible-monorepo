@@ -193,6 +193,8 @@
                 evt.Parsed.traefik_router_name startsWith 'immich-server' && (evt.Meta.http_path startsWith '/api')
               -
                 evt.Parsed.traefik_router_name startsWith 'home-assistant' && evt.Meta.http_path startsWith '/&v='
+              -
+                evt.Parsed.traefik_router_name startsWith 'syncthing' && (evt.Meta.http_path startsWith '/rest/' || evt.Meta.http_path startsWith '/assets')
         dest: "{{ config_directory }}/my-whitelists.yaml"
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"

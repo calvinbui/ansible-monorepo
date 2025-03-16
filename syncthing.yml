@@ -1,0 +1,107 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: syncthing
+
+    docker_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart
+      community.docker.docker_container:
+        name: "{{ application }}"
+        restart: true
+        comparisons:
+          '*': ignore
+
+  tasks:
+    - name: Create config folders
+      ansible.builtin.file:
+        path: "{{ common_directory_backup }}/{{ application }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0751"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: ghcr.io/syncthing/syncthing:1.29.3
+        ipv4_address: "{{ docker_network.prefix }}.249"
+        env:
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_group_id | string }}"
+        volumes:
+          - "{{ common_directory_backup }}/{{ application }}:/var/syncthing"
+        traefik:
+          - port: 8384
+        blackbox:
+          path: /rest/noauth/health
+
+    - name: Wait for config file
+      ansible.builtin.wait_for:
+        path: "{{ common_directory_backup }}/{{ application }}/config/config.xml"
+
+    - name: Configure
+      community.general.xml:
+        path: "{{ common_directory_backup }}/{{ application }}/config/config.xml"
+        xpath: "{{ item.xpath }}"
+        value: "{{ item.value | default(omit) | string }}"
+        attribute: "{{ item.attribute | default(omit) }}"
+        state: "{{ item.state | default(omit) }}"
+      notify: Restart
+      loop:
+        -
+          xpath: /configuration/options/globalAnnounceEnabled
+          value: "false"
+        -
+          xpath: /configuration/options/localAnnounceEnabled
+          value: "false"
+        -
+          xpath: /configuration/options/relaysEnabled
+          value: "false"
+        -
+          xpath: /configuration/options/startBrowser
+          value: "false"
+        -
+          xpath: /configuration/options/natEnabled
+          value: "false"
+        -
+          xpath: /configuration/options/crashReportingEnabled
+          value: "false"
+        -
+          # analytics
+          xpath: /configuration/options/urAccepted
+          value: "-1"
+        -
+          xpath: /configuration/options/urSeen
+          value: "3"
+        -
+          xpath: "/configuration/folder[@id='default']"
+          state: absent
+        -
+          xpath: "/configuration/gui/user"
+          value: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            36633936353765663830383862663835333531626632313739376139356166666266316637303731
+            6261666438303134306538626365306336613531653231350a623335333066366661633732306334
+            30643935646233343235316265353133666536363034613930616665636633646262383364653831
+            3663363865653131610a326433336436616630613837303565336232626139363938616637613439
+            3936
+
+    - name: Set password
+      community.general.xml:
+        path: "{{ common_directory_backup }}/{{ application }}/config/config.xml"
+        xpath: "/configuration/gui/password"
+        value: "{{ _password | to_json(vault_to_text=True) | from_json | ansible.builtin.password_hash(hashtype='bcrypt') }}"
+      changed_when: false
+      vars:
+        _password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          63333236646633613732376230373134646139646636333638306364633336343530363032333463
+          3937623866323930383263313938313033326461343462300a396234663138633033626666303733
+          61316564396531333537326466613537623034646632306461313639333836363230356461366264
+          6166646631306338390a376435353265643339323531333662666464333566363831663563356364
+          31636136613863633037386466333638623166323063353863336165336663383739

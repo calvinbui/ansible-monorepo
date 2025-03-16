@@ -387,7 +387,7 @@ opnsense_dhcp_reservations:
   -
     ip: 192.168.3.74
     subnet: 192.168.3.0/24
-    mac: e4:b0:63:c9:76:70	
+    mac: e4:b0:63:c9:76:70
     hostname: master-bed-presence
     description: "elevated sensors king bed"
   -
@@ -621,7 +621,7 @@ opnsense_dhcp_reservations:
     ip: 192.168.4.249
     subnet: 192.168.4.0/24
     mac: ff:00:ff:00:f2:49
-    hostname: authentik
+    hostname: syncthing
   -
     ip: 192.168.4.250
     subnet: 192.168.4.0/24
