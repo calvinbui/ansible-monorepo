@@ -556,11 +556,6 @@ opnsense_dhcp_reservations:
     mac: a4:97:5c:99:0f:4c
     hostname: leapfrog-camera-downstairs
   -
-    ip: 192.168.3.123
-    subnet: 192.168.3.0/24
-    mac: 44:b2:95:80:df:72
-    hostname: snoo
-  -
     ip: 192.168.3.247
     subnet: 192.168.3.0/24
     mac: ff:00:ff:00:f2:47
