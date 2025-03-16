@@ -21,21 +21,13 @@
         name: docker_container
       vars:
         image: ghcr.io/syncthing/syncthing:1.29.3
+        ipv4_address: "{{ docker_network.prefix }}.249"
         env:
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_group_id | string }}"
         volumes:
           - "{{ common_directory_backup }}/{{ application }}:/var/syncthing"
         traefik:
-          -
-            port: 8384
-          -
-            name: "{{ application }}-tcp"
-            port: 22000
-            type: tcp
-          -
-            name: "{{ application }}-udp"
-            port: 22000
-            type: udp
+          - port: 8384
         blackbox:
           path: /rest/noauth/health
