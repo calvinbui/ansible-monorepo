@@ -603,11 +603,6 @@ opnsense_dhcp_reservations:
     mac: ff:00:ff:00:f2:54
     hostname: mosquitto
   -
-    ip: 192.168.4.246
-    subnet: 192.168.4.0/24
-    mac: ff:00:ff:00:f2:46
-    hostname: endlessh
-  -
     ip: 192.168.4.247
     subnet: 192.168.4.0/24
     mac: ff:00:ff:00:f2:47
