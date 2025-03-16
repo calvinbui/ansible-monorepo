@@ -382,6 +382,11 @@
       matchPackagePatterns: [".*\\/dovecot.*"],
       sourceUrl: "https://github.com/dovecot/core",
     },
+    /* systemd_exporter */
+    {
+      matchPackagePatterns: [".*\\/systemd_exporter.*"],
+      sourceUrl: "https://github.com/prometheus-community/systemd_exporter",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
