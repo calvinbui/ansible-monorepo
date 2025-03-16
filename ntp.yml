@@ -13,6 +13,7 @@
         name: docker_container
       vars:
         image: cturra/ntp:latest
+        ipv4_address: "{{ docker_network.prefix }}.246"
         read_only: true
         tmpfs:
           - /etc/chrony:rw,mode=1750
@@ -29,6 +30,3 @@
             }}
           LOG_LEVEL: "0"
           TZ: "{{ common_timezone }}"
-        traefik:
-          - port: 123
-            type: udp

@@ -27,9 +27,6 @@ entryPoints:
   metrics:
     address: ':8082/tcp'
 
-  ntp:
-    address: ':123/udp'
-
 certificatesResolvers:
   {{ traefik_certresolver }}:
     acme:
