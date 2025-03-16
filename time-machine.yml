@@ -36,8 +36,8 @@
           PASSWORD={{ item.password }}
           SHARE_NAME={{ item.share }}
           VOLUME_SIZE_LIMIT="{{ item.limit }}"
-          TM_UID=1000
-          TM_GID=1000
+          TM_UID={{ common_user_id }}
+          TM_GID={{ common_group_id }}
       loop:
         -
           name: "{{ common_user }}"
@@ -78,8 +78,8 @@
           HIDE_SHARES: "yes"
           TM_USERNAME: "timemachine"
           TM_GROUPNAME: "timemachine"
-          TM_UID: "1000"
-          TM_GID: "1000"
+          TM_UID: "{{ common_user_id | string }}"
+          TM_GID: "{{ common_group_id | string }}"
           PASSWORD: *_time_machine_password
           SET_PERMISSIONS: "true"
           SHARE_NAME: "TimeMachine"
