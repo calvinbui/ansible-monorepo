@@ -30,11 +30,6 @@ entryPoints:
   ntp:
     address: ':123/udp'
 
-  switch-lan-play-tcp:
-    address: ':11451/tcp'
-  switch-lan-play-udp:
-    address: ':11451/udp'
-
 certificatesResolvers:
   {{ traefik_certresolver }}:
     acme:
