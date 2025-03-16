@@ -35,6 +35,11 @@ entryPoints:
   switch-lan-play-udp:
     address: ':11451/udp'
 
+  syncthing-tcp:
+    address: ':22000/tcp'
+  syncthing-udp:
+    address: ':22000/udp'
+
 certificatesResolvers:
   {{ traefik_certresolver }}:
     acme:
