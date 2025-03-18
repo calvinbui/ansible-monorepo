@@ -384,7 +384,7 @@
     },
     /* systemd_exporter */
     {
-      matchPackagePatterns: [".*\\/systemd_exporter.*"],
+      matchPackagePatterns: [".*\\/systemd(-|_)exporter.*"],
       sourceUrl: "https://github.com/prometheus-community/systemd_exporter",
     },
   ],
