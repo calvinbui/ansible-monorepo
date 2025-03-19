@@ -3,7 +3,8 @@
 
 server:
   address: 0.0.0.0:9091
-  read_buffer_size: 10485760
+  buffers:
+    read: 10485760
 
 theme: dark
 
@@ -101,6 +102,9 @@ identity_providers:
           - openid
           - profile
           - email
+        {% if k in ["lubelogger", "mealie", "nextcloud"] %}
+          - groups
+        {% endif %}
         {% if k in ["lubelogger", "outline"] %}
           - offline_access
         token_endpoint_auth_method: client_secret_post
@@ -108,7 +112,6 @@ identity_providers:
           - code
         {% endif %}
         {% if k in ["lubelogger", "mealie", "nextcloud"] %}
-          - groups
         require_pkce: true
         pkce_challenge_method: 'S256'
         {% endif %}
