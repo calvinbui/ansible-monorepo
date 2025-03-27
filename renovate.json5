@@ -387,6 +387,12 @@
       matchPackagePatterns: [".*\\/systemd(-|_)exporter.*"],
       sourceUrl: "https://github.com/prometheus-community/systemd_exporter",
     },
+    /* nzbgetcom */
+    {
+      matchPackagePatterns: [".*\\/nzbget"],
+      versioning: "regex:^version-v(?<major>\\d+)\\.(?<minor>\\d+)$",
+      sourceUrl: "https://github.com/nzbgetcom/nzbget",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
