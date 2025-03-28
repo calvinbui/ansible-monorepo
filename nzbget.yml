@@ -52,7 +52,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: lscr.io/linuxserver/nzbget:version-v24.5
+        image: lscr.io/linuxserver/nzbget:version-v24.8
         volumes:
           - "{{ config_directory }}:/config"
           - "{{ common_directory_download }}:{{ common_mounted_directory_download }}"
