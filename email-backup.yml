@@ -184,7 +184,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: dovecot/dovecot:2.4.0
+        image: dovecot/dovecot:2.4.1
         volumes:
           - "{{ config_directory }}/conf:/etc/dovecot"
           - "{{ config_directory }}/users:/home/vmail"
