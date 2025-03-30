@@ -82,6 +82,11 @@ identity_providers:
       allowed_origins:
         - "https://mealie.{{ common_tld }}"
 
+    # https://www.authelia.com/integration/openid-connect/openid-connect-1.0-claims/#restore-functionality-prior-to-claims-parameter
+    claims_policies:
+      restore:
+        id_token: ['groups', 'email', 'email_verified', 'alt_emails', 'preferred_username', 'name']
+
     clients:
       {% for k, v in oidc_auth.items() %}
       - client_id: {{ k }}
@@ -126,6 +131,11 @@ identity_providers:
         grant_types:
           - authorization_code
         {% endif %}
+
+        {% if k in ["nextcloud"] %}
+        claims_policy: 'restore'
+        {% endif %}
+
       {% endfor %}
 
 ntp:
