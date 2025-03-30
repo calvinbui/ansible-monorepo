@@ -385,6 +385,7 @@
       loop: "{{ _nextcloud_oidc_config | dict2items }}"
       vars:
         _nextcloud_oidc_config:
+          hide_login_form: true
           allow_user_to_change_display_name: false
           lost_password_link: "disabled"
           oidc_login_provider_url: "{{ oidc_base_url }}"
