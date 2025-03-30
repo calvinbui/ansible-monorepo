@@ -110,23 +110,28 @@ identity_providers:
         {% if k in ["lubelogger", "mealie", "nextcloud"] %}
           - groups
         {% endif %}
+
         {% if k in ["lubelogger", "outline"] %}
           - offline_access
         token_endpoint_auth_method: client_secret_post
         response_types:
           - code
         {% endif %}
+
         {% if k in ["lubelogger", "mealie", "nextcloud"] %}
         require_pkce: true
         pkce_challenge_method: 'S256'
         {% endif %}
+
         userinfo_signed_response_alg: none
+
         {% if k == "guacamole" %}
         response_types:
           - id_token
         grant_types:
           - implicit
         {% endif %}
+
         {% if k == "mealie" %}
         grant_types:
           - authorization_code
