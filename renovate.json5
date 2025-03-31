@@ -392,6 +392,7 @@
       matchPackagePatterns: [".*\\/nzbget"],
       versioning: "regex:^version-v(?<major>\\d+)\\.(?<minor>\\d+)$",
       sourceUrl: "https://github.com/nzbgetcom/nzbget",
+      changelogUrl: "https://github.com/nzbgetcom/nzbget/blob/develop/ChangeLog.md",
     },
   ],
 
