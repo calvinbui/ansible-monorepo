@@ -41,6 +41,9 @@
       vars:
         name: "{{ application }}-meilisearch"
         image: getmeili/meilisearch:v1.13.3
+        # command:
+        #   - /bin/meilisearch
+        #   - --experimental-dumpless-upgrade
         user: "{{ common_user_id }}:{{ common_group_id }}"
         env:
           MEILI_HOST: "http://{{ application }}-meilisearch:7700"
