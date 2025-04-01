@@ -15,11 +15,6 @@
   ansible.builtin.set_fact:
     route_middlewares: "{{ route_middlewares + ['authelia@docker'] }}"
 
-- name: Add compression middleware
-  when: (route.compress is undefined) or (route is defined and route.compress == "true")
-  ansible.builtin.set_fact:
-    route_middlewares: "{{ route_middlewares + ['compression@file'] }}"
-
 - name: "Generating HTTP Traefik labels for {{ route_name }}"
   when: traefik and (route.type is undefined or (route.type is defined and route.type == "http"))
   ansible.builtin.set_fact:

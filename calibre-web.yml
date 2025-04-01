@@ -32,7 +32,6 @@
           - "{{ common_directory }}/calibre/Calibre Library:/books"
         traefik:
           - port: 8083
-            compress: false
             auth: page
             middleware:
               - "{{ application }}-headers"
