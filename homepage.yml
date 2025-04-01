@@ -63,6 +63,7 @@
         ipv4_address: "{{ docker_network.prefix }}.251"
         env:
           HOMEPAGE_ALLOWED_HOSTS: "{{ common_tld }},{{ docker_network.prefix }}.251"
+          HOMEPAGE_PROXY_DISABLE_IPV6: "true"
         volumes:
           - "{{ config_directory }}/config:/app/config"
           - "{{ homepage_icons_remote_dir }}:/app/public/icons"
