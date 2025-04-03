@@ -60,7 +60,7 @@
 
           LUBELOGGER_ALLOWED_FILE_EXTENSIONS: "*"
 
-          OpenIDConfig__Name: "{{ oidc_provider }}"
+          OpenIDConfig__Name: "{{ oidc_provider | title }}"
           OpenIDConfig__ClientId: "{{ application }}"
           OpenIDConfig__ClientSecret: "{{ oidc_auth.lubelogger.secret }}"
           OpenIDConfig__AuthURL: "{{ oidc_auth_url }}"
