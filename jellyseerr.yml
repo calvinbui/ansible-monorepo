@@ -54,6 +54,8 @@
           TZ: "{{ common_timezone }}"
         volumes:
           - "{{ config_directory }}/config:/app/config"
+        tmpfs:
+          - /app/.next/cache:rw,mode=01777
         user: "{{ common_user_id }}:{{ common_group_id }}"
         traefik:
           - port: 5055
