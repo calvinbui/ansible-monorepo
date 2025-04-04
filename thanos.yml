@@ -30,7 +30,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-sidecar"
-        image: quay.io/thanos/thanos:v0.37.2
+        image: quay.io/thanos/thanos:v0.38.0
         user: root:root
         command:
           - sidecar
@@ -48,7 +48,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-store"
-        image: quay.io/thanos/thanos:v0.37.2
+        image: quay.io/thanos/thanos:v0.38.0
         command:
           - store
           - --data-dir=/store
@@ -64,7 +64,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-compactor"
-        image: quay.io/thanos/thanos:v0.37.2
+        image: quay.io/thanos/thanos:v0.38.0
         user: root:root
         command:
           - compact
@@ -86,7 +86,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-query"
-        image: quay.io/thanos/thanos:v0.37.2
+        image: quay.io/thanos/thanos:v0.38.0
         command:
           - query
 
@@ -103,7 +103,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-query-frontend"
-        image: quay.io/thanos/thanos:v0.37.2
+        image: quay.io/thanos/thanos:v0.38.0
         command:
           - query-frontend
           - --query-frontend.downstream-url=http://{{ application }}-query.{{ docker_network.name }}:10902
@@ -123,7 +123,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-bucket-web"
-        image: quay.io/thanos/thanos:v0.37.2
+        image: quay.io/thanos/thanos:v0.38.0
         command:
           - tools
           - bucket
