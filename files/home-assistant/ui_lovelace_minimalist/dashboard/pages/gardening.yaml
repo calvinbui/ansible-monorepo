@@ -16,3 +16,7 @@ cards:
     entity: plant.chilli
     battery_sensor: sensor.chilli_plant_sensor_battery
     <<: *gardening_card
+  -
+    entity: plant.dwarf_jade
+    battery_sensor: sensor.dwarf_jade_plant_sensor_battery
+    <<: *gardening_card
