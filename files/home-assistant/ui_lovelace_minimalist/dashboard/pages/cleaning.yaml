@@ -138,7 +138,12 @@ cards:
       -
         type: custom:xiaomi-vacuum-map-card
         preset_name: Downstairs
-        vacuum_platform: humbertogontijo/homeassistant-roborock
+        vacuum_platform: Roborock
+        entity: vacuum.downstairs_s7
+        map_source:
+          camera: image.downstairs_s7_downstairs_custom
+        calibration_source:
+          camera: true
         activate_on_switch: true
         activate:
           service: select.select_option
@@ -146,52 +151,280 @@ cards:
             option: Downstairs
           target:
             entity_id: select.downstairs_s7_selected_map
-        entity: vacuum.downstairs_s7
-        map_source:
-          camera: image.downstairs_s7_downstairs
-          crop:
-            top: 200
-            bottom: 200
-            right: 200
-            left: 200
-        calibration_source:
-          camera: image.downstairs_s7_downstairs
+        map_modes:
+          - template: vacuum_clean_segment
+            predefined_selections:
+              - id: "18"
+                icon:
+                  name: mdi:broom
+                  x: 16200
+                  "y": 28275
+                label:
+                  text: Living Room
+                  x: 16200
+                  "y": 28275
+                  offset_y: 35
+                outline:
+                  - - 13200
+                    - 25300
+                  - - 19050
+                    - 25300
+                  - - 19050
+                    - 31200
+                  - - 13200
+                    - 31200
+              - id: "20"
+                icon:
+                  name: mdi:broom
+                  x: 27825
+                  "y": 28675
+                label:
+                  text: Hallway
+                  x: 27825
+                  "y": 28675
+                  offset_y: 35
+                outline:
+                  - - 25800
+                    - 27850
+                  - - 29850
+                    - 27850
+                  - - 29850
+                    - 29300
+                  - - 25800
+                    - 29300
+              - id: "22"
+                icon:
+                  name: mdi:broom
+                  x: 27900
+                  "y": 26500
+                label:
+                  text: Calvin's Study
+                  x: 27900
+                  "y": 26500
+                  offset_y: 35
+                outline:
+                  - - 25750
+                    - 24550
+                  - - 29750
+                    - 24550
+                  - - 29750
+                    - 27950
+                  - - 25750
+                    - 27950
+              - id: "23"
+                icon:
+                  name: mdi:broom
+                  x: 22425
+                  "y": 30050
+                label:
+                  text: Dining
+                  x: 22425
+                  "y": 30050
+                  offset_y: 35
+                outline:
+                  - - 19100
+                    - 27850
+                  - - 25750
+                    - 27850
+                  - - 25750
+                    - 31200
+                  - - 19100
+                    - 31200
+              - id: "24"
+                icon:
+                  name: mdi:broom
+                  x: 27300
+                  "y": 30350
+                label:
+                  text: Bathroom
+                  x: 27300
+                  "y": 30350
+                  offset_y: 35
+                outline:
+                  - - 25650
+                    - 29300
+                  - - 28500
+                    - 29300
+                  - - 28500
+                    - 31200
+                  - - 25650
+                    - 31200
+              - id: "25"
+                icon:
+                  name: mdi:broom
+                  x: 29400
+                  "y": 30350
+                label:
+                  text: Laundry
+                  x: 29400
+                  "y": 30350
+                  offset_y: 35
+                outline:
+                  - - 28550
+                    - 29200
+                  - - 30250
+                    - 29200
+                  - - 30250
+                    - 31200
+                  - - 28550
+                    - 31200
+              - id: "27"
+                icon:
+                  name: mdi:broom
+                  x: 20575
+                  "y": 26900
+                label:
+                  text: Kitchen
+                  x: 20575
+                  "y": 26900
+                  offset_y: 35
+                outline:
+                  - - 19100
+                    - 25300
+                  - - 22050
+                    - 25300
+                  - - 22050
+                    - 27900
+                  - - 19100
+                    - 27900
+          - template: vacuum_clean_zone
+          - template: vacuum_goto
         additional_presets:
           -
             preset_name: Upstairs
-            vacuum_platform: humbertogontijo/homeassistant-roborock
+            vacuum_platform: Roborock
             entity: vacuum.upstairs_s7
             map_source:
-              camera: image.upstairs_s7_map_0
-              crop:
-                top: 200
-                bottom: 200
-                left: 200
-                right: 200
+              camera: image.upstairs_s7_map_0_custom
             calibration_source:
-              camera: image.upstairs_s7_map_0
-
-            icons:
-              -
-                icon: mdi:home
-                tooltip: "Stop"
-                tap_action:
-                  action: call-service
-                  service: vacuum.return_to_base
-                  service_data:
-                    entity_id: vacuum.upstairs_s7
-              -
-                icon: mdi:delete-restore
-                tooltip: "Stop"
-                tap_action:
-                  action: call-service
-                  service: vacuum.send_command
-                  service_data:
-                    command: app_start_collect_dust
-                    entity_id: vacuum.upstairs_s7
+              camera: true
+            map_modes:
+              - template: vacuum_clean_segment
+                predefined_selections:
+                  - id: "16"
+                    icon:
+                      name: mdi:broom
+                      x: 27500
+                      "y": 29300
+                    label:
+                      text: Small Bedroom
+                      x: 27500
+                      "y": 29300
+                      offset_y: 35
+                    outline:
+                      - - 25200
+                        - 27700
+                      - - 29750
+                        - 27700
+                      - - 29750
+                        - 30550
+                      - - 25200
+                        - 30550
+                  - id: "18"
+                    icon:
+                      name: mdi:broom
+                      x: 32500
+                      "y": 28500
+                    label:
+                      text: Bathroom
+                      x: 32500
+                      "y": 28500
+                      offset_y: 35
+                    outline:
+                      - - 31000
+                        - 27400
+                      - - 34250
+                        - 27400
+                      - - 34250
+                        - 29400
+                      - - 31000
+                        - 29400
+                  - id: "21"
+                    icon:
+                      name: mdi:broom
+                      x: 36200
+                      "y": 26125
+                    label:
+                      text: Tammy's Study
+                      x: 36200
+                      "y": 26125
+                      offset_y: 35
+                    outline:
+                      - - 34350
+                        - 24800
+                      - - 37900
+                        - 24800
+                      - - 37900
+                        - 27400
+                      - - 34350
+                        - 27400
+                  - id: "22"
+                    icon:
+                      name: mdi:broom
+                      x: 38900
+                      "y": 26125
+                    label:
+                      text: Ensuite
+                      x: 38900
+                      "y": 26125
+                      offset_y: 35
+                    outline:
+                      - - 38050
+                        - 24850
+                      - - 39650
+                        - 24850
+                      - - 39650
+                        - 27400
+                      - - 38050
+                        - 27400
+                  - id: "23"
+                    icon:
+                      name: mdi:broom
+                      x: 41900
+                      "y": 27000
+                    label:
+                      text: Master Bedroom
+                      x: 41900
+                      "y": 27000
+                      offset_y: 35
+                    outline:
+                      - - 39700
+                        - 24800
+                      - - 44000
+                        - 24800
+                      - - 44000
+                        - 28700
+                      - - 39700
+                        - 28700
+                  - id: "25"
+                    icon:
+                      name: mdi:broom
+                      x: 28000
+                      "y": 26125
+                    label:
+                      text: Large Bedroom
+                      x: 28000
+                      "y": 26125
+                      offset_y: 35
+                    outline:
+                      - - 25200
+                        - 24850
+                      - - 30900
+                        - 24850
+                      - - 30900
+                        - 27700
+                      - - 25200
+                        - 27700
+              - template: vacuum_clean_zone
+              - template: vacuum_goto
           -
             preset_name: Foyer
-            vacuum_platform: humbertogontijo/homeassistant-roborock
+            vacuum_platform: Roborock
+            entity: vacuum.downstairs_s7
+            map_source:
+              camera: image.downstairs_s7_foyer_custom
+            calibration_source:
+              camera: true
             activate_on_switch: true
             activate:
               service: select.select_option
@@ -199,13 +432,26 @@ cards:
                 option: Foyer
               target:
                 entity_id: select.downstairs_s7_selected_map
-            entity: vacuum.downstairs_s7
-            map_source:
-              camera: image.downstairs_s7_foyer
-              crop:
-                top: 500
-                bottom: 500
-                left: 500
-                right: 500
-            calibration_source:
-              camera: image.downstairs_s7_foyer
+            map_locked: true
+            map_modes:
+              - template: vacuum_clean_segment
+                predefined_selections:
+                  - id: "1"
+                    icon:
+                      name: mdi:broom
+                      x: 23925
+                      "y": 25600
+                    label:
+                      text: Foyer
+                      x: 23925
+                      "y": 25600
+                      offset_y: 35
+                    outline:
+                      - - 20550
+                        - 24250
+                      - - 27300
+                        - 24250
+                      - - 27300
+                        - 26950
+                      - - 20550
+                        - 26950
