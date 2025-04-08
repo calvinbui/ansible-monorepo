@@ -10,11 +10,36 @@
   tasks:
     - name: Create config folder
       ansible.builtin.file:
-        path: "{{ config_directory }}/app"
+        path: "{{ config_directory }}/{{ item }}"
         state: directory
         owner: "{{ common_user }}"
         group: "{{ common_root_group }}"
         mode: "0771"
+      loop:
+        - app
+        - meilisearch
+
+    - name: Create meilisearch container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-meilisearch"
+        image: getmeili/meilisearch:v1.13.3
+        # command:
+        #   - /bin/meilisearch
+        #   - --experimental-dumpless-upgrade
+        user: "{{ common_user_id }}:{{ common_group_id }}"
+        env:
+          MEILI_NO_ANALYTICS: "true"
+          MEILI_MASTER_KEY: &_opengist_meili_master_key !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            63363430316438323439313962626639633137383738663566333031633334303263666664333931
+            6138643730613033613830303030316565393135343164350a636362323030373232306131636365
+            30303333376233303934356364313965663061616336653561333931356530633635306464383262
+            3632306239333634340a366131643234333035613464653830663231613664636631626661666231
+            38653038356563393265646432396132346239656630346230316331366333633136
+        volumes:
+          - "{{ config_directory }}/meilisearch:/meili_data"
 
     - name: Create postgres container
       ansible.builtin.import_role:
@@ -52,13 +77,20 @@
 
           OG_DB_URI: "{{ _postgres_url }}"
 
+          OG_INDEX: "meilisearch"
+          OG_MEILI_HOST: "http://{{ application }}-meilisearch:7700"
+          OG_MEILI_API_KEY: *_opengist_meili_master_key
+
           OG_SSH_GIT_ENABLED: "false"
 
+          OG_OIDC_PROVIDER_NAME: "{{ oidc_provider | title }}"
           OG_OIDC_DISCOVERY_URL: "{{ oidc_discovery_url }}"
           OG_OIDC_CLIENT_KEY: "{{ application }}"
           OG_OIDC_SECRET: "{{ oidc_auth.opengist.secret }}"
         traefik:
           - port: 6157
+        blackbox:
+          path: /healthcheck
         homepage:
           group: Programming
           weight: 200
