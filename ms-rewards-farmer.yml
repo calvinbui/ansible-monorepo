@@ -18,8 +18,8 @@
 
     - name: Clone
       ansible.builtin.git:
-        repo: "https://github.com/neve360/MS-Rewards-Farmer.git"
-        version: Docker
+        repo: "https://github.com/klept0/MS-Rewards-Farmer.git"
+        version: develop
         dest: "{{ config_directory }}"
         update: true
       register: _ms_rewards_farmer_repo_updated
@@ -57,5 +57,10 @@
             34363735373237656138653064663737313635353661303766323831366135353230
           GEOLOCATION: "{{ common_country_iso_3166 }}"
           LANG: "{{ common_language_iso_639 }}"
+
+          RUN_ONCE: "false"
+          CRON_SCHEDULE: "0 14 40 0 0"
+        volumes:
+          - /etc/localtime:/etc/localtime:ro
         labels:
           com.centurylinklabs.watchtower.enable: "false"
