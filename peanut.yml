@@ -67,7 +67,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: brandawg93/peanut:5.6.1
+        image: brandawg93/peanut:5.7.0
         volumes:
           - "{{ config_directory }}/config:/config"
         traefik:
