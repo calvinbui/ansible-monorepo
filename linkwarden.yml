@@ -33,7 +33,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/linkwarden/linkwarden:v2.9.3
+        image: ghcr.io/linkwarden/linkwarden:v2.10.0
         env:
           NEXTAUTH_URL: "https://{{ application }}.{{ common_tld }}/api/v1/auth"
           NEXTAUTH_SECRET: !vault |
