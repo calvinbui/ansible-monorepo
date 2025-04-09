@@ -59,7 +59,7 @@
           LANG: "{{ common_language_iso_639 }}"
 
           RUN_ONCE: "false"
-          CRON_SCHEDULE: "0 14 40 0 0"
+          CRON_SCHEDULE: "40 0 * * *"
         volumes:
           - /etc/localtime:/etc/localtime:ro
         labels:
