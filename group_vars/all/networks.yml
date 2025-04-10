@@ -8,10 +8,13 @@ networks:
   # 192.168.1.255: broadcast
   mgmt:
     name: mgmt
-    description: Management
+    description: Mgmt
     subnet: 192.168.1.1/24
     dns: 192.168.1.1
-    iprange: 192.168.1.192/26
+    iprange:
+      dhcp:
+        - 192.168.1.64-192.168.1.191
+      docker: 192.168.1.192/26
     prefix: 192.168.1
     parent: ens3f0
     driver: macvlan
@@ -28,7 +31,10 @@ networks:
     description: Userland
     subnet: 192.168.2.1/24
     dns: 192.168.2.1
-    iprange: 192.168.2.192/26
+    iprange:
+      dhcp:
+        - 192.168.2.64-192.168.2.191
+      docker: 192.168.2.192/26
     prefix: 192.168.2
     parent: ens3f0
     driver: macvlan
@@ -45,7 +51,10 @@ networks:
     description: IOT
     subnet: 192.168.3.1/24
     dns: 192.168.3.1
-    iprange: 192.168.3.192/26
+    iprange:
+      dhcp:
+        - 192.168.3.128-192.168.3.191
+      docker: 192.168.3.192/26
     prefix: 192.168.3
     parent: ens3f0
     driver: macvlan
@@ -71,7 +80,10 @@ networks:
     description: Public
     subnet: 192.168.4.1/24
     dns: 192.168.4.1
-    iprange: 192.168.4.128/25
+    iprange:
+      dhcp:
+        - 192.168.4.64-192.168.4.127
+      docker: 192.168.4.128/25
     prefix: 192.168.4
     parent: ens3f0
     driver: macvlan
@@ -88,7 +100,10 @@ networks:
     description: Granny
     subnet: 192.168.6.1/24
     dns: 192.168.6.1
-    iprange: 192.168.6.128/25
+    iprange:
+      dhcp:
+        - 192.168.6.64-192.168.6.127
+      docker: 192.168.6.128/25
     prefix: 192.168.6
     parent: ens3f0
     driver: macvlan

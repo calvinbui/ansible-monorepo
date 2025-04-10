@@ -118,7 +118,7 @@
         ipam_config:
           - gateway: "{{ item.value.subnet | ansible.utils.ipaddr('address') }}"
             subnet: "{{ item.value.subnet | ansible.utils.ipaddr('0') }}"
-            iprange: "{{ item.value.iprange }}"
+            iprange: "{{ item.value.iprange.docker }}"
         driver_options:
           parent: "{{ item.value.parent }}.{{ item.value.vlan }}"
       loop: "{{ networks | dict2items }}"

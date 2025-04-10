@@ -124,6 +124,15 @@
           hostname: dns.quad9.net
       tags: unbound
 
+    - name: KEA - DHCP Subnets
+      ansibleguy.opnsense.dhcp_subnet:
+        description: "{{ networks[item].description }}"
+        subnet: "{{ networks[item].subnet | ansible.utils.ipsubnet }}"
+        pools: "{{ networks[item].iprange.dhcp }}"
+        auto_options: true # auto-configures router, dns and ntp
+      loop: "{{ networks.keys() | list }}"
+      notify: Reload KEA
+
     - name: KEA - DHCP Leases
       ansibleguy.opnsense.dhcp_reservation:
         ip: "{{ item.ip }}"
