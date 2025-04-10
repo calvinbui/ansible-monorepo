@@ -141,9 +141,9 @@
           Server1.IpVersion: 'ipv4'
           Server1.Notes: ''
 
-          Server2.Active: 'yes'
+          Server2.Active: 'no'
           Server2.Name: 'Easynews'
-          Server2.Level: '0'
+          Server2.Level: '1'
           Server2.Optional: 'no'
           Server2.Group: '0'
           Server2.Host: 'news.easynews.com'
@@ -170,9 +170,9 @@
           Server2.IpVersion: 'ipv4'
           Server2.Notes: ''
 
-          Server3.Active: 'yes'
+          Server3.Active: 'no'
           Server3.Name: 'Tweaknews'
-          Server3.Level: '0'
+          Server3.Level: '1'
           Server3.Optional: 'no'
           Server3.Group: '0'
           Server3.Host: 'newshosting.tweaknews.eu'
@@ -195,7 +195,7 @@
 
           Server4.Active: 'yes'
           Server4.Name: 'Blocknews US'
-          Server4.Level: '1'
+          Server4.Level: '2'
           Server4.Optional: 'no'
           Server4.Group: '0'
           Server4.Host: 'usnews.blocknews.net'
@@ -224,7 +224,7 @@
 
           Server5.Active: 'yes'
           Server5.Name: 'Blocknews EU'
-          Server5.Level: '1'
+          Server5.Level: '2'
           Server5.Optional: 'no'
           Server5.Group: '0'
           Server5.Host: 'eunews.blocknews.net'
