@@ -48,6 +48,13 @@
         force: true
         update: true
 
+    - name: Clone Extended Unrar
+      ansible.builtin.git:
+        repo: https://github.com/nzbgetcom/Extension-ExtendedUnrar.git
+        dest: "{{ config_directory }}/scripts/extended-unrar"
+        force: true
+        update: true
+
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
@@ -290,6 +297,11 @@
           UnpackPassFile: '/config/unpackpassfile.txt'
 
           # EXTENSION SCRIPTS
-          Extensions: 'unzip'
-          ScriptOrder: 'unzip'
+          Extensions: 'unzip, ExtendedUnrar'
+          ScriptOrder: 'unzip, ExtendedUnrar'
           ScriptPauseQueue: 'yes'
+
+          # EXTENDED UNRAR
+          ExtendedUnrar:UnrarCmd: 'unrar e -idp -ai -o-'
+          ExtendedUnrar:WaitTime: '0'
+          ExtendedUnrar:DeleteLeftover: 'yes'
