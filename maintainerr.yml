@@ -28,3 +28,8 @@
         traefik:
           - port: 6246
             auth: page
+        homepage:
+          name: Maintainerr
+          group: Plex
+          weight: 695
+          description: "Media janitor"
