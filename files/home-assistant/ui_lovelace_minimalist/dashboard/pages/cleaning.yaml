@@ -133,8 +133,14 @@ cards:
         preset_name: Downstairs
         vacuum_platform: Roborock
         entity: vacuum.downstairs_s7
+        tiles: []
         map_source:
           camera: image.downstairs_s7_downstairs_custom
+          crop:
+            top: 200
+            bottom: 200
+            left: 200
+            right: 200
         calibration_source:
           camera: true
         activate_on_switch: true
@@ -287,8 +293,14 @@ cards:
             preset_name: Upstairs
             vacuum_platform: Roborock
             entity: vacuum.upstairs_s7
+            tiles: []
             map_source:
               camera: image.upstairs_s7_map_0_custom
+              crop:
+                top: 180
+                bottom: 150
+                left: 180
+                right: 180
             calibration_source:
               camera: true
             map_modes:
@@ -414,8 +426,14 @@ cards:
             preset_name: Foyer
             vacuum_platform: Roborock
             entity: vacuum.downstairs_s7
+            tiles: []
             map_source:
               camera: image.downstairs_s7_foyer_custom
+              crop:
+                top: 500
+                bottom: 500
+                left: 500
+                right: 500
             calibration_source:
               camera: true
             activate_on_switch: true
