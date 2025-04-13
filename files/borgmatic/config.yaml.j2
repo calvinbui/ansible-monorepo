@@ -25,5 +25,7 @@ keep_daily: 3
 keep_weekly: 3
 keep_monthly: 1
 
-on_error:
-  - /etc/borgmatic.d/notifications.sh error {{ item.name }}
+commands:
+  - after: error
+    run:
+      - /etc/borgmatic.d/notifications.sh error {{ item.name }}
