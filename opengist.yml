@@ -24,7 +24,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-meilisearch"
-        image: getmeili/meilisearch:v1.13.3
+        image: getmeili/meilisearch:v1.14.0
         # command:
         #   - /bin/meilisearch
         #   - --experimental-dumpless-upgrade
