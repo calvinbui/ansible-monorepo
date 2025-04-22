@@ -53,28 +53,28 @@ cards:
           variables:
             ulm_card_light_name: >-
               [[[
-                if (entity.entity_id.includes('downlights')) {
-                  return 'Downlights';
-                } else if (entity.entity_id.includes('leds')) {
+                if (entity.entity_id.includes('leds')) {
                   return 'LEDs';
                 } else if (entity.entity_id.includes('balcony')) {
                   return 'Balcony';
                 } else if (entity.entity_id.includes('fan')) {
                   return 'Fan';
+                } else if (entity.entity_id.includes('downlights')) {
+                  return 'Downlights';
                 } else {
                   return entity.name;
                 }
               ]]]
             ulm_card_light_icon: >-
               [[[
-                if (entity.entity_id.includes('downlights')) {
-                  return 'mdi:light-recessed';
-                } else if (entity.entity_id.includes('leds')) {
+                if (entity.entity_id.includes('leds')) {
                   return 'mdi:led-strip-variant';
                 } else if (entity.entity_id.includes('balcony')) {
                   return 'mdi:balcony';
                 } else if (entity.entity_id.includes('fan')) {
                   return 'mdi:fan';
+                } else if (entity.entity_id.includes('downlights')) {
+                  return 'mdi:light-recessed';
                 } else if (entity.entity_id.includes('lamp')) {
                   return 'mdi:floor-lamp';
                 } else {
@@ -191,8 +191,6 @@ cards:
       -
         entity: light.rear_balcony_lights_downlights
         <<: *lighting_card_switch
-        variables:
-          ulm_card_light_name: Balcony
 
   - type: vertical-stack
     view_layout:
