@@ -17,6 +17,7 @@
       args:
         - --disable-web-security
       stealth: true
+      ignoreHTTPSErrors: true
 
     docker_network: "{{ networks.pub }}"
 
