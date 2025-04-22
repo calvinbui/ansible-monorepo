@@ -24,6 +24,7 @@
       - shellyplus2pm-8813bfd2f81c # Downstairs Hallway Lights
       - shelly1pmminig3-8cbfea922594 # Walk-In Lights
       - shelly1pmminig3-e4b323181ba0 # Calvin's Study Lights
+      - shelly1pmminig3-e4b32323fe10 # Rear Balcony Lights
   actions:
     - delay:
         hours: 0

@@ -181,18 +181,18 @@ cards:
       grid-area: room7
     cards:
       -
-        name: 📦 Large Rear Bedroom
+        name: 📦 Rear Bedrooms
         <<: *lighting_card_title
       -
         entity: light.walk_in_downlights_downlights
         <<: *lighting_card_switch
         variables:
           ulm_card_light_name: Walk-In
-      # -
-      #   entity: light.walk_in_downlights_downlights
-      #   <<: *lighting_card_switch
-      #   variables:
-      #     ulm_card_light_name: Balcony
+      -
+        entity: light.rear_balcony_lights_downlights
+        <<: *lighting_card_switch
+        variables:
+          ulm_card_light_name: Balcony
 
   - type: vertical-stack
     view_layout:

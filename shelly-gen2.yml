@@ -203,6 +203,15 @@
               name: Calvin's Study Lights
         relay:
           - name: Downlights
+      -
+        ip: "{{ networks.iot.prefix }}.97"
+        device_id: shelly1pmminig3-e4b32323fe10
+        settings:
+          sys:
+            device:
+              name: Rear Balcony Lights
+        relay:
+          - name: Downlights
 
   module_defaults:
     ansible.builtin.uri:
