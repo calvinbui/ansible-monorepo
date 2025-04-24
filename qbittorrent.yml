@@ -28,25 +28,27 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: lscr.io/linuxserver/qbittorrent:4.6.7
+        image: ghcr.io/qbittorrent/docker-qbittorrent-nox:4.6.7-1
         env:
+          QBT_LEGAL_NOTICE: "confirm"
+
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_root_group | string }}"
+
           TZ: "{{ common_timezone }}"
           UMASK: "022"
-          WEBUI_PORT: "8090"
         volumes:
           - "{{ config_directory }}:/config/qBittorrent"
           - "{{ common_directory_download }}:{{ common_mounted_directory_download }}"
         ipv4_address: "{{ docker_network.prefix }}.252"
         traefik:
           -
-            port: 8090
+            port: 8080
             auth: page
             rule: Host(`{{ application }}.{{ common_tld }}`)
           -
             name: "{{ application }}-bypass-auth"
-            port: 8090
+            port: 8080
             rule: Host(`{{ application }}.{{ common_tld }}`) && Header(`{{ traefik_bypass_auth_header.key }}`, `{{ traefik_bypass_auth_header.value }}`)
         homepage:
           name: qBittorrent
@@ -59,7 +61,7 @@
 
     - name: Wait for config
       ansible.builtin.wait_for:
-        path: "{{ config_directory }}/qBittorrent.conf"
+        path: "{{ config_directory }}/config/qBittorrent.conf"
       register: _config_file
 
     - name: Check if config changes required
@@ -160,25 +162,50 @@
       when: _qbittorrent_config.changed
       notify: Restart
 
+    - name: Create categories
+      ansible.builtin.copy:
+        content: |
+          {
+            "Movies": {
+              "save_path": ""
+            },
+            "MyAnonaMouse": {
+              "save_path": ""
+            },
+            "TV": {
+              "save_path": ""
+            },
+            "TV-Anime": {
+              "save_path": ""
+            },
+            "prowlarr": {
+              "save_path": ""
+            }
+          }
+        dest: "{{ config_directory }}/config/categories.json"
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
+      notify: Restart
+
     - name: Find search engines to disable
       ansible.builtin.stat:
-        path: "{{ config_directory }}/nova3/engines/{{ item }}.py"
+        path: "{{ config_directory }}/data/nova3/engines/{{ item }}.py"
       loop:
         - eztv
-        - legittorrents
+        - jackett
         - limetorrents
         - piratebay
-        - rarbg
+        - solidtorrents
         - torlock
+        - torrentproject
         - torrentscsv
-        - zooqle
-        - jackett
       register: _qbittorrent_search_engines
 
     - name: Disable search engines
       ansible.builtin.command: "mv '{{ item.stat.path }}' '{{ item.stat.path }}.bak'"
       args:
-        chdir: "{{ config_directory }}/nova3/engines/"
+        chdir: "{{ config_directory }}/data/nova3/engines/"
       when: item.stat.exists
       changed_when: true
       loop: "{{ _qbittorrent_search_engines.results }}"
@@ -186,10 +213,18 @@
 
     - name: Install Prowlarr search plugin
       block:
+        - name: Create plugins folder
+          ansible.builtin.file:
+            path: "{{ config_directory }}/data/nova3/engines"
+            state: directory
+            owner: "{{ common_user_id | string }}"
+            group: "{{ common_root_group | string }}"
+            mode: "0755"
+
         - name: Download Prowlarr search plugin
           ansible.builtin.get_url:
             url: https://raw.githubusercontent.com/swannie-eire/prowlarr-qbittorrent-plugin/main/prowlarr.py
-            dest: "{{ config_directory }}/nova3/engines/"
+            dest: "{{ config_directory }}/data/nova3/engines/"
             mode: "0600"
             owner: "{{ common_user }}"
             group: "{{ common_root_group }}"
@@ -202,7 +237,7 @@
                 "tracker_first": true,
                 "url": "http://prowlarr.{{ docker_network.name }}:9696"
               }
-            dest: "{{ config_directory }}/nova3/engines/prowlarr.json"
+            dest: "{{ config_directory }}/data/nova3/engines/prowlarr.json"
             owner: "{{ common_user }}"
             group: "{{ common_root_group }}"
             mode: "0600"
