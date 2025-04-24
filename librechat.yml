@@ -16,7 +16,6 @@
         group: "{{ common_root_group }}"
         mode: "0771"
       loop:
-        - meilisearch
         - images
         - uploads
         - logs
@@ -37,26 +36,16 @@
 
     - name: Create meilisearch container
       ansible.builtin.include_role:
-        name: docker_container
+        name: meilisearch
       vars:
-        name: "{{ application }}-meilisearch"
-        image: getmeili/meilisearch:v1.14.0
-        # command:
-        #   - /bin/meilisearch
-        #   - --experimental-dumpless-upgrade
-        user: "{{ common_user_id }}:{{ common_group_id }}"
-        env:
-          MEILI_HOST: "http://{{ application }}-meilisearch:7700"
-          MEILI_NO_ANALYTICS: "true"
-          MEILI_MASTER_KEY: &_librechat_meili_master_key !vault |
-            $ANSIBLE_VAULT;1.1;AES256
-            39373565323531383237613133326338666231313932626337646535303537313363363466333565
-            6235633332616431626662366534346433306634666566650a666639313562623865383964383561
-            30363762366563383339373637666638643631653862636134663735666639343662393931633162
-            3361303165366135660a333637306634333638336133346630313032306137663234653065356139
-            34383066623130313738323438323430326433623162666238333839396430366530
-        volumes:
-          - "{{ config_directory }}/meilisearch:/meili_data"
+        meilisearch_version: 1.14.0
+        meilisearch_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          39373565323531383237613133326338666231313932626337646535303537313363363466333565
+          6235633332616431626662366534346433306634666566650a666639313562623865383964383561
+          30363762366563383339373637666638643631653862636134663735666639343662393931633162
+          3361303165366135660a333637306634333638336133346630313032306137663234653065356139
+          34383066623130313738323438323430326433623162666238333839396430366530
 
     - name: Create postgres container
       ansible.builtin.include_role:
@@ -168,9 +157,8 @@
             66356230633539323461
 
           SEARCH: "true"
-          MEILI_NO_ANALYTICS: "true"
-          MEILI_HOST: "http://{{ application }}-meilisearch:7700"
-          MEILI_MASTER_KEY: *_librechat_meili_master_key
+          MEILI_HOST: "{{ _meilisearch_url }}"
+          MEILI_MASTER_KEY: "{{ _meilisearch_password }}"
 
           RAG_API_URL: "http://{{ application }}-rag-api:8000"
 

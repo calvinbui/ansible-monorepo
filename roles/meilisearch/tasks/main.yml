@@ -1,0 +1,54 @@
+---
+
+- name: Create Meilisearch directory
+  ansible.builtin.file:
+    path: "{{ meilisearch_directory }}"
+    state: directory
+    owner: 1000
+    group: 0
+    mode: "0771"
+
+- name: Create Meilisearch container
+  community.docker.docker_container:
+    name: "{{ meilisearch_name }}"
+    image: "getmeili/meilisearch:v{{ meilisearch_version }}"
+
+    state: started
+
+    hostname: "{{ meilisearch_name }}"
+    published_ports: "{{ meilisearch_ports | default(omit) }}"
+    networks:
+      - name: "{{ docker_network.name | default('bridge') }}"
+    network_mode: "{{ docker_network.name | default('omit') }}"
+    networks_cli_compatible: "{{ meilisearch_networks_cli_compatible | default(true) }}"
+
+    command:
+      - /bin/meilisearch
+      - --experimental-dumpless-upgrade
+
+    env:
+      MEILI_NO_ANALYTICS: "true"
+      MEILI_MASTER_KEY: "{{ meilisearch_password }}"
+
+    volumes: "{{ meilisearch_directory }}:/meili_data"
+
+    labels:
+      traefik.enable: "false"
+
+    restart_policy: unless-stopped
+
+    container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
+
+    comparisons:
+      networks: strict
+  register: meilisearch
+
+- name: Set variables
+  ansible.builtin.set_fact:
+    _meilisearch_hostname: "{{ meilisearch_name }}.{{ docker_network.name }}"
+    _meilisearch_port: "7700"
+    _meilisearch_password: "{{ meilisearch_password }}"
+
+- name: Set connection URL variable
+  ansible.builtin.set_fact:
+    _meilisearch_url: "http://{{ _meilisearch_hostname }}:{{ _meilisearch_port }}"

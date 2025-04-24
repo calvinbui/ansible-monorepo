@@ -1,0 +1,5 @@
+---
+
+meilisearch_name: "{{ application }}-meilisearch"
+meilisearch_directory: "{{ config_directory }}/meilisearch"
+meilisearch_password: ""
