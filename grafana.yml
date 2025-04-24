@@ -85,6 +85,8 @@
           GF_USERS_DEFAULT_LANGUAGE: "{{ common_locale }}"
           GF_USERS_AUTO_ASSIGN_ORG_ROLE: Admin
 
+          GF_AUTH_DISABLE_LOGIN_FORM: "true"
+
           GF_AUTH_GENERIC_OAUTH_ENABLED: "true"
           GF_AUTH_GENERIC_OAUTH_NAME: "{{ oidc_provider | title }}"
           GF_AUTH_GENERIC_OAUTH_ICON: signin
