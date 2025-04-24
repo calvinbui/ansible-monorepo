@@ -32,7 +32,7 @@
     - name: Create postgres container
       tags:
         - integrations
-      ansible.builtin.import_role:
+      ansible.builtin.include_role:
         name: postgres
       vars:
         postgres_version: 17

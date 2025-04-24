@@ -33,7 +33,7 @@
           64356139626430353833666466633966346464356330393439623234383664613062
 
     - name: Create postgres container
-      ansible.builtin.import_role:
+      ansible.builtin.include_role:
         name: postgres
       vars:
         postgres_version: 17

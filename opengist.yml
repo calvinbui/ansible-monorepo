@@ -30,7 +30,7 @@
           38653038356563393265646432396132346239656630346230316331366333633136
 
     - name: Create postgres container
-      ansible.builtin.import_role:
+      ansible.builtin.include_role:
         name: postgres
       vars:
         postgres_version: 17
@@ -66,8 +66,8 @@
           OG_DB_URI: "{{ _postgres_url }}"
 
           OG_INDEX: "meilisearch"
-          OG_MEILI_HOST: "http://{{ application }}-meilisearch:7700"
-          OG_MEILI_API_KEY: *_opengist_meili_master_key
+          OG_MEILI_HOST: "{{ _meilisearch_url }}"
+          OG_MEILI_API_KEY: "{{ _meilisearch_password }}"
 
           OG_SSH_GIT_ENABLED: "false"
 

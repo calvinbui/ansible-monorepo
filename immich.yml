@@ -30,7 +30,7 @@
           66623361316230663431303761663530383034633533323363333866643166623632
 
     - name: Create postgres container
-      ansible.builtin.import_role:
+      ansible.builtin.include_role:
         name: postgres
       vars:
         postgres_image: tensorchord/pgvecto-rs

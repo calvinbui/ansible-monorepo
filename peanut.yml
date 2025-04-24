@@ -25,7 +25,7 @@
         mode: "0771"
 
     - name: Create influxdb container
-      ansible.builtin.import_role:
+      ansible.builtin.include_role:
         name: influxdb
       vars:
         influxdb_version: 2.7
