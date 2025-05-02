@@ -103,14 +103,17 @@
           GID: "{{ common_group_id | string }}"
 
           OPENAI_API_KEY: *_librechat_openai_api_key
+          # GPT-4.1: more input tokens and precise text work
+          # o4-mini: reasoning, better for math, coding and visual tasks
           OPENAI_MODELS: |
             {{
               [
                 "gpt-4.1-mini",
                 "o4-mini",
-                "gpt-4o",
               ] | join(",")
             }}
+
+          IMAGE_GEN_OAI_API_KEY: *_librechat_openai_api_key
 
           DEBUG_PLUGINS: "false"
 
