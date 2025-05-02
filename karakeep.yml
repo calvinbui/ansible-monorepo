@@ -1,0 +1,107 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: karakeep
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}/app"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+
+    - name: Create meilisearch container
+      ansible.builtin.include_role:
+        name: meilisearch
+      vars:
+        meilisearch_version: 1.14.0
+        meilisearch_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          63363430316438323439313962626639633137383738663566333031633334303263666664333931
+          6138643730613033613830303030316565393135343164350a636362323030373232306131636365
+          30303333376233303934356364313965663061616336653561333931356530633635306464383262
+          3632306239333634340a366131643234333035613464653830663231613664636631626661666231
+          38653038356563393265646432396132346239656630346230316331366333633136
+
+    - name: Create browser container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-chrome"
+        image: gcr.io/zenika-hub/alpine-chrome:123
+        command:
+          - --no-sandbox
+          - --disable-gpu
+          - --disable-dev-shm-usage
+          - --remote-debugging-address=0.0.0.0
+          - --remote-debugging-port=9222
+          - --hide-scrollbars
+
+    - name: Create app container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: ghcr.io/karakeep-app/karakeep:0.24.1
+        env:
+          DATA_DIR: /data
+
+          NEXTAUTH_URL: "https://{{ application }}.{{ common_tld }}"
+          NEXTAUTH_SECRET: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            33353666616562643038353030303064393162633934343265373930633066383630336165646433
+            3263376361633362303434653831346437306463626431340a326561353333326239336634616363
+            35396164333938326130316364636132353236386532373638396531663165396234653765373734
+            3431356330353331620a323539663732343962663933313830373237663636653234383466356438
+            63363861633435346465386361666334316330316333303462323431373063666633366462653861
+            64323863653530326635386366663736336338663862376637386532396235303739653263363962
+            396237313966326564613436396139346362
+
+          MEILI_ADDR: "{{ _meilisearch_url }}"
+          MEILI_MASTER_KEY: "{{ _meilisearch_password }}"
+
+          DISABLE_NEW_RELEASE_CHECK: "true"
+
+          DISABLE_SIGNUPS: "false"
+          DISABLE_PASSWORD_AUTH: "true"
+
+          OAUTH_WELLKNOWN_URL: "{{ oidc_discovery_url }}"
+          OAUTH_CLIENT_SECRET: "{{ oidc_auth.karakeep.secret }}"
+          OAUTH_CLIENT_ID: "{{ application }}"
+          OAUTH_PROVIDER_NAME: "{{ oidc_provider | title }}"
+
+          OPENAI_API_KEY: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            66393537313333363331363366636666333363383134313335356331393066656234633130343133
+            3364356134326264663866616230613735663764353763650a363936386537343930653435313936
+            33613361643538393938653564326266623063343130373730336264393030643931383636666161
+            6362663035666161650a376334333936383464306133663731343134313861343639303038376363
+            34356562633432633863346337396534346236363036386261653830656537346635323232373861
+            31643762373133663434396362353366333035376138363639336332313930336637306561636238
+            653366613461666538316430646239393433
+
+          BROWSER_WEB_URL: http://{{ application }}-chrome:9222
+        volumes:
+          - "{{ config_directory }}/data:/data"
+        traefik:
+          - port: 3000
+        homepage:
+          group: Tools
+          weight: 400
+          description: "Bookmark Everything"
+          widget:
+            type: hoarder
+            key: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              64653233663762306436393138383261663239653664643832356564353530656139353462646430
+              6635356266323163383363663761316165653330313836330a643931383730373832396363346263
+              31316362333366323732393338323530343965376636663538363734643461383533313732313931
+              3439306338356133330a356430643966313561613262346436343161663934366336336462646339
+              66313731613730346439383863326131326233383533623861323937633266306263623238373063
+              6635306239613430623764623738393434333538626137353966
+            fields: '["bookmarks", "tags"]'

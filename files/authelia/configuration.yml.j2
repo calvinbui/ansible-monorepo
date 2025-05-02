@@ -84,10 +84,12 @@ identity_providers:
 
     # https://www.authelia.com/integration/openid-connect/openid-connect-1.0-claims/#restore-functionality-prior-to-claims-parameter
     claims_policies:
-      nextcloud_claims_policy:
-        id_token: ['groups', 'email', 'email_verified', 'alt_emails', 'preferred_username', 'name']
+      karakeep_claims_policy:
+        id_token: ['email']
       lubelogger_claims_policy:
         id_token: ['email']
+      nextcloud_claims_policy:
+        id_token: ['groups', 'email', 'email_verified', 'alt_emails', 'preferred_username', 'name']
 
     clients:
       {% for k, v in oidc_auth.items() %}
@@ -139,8 +141,8 @@ identity_providers:
           - authorization_code
         {% endif %}
 
-        {% if k in ["nextcloud"] %}
-        claims_policy: nextcloud_claims_policy
+        {% if k in ["karakeep"] %}
+        claims_policy: karakeep_claims_policy
         {% endif %}
 
         {% if k in ["lubelogger"] %}
@@ -148,6 +150,10 @@ identity_providers:
         response_types:
           - code
         claims_policy: lubelogger_claims_policy
+        {% endif %}
+
+        {% if k in ["nextcloud"] %}
+        claims_policy: nextcloud_claims_policy
         {% endif %}
       {% endfor %}
 
