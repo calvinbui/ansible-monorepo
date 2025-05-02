@@ -1,0 +1,16 @@
+---
+
+apprise:
+  enabled: false
+
+browser:
+  geolocation: {{ common_country_iso_3166 }}
+  language: "{{ common_language_iso_639 }}"
+
+logging:
+  level: INFO
+
+accounts:
+{% for account in ms_rewards_farmer_accounts %}
+- {{ account | to_json(vault_to_text=True) | from_json | to_nice_yaml | indent(2) }}
+{% endfor %}
