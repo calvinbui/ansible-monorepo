@@ -34,6 +34,22 @@
           TIMEOUT: "60000"
         log_driver: none
 
+    # - name: Create playwright container
+    #   ansible.builtin.include_role:
+    #     name: docker_container
+    #   vars:
+    #     name: "{{ application }}-chrome"
+    #     image: dgtlmoon/sockpuppetbrowser:latest
+    #     capabilities:
+    #       - SYS_ADMIN
+    #     env:
+    #       SCREEN_WIDTH: "1920"
+    #       SCREEN_HEIGHT: "1024"
+    #       SCREEN_DEPTH: "16"
+    #       MAX_CONCURRENT_CHROME_PROCESSES: "10"
+    #       CONNECTION_TIMEOUT: "300000"
+    #     log_driver: none
+
     - name: Create "{{ application }}" container
       ansible.builtin.include_role:
         name: docker_container
@@ -45,6 +61,7 @@
         env:
           BASE_URL: "https://{{ application }}.{{ common_tld }}"
 
+          # PLAYWRIGHT_DRIVER_URL: "ws://{{ application }}-chrome:3000"
           PLAYWRIGHT_DRIVER_URL: "ws://{{ application }}-chrome:3000?token={{ changedetection_browserless_token }}&launch={{ changedetection_browserless_launch_args | to_json | replace(' ', '') }}"
 
           PUID: "{{ common_user_id | string }}"
