@@ -48,7 +48,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-server"
-        image: ghcr.io/immich-app/immich-server:v1.132.3
+        image: ghcr.io/immich-app/immich-server:v1.132.2
         env: &immich_shared_env
           DB_HOSTNAME: "{{ _postgres_hostname }}"
           DB_PORT: "{{ _postgres_port | string }}"
