@@ -87,7 +87,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/danny-avila/librechat:v0.7.7
+        image: ghcr.io/danny-avila/librechat:v0.7.8
         user: "{{ common_user_id }}:{{ common_group_id }}"
         env:
           HOST: "0.0.0.0"
