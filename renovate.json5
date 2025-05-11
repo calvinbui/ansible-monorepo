@@ -394,6 +394,11 @@
       sourceUrl: "https://github.com/nzbgetcom/nzbget",
       changelogUrl: "https://github.com/nzbgetcom/nzbget/blob/develop/ChangeLog.md",
     },
+    /* librechat */
+    {
+      matchPackagePatterns: [".*\\/librechat"],
+      sourceUrl: "https://github.com/danny-avila/LibreChat",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
