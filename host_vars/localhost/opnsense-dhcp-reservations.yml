@@ -130,6 +130,11 @@ opnsense_dhcp_reservations:
     mac: 78:45:58:2f:19:dd
     hostname: g3-flex-rear-balcony
   -
+    ip: 192.168.3.13
+    subnet: 192.168.3.0/24
+    mac: e0:63:da:ef:bf:42
+    hostname: g4-pro-driveway
+  -
     ip: 192.168.3.21
     subnet: 192.168.3.0/24
     mac: e4:5f:01:ae:ff:fb

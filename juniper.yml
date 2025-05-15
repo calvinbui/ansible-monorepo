@@ -80,6 +80,10 @@
         port: "11"
         description: "cam-09"
         access: "{{ networks.iot.vlan }}"
+      -
+        port: "12"
+        description: "cam-10"
+        access: "{{ networks.iot.vlan }}"
       #
       # ROOMS
       #
