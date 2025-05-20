@@ -169,6 +169,10 @@
               friendly_name: Master Bedroom Sliding Door Sensor
             '0x00158d008afd7625':
               friendly_name: Tammy's Study Cabinet Door Sensor
+            '0x00158d008afd1999':
+              friendly_name: Garage Right Window Sensor
+            '0x00158d008afd232f':
+              friendly_name: Garage Left Window Sensor
 
             # Aqara Door and Window (MCCGQ14LM)
             '0x54ef441001115982':
