@@ -37,3 +37,17 @@
           group: Tools
           weight: 250
           description: "YouTube Downloader"
+
+    - name: Wait for yt-dlp config
+      ansible.builtin.wait_for:
+        path: "{{ config_directory }}/extras/yt-dlp-configs/base-config.txt"
+
+    - name: Create yt-dlp config file
+      ansible.builtin.copy:
+        content: |
+          # do not copy video's modification time
+          --no-mtime
+        dest: "{{ config_directory }}/extras/yt-dlp-configs/base-config.txt"
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0644"
