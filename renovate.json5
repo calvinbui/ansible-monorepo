@@ -399,6 +399,12 @@
       matchPackagePatterns: [".*\\/librechat"],
       sourceUrl: "https://github.com/danny-avila/LibreChat",
     },
+    /* emqx */
+    {
+      matchPackagePatterns: [".*\\/emqx"],
+      sourceUrl: "https://github.com/emqx/emqx",
+      extractVersion: "^e?(?<version>.*)$",
+    },
   ],
 
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
