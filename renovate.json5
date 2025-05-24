@@ -226,8 +226,8 @@
     /* radarr */
     {
       matchPackagePatterns: [".*\\/radarr"],
-      versioning: "regex:^version-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)$",
-      changelogUrl: "https://github.com/Radarr/Radarr/releases",
+      versionCompatibility: "^(?<compatibility>.*)-(?<version>.*)$",
+      changelogUrl: "https://github.com/Radarr/Radarr/releases/tag/v{{newVersion}}",
     },
     /* gotenberg */
     {
@@ -286,7 +286,7 @@
     /* sonarr */
     {
       matchPackagePatterns: [".*\\/sonarr"],
-      versioning: "regex:^version-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)$",
+      versionCompatibility: "^(?<compatibility>.*)-(?<version>.*)$",
       changelogUrl: "https://services.sonarr.tv/v1/update/stable/changes?version=4",
     },
     /* esphome */
