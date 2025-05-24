@@ -33,8 +33,8 @@
       ansible.builtin.include_role:
         name: postgres
       vars:
-        postgres_image: tensorchord/pgvecto-rs
-        postgres_version: pg15-v0.2.0
+        postgres_image: ghcr.io/immich-app/postgres
+        postgres_version: 17-vectorchord0.3.0
         postgres_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           39386239373632396266303736376262626638666636666637643566653161633361376138626637
