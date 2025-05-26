@@ -25,6 +25,12 @@ esphome:
       - delay: 1000ms
       - uart.write: "<R0.12." # read eeprom slot 12 - highest position
 
+external_components:
+  - source:
+      type: git
+      url: https://github.com/robertklep/esphome-custom-component
+    components: [ custom, custom_component ]
+
 # https://esphome.io/components/sensor/index.html
 # https://esphome.io/components/sensor/custom.html
 sensor:
@@ -200,17 +206,17 @@ number:
     unit_of_measurement: 'cm'
     #NewValue = (((OldValue - OldMin) * (NewMax - NewMin)) / (OldMax - OldMin)) + NewMin
     lambda: |-
-      return ((((id(megadesk_raw_height).state - 300) * (119.38 - 58.54)) / (6914 - 300)) + 58.54);
+      return ((((id(megadesk_raw_height).state - 299) * (119.38 - 58.54)) / (6914 - 299)) + 58.54);
     set_action:
       - number.set:
           id: megadesk_height_raw
-          value: !lambda "return int((((x - 58.54) * (6640 - 300)) / (119.38 - 58.54)) + 300);"
+          value: !lambda "return int((((x - 58.54) * (6640 - 299)) / (119.38 - 58.54)) + 299);"
   -
     platform: template
     name: "Current Height (raw)"
     id: megadesk_height_raw
     internal: true
-    min_value: 300
+    min_value: 299
     max_value: 6640
     step: 1
     update_interval: never
@@ -236,17 +242,17 @@ number:
     update_interval: never
     unit_of_measurement: 'cm'
     lambda: |-
-      return ((((id(megadesk_raw_{{ i }}).state - 300) * (119.38 - 58.54)) / (6914 - 300)) + 58.54);
+      return ((((id(megadesk_raw_{{ i }}).state - 299) * (119.38 - 58.54)) / (6914 - 299)) + 58.54);
     set_action:
       - number.set:
           id: megadesk_height_raw_{{ i }}
-          value: !lambda "return int((((x - 58.54) * (6640 - 300)) / (119.38 - 58.54)) + 300);"
+          value: !lambda "return int((((x - 58.54) * (6640 - 299)) / (119.38 - 58.54)) + 299);"
   -
     platform: template
     name: "Memory Position Height {{ '%02d' % i }} (raw)"
     id: megadesk_height_raw_{{ i }}
     internal: true
-    min_value: 300
+    min_value: 299
     max_value: 6640
     step: 1
     update_interval: never
