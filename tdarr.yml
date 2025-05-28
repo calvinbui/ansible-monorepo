@@ -1,0 +1,89 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: tdarr
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: ghcr.io/haveagitgat/tdarr:2.40.01
+        env:
+          serverIP: 0.0.0.0
+          serverPort: "8266"
+          webUIPort: "8265"
+
+          internalNode: "true" # enables node in the server
+          inContainer: "true"
+
+          auth: "true"
+          authSecretKey: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            33356561666361326635633634303963656337633530396232356632383566363833623639316363
+            6663393137613734323332343935303333353262666134320a306431396664316139613034306361
+            62393132633665666462323636333732396438363333353561623539303333316634313539376461
+            3264383661363933330a343564366662656633393763333732663537613264353335386434346139
+            64373765373334646566353139636166656133393639353038303838613735646133366462623937
+            6439303331376530653835613837393066653361303265656261
+
+          nodeName: "{{ application }}_node"
+          apiKey: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            36383139306365623239313730656431353933353832373561346439336231303764303561363537
+            3264643962366365313337343466356139336431356661310a656661396334326636346564346234
+            35613864643538343966386631386236336334336536313934646137643630383037323735663636
+            3338663039343964360a653134376635303864326564353837373737346333663536383830313565
+            6366
+
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_group_id | string }}"
+          TZ: "{{ common_timezone }}"
+          UMASK: "022"
+
+          NVIDIA_DRIVER_CAPABILITIES: all
+          NVIDIA_VISIBLE_DEVICES: all
+        volumes:
+          - "{{ config_directory }}/server:/app/server"
+          - "{{ config_directory }}/configs:/app/configs"
+          - "{{ config_directory }}/logs:/app/logs"
+
+          - "{{ common_directory_download }}:/media"
+        tmpfs:
+          - /temp:rw,mode=01777
+        device_requests:
+          - driver: nvidia
+            count: -1
+            device_ids: []
+            options: {}
+            capabilities:
+              - - gpu
+                - video
+                - compute
+                - utility
+        traefik:
+          - port: 8265
+        homepage:
+          group: Tools
+          weight: 500
+          description: Transcode/Remux Automation
+          widget:
+            key: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              36383139306365623239313730656431353933353832373561346439336231303764303561363537
+              3264643962366365313337343466356139336431356661310a656661396334326636346564346234
+              35613864643538343966386631386236336334336536313934646137643630383037323735663636
+              3338663039343964360a653134376635303864326564353837373737346333663536383830313565
+              6366
