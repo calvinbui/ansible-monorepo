@@ -39,7 +39,8 @@ receivers:
 
 route:
   receiver: mattermost-home-lab-alerts
-  group_by: ['alertname','name']
+  group_by:
+    - alertname
   group_wait: 10s
   group_interval: 30s
   repeat_interval: 24h
@@ -47,7 +48,8 @@ route:
   routes:
     -
       receiver: "mattermost-home-lab-alerts-no-resolve"
-      group_by: ['alertname','name']
+      group_by:
+        - alertname
       group_wait: 10s
       group_interval: 30s
       repeat_interval: 24h
