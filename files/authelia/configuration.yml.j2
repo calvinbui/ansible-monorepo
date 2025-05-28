@@ -62,6 +62,7 @@ storage:
     password: "{{ _postgres_password }}"
 
 notifier:
+  disable_startup_check: true
   smtp:
     username: "{{ common_email_username }}"
     password: "{{ common_email_password }}"
