@@ -6,14 +6,14 @@ global:
 
 inhibit_rules:
   - target_matchers:
-      - alertname = Internet Connectivity
+      - alertname = "BlackboxInternetConnectivity"
     source_matchers:
-      - alertname =~ "(HTTP Connection|Notification Failing|Clock Sync)"
+      - alertname =~ "BlackboxConnection|BlackboxHTTPEndpointMissing|ClockSync|ContainerRestarting|ContainerDown"
     equal:
       - alertstate
 
 templates:
-  - '/etc/alertmanager/template/*.tmpl'
+  - "/etc/alertmanager/template/*.tmpl"
 
 receivers:
   - name: mattermost-home-lab-alerts

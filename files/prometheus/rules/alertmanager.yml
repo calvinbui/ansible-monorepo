@@ -31,7 +31,7 @@ groups:
   - name: alertmanager_notifications
     rules:
       -
-        alert: Notification Failing
+        alert: NotificationFailing
         expr: rate(alertmanager_notifications_failed_total[1m]) > 0
         for: 0m
         annotations:
