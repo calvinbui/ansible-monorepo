@@ -69,6 +69,11 @@ cards:
               display: none !important;
             }
 
+            /* temperature */
+            .current--value {
+              font-size: 2rem !important;
+            }
+
             /* hvac and fan mode */
             .modes {
               padding: 0 15px !important;
