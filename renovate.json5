@@ -1,25 +1,25 @@
 {
-  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
 
   branchConcurrentLimit: 0,
   prConcurrentLimit: 0,
   prHourlyLimit: 0,
 
-  rebaseWhen: "conflicted",
+  rebaseWhen: 'conflicted',
 
   dependencyDashboard: true,
 
   ansible: {
-    fileMatch: ["^.*\\.ya?ml$"],
+    managerFilePatterns: ['/^.*\\.ya?ml$/'],
   },
 
-  timezone: "Australia/Sydney",
+  timezone: 'Australia/Sydney',
 
-  reviewers: ["calvinbui"],
+  reviewers: ['calvinbui'],
 
-  commitMessagePrefix: "{{depName}}:",
-  commitMessageAction: "update",
-  commitMessageTopic: "version",
+  commitMessagePrefix: '{{depName}}:',
+  commitMessageAction: 'update',
+  commitMessageTopic: 'version',
 
   /*
     Renovate will evaluate all packageRules and not stop once it gets a first match
@@ -27,13 +27,13 @@
   */
   packageRules: [
     {
-      matchCategories: ["python"],
+      matchCategories: ['python'],
       enabled: false,
     },
     /* Ignore latest and localhost tags */
     {
-      matchDatasources: ["docker"],
-      matchCurrentVersion: "/localhost|latest/",
+      matchDatasources: ['docker'],
+      matchCurrentVersion: '/localhost|latest/',
       enabled: false,
     },
     /*
@@ -41,373 +41,373 @@
       https://docs.renovatebot.com/modules/datasource/#docker-datasource
     */
     {
-      matchDatasources: ["docker"],
-      commitMessageTopic: "version",
+      matchDatasources: ['docker'],
+      commitMessageTopic: 'version',
       digest: {
-        commitMessageTopic: "digest",
+        commitMessageTopic: 'digest',
         group: {
-          commitMessageTopic: "digest",
+          commitMessageTopic: 'digest',
         },
       },
       pin: {
         group: {
-          commitMessageTopic: "version",
+          commitMessageTopic: 'version',
         },
       },
       group: {
-        commitMessageTopic: "version",
+        commitMessageTopic: 'version',
       },
     },
     /* plex */
     {
-      matchPackagePatterns: [".*\\/pms-docker"],
-      versioning: "loose",
-      changelogUrl: "https://forums.plex.tv/t/plex-media-server/30447",
+      matchPackageNames: ['/.*\\/pms-docker$/'],
+      versioning: 'loose',
+      changelogUrl: 'https://forums.plex.tv/t/plex-media-server/30447',
     },
     /* umami */
     {
-      matchPackagePatterns: [".*\\/umami"],
-      versionCompatibility: "^(?<compatibility>.*)-(?<version>.*)$",
-      versioning: "semver",
-      sourceUrl: "https://github.com/umami-software/umami",
-      changelogUrl: "https://github.com/umami-software/umami/releases",
+      matchPackageNames: ['/.*\\/umami$/'],
+      versionCompatibility: '^(?<compatibility>.*)-(?<version>.*)$',
+      versioning: 'semver',
+      sourceUrl: 'https://github.com/umami-software/umami',
+      changelogUrl: 'https://github.com/umami-software/umami/releases',
     },
     /* minio */
     {
-      matchPackagePatterns: [".*\\/minio"],
-      versioning: "regex:^RELEASE\\.(?<major>\\d+)-(?<minor>\\d+)-(?<patch>\\d+)T(?<build>.*)Z$",
-      sourceUrl: "https://github.com/minio/minio",
+      matchPackageNames: ['/.*\\/minio$/'],
+      versioning: 'regex:^RELEASE\\.(?<major>\\d+)-(?<minor>\\d+)-(?<patch>\\d+)T(?<build>.*)Z$',
+      sourceUrl: 'https://github.com/minio/minio',
     },
     /* bazarr */
     {
-      matchPackagePatterns: [".*\\/bazarr"],
-      sourceUrl: "https://github.com/morpheus65535/bazarr",
+      matchPackageNames: ['/.*\\/bazarr$/'],
+      sourceUrl: 'https://github.com/morpheus65535/bazarr',
     },
     /* prometheus */
     {
-      matchPackagePatterns: [".*\\/prometheus"],
-      sourceUrl: "https://github.com/prometheus/prometheus",
+      matchPackageNames: ['/.*\\/prometheus$/'],
+      sourceUrl: 'https://github.com/prometheus/prometheus',
     },
     /* prowlarr */
     {
-      matchPackagePatterns: [".*\\/prowlarr"],
-      changelogUrl: "https://github.com/Prowlarr/Prowlarr/releases",
+      matchPackageNames: ['/.*\\/prowlarr$/'],
+      changelogUrl: 'https://github.com/Prowlarr/Prowlarr/releases',
     },
     /* renovate */
     {
-      matchPackagePatterns: [".*\\/renovate"],
-      sourceUrl: "https://github.com/renovatebot/renovate",
+      matchPackageNames: ['/.*\\/renovate$/'],
+      sourceUrl: 'https://github.com/renovatebot/renovate',
     },
     /* authelia */
     {
-      matchPackagePatterns: [".*\\/authelia"],
-      sourceUrl: "https://github.com/authelia/authelia",
+      matchPackageNames: ['/.*\\/authelia$/'],
+      sourceUrl: 'https://github.com/authelia/authelia',
     },
     /* qbittorrent */
     {
-      matchPackagePatterns: [".*\\/qbittorrent"],
-      sourceUrl: "https://github.com/qbittorrent/qBittorrent",
-      changelogUrl: "https://github.com/qbittorrent/qBittorrent/blob/v{{newMajor}}_{{newMinor}}_x/Changelog",
+      matchPackageNames: ['/.*\\/qbittorrent$/'],
+      sourceUrl: 'https://github.com/qbittorrent/qBittorrent',
+      changelogUrl: 'https://github.com/qbittorrent/qBittorrent/blob/v{{newMajor}}_{{newMinor}}_x/Changelog',
     },
     /* portainer */
     {
-      matchPackagePatterns: [".*\\/portainer-[c|e]e"],
-      sourceUrl: "https://github.com/portainer/portainer",
+      matchPackageNames: ['/.*\\/portainer-[c|e]e$/'],
+      sourceUrl: 'https://github.com/portainer/portainer',
     },
     /* outline */
     {
-      matchPackagePatterns: ["outlinewiki\\/outline"],
-      sourceUrl: "https://github.com/outline/outline",
+      matchPackageNames: ['/outlinewiki\\/outline$/'],
+      sourceUrl: 'https://github.com/outline/outline',
     },
     /* tautulli */
     {
-      matchPackagePatterns: [".*\\/tautulli"],
-      sourceUrl: "https://github.com/Tautulli/Tautulli",
+      matchPackageNames: ['/.*\\/tautulli$/'],
+      sourceUrl: 'https://github.com/Tautulli/Tautulli',
     },
     /* overseerr */
     {
-      matchPackagePatterns: ["sctx\\/overseerr"],
-      sourceUrl: "https://github.com/sct/overseerr",
+      matchPackageNames: ['/sctx\\/overseerr$/'],
+      sourceUrl: 'https://github.com/sct/overseerr',
     },
     /* vscode */
     {
-      matchPackagePatterns: [".*\\/code-server"],
-      sourceUrl: "https://github.com/coder/code-server",
+      matchPackageNames: ['/.*\\/code-server$/'],
+      sourceUrl: 'https://github.com/coder/code-server',
     },
     /* nextcloud */
     {
-      matchPackagePatterns: ["nextcloud"],
-      sourceUrl: "https://github.com/nextcloud/server",
-      changelogUrl: "https://nextcloud.com/changelog/",
+      matchPackageNames: ['/nextcloud$/'],
+      sourceUrl: 'https://github.com/nextcloud/server',
+      changelogUrl: 'https://nextcloud.com/changelog/',
     },
     /* chadburn */
     {
-      matchPackagePatterns: [".*\\/chadburn"],
-      sourceUrl: "https://github.com/PremoWeb/Chadburn",
+      matchPackageNames: ['/.*\\/chadburn$/'],
+      sourceUrl: 'https://github.com/PremoWeb/Chadburn',
     },
     /* grafana */
     {
-      matchPackagePatterns: [".*\\/grafana"],
-      sourceUrl: "https://github.com/grafana/grafana",
+      matchPackageNames: ['/.*\\/grafana$/'],
+      sourceUrl: 'https://github.com/grafana/grafana',
     },
     /* mattermost */
     {
-      matchPackagePatterns: [".*\\/mattermost-(team|enterprise)-edition"],
-      sourceUrl: "https://github.com/mattermost/mattermost-server",
-      changelogUrl: "https://docs.mattermost.com/about/mattermost-server-releases.html#latest-releases",
+      matchPackageNames: ['/.*\\/mattermost-(team|enterprise)-edition$/'],
+      sourceUrl: 'https://github.com/mattermost/mattermost-server',
+      changelogUrl: 'https://docs.mattermost.com/about/mattermost-server-releases.html#latest-releases',
     },
     /* onlyoffice */
     {
-      matchPackagePatterns: ["onlyoffice\\/documentserver"],
-      sourceUrl: "https://github.com/ONLYOFFICE/DocumentServer",
+      matchPackageNames: ['/onlyoffice\\/documentserver$/'],
+      sourceUrl: 'https://github.com/ONLYOFFICE/DocumentServer',
     },
     /* eufy-security-ws */
     {
-      matchPackagePatterns: ["bropat\\/eufy-security-ws"],
-      sourceUrl: "https://github.com/bropat/eufy-security-ws",
+      matchPackageNames: ['/bropat\\/eufy-security-ws$/'],
+      sourceUrl: 'https://github.com/bropat/eufy-security-ws',
     },
     /* changedetection.io */
     {
-      matchPackagePatterns: [".*\\/changedetection.io"],
-      versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.?(?<patch>\\d+)?\\.?(?<build>\\d+)?$",
-      sourceUrl: "https://github.com/dgtlmoon/changedetection.io",
+      matchPackageNames: ['/.*\\/changedetection.io$/'],
+      versioning: 'regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.?(?<patch>\\d+)?\\.?(?<build>\\d+)?$',
+      sourceUrl: 'https://github.com/dgtlmoon/changedetection.io',
     },
     /* watchtower */
     {
-      matchPackagePatterns: ["containrrr\\/watchtower"],
-      sourceUrl: "https://github.com/containrrr/watchtower",
+      matchPackageNames: ['/containrrr\\/watchtower$/'],
+      sourceUrl: 'https://github.com/containrrr/watchtower',
     },
     /* cadvisor */
     {
-      matchPackagePatterns: [".*\\/cadvisor"],
-      sourceUrl: "https://github.com/google/cadvisor",
+      matchPackageNames: ['/.*\\/cadvisor$/'],
+      sourceUrl: 'https://github.com/google/cadvisor',
     },
     /* psitransfer */
     {
-      matchPackagePatterns: ["psitrax\\/psitransfer"],
-      sourceUrl: "https://github.com/psi-4ward/psitransfer",
+      matchPackageNames: ['/psitrax\\/psitransfer$/'],
+      sourceUrl: 'https://github.com/psi-4ward/psitransfer',
     },
     /* node_exporter */
     {
-      matchPackagePatterns: [".*\\/node(-|_)exporter"],
-      sourceUrl: "https://github.com/prometheus/node_exporter",
+      matchPackageNames: ['/.*\\/node(-|_)exporter$/'],
+      sourceUrl: 'https://github.com/prometheus/node_exporter',
     },
     /* blackbox_exporter */
     {
-      matchPackagePatterns: [".*\\/blackbox(-|_)exporter"],
-      sourceUrl: "https://github.com/prometheus/blackbox_exporter",
+      matchPackageNames: ['/.*\\/blackbox(-|_)exporter$/'],
+      sourceUrl: 'https://github.com/prometheus/blackbox_exporter',
     },
     /* privatebin */
     {
-      matchPackagePatterns: ["privatebin\\/.*"],
-      sourceUrl: "https://github.com/PrivateBin/PrivateBin",
+      matchPackageNames: ['/privatebin\\/.*$/'],
+      sourceUrl: 'https://github.com/PrivateBin/PrivateBin',
     },
     /* actualbudget */
     {
-      matchPackagePatterns: [".*\\/actual-server"],
-      sourceUrl: "https://github.com/actualbudget/actual",
-      changelogUrl: "https://actualbudget.org/docs/releases/",
+      matchPackageNames: ['/.*\\/actual-server$/'],
+      sourceUrl: 'https://github.com/actualbudget/actual',
+      changelogUrl: 'https://actualbudget.org/docs/releases/',
     },
     /* borgmatic */
     {
-      matchPackagePatterns: [".*\\/borgmatic"],
-      sourceUrl: "https://github.com/borgmatic-collective/borgmatic",
+      matchPackageNames: ['/.*\\/borgmatic$/'],
+      sourceUrl: 'https://github.com/borgmatic-collective/borgmatic',
     },
     /* nginx */
     {
-      matchPackagePatterns: ["nginx"],
-      changelogUrl: "https://nginx.org/en/CHANGES",
+      matchPackageNames: ['/nginx$/'],
+      changelogUrl: 'https://nginx.org/en/CHANGES',
     },
     /* alertmanager */
     {
-      matchPackagePatterns: [".*\\/alertmanager"],
-      sourceUrl: "https://github.com/prometheus/alertmanager",
+      matchPackageNames: ['/.*\\/alertmanager$/'],
+      sourceUrl: 'https://github.com/prometheus/alertmanager',
     },
     /* radarr */
     {
-      matchPackagePatterns: [".*\\/radarr"],
-      versionCompatibility: "^(?<compatibility>.*)-(?<version>.*)$",
-      changelogUrl: "https://github.com/Radarr/Radarr/releases/tag/v{{newVersion}}",
+      matchPackageNames: ['/.*\\/radarr$/'],
+      versionCompatibility: '^(?<compatibility>.*)-(?<version>.*)$',
+      changelogUrl: 'https://github.com/Radarr/Radarr/releases/tag/v{{newVersion}}',
     },
     /* gotenberg */
     {
-      matchPackagePatterns: [".*\\/gotenberg"],
-      sourceUrl: "https://github.com/gotenberg/gotenberg",
+      matchPackageNames: ['/.*\\/gotenberg$/'],
+      sourceUrl: 'https://github.com/gotenberg/gotenberg',
     },
     /* languagetool */
     {
-      matchPackagePatterns: [".*\\/.*languagetool"],
-      sourceUrl: "https://github.com/silvio/docker-languagetool",
-      changelogUrl: "https://github.com/languagetool-org/languagetool/blob/master/languagetool-standalone/CHANGES.md",
+      matchPackageNames: ['/.*\\/.*languagetool$/'],
+      sourceUrl: 'https://github.com/silvio/docker-languagetool',
+      changelogUrl: 'https://github.com/languagetool-org/languagetool/blob/master/languagetool-standalone/CHANGES.md',
     },
     /* scrutiny */
     {
-      matchPackagePatterns: [".*\\/scrutiny"],
-      versioning: "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-omnibus$",
-      sourceUrl: "https://github.com/AnalogJ/scrutiny",
-      changelogUrl: "https://github.com/AnalogJ/scrutiny/releases",
+      matchPackageNames: ['/.*\\/scrutiny$/'],
+      versioning: 'regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-omnibus$',
+      sourceUrl: 'https://github.com/AnalogJ/scrutiny',
+      changelogUrl: 'https://github.com/AnalogJ/scrutiny/releases',
     },
     /* drawio */
     {
-      matchPackagePatterns: [".*\\/drawio"],
-      sourceUrl: "https://github.com/jgraph/drawio",
-      changelogUrl: "https://github.com/jgraph/drawio/blob/dev/ChangeLog",
-      matchUpdateTypes: ["major"],
+      matchPackageNames: ['/.*\\/drawio$/'],
+      sourceUrl: 'https://github.com/jgraph/drawio',
+      changelogUrl: 'https://github.com/jgraph/drawio/blob/dev/ChangeLog',
+      matchUpdateTypes: ['major'],
     },
     {
-      matchPackagePatterns: [".*\\/drawio"],
-      sourceUrl: "https://github.com/jgraph/drawio",
-      changelogUrl: "https://github.com/jgraph/drawio/blob/dev/ChangeLog",
-      matchUpdateTypes: ["minor", "patch"],
+      matchPackageNames: ['/.*\\/drawio$/'],
+      sourceUrl: 'https://github.com/jgraph/drawio',
+      changelogUrl: 'https://github.com/jgraph/drawio/blob/dev/ChangeLog',
+      matchUpdateTypes: ['minor', 'patch'],
       automerge: true,
       ignoreTests: true,
     },
     /* omada */
     {
-      matchPackagePatterns: ["mbentley\\/omada-controller"],
-      changelogUrl: "https://community.tp-link.com/en/business/forum/topic/245226",
+      matchPackageNames: ['/mbentley\\/omada-controller$/'],
+      changelogUrl: 'https://community.tp-link.com/en/business/forum/topic/245226',
     },
     /* guacamole */
     {
-      groupName: "Guacamole",
-      matchPackagePatterns: [
-        ".*\\/guacamole",
-        ".*\\/guacd",
+      groupName: 'Guacamole',
+      matchPackageNames: [
+        '/.*\\/guacamole$/',
+        '/.*\\/guacd$/',
       ],
-      changelogUrl: "https://guacamole.apache.org/releases/{{newVersion}}",
+      changelogUrl: 'https://guacamole.apache.org/releases/{{newVersion}}',
     },
     /* nvidia dcgm-exporter */
     {
-      matchPackagePatterns: [".*\\/dcgm-exporter"],
-      versioning: "loose",
-      versionCompatibility: "^(?<version>.*)-(?<compatibility>.*)$",
-      sourceUrl: "https://github.com/NVIDIA/dcgm-exporter",
-      prBodyNotes: "[GitHub Releases](https://github.com/NVIDIA/dcgm-exporter/releases)\n[DCGM Changelog](https://docs.nvidia.com/datacenter/dcgm/latest/release-notes/changelog.html)",
+      matchPackageNames: ['/.*\\/dcgm-exporter$/'],
+      versioning: 'loose',
+      versionCompatibility: '^(?<version>.*)-(?<compatibility>.*)$',
+      sourceUrl: 'https://github.com/NVIDIA/dcgm-exporter',
+      prBodyNotes: '[GitHub Releases](https://github.com/NVIDIA/dcgm-exporter/releases)\n[DCGM Changelog](https://docs.nvidia.com/datacenter/dcgm/latest/release-notes/changelog.html)',
     },
     /* sonarr */
     {
-      matchPackagePatterns: [".*\\/sonarr"],
-      versionCompatibility: "^(?<compatibility>.*)-(?<version>.*)$",
-      changelogUrl: "https://services.sonarr.tv/v1/update/stable/changes?version=4",
+      matchPackageNames: ['/.*\\/sonarr$/'],
+      versionCompatibility: '^(?<compatibility>.*)-(?<version>.*)$',
+      changelogUrl: 'https://services.sonarr.tv/v1/update/stable/changes?version=4',
     },
     /* esphome */
     {
-      matchPackagePatterns: [".*\\/esphome"],
-      sourceUrl: "https://github.com/esphome/esphome",
+      matchPackageNames: ['/.*\\/esphome$/'],
+      sourceUrl: 'https://github.com/esphome/esphome',
     },
     /* browserless */
     {
-      matchPackagePatterns: ["browserless\\/chrom.*"],
-      changelogUrl: "https://github.com/browserless/chrome/blob/main/CHANGELOG.md",
+      matchPackageNames: ['/browserless\\/chrom.*$/'],
+      changelogUrl: 'https://github.com/browserless/chrome/blob/main/CHANGELOG.md',
     },
     /* apache tika */
     {
-      matchPackagePatterns: [".*\\/tika"],
-      prBodyNotes: "[Docker Image Changes](https://github.com/apache/tika-docker/blob/main/CHANGES.md)\n[Tika Changes](https://github.com/apache/tika/blob/main/CHANGES.txt)",
+      matchPackageNames: ['/.*\\/tika$/'],
+      prBodyNotes: '[Docker Image Changes](https://github.com/apache/tika-docker/blob/main/CHANGES.md)\n[Tika Changes](https://github.com/apache/tika/blob/main/CHANGES.txt)',
     },
     /* immich */
     {
-      groupName: "Immich",
-      matchPackagePatterns: [".*\\/immich-.*"],
-      sourceUrl: "https://github.com/immich-app/immich",
+      groupName: 'Immich',
+      matchPackageNames: ['/.*\\/immich-.*$/'],
+      sourceUrl: 'https://github.com/immich-app/immich',
     },
     /* wizarr */
     {
-      matchPackagePatterns: [".*\\/wizarr"],
-      sourceUrl: "https://github.com/Wizarrrr/wizarr",
+      matchPackageNames: ['/.*\\/wizarr$/'],
+      sourceUrl: 'https://github.com/Wizarrrr/wizarr',
     },
     /* typesense */
     {
-      matchPackagePatterns: [".*\\/typesense"],
-      sourceUrl: "https://github.com/typesense/typesense",
+      matchPackageNames: ['/.*\\/typesense$/'],
+      sourceUrl: 'https://github.com/typesense/typesense',
     },
     /* castsponsorskip */
     {
-      matchPackagePatterns: [".*\\/castsponsorskip"],
-      sourceUrl: "https://github.com/gabe565/CastSponsorSkip",
+      matchPackageNames: ['/.*\\/castsponsorskip$/'],
+      sourceUrl: 'https://github.com/gabe565/CastSponsorSkip',
     },
     /* notify_push */
     {
-      matchPackagePatterns: [".*\\/notify_push"],
-      sourceUrl: "https://github.com/nextcloud/notify_push",
+      matchPackageNames: ['/.*\\/notify_push$/'],
+      sourceUrl: 'https://github.com/nextcloud/notify_push',
     },
     /* thanos */
     {
-      matchPackagePatterns: [".*\\/thanos"],
-      sourceUrl: "https://github.com/thanos-io/thanos",
+      matchPackageNames: ['/.*\\/thanos$/'],
+      sourceUrl: 'https://github.com/thanos-io/thanos',
     },
     /* calibre */
     {
-      matchPackagePatterns: [".*\\/calibre"],
-      sourceUrl: "https://github.com/kovidgoyal/calibre",
-      changelogUrl: "https://calibre-ebook.com/whats-new",
+      matchPackageNames: ['/.*\\/calibre$/'],
+      sourceUrl: 'https://github.com/kovidgoyal/calibre',
+      changelogUrl: 'https://calibre-ebook.com/whats-new',
     },
     /* ubuntu */
     {
-      matchPackagePatterns: ["ubuntu"],
-      versioning: "ubuntu",
+      matchPackageNames: ['/ubuntu$/'],
+      versioning: 'ubuntu',
     },
     /* glances */
     {
-      matchPackagePatterns: [".*\\/glances"],
-      versioning: "regex:^ubuntu-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.?(?<build>\\d+)?-full$",
-      changelogUrl: "https://github.com/nicolargo/glances/releases",
+      matchPackageNames: ['/.*\\/glances$/'],
+      versioning: 'regex:^ubuntu-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.?(?<build>\\d+)?-full$',
+      changelogUrl: 'https://github.com/nicolargo/glances/releases',
     },
     /* mealie */
     {
-      matchPackagePatterns: [".*\\/mealie"],
-      sourceUrl: "https://github.com/mealie-recipes/mealie",
+      matchPackageNames: ['/.*\\/mealie$/'],
+      sourceUrl: 'https://github.com/mealie-recipes/mealie',
     },
     /* audiobookshelf */
     {
-      matchPackagePatterns: [".*\\/audiobookshelf"],
-      sourceUrl: "https://github.com/advplyr/audiobookshelf",
+      matchPackageNames: ['/.*\\/audiobookshelf$/'],
+      sourceUrl: 'https://github.com/advplyr/audiobookshelf',
     },
     /* act_runner */
     {
-      matchPackagePatterns: [".*\\/act_runner"],
-      changelogUrl: "https://gitea.com/gitea/act_runner/releases",
+      matchPackageNames: ['/.*\\/act_runner$/'],
+      changelogUrl: 'https://gitea.com/gitea/act_runner/releases',
     },
     /* zigbee2mqtt */
     {
-      matchPackagePatterns: ["koenkk\\/zigbee2mqtt"],
-      sourceUrl: "https://github.com/Koenkk/zigbee2mqtt",
+      matchPackageNames: ['/koenkk\\/zigbee2mqtt$/'],
+      sourceUrl: 'https://github.com/Koenkk/zigbee2mqtt',
     },
     /* roundcubemail */
     {
-      matchPackagePatterns: ["roundcube\\/roundcubemail"],
-      sourceUrl: "https://github.com/roundcube/roundcubemail",
-      versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-apache$",
+      matchPackageNames: ['/roundcube\\/roundcubemail$/'],
+      sourceUrl: 'https://github.com/roundcube/roundcubemail',
+      versioning: 'regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-apache$',
     },
     /* dovecot */
     {
-      matchPackagePatterns: [".*\\/dovecot.*"],
-      sourceUrl: "https://github.com/dovecot/core",
+      matchPackageNames: ['/.*\\/dovecot.*$/'],
+      sourceUrl: 'https://github.com/dovecot/core',
     },
     /* systemd_exporter */
     {
-      matchPackagePatterns: [".*\\/systemd(-|_)exporter.*"],
-      sourceUrl: "https://github.com/prometheus-community/systemd_exporter",
+      matchPackageNames: ['/.*\\/systemd(-|_)exporter.*$/'],
+      sourceUrl: 'https://github.com/prometheus-community/systemd_exporter',
     },
     /* nzbgetcom */
     {
-      matchPackagePatterns: [".*\\/nzbget"],
-      versioning: "regex:^version-v(?<major>\\d+)\\.(?<minor>\\d+)$",
-      sourceUrl: "https://github.com/nzbgetcom/nzbget",
-      changelogUrl: "https://github.com/nzbgetcom/nzbget/blob/develop/ChangeLog.md",
+      matchPackageNames: ['/.*\\/nzbget$/'],
+      versioning: 'regex:^version-v(?<major>\\d+)\\.(?<minor>\\d+)$',
+      sourceUrl: 'https://github.com/nzbgetcom/nzbget',
+      changelogUrl: 'https://github.com/nzbgetcom/nzbget/blob/develop/ChangeLog.md',
     },
     /* librechat */
     {
-      matchPackagePatterns: [".*\\/librechat"],
-      sourceUrl: "https://github.com/danny-avila/LibreChat",
+      matchPackageNames: ['/.*\\/librechat$/'],
+      sourceUrl: 'https://github.com/danny-avila/LibreChat',
     },
     /* emqx */
     {
-      matchPackagePatterns: [".*\\/emqx"],
-      sourceUrl: "https://github.com/emqx/emqx",
-      extractVersion: "^e?(?<version>.*)$",
+      matchPackageNames: ['/.*\\/emqx$/'],
+      sourceUrl: 'https://github.com/emqx/emqx',
+      extractVersion: '^e?(?<version>.*)$',
     },
   ],
 
-  prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}",
+  prBodyTemplate: '{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}',
 }
