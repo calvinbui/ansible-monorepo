@@ -1,4 +1,4 @@
-FROM alpine:3.21.3
+FROM alpine:3.22.0
 LABEL skip.prune=true
 RUN apk add --no-cache \
   git \
