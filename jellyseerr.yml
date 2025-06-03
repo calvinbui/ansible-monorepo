@@ -144,7 +144,7 @@
       vars:
         _jellyseerr_configuration:
           main/applicationUrl: "https://{{ application }}.{{ common_tld }}"
-          main/defaultPermissions: 1153433632
+          main/defaultPermissions: 1149239328
           main/localLogin: false
           main/streamingRegion: "{{ common_country_iso_3166 }}"
           main/mediaServerType: 1 # Plex
@@ -250,6 +250,7 @@
           31646138613861653261666566613132306166656334373163336239316263666134
         _jellyseerr_webhook_payload: |
           {
+            "text": "{{ '{{subject}}' }} - {{ '{{event}}' }}",
             "attachments": [
               {
                 "author_name": "{{ '{{requestedBy_username}}' }}",
@@ -261,7 +262,6 @@
               }
             ]
           }
-
 
     - name: Waiting for user to finish setup
       ansible.builtin.wait_for:
