@@ -51,14 +51,17 @@
         group: "{{ common_group }}"
         mode: "0771"
 
-    - name: Copy token
-      ansible.builtin.copy:
-        src: "{{ files_directory }}/{{ item.name }}.json"
-        dest: "{{ config_directory }}/{{ item.name }}.json"
-        owner: "{{ common_user }}"
-        group: "{{ common_group }}"
-        mode: "0660"
+    - name: Check if token exists
+      ansible.builtin.stat:
+        path: "{{ config_directory }}/{{ item.name }}.json"
+      register: _fitbit_token_stat
       loop: "{{ fitbit_apps }}"
+
+    - name: Ensure token exists
+      ansible.builtin.fail:
+        msg: "A token file is missing!"
+      when: not item.stat.exists
+      loop: "{{ _fitbit_token_stat.results }}"
 
     - name: Create container
       ansible.builtin.include_role:
