@@ -55,6 +55,7 @@
 
           frontend:
             enabled: true
+            package: zigbee2mqtt-windfront
             url: https://zigbee2mqtt.{{ common_tld }}
 
           availability:
