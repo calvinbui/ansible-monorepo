@@ -94,6 +94,8 @@ identity_providers:
         id_token: ['email']
       nextcloud_claims_policy:
         id_token: ['groups', 'email', 'email_verified', 'alt_emails', 'preferred_username', 'name']
+      otf_claims_policy:
+        id_token: ['name']
 
     clients:
       {% for k, v in oidc_auth.items() %}
@@ -158,6 +160,10 @@ identity_providers:
 
         {% if k in ["nextcloud"] %}
         claims_policy: nextcloud_claims_policy
+        {% endif %}
+
+        {% if k in ["otf"] %}
+        claims_policy: otf_claims_policy
         {% endif %}
       {% endfor %}
 

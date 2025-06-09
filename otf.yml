@@ -1,0 +1,66 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: otf
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Create postgres container
+      ansible.builtin.include_role:
+        name: postgres
+      vars:
+        postgres_version: 17
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          65346236336135383732643038323539666662643431633438386533393731393066623139353532
+          3362663330303938323130653132303033666331363562310a643936353939393631393734393634
+          64373037633931373563323939306636383965373132313265326564613962353238613037353439
+          3639313061653432630a663130613337303634393330626135656530356432303535346162623663
+          66633430333161316530623135656431623536663963346435303830653335613131
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: leg100/otfd:0.3.23
+        env:
+          OTF_HOSTNAME: "{{ application }}.{{ common_tld }}"
+
+          OTF_DATABASE: "{{ _postgres_url }}"
+
+          OTF_SECRET: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            32623631303336326631353335653035356261663863643932333365393934343439646564633635
+            6631386132643566303639623739316164643633616139320a376137613266353662613333396439
+            38373837306633653130393030396661613831336263656639346262643365323534653835656532
+            3132353362373834630a343865633965616538666536353139333231366430353461313338636563
+            65313038363130663937663136316337663932303336306262363633316465373838636231386330
+            3738383034353636356235643035313830313035366661313561
+
+          OTF_DEFAULT_ENGINE: "tofu"
+
+          OTF_RESTRICT_ORG_CREATION: "true"
+
+          OTF_OIDC_NAME: "{{ oidc_provider }}"
+          OTF_OIDC_ISSUER_URL: "{{ oidc_base_url }}"
+          OTF_OIDC_CLIENT_ID: "{{ application }}"
+          OTF_OIDC_CLIENT_SECRET: "{{ oidc_auth.otf.secret }}"
+        traefik:
+          - port: 8080
+        homepage:
+          group: Programming
+          weight: 250
+          description: "Terraform/OpenTofu Platform"
+        blackbox:
+          path: /healthz
