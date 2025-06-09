@@ -47,7 +47,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/karakeep-app/karakeep:0.24.1
+        image: ghcr.io/karakeep-app/karakeep:0.25.0
         env:
           DATA_DIR: /data
 
