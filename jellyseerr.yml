@@ -41,7 +41,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/fallenbagel/jellyseerr:2.5.2
+        image: ghcr.io/fallenbagel/jellyseerr:2.6.0
         env:
           DB_TYPE: "postgres"
           DB_HOST: "{{ _postgres_hostname }}"
