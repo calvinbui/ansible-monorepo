@@ -8,24 +8,25 @@ type: custom:grid-layout
 layout:
   grid-template-columns: 10% repeat(auto-fill) 10%
   grid-template-areas: |
-    ". bigcamera1   bigcamera1   bigcamera1   bigcamera2   bigcamera2   bigcamera2   ."
-    ". smallcamera1 smallcamera1 smallcamera2 smallcamera2 smallcamera3 smallcamera3 ."
+    ". camera1 camera2 camera3 ."
+    ". camera4 camera5 camera6 ."
   mediaquery:
     "(max-width: 800px)":
       grid-template-columns: 1
       grid-template-areas: |
-        "bigcamera1"
-        "bigcamera2"
-        "smallcamera1"
-        "smallcamera2"
-        "smallcamera3"
+        "camera1"
+        "camera2"
+        "camera3"
+        "camera4"
+        "camera5"
+        "camera6"
 
 cards:
   -
     streams:
       - url: downstairs_common
     view_layout:
-      grid-area: bigcamera1
+      grid-area: camera1
     <<: &webrtc_camera
       type: custom:webrtc-camera
       server: http://go2rtc:1984/
@@ -42,23 +43,29 @@ cards:
     streams:
       - url: foyer
     view_layout:
-      grid-area: bigcamera2
+      grid-area: camera2
+    <<: *webrtc_camera
+  -
+    streams:
+      - url: downstairs_hallway
+    view_layout:
+      grid-area: camera3
     <<: *webrtc_camera
   -
     streams:
       - url: front_bedrooms
     view_layout:
-      grid-area: smallcamera1
+      grid-area: camera4
     <<: *webrtc_camera
   -
     streams:
       - url: upstairs_hallway
     view_layout:
-      grid-area: smallcamera2
+      grid-area: camera5
     <<: *webrtc_camera
   -
     streams:
       - url: garage
     view_layout:
-      grid-area: smallcamera3
+      grid-area: camera6
     <<: *webrtc_camera

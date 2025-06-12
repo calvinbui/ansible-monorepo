@@ -32,7 +32,9 @@
               - ffmpeg:rtsp://admin:{{ reolink_doorbell_password }}@reolink-doorbell.{{ common_local_tld }}:554/h264Preview_01_sub#audio=pcm#audio=volume
               - rtsp://admin:{{ reolink_doorbell_password }}@reolink-doorbell.{{ common_local_tld }}:554/h264Preview_01_sub
 
-            driveway: rtspx://192.168.3.3:7441/SiIzjZyICCOaM23e
+            driveway: rtspx://192.168.3.3:7441/Lb2Mn8bzxrwIAzFH
+
+            downstairs_hallway: rtspx://192.168.3.3:7441/SiIzjZyICCOaM23e
 
             backyard: rtspx://192.168.3.3:7441/AKV6ed7s96ojGDU0
 
