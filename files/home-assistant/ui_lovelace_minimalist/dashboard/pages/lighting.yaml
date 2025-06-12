@@ -320,9 +320,3 @@ cards:
         variables:
           ulm_card_input_boolean_name: Alfresco
         <<: *input_boolean_card
-
-      -
-        entity: automation.lights_foyer_motion_detection_on_off
-        variables:
-          ulm_card_input_boolean_name: Foyer
-        <<: *input_boolean_card
