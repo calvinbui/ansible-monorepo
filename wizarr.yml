@@ -8,15 +8,30 @@
     docker_network: "{{ networks.pub }}"
 
   tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      loop:
+        - "{{ config_directory }}/database"
+        - "{{ config_directory }}/wizard"
+
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/wizarrrr/wizarr:4.2.0
+        image: ghcr.io/wizarrrr/wizarr:2025.6.3
         env:
+          PUID: "{{ common_user_id | string }}"
+          PGID: "{{ common_group_id | string }}"
+          DISABLE_BUILTIN_AUTH: "false"
           TZ: "{{ common_timezone }}"
         volumes:
-          - "{{ config_directory }}:/data/database"
+          - "{{ config_directory }}/database:/data/database"
+          - "{{ config_directory }}/wizard:/data/wizard_steps"
         traefik:
           - port: 5690
         homepage:
