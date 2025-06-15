@@ -195,7 +195,7 @@ cards:
           -
             primary: Small Bedroom
             secondary: |
-              {{ states('sensor.large_rear_bedroom_temperature_humidity_sensor_temperature') | int(0) }}°C / {{ states('sensor.large_rear_bedroom_temperature_humidity_sensor_humidity') | int(0) }}%
+              {{ states('sensor.small_rear_bedroom_temperature_humidity_sensor_temperature') | int(0) }}°C / {{ states('sensor.small_rear_bedroom_temperature_humidity_sensor_humidity') | int(0) }}%
             icon: mdi:bed-outline
             entity: switch.daikin_ac_small_bed
             <<: *air_conditioning_room
