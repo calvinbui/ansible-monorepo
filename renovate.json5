@@ -407,6 +407,11 @@
       sourceUrl: 'https://github.com/emqx/emqx',
       extractVersion: '^e?(?<version>.*)$',
     },
+    /* otf */
+    {
+      matchPackageNames: ['/.*\\/otfd$/'],
+      sourceUrl: 'https://github.com/leg100/otf',
+    },
   ],
 
   prBodyTemplate: '{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}',
