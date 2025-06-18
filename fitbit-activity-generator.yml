@@ -77,6 +77,4 @@
 
           INTERVAL: "120"
           TZ: "{{ common_timezone }}"
-        labels:
-          com.centurylinklabs.watchtower.enable: "false"
       loop: "{{ fitbit_apps }}"
