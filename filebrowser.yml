@@ -7,41 +7,80 @@
 
     docker_network: "{{ networks.pub }}"
 
+  handlers:
+    - name: Restart
+      community.docker.docker_container:
+        name: "{{ application }}"
+        restart: true
+        comparisons:
+          '*': ignore
+
   tasks:
-    - name: Create config folder
+    - name: Create config folders
       ansible.builtin.file:
-        path: "{{ config_directory }}"
+        path: "{{ item }}"
         state: directory
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
+      loop:
+        - "{{ config_directory }}"
+        - "{{ config_directory }}/data"
 
-    - name: Touch config
-      ansible.builtin.file:
-        path: "{{ config_directory }}/filebrowser.json"
-        state: touch
-        modification_time: preserve
-        access_time: preserve
-        mode: "0640"
+    - name: Create config
+      ansible.builtin.copy:
+        content: |
+          server:
+            sources:
+              - path: "/srv"
+            externalUrl: "https://{{ application }}.{{ common_tld }}"
+            internalUrl: "http://{{ application }}.{{ docker_network.name }}"
 
-    - name: Touch DB
-      ansible.builtin.file:
-        path: "{{ config_directory }}/filebrowser.db"
-        state: touch
-        modification_time: preserve
-        access_time: preserve
-        mode: "0640"
+          auth:
+            methods:
+              proxy:
+                enabled: false
+
+              noauth: false
+
+              password:
+                enabled: false
+
+              oidc:
+                enabled: true
+                clientId: "{{ application }}"
+                clientSecret: "{{ oidc_auth.filebrowser.secret }}"
+                issuerUrl: "{{ oidc_base_url }}"
+                scopes: "email openid profile"
+                userIdentifier: "username"
+                logoutRedirectUrl: "{{ oidc_base_url }}/application/o/{{ application }}/end-session/"
+                createUser: true
+
+          userDefaults:
+            loginMethod: oidc
+
+          integrations:
+            office:
+              url: "https://onlyoffice.{{ common_tld }}"
+              internalUrl: "http://nextcloud-onlyoffice.{{ docker_network.name }}"
+              secret: "{{ onlyoffice_jwt_secret }}"
+
+        dest: "{{ config_directory }}/config.yaml"
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0644"
+      notify: Restart
 
     - name: Create container
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: filebrowser/filebrowser:v2.32.3
+        image: ghcr.io/gtsteffaniak/filebrowser:0.7.9-beta
         user: "{{ common_user_id }}:{{ common_group_id }}"
         volumes:
           - "{{ common_directory_storage }}:/srv"
-          - "{{ config_directory }}/filebrowser.db:/database.db"
-          - "{{ config_directory }}/filebrowser.json:/.filebrowser.json"
+          - "{{ config_directory }}/config.yaml:/home/filebrowser/config.yaml"
+          - "{{ config_directory }}/data:/home/filebrowser/data"
         traefik:
           - port: 80
         homepage:
