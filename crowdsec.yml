@@ -205,7 +205,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: crowdsecurity/crowdsec:v1.6.8
+        image: crowdsecurity/crowdsec:v1.6.9
         env:
           # General
           TZ: "{{ common_timezone }}"
