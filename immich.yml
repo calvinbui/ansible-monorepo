@@ -16,12 +16,12 @@
         group: "{{ common_group }}"
         mode: "0771"
 
-    - name: Create redis container
+    - name: Create valkey container
       ansible.builtin.include_role:
-        name: redis
+        name: valkey
       vars:
-        redis_version: 7
-        redis_password: !vault |
+        valkey_version: 8
+        valkey_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           35623530313433376535366161386234616565376361306239316436623034636432613436336137
           3961346334623632333534353038616339383730333635650a303336386631356464353234356562
@@ -56,9 +56,9 @@
           DB_PASSWORD: "{{ _postgres_password }}"
           DB_DATABASE_NAME: "{{ _postgres_database }}"
 
-          REDIS_HOSTNAME: "{{ _redis_hostname }}"
-          REDIS_PORT: "{{ _redis_port | string }}"
-          REDIS_PASSWORD: "{{ _redis_password }}"
+          REDIS_HOSTNAME: "{{ _valkey_hostname }}"
+          REDIS_PORT: "{{ _valkey_port | string }}"
+          REDIS_PASSWORD: "{{ _valkey_password }}"
 
           UPLOAD_LOCATION: "/usr/src/app/upload"
 
