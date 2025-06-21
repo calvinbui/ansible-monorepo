@@ -134,6 +134,7 @@
           PAPERLESS_CORS_ALLOWED_HOSTS: "https://{{ application }}.{{ common_tld }}"
 
           PAPERLESS_SOCIALACCOUNT_PROVIDERS: "{{ paperless_oidc | to_json }}"
+          PAPERLESS_DISABLE_REGULAR_LOGIN: "true"
 
           PAPERLESS_OCR_LANGUAGE: "eng"
 
