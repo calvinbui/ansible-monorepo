@@ -57,7 +57,16 @@
                 createUser: true
 
           userDefaults:
-            loginMethod: oidc
+            locale: "{{ common_locale }}"
+            showHidden: true
+            permissions:
+              api: true
+              admin: true
+              modify: true
+              share: true
+              realtime: true
+            loginMethod: "oidc"
+            disableUpdateNotifications: true
 
           integrations:
             office:
