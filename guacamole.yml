@@ -51,7 +51,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-guacd"
-        image: guacamole/guacd:1.5.5
+        image: guacamole/guacd:1.6.0
         env:
           GUACD_LOG_LEVEL: debug
 
@@ -59,7 +59,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: guacamole/guacamole:1.5.5
+        image: guacamole/guacamole:1.6.0
         volumes:
           - "{{ config_directory }}/{{ application }}:/config"
         env:
