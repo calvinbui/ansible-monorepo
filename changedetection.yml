@@ -27,7 +27,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-chrome"
-        image: ghcr.io/browserless/chromium:v2.31.1
+        image: ghcr.io/browserless/chromium:v2.32.0
         env:
           TOKEN: "{{ changedetection_browserless_token }}"
           CONCURRENT: "10"
