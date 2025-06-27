@@ -106,7 +106,7 @@
           USERMAP_UID: "{{ _paperless_user.uid | string }}"
           USERMAP_GID: "{{ common_group_id | string }}"
 
-          PAPERLESS_REDIS: "{{ _redis_url }}"
+          PAPERLESS_REDIS: "{{ _valkey_url }}"
 
           PAPERLESS_DBHOST: "{{ _postgres_hostname }}"
           PAPERLESS_DBPORT: "{{ _postgres_port | string }}"

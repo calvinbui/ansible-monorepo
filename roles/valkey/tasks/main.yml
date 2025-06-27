@@ -53,4 +53,4 @@
 
 - name: Set connection URL variable
   ansible.builtin.set_fact:
-    _valkey_url: "valkey://:{{ _valkey_password }}@{{ _valkey_hostname }}:{{ _valkey_port }}"
+    _valkey_url: "redis://:{{ _valkey_password }}@{{ _valkey_hostname }}:{{ _valkey_port }}"

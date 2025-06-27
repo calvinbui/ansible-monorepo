@@ -98,7 +98,7 @@
           DATABASE_URL: "{{ _postgres_url }}"
           PGSSLMODE: disable
 
-          REDIS_URL: "{{ _redis_url }}"
+          REDIS_URL: "{{ _valkey_url }}"
 
           URL: "https://{{ application }}.{{ common_tld }}"
           PORT: "443"
