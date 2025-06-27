@@ -32,12 +32,12 @@
         group: "1001" # nodejs
         mode: "1777"
 
-    - name: Create redis container
+    - name: Create valkey container
       ansible.builtin.include_role:
-        name: redis
+        name: valkey
       vars:
-        redis_version: 7
-        redis_password: !vault |
+        valkey_version: 8
+        valkey_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           34343430363733366263646563383863633466613466386532396264623737613663313035613966
           3936363233636566313165653431626233336433303932370a383936623064643630626266393730
@@ -98,7 +98,7 @@
           DATABASE_URL: "{{ _postgres_url }}"
           PGSSLMODE: disable
 
-          REDIS_URL: "{{ _redis_url }}"
+          REDIS_URL: "{{ _valkey_url }}"
 
           URL: "https://{{ application }}.{{ common_tld }}"
           PORT: "443"

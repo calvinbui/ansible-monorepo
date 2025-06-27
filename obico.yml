@@ -16,12 +16,12 @@
         group: "{{ common_group }}"
         mode: "0771"
 
-    - name: Create redis container
+    - name: Create valkey container
       ansible.builtin.include_role:
-        name: redis
+        name: valkey
       vars:
-        redis_version: 7
-        redis_password: !vault |
+        valkey_version: 8
+        valkey_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           31653462326237343161383364613539386639343032383536386436303862323132343638393562
           3662643233323937343736633533356237663863346637320a653831636537616665653332376665
@@ -125,7 +125,7 @@
           SITE_IS_PUBLIC: "False"
           SOCIAL_LOGIN: "False"
 
-          REDIS_URL: "{{ _redis_url }}"
+          REDIS_URL: "{{ _valkey_url }}"
           DATABASE_URL: "sqlite:////app/db.sqlite3"
 
           INTERNAL_MEDIA_HOST: "http://{{ application }}-web.{{ docker_network.name }}:3334"

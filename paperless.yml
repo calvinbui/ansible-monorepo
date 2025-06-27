@@ -51,12 +51,12 @@
         group: "{{ common_group_id }}"
         mode: "0750"
 
-    - name: Create redis container
+    - name: Create valkey container
       ansible.builtin.include_role:
-        name: redis
+        name: valkey
       vars:
-        redis_version: 7
-        redis_password: !vault |
+        valkey_version: 8
+        valkey_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           66616663343636323632653230393236623832323030353239326134343865396537623838636633
           3338386137643637363764363536306162313962396436360a383164326261663939323166333065
@@ -106,7 +106,7 @@
           USERMAP_UID: "{{ _paperless_user.uid | string }}"
           USERMAP_GID: "{{ common_group_id | string }}"
 
-          PAPERLESS_REDIS: "{{ _redis_url }}"
+          PAPERLESS_REDIS: "{{ _valkey_url }}"
 
           PAPERLESS_DBHOST: "{{ _postgres_hostname }}"
           PAPERLESS_DBPORT: "{{ _postgres_port | string }}"

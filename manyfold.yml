@@ -19,12 +19,12 @@
         - "{{ config_directory }}"
         - "{{ config_directory }}/app"
 
-    - name: Create redis container
+    - name: Create valkey container
       ansible.builtin.include_role:
-        name: redis
+        name: valkey
       vars:
-        redis_version: 7
-        redis_password: !vault |
+        valkey_version: 8
+        valkey_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           31393133663238636634653436653136643131646662306464376363303830623332656237313631
           3662626135653931343433366161393964383532366162340a333063656339663462363739643563
@@ -64,7 +64,7 @@
             3637643038653738300a303834366464336161343262383732323066353431653662303531633939
             64356236363035656538666339303031306231633266613133616362616438626631
 
-          REDIS_URL: "{{ _redis_url }}"
+          REDIS_URL: "{{ _valkey_url }}"
 
           DATABASE_ADAPTER: postgresql
           DATABASE_URL: "{{ _postgres_url }}"

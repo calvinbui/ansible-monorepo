@@ -1,0 +1,56 @@
+---
+
+- name: Create valkey directory
+  ansible.builtin.file:
+    path: "{{ valkey_directory }}"
+    state: directory
+    owner: 999
+    group: 0
+    mode: "0771"
+
+- name: Create valkey container
+  community.docker.docker_container:
+    name: "{{ valkey_name }}"
+    image: "{{ valkey_image }}:{{ valkey_version }}"
+
+    state: started
+
+    hostname: "{{ valkey_name }}"
+    published_ports: "{{ valkey_ports | default(omit) }}"
+    networks:
+      - name: "{{ docker_network.name | default('bridge') }}"
+    network_mode: "{{ docker_network.name | default('omit') }}"
+    networks_cli_compatible: "{{ valkey_networks_cli_compatible | default(true) }}"
+
+    env:
+      TZ: "{{ common_timezone }}"
+      VALKEY_EXTRA_FLAGS: "--requirepass {{ valkey_password }}"
+
+    volumes: "{{ valkey_directory }}:/data"
+
+    healthcheck:
+      test: "valkey-cli ping"
+      interval: 10s
+      timeout: 30s
+      retries: 3
+
+    labels:
+      traefik.enable: "false"
+
+    restart_policy: unless-stopped
+
+    container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
+
+    comparisons:
+      networks: strict
+  register: valkey
+
+- name: Set variables
+  ansible.builtin.set_fact:
+    _valkey_hostname: "{{ valkey_name }}.{{ docker_network.name }}"
+    _valkey_port: "6379"
+    _valkey_password: "{{ valkey_password }}"
+
+- name: Set connection URL variable
+  ansible.builtin.set_fact:
+    _valkey_url: "redis://:{{ _valkey_password }}@{{ _valkey_hostname }}:{{ _valkey_port }}"

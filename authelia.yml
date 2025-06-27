@@ -65,12 +65,12 @@
         group: "{{ common_group }}"
         mode: "0771"
 
-    - name: Create redis container
+    - name: Create valkey container
       ansible.builtin.include_role:
-        name: redis
+        name: valkey
       vars:
-        redis_version: 7
-        redis_password: !vault |
+        valkey_version: 8
+        valkey_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           30306365373164346565373038643030313035363630306431663036323335663335316665323064
           3862363762396432306164636136323037333138333237650a363336653265656634393833643338

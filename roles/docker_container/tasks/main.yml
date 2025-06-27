@@ -75,7 +75,7 @@
 # Watchtower labels
 - name: Generate Watchtower labels
   ansible.builtin.include_tasks: watchtower.yml
-  when: _postgres_hostname is defined or _redis_hostname is defined or _mariadb_hostname is defined or _mongo_hostname is defined
+  when: _postgres_hostname is defined or _valkey_hostname is defined or _mariadb_hostname is defined or _mongo_hostname is defined
 
 - name: Merge generated Watchtower and Docker labels
   ansible.builtin.set_fact:

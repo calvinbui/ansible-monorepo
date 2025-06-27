@@ -15,6 +15,7 @@
     - redis
     - mariadb
     - mongo
+    - valkey
 
 - name: "Add to Watchtower labels"
   ansible.builtin.set_fact:

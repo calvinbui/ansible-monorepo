@@ -44,9 +44,9 @@ session:
       expiration: "24h"
       remember_me: "30d"
   redis:
-    host: {{ _redis_hostname }}
-    port: {{ _redis_port }}
-    password: {{ _redis_password }}
+    host: {{ _valkey_hostname }}
+    port: {{ _valkey_port }}
+    password: {{ _valkey_password }}
 
 regulation:
   max_retries: 3
