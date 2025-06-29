@@ -105,7 +105,7 @@
     },
     /* qbittorrent */
     {
-      matchPackageNames: ['/.*\\/qbittorrent$/'],
+      matchPackageNames: ['/.*\\/.*qbittorrent.*$/'],
       sourceUrl: 'https://github.com/qbittorrent/qBittorrent',
       changelogUrl: 'https://github.com/qbittorrent/qBittorrent/blob/v{{newMajor}}_{{newMinor}}_x/Changelog',
     },
@@ -411,6 +411,11 @@
     {
       matchPackageNames: ['/.*\\/otfd$/'],
       sourceUrl: 'https://github.com/leg100/otf',
+    },
+    /* filebrowser */
+    {
+      matchPackageNames: ['/.*\\/filebrowser$/'],
+      sourceUrl: 'https://github.com/gtsteffaniak/filebrowser'
     },
   ],
 
