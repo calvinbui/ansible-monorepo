@@ -1,0 +1,80 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: ntfy
+
+    ntfy_users:
+      -
+        username: "{{ common_user }}"
+        password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          35623131356135323139343562366462373839373133346335616362363431623664396634356563
+          3636373534386365666461373162633161343961333965360a616335343665636137373032643137
+          32663364363461633066313030393362363361636662376466383564306439666630366163313938
+          3834366238313233640a393931383537663531323230383337303263393264616463376132363162
+          65356237396534376361636664366131313835303535366462346437316134353134
+        role: admin
+
+    docker_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+      loop:
+        - "{{ config_directory }}/config"
+        - "{{ config_directory }}/cache"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: binwiederhier/ntfy:v2.12.0
+        command:
+          - serve
+        user: "{{ common_user_id }}:{{ common_group_id }}"
+        env:
+          TZ: "{{ common_timezone }}"
+
+          NTFY_BASE_URL: "https://{{ application }}.{{ common_tld }}"
+
+          NTFY_ATTACHMENT_CACHE_DIR: /var/cache/ntfy/attachments
+          NTFY_CACHE_FILE: "/var/cache/ntfy/cache.db"
+          NTFY_CACHE_DURATION: "72h"
+
+          NTFY_AUTH_FILE: "/var/lib/ntfy/user.db"
+          NTFY_AUTH_DEFAULT_ACCESS: deny-all
+
+          NTFY_BEHIND_PROXY: "true"
+
+          NTFY_ENABLE_SIGNUP: "false"
+
+          NTFY_WEB_ROOT: disable
+        volumes:
+          - "{{ config_directory }}/config:/var/lib/ntfy"
+          - "{{ config_directory }}/cache:/var/cache/ntfy"
+          - "{{ config_directory }}/attachments:/var/cache/ntfy/attachments"
+        traefik:
+          - port: 80
+
+    - name: Create users
+      community.docker.docker_container_exec:
+        container: "{{ application }}"
+        command: sh -c "NTFY_PASSWORD='{{ item.password }}' /usr/bin/ntfy user add --role={{ item.role }} {{ item.username }}"
+      loop: "{{ ntfy_users }}"
+      register: _result
+      changed_when: "'added with role' in _result.stdout"
+      failed_when: "'already exists' not in _result.stderr"
+
+    - name: Allow UnifiedPush notifications
+      community.docker.docker_container_exec:
+        container: "{{ application }}"
+        command: "/usr/bin/ntfy access '*' 'up*' write-only"
+      register: _result
+      changed_when: false
