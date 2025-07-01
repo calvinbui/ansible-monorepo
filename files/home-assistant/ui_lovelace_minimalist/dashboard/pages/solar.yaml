@@ -205,16 +205,6 @@ cards:
             in_header: true
             in_chart: false
         -
-          entity: sensor.electricity_costs_alternative_plan
-          yaxis_id: header_only
-          name: Savings (Today)
-          unit: " "
-          float_precision: 2
-          show:
-            legend_value: true
-            in_header: true
-            in_chart: false
-        -
           name: Solar
           entity: sensor.total_solar_generation
           yaxis_id: kWh
