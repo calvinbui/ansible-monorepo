@@ -151,7 +151,7 @@
             '0x00158d000af2c512':
               friendly_name: Garage Switch Right
             '0x00158d008b3d10f4':
-              friendly_name: Dream Feed Switch
+              friendly_name: Living Room TV Switch
 
             # Aqara Door and Window (MCCGQ11LM)
             '0x00158d008afd5a2c':
@@ -187,7 +187,7 @@
 
             # Aqara Smart Vibration Sensor (DJT11LM)
             '0x00158d000af0bac2':
-              friendly_name: Mailbox Vibration Sensor
+              friendly_name: Dining Table Vibration Sensor
 
             # Moes Chain Roller Blind Motor (AM43)
             '0xe406bffffefd7c1c':
