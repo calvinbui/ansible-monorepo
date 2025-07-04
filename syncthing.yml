@@ -37,6 +37,10 @@
           - "{{ common_directory_backup }}/{{ application }}:/var/syncthing"
         traefik:
           - port: 8384
+        homepage:
+          group: Backups
+          weight: 200
+          description: "File synchronisation"
         blackbox:
           path: /rest/noauth/health
 
