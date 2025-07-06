@@ -109,9 +109,7 @@
 
           OIDC_CLIENT_ID: "{{ application }}"
           OIDC_CLIENT_SECRET: "{{ oidc_auth.outline.secret }}"
-          OIDC_AUTH_URI: "{{ oidc_auth_url }}"
-          OIDC_TOKEN_URI: "{{ oidc_token_url }}"
-          OIDC_USERINFO_URI: "{{ oidc_userinfo_url }}"
+          OIDC_ISSUER_URL: "{{ oidc_discovery_url }}"
           OIDC_USERNAME_CLAIM: preferred_username
           OIDC_DISPLAY_NAME: "{{ oidc_provider | title }}"
           OIDC_SCOPES: "openid offline_access profile email"
