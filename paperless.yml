@@ -32,6 +32,14 @@
 
     docker_network: "{{ networks.iot }}"
 
+  handlers:
+    - name: Restart AI
+      community.docker.docker_container:
+        name: "{{ application }}-ai"
+        restart: true
+        comparisons:
+          '*': ignore
+
   tasks:
     - name: Create FTP user
       ansible.builtin.user:
@@ -178,3 +186,77 @@
       register: _command_result
       changed_when: "'Superuser created successfully' in _command_result.stdout"
       failed_when: ('Superuser created successfully' not in _command_result.stdout) and ('That username is already taken' not in _command_result.stderr)
+
+    - name: Create AI directory
+      ansible.builtin.file:
+        path: "{{ config_directory }}/ai"
+        state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_group_id }}"
+        mode: "0750"
+
+    - name: Configure AI env
+      ansible.builtin.lineinfile:
+        dest: "{{ config_directory }}/ai/.env"
+        regexp: "^{{ item.key }}="
+        line: "{{ item.key }}={{ item.value }}"
+      loop: "{{ paperless_ai_config | dict2items }}"
+      notify: Restart AI
+      vars:
+        paperless_ai_config:
+          # Connection Settings
+          PAPERLESS_API_URL: "https://{{ application }}.{{ common_tld }}/api"
+          PAPERLESS_API_TOKEN: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            36316136343466376334353666356131623939623235383161633436363162313837623562383039
+            3431323034333061323333623339633536363165623363630a663031383366393834363037633363
+            61613138376465613238613865663463343532623635623666653061396231333637306533383932
+            3766326661383038300a393434383761653235396166313037643034666634616232376338313638
+            64346665343537316336653838653763343864393832306131323038306263396637613366383332
+            3030616136613064613861316231306230666134643238636164
+          # there are permission issues using another user
+          PAPERLESS_USERNAME: "{{ common_user }}"
+
+          # AI Configuration
+          AI_PROVIDER: openai
+          OPENAI_API_KEY: "{{ openai_api_key }}"
+          OPENAI_MODEL: gpt-4o
+          TOKEN_LIMIT: 128000
+          RESPONSE_TOKENS: 1000
+
+          # Advanced Settings
+          USE_EXISTING_DATA: false
+          SCAN_INTERVAL: "30 8 * * *"
+          PROCESS_PREDEFINED_DOCUMENTS: false
+
+          # AI Restrictions
+          RESTRICT_TO_EXISTING_TAGS: false
+          RESTRICT_TO_EXISTING_CORRESPONDENTS: false
+
+          # External API Integration
+          EXTERNAL_API_ENABLED: false
+          ADD_AI_PROCESSED_TAG: false
+          USE_PROMPT_TAGS: false
+          DISABLE_AUTOMATIC_PROCESSING: false
+
+          # AI Function Limits
+          ACTIVATE_TAGGING: true
+          ACTIVATE_CORRESPONDENTS: true
+          ACTIVATE_DOCUMENT_TYPE: true
+          ACTIVATE_TITLE: true
+          ACTIVATE_CUSTOM_FIELDS: false
+
+    - name: Create AI container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        name: "{{ application }}-ai"
+        image: clusterzx/paperless-ai:3.0.7
+        environment:
+          PUID: "{{ common_user_id }}"
+          PGID: "{{ common_group_id }}"
+        volumes:
+          - "{{ config_directory }}/ai:/app/data"
+        traefik:
+          - port: 3000
+            rule: Host(`{{ application }}-ai.{{ common_tld }}`)
