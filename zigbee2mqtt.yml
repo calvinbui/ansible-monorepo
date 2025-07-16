@@ -185,10 +185,10 @@
             '0x54ef44100111591d':
               friendly_name: Downstairs Bathroom Door Sensor
 
-            # Aqara Smart Vibration Sensor (DJT11LM)
-            '0x00158d000af0bac2':
+            # Moes Vibration Sensor (TS0210)
+            '0xa4c1386b0855a815':
               friendly_name: Dining Table Vibration Sensor
-              vibration_timeout: 60
+              vibration_timeout: 1
 
             # Moes Chain Roller Blind Motor (AM43)
             '0xe406bffffefd7c1c':
