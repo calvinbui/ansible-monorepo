@@ -46,7 +46,6 @@
       ansible.builtin.apt:
         name:
           - moreutils
-          - ipmitool
           - smartmontools
         state: present
 
@@ -71,9 +70,6 @@
         -
           name: apt
           job: "{{ _scripts_dir.path }}/apt_info.py"
-        -
-          name: ipmitool
-          job: "ipmitool sensor | {{ _scripts_dir.path }}/ipmitool"
 
     - name: Create container
       ansible.builtin.include_role:
