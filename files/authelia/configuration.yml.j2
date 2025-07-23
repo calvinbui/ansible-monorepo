@@ -147,14 +147,17 @@ identity_providers:
           - authorization_code
         {% endif %}
 
+        {% if k in ["lubelogger", "immich"] %}
+        token_endpoint_auth_method: client_secret_post
+        response_types:
+          - code
+        {% endif %}
+
         {% if k in ["karakeep"] %}
         claims_policy: karakeep_claims_policy
         {% endif %}
 
         {% if k in ["lubelogger"] %}
-        token_endpoint_auth_method: client_secret_post
-        response_types:
-          - code
         claims_policy: lubelogger_claims_policy
         {% endif %}
 
