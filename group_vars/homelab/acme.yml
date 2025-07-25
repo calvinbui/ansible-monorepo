@@ -36,3 +36,14 @@ cert_domains:
     script_args: |
       {{ config_directory }}/certs/nvr.{{ common_local_tld }}/fullchain.cer \
       {{ config_directory }}/certs/nvr.{{ common_local_tld }}/nvr.{{ common_local_tld }}.key
+  -
+    domain: "plex.{{ common_tld }}"
+    keylength: ec-384
+    method: --dns dns_cf
+    script: "plex.sh"
+    script_args: |
+      plex.{{ common_tld }} \
+      {{ plex_pfx_password }} \
+      {{ config_directory }}/install \
+      {{ config_directory }}/certs/plex.{{ common_tld }}_ecc \
+      {{ common_directory }}/plex
