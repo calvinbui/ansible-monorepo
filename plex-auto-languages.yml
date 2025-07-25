@@ -42,7 +42,7 @@
 
             plex:
               url: "http://plex.{{ networks.pub.name }}:32400"
-              token: "{{ home_assistant_integrations.plex_token }}"
+              token: "{{ plex_token }}"
 
             scheduler:
               enable: true
