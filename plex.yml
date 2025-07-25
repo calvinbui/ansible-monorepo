@@ -5,8 +5,6 @@
   vars:
     application: plex
 
-    plex_main_folder: "{{ config_directory }}/Library/Application Support/Plex Media Server"
-
     docker_network: "{{ networks.pub }}"
 
   handlers:
@@ -72,3 +70,92 @@
           widget:
             key: "{{ plex_token }}"
             fields: '["streams", "movies", "tv"]'
+
+    - name: Configure
+      community.general.xml:
+        path: "{{ config_directory }}/Library/Application Support/Plex Media Server/Preferences.xml"
+        xpath: "/Preferences"
+        attribute: "{{ item.attribute }}"
+        value: "{{ item.value | string }}"
+      loop:
+        # General
+        -
+          attribute: FriendlyName
+          value: "{{ application }}"
+        -
+          attribute: sendCrashReports
+          value: "0"
+        -
+          attribute: logDebug
+          value: "0"
+        -
+          attribute: LogVerbose
+          value: "0"
+
+        # Remote Access
+        -
+          attribute: ManualPortMappingMode
+          value: "1"
+        -
+          attribute: ManualPortMappingPort
+          value: "32400"
+
+        # Network
+        -
+          attribute: EnableIPv6
+          value: "0"
+        -
+          attribute: IPNetworkType
+          value: "v4only"
+        -
+          attribute: secureConnections
+          value: "1"
+        -
+          attribute: customCertificatePath
+          value: "/config/cert.p12"
+        -
+          attribute: customCertificateDomain
+          value: "{{ application }}.{{ common_tld }}"
+        -
+          attribute: customCertificateKey
+          value: "{{ plex_pfx_password }}"
+        -
+          attribute: DisableTLSv1_0
+          value: "1"
+        -
+          attribute: WanPerUserStreamCount
+          value: "3"
+        -
+          attribute: LanNetworksBandwidth
+          value: "192.168.0.0/16"
+        -
+          attribute: TranscodeCountLimit
+          value: "0"
+        -
+          attribute: TreatWanIpAsLocal
+          value: "1"
+        -
+          attribute: RelayEnabled
+          value: "0"
+        -
+          attribute: customConnections
+          value: "https://{{ application }}.{{ common_tld }},https://{{ application }}.{{ common_tld }}:32400"
+
+        # Transcoder
+        -
+          attribute: TranscoderQuality
+          value: "0"
+        -
+          attribute: TranscoderTempDirectory
+          value: "/transcode"
+        -
+          attribute: TranscoderToneMapping
+          value: "0"
+        -
+          attribute: HardwareAcceleratedCodecs
+          value: "1"
+
+        # DLNA
+        -
+          attribute: DlnaEnabled
+          value: "0"
