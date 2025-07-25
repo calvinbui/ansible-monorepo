@@ -33,7 +33,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: leg100/otfd:0.3.27
+        image: leg100/otfd:0.4.0
         env:
           OTF_HOSTNAME: "{{ application }}.{{ common_tld }}"
 
