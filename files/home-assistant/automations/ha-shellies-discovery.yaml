@@ -7,13 +7,23 @@
   trigger:
     - platform: homeassistant
       event: start
+      id: start
     - platform: time_pattern
       hours: "/1"  # Modifying this if you are using Shelly Motion can drain your device's battery quickly.
-  action:
-    service: mqtt.publish
-    data:
-      topic: shellies/command
-      payload: announce
+      id: time
+  actions:
+    - if:
+        - condition: trigger
+          id:
+            - start
+            - time
+      then:
+        - delay:
+            seconds: 15
+    - service: mqtt.publish
+      data:
+        topic: shellies/command
+        payload: announce
 
 - id: 'shellies_discovery'
   alias: 'Shellies Discovery'

@@ -7,6 +7,7 @@
   triggers:
     - trigger: homeassistant
       event: start
+      id: start
   variables:
     get_config_payload: "{{ {'id': 1, 'src': 'shellies_discovery', 'method': 'Shelly.GetConfig'} | to_json }}"
     get_components_payload: "{{ {'id': 1, 'src': 'shellies_discovery', 'method':'Shelly.GetComponents', 'params': {'include': ['config']}} | to_json }}"
@@ -26,11 +27,13 @@
       - shelly1pmminig3-e4b323181ba0 # Calvin's Study Lights
       - shelly1pmminig3-e4b32323fe10 # Rear Balcony Lights
   actions:
-    - delay:
-        hours: 0
-        minutes: 1
-        seconds: 0
-        milliseconds: 0
+    - if:
+        - condition: trigger
+          id:
+            - start
+      then:
+        - delay:
+            seconds: 15
     - repeat:
         for_each: "{{ device_ids }}"
         sequence:
