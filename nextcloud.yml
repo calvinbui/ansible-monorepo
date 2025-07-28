@@ -68,6 +68,8 @@
           NEXTCLOUD_TRUSTED_DOMAINS: "{{ application }} {{ application }}.{{ docker_network.name }} {{ application }}.{{ common_local_tld }} {{ application }}.{{ common_tld }}"
           TRUSTED_PROXIES: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] | string }} {{ docker_network.subnet }}"
           OVERWRITEPROTOCOL: "https"
+          OVERWRITEHOST: "{{ application }}.{{ common_tld }}"
+          OVERWRITECLIURL: "https://{{ application }}.{{ common_tld }}"
 
           REDIS_HOST: "{{ _valkey_hostname }}"
           REDIS_HOST_PORT: "{{ _valkey_port | string }}"
