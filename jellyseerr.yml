@@ -250,13 +250,13 @@
           31646138613861653261666566613132306166656334373163336239316263666134
         _jellyseerr_webhook_payload: |
           {
-            "text": "{{ '{{subject}}' }} - {{ '{{event}}' }}",
+            "text": "{{ '{{subject}}' }} - {{ '{{event}}' }} by {{ '{{requestedBy_username}}' }}",
             "attachments": [
               {
                 "author_name": "{{ '{{requestedBy_username}}' }}",
                 "author_icon": "{{ '{{requestedBy_avatar}}' }}",
                 "title": "{{ '{{subject}}' }} - {{ '{{event}}' }}",
-                "title_link": "https://{{ application }}.{{ common_tld }}/{{ '{{media_type}}' }}/{{ '{{media_tmdbid}}' }}{{ '{{media_tvdbid}}' }}",
+                "title_link": "https://{{ application }}.{{ common_tld }}/{{ '{{media_type}}' }}/{{ '{{media_tmdbid}}' }}",
                 "text": "{{ '{{message}}' }}",
                 "image_url": "{{ '{{image}}' }}"
               }
