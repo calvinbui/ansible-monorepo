@@ -66,7 +66,7 @@
         name: docker_container
       vars:
         name: "{{ application }}-rag-api"
-        image: ghcr.io/danny-avila/librechat-rag-api-dev-lite:v0.5.0
+        image: ghcr.io/danny-avila/librechat-rag-api-dev-lite:v0.6.0
         env:
           DB_HOST: "{{ _postgres_hostname }}"
           DB_PORT: "{{ _postgres_port | string }}"
