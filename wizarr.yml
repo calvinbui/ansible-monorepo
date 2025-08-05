@@ -23,7 +23,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/wizarrrr/wizarr:2025.7.8
+        image: ghcr.io/wizarrrr/wizarr:2025.8.1
         env:
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_group_id | string }}"
