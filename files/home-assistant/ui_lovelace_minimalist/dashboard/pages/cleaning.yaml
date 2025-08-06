@@ -134,6 +134,16 @@ cards:
         vacuum_platform: Roborock
         entity: vacuum.downstairs_s7
         tiles: []
+        append_icons: true
+        icons:
+          - icon: mdi:delete-restore
+            tap_action:
+                action: "call-service"
+                service: "vacuum.send_command"
+                service_data:
+                  command: "app_start_collect_dust"
+                target:
+                  entity_id: "[[entity_id]]"
         map_source:
           camera: image.downstairs_s7_downstairs_custom
           crop:
@@ -161,7 +171,6 @@ cards:
               map:
                 x: 1360
                 y: 48
-
         activate_on_switch: true
         activate:
           service: select.select_option
@@ -313,6 +322,16 @@ cards:
             vacuum_platform: Roborock
             entity: vacuum.upstairs_s7
             tiles: []
+            append_icons: true
+            icons:
+              - icon: mdi:delete-restore
+                tap_action:
+                    action: "call-service"
+                    service: "vacuum.send_command"
+                    service_data:
+                      command: "app_start_collect_dust"
+                    target:
+                      entity_id: "[[entity_id]]"
             map_source:
               camera: image.upstairs_s7_map_0_custom
               crop:
@@ -446,6 +465,16 @@ cards:
             vacuum_platform: Roborock
             entity: vacuum.downstairs_s7
             tiles: []
+            append_icons: true
+            icons:
+              - icon: mdi:delete-restore
+                tap_action:
+                    action: "call-service"
+                    service: "vacuum.send_command"
+                    service_data:
+                      command: "app_start_collect_dust"
+                    target:
+                      entity_id: "[[entity_id]]"
             map_source:
               camera: image.downstairs_s7_foyer_custom
               crop:
