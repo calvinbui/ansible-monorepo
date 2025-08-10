@@ -229,12 +229,12 @@ cards:
               ulm_card_binary_sensor_alert_name: Master Bedroom
               ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
             <<: *alarm_sensor_status
-          # -
-          #   entity:
-          #   variables:
-          #     ulm_card_binary_sensor_alert_name:
-          #     ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
-          #   <<: *alarm_sensor_status
+          -
+            entity: binary_sensor.kai_s_crib_occupancy_sensor_occupancy
+            variables:
+              ulm_card_binary_sensor_alert_name: Kai's Crib
+              ulm_card_binary_sensor_alert_icon: mdi:motion-sensor
+            <<: *alarm_sensor_status
       -
         type: horizontal-stack
         cards:
