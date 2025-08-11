@@ -58,7 +58,7 @@
           - os-nut
           - os-smart
           - os-theme-cicada
-        action: 'install'
+        action: install
       tags: packages
 
     - name: Interface - VLANs
@@ -143,3 +143,19 @@
         reload: false
       loop: "{{ opnsense_dhcp_reservations }}"
       notify: Reload KEA
+
+    - name: WireGuard - Create server
+      ansibleguy.opnsense.wireguard_server:
+        name: Home
+        public_key: LyOL+HkCzjVUGMoeSoYt2oLUO5Vu8SGUoguMtMcqxHg=
+        private_key: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          61323235356335343663633631663166633632373532633166353333343162626437663262626234
+          6138393932356430636139316538326336303338313061330a363837383533613230386534363563
+          62313864316166373061636334646534326266383234666661666133363435613234323135643732
+          3632376534656539640a626530633839376566666365623930306331616564343033623535653031
+          62663963373334326261313638363539653363346463633035313838303037613463376336643836
+          3735363738356534393261303962626562393463643331666336
+        port: 51820
+        tunnel_address: "{{ networks.vpn.subnet }}"
+        link_peers: false
