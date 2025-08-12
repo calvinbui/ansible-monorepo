@@ -11,7 +11,7 @@ jobs:
     container: calvinbui/gitea-actions:localhost
     steps:
       - name: 🛎️ Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 2  # to be able to get files changed
 
@@ -33,7 +33,7 @@ jobs:
     container: calvinbui/gitea-actions:localhost
     steps:
       - name: 🛎️ Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 2  # to be able to get files changed
 
