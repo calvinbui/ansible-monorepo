@@ -1,12 +1,17 @@
 #!/usr/bin/env bash
 
-EMAIL_BODY="Subject: nut: $NOTIFYTYPE"
-EMAIL_BODY+="\r\n\r\n"
-EMAIL_BODY+="UPS: $UPSNAME"
-EMAIL_BODY+="\r\n"
-EMAIL_BODY+="Alert type: $NOTIFYTYPE"
-EMAIL_BODY+="\r\n\r\n"
-EMAIL_BODY+="$(upsc "$UPSNAME")"
+set -euo pipefail
 
-# shellcheck disable=SC1083
-echo -e "$EMAIL_BODY" | msmtp -a default nut{{ common_email_to }}
+NOTIFYTYPE=${NOTIFYTYPE:-TEST}
+UPSNAME=${UPSNAME:-ups@localhost}
+UPS_STATUS=$(upsc "$UPSNAME" 2>/dev/null || echo "Unable to get UPS status")
+
+EMAIL_BODY="Subject: UPS Alert: $NOTIFYTYPE on $UPSNAME"
+EMAIL_BODY+="\n\n"
+EMAIL_BODY+="UPS: $UPSNAME\n"
+EMAIL_BODY+="Alert type: $NOTIFYTYPE\n"
+EMAIL_BODY+="Time: $(date)\n"
+EMAIL_BODY+="UPS Status:\n"
+EMAIL_BODY+="$UPS_STATUS"
+
+printf "%b" "$EMAIL_BODY" | msmtp -a default {{ common_user }}{{ common_email_to }}

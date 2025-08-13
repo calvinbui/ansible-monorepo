@@ -20,8 +20,8 @@
         port = auto
         ignorelb
         pollinterval = 15
-        override.battery.charge.low = 40
-        override.battery.charge.warning = 70
+        override.battery.charge.low = 60
+        override.battery.charge.warning = 75
         override.battery.runtime.low = 300
 
     nut_ups_listen: |

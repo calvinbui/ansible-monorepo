@@ -2,17 +2,17 @@
 
 MINSUPPLIES 1
 
-SHUTDOWNCMD "/sbin/shutdown -h +0"
+SHUTDOWNCMD /usr/sbin/poweroff
 
 NOTIFYCMD /etc/nut/email-notification.sh
 
 POLLFREQ 5
 
-POLLFREQALERT 5
+POLLFREQALERT 2
 
-HOSTSYNC 180
+HOSTSYNC 15
 
-DEADTIME 25
+DEADTIME 15
 
 {% if ansible_os_family == 'RedHat' %}
 POWERDOWNFLAG /etc/killpower
