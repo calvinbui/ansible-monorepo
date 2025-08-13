@@ -43,6 +43,7 @@
           BASE_URL: "https://{{ application }}.{{ common_tld }}"
           TZ: "{{ common_timezone }}"
           ALLOW_SIGNUP: "false"
+          ALLOW_PASSWORD_LOGIN: "false"
 
           ## Database
           DB_ENGINE: postgres
