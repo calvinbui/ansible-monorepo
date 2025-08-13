@@ -415,7 +415,8 @@
     /* filebrowser */
     {
       matchPackageNames: ['/.*\\/filebrowser$/'],
-      sourceUrl: 'https://github.com/gtsteffaniak/filebrowser'
+      sourceUrl: 'https://github.com/gtsteffaniak/filebrowser',
+      changelogUrl: 'https://github.com/gtsteffaniak/filebrowser/blob/main/CHANGELOG.md',
     },
   ],
 
