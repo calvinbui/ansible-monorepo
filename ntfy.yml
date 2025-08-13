@@ -5,6 +5,15 @@
   vars:
     application: ntfy
 
+    # Must be exactly 22 chars for bcrypt
+    ntfy_salt: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      62633866643438366131306639313261373266393863663435633564643630306138613131653835
+      3636306633323930633233646565303839653833643435390a643761333634356561303838373430
+      39323838646238613936643838393163356332333033306331356339633631393338363035626661
+      6266633436353066370a393437383137666263383633643130356335383565323466326536313031
+      34353131636631306534373362396230626363336132353065383564666361323538
+
     ntfy_users:
       -
         username: "{{ common_user }}"
@@ -16,6 +25,13 @@
           3834366238313233640a393931383537663531323230383337303263393264616463376132363162
           65356237396534376361636664366131313835303535366462346437316134353134
         role: admin
+
+    ntfy_acls:
+      -
+        # UnifiedPush notifications
+        username: "*"
+        topic: "up*"
+        permission: "write-only"
 
     docker_network: "{{ networks.pub }}"
 
@@ -51,6 +67,18 @@
           NTFY_AUTH_FILE: "/var/lib/ntfy/user.db"
           NTFY_AUTH_DEFAULT_ACCESS: deny-all
 
+          NTFY_AUTH_USERS: >-
+            {%- for user in ntfy_users -%}
+            {{ user.username }}:{{ user.password | string | ansible.builtin.password_hash('bcrypt', salt=(ntfy_salt | string)) }}:{{ user.role }}
+            {%- if not loop.last -%},{%- endif -%}
+            {%- endfor -%}
+
+          NTFY_AUTH_ACCESS: >-
+            {%- for user in ntfy_acls -%}
+            {{ user.username }}:{{ user.topic }}:{{ user.permission }}
+            {%- if not loop.last -%},{%- endif -%}
+            {%- endfor -%}
+
           NTFY_BEHIND_PROXY: "true"
 
           NTFY_ENABLE_SIGNUP: "false"
@@ -64,19 +92,3 @@
           - port: 80
         blackbox:
           path: /v1/health
-
-    - name: Create users
-      community.docker.docker_container_exec:
-        container: "{{ application }}"
-        command: sh -c "NTFY_PASSWORD='{{ item.password }}' /usr/bin/ntfy user add --role={{ item.role }} {{ item.username }}"
-      loop: "{{ ntfy_users }}"
-      register: _result
-      changed_when: "'added with role' in _result.stdout"
-      failed_when: "'already exists' not in _result.stderr"
-
-    - name: Allow UnifiedPush notifications
-      community.docker.docker_container_exec:
-        container: "{{ application }}"
-        command: "/usr/bin/ntfy access '*' 'up*' write-only"
-      register: _result
-      changed_when: false
