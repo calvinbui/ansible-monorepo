@@ -131,6 +131,9 @@
         pools: "{{ networks[item].iprange.dhcp }}"
         auto_options: true # auto-configures router, dns and ntp
       loop: "{{ networks.keys() | list }}"
+      when:
+        - networks[item].iprange is defined
+        - networks[item].iprange.dhcp is defined
       notify: Reload KEA
 
     - name: KEA - DHCP Leases
