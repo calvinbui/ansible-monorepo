@@ -58,6 +58,11 @@ opnsense_dhcp_reservations:
     mac: 70:85:c2:5c:89:61
     hostname: CALVIN-PC
   -
+    ip: 192.168.2.251
+    subnet: 192.168.2.0/24
+    mac: ff:00:ff:00:f2:51
+    hostname: wakeupbr-user
+  -
     ip: 192.168.2.252
     subnet: 192.168.2.0/24
     mac: ff:00:ff:00:f2:52
