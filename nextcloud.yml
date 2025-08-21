@@ -50,6 +50,9 @@
         volumes:
           - "{{ config_directory }}/app:/var/www/html"
         env:
+          # some vars need to be updated manually in config.php after first startup
+          # https://github.com/nextcloud/docker/issues/2224
+
           POSTGRES_DB: "{{ _postgres_database }}"
           POSTGRES_USER: "{{ _postgres_username }}"
           POSTGRES_PASSWORD: "{{ _postgres_password }}"
@@ -64,7 +67,6 @@
             3138613230353462620a383130653733326661386336393737643233396464353061386431316264
             64663865643961313431333430373362353366323836386238623831646139356537
 
-          # these values need to be updated manually afterwards in config.php
           NEXTCLOUD_TRUSTED_DOMAINS: "{{ application }} {{ application }}.{{ docker_network.name }} {{ application }}.{{ common_local_tld }} {{ application }}.{{ common_tld }}"
           TRUSTED_PROXIES: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] | string }} {{ docker_network.subnet }}"
           OVERWRITEPROTOCOL: "https"
