@@ -1,0 +1,36 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: netbootxyz
+
+    docker_network: "{{ networks.user }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: ghcr.io/netbootxyz/netbootxyz:0.7.6-nbxyz7
+        volumes:
+          - "{{ config_directory }}:/config"
+          - "{{ common_directory_storage }}/ISO:/assets"
+        traefik:
+          - port: 3000
+            auth: page
+        network:
+          -
+            name: "{{ docker_network.name }}"
+            ipv4_address: "{{ docker_network.prefix }}.250"
+          -
+            name: "{{ networks.granny.name }}"
+            ipv4_address: "{{ networks.granny.prefix }}.250"

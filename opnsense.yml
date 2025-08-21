@@ -130,6 +130,9 @@
         subnet: "{{ networks[item].subnet | ansible.utils.ipsubnet }}"
         pools: "{{ networks[item].iprange.dhcp }}"
         auto_options: true # auto-configures router, dns and ntp
+        next_server: "{{ networks[item].tftp_server | default(omit) }}"
+        tftp_server: "{{ networks[item].tftp_server | default(omit) }}"
+        tftp_file: "{{ networks[item].tftp_file | default(omit) }}"
       loop: "{{ networks.keys() | list }}"
       when:
         - networks[item].iprange is defined

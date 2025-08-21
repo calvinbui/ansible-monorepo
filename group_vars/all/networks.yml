@@ -16,6 +16,8 @@ networks:
         - 192.168.1.64-192.168.1.191
       docker: 192.168.1.192/26
     prefix: 192.168.1
+    tftp_server: 192.168.2.250
+    tftp_file: netboot.xyz.efi
     parent: ens3f0
     driver: macvlan
     vlan: 10
@@ -36,6 +38,8 @@ networks:
         - 192.168.2.64-192.168.2.191
       docker: 192.168.2.192/26
     prefix: 192.168.2
+    tftp_server: 192.168.2.250
+    tftp_file: netboot.xyz.efi
     parent: ens3f0
     driver: macvlan
     vlan: 20
@@ -105,6 +109,8 @@ networks:
         - 192.168.6.64-192.168.6.127
       docker: 192.168.6.128/25
     prefix: 192.168.6
+    tftp_server: 192.168.6.250
+    tftp_file: netboot.xyz.efi
     parent: ens3f0
     driver: macvlan
     vlan: 50
