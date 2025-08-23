@@ -58,6 +58,7 @@
           - os-nut
           - os-smart
           - os-theme-cicada
+          - os-udpbroadcastrelay
         action: install
       tags: packages
 
