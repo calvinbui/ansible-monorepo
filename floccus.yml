@@ -1,0 +1,125 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: floccus
+
+    docker_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart
+      community.docker.docker_container:
+        name: "{{ application }}"
+        restart: true
+        comparisons:
+          '*': ignore
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Create webdav folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}/webdav"
+        state: directory
+        owner: 33
+        group: 33
+        mode: "775"
+
+    - name: Create configuration
+      ansible.builtin.copy:
+        dest: "{{ config_directory }}/httpd.conf"
+        mode: '0644'
+        content: |
+          ServerRoot "/usr/local/apache2"
+          Listen 80
+
+          ServerName {{ application }}.{{ common_tld }}
+
+          User www-data
+          Group www-data
+
+          ServerTokens Prod
+          ServerSignature Off
+          TraceEnable Off
+
+          LoadModule mpm_event_module  modules/mod_mpm_event.so
+          LoadModule unixd_module      modules/mod_unixd.so
+          LoadModule authz_core_module modules/mod_authz_core.so
+          LoadModule authz_host_module modules/mod_authz_host.so
+          LoadModule authz_user_module modules/mod_authz_user.so
+          LoadModule authn_core_module modules/mod_authn_core.so
+          LoadModule authn_file_module modules/mod_authn_file.so
+          LoadModule auth_basic_module modules/mod_auth_basic.so
+          LoadModule dav_module        modules/mod_dav.so
+          LoadModule dav_fs_module     modules/mod_dav_fs.so
+          LoadModule dir_module        modules/mod_dir.so
+          LoadModule mime_module       modules/mod_mime.so
+
+          ErrorLog /proc/self/fd/2
+
+          <VirtualHost *:80>
+            DocumentRoot /var/www/webdav
+            DAVLockDB /tmp/DAVLock
+
+            <Directory "/var/www/webdav">
+              DAV On
+
+              AuthType Basic
+              AuthName "WebDAV Repository"
+              AuthUserFile /usr/local/apache2/conf/.htpasswd
+              Require valid-user
+
+              Options Indexes
+              AllowOverride None
+
+              <LimitExcept GET HEAD OPTIONS PROPFIND PROPPATCH MKCOL PUT DELETE COPY MOVE LOCK UNLOCK>
+                Require all denied
+              </LimitExcept>
+            </Directory>
+          </VirtualHost>
+      notify: Restart
+
+    - name: Install passlib
+      ansible.builtin.apt:
+        name:
+          - python3-passlib
+        state: present
+
+    - name: Create htpasswd file
+      community.general.htpasswd:
+        path: "{{ config_directory }}/htpasswd"
+        name: "{{ item.name }}"
+        password: "{{ item.password }}"
+        mode: "0644"
+      no_log: true
+      loop:
+        - name: "{{ common_user }}"
+          password: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            66363263396563626137646563373232376334353936383430386636616632333738326332306630
+            3661323139333635373735393961643030373563643838300a623162646134613930613335363664
+            38313539333838313136643337633236653830316239323466666162336236383130616139306565
+            6330373630653866310a303434353663636232353163316431396436373535366439316561343835
+            31333730663463393466656633353738383535393830646265323835653434616333
+      notify: Restart
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: httpd:2.4.65
+        volumes:
+          - "{{ config_directory }}/webdav:/var/www/webdav"
+          - "{{ config_directory }}/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro"
+          - "{{ config_directory }}/htpasswd:/usr/local/apache2/conf/.htpasswd:ro"
+        tmpfs:
+          - /tmp:rw,mode=01777
+        traefik:
+          - port: 80
