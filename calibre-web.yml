@@ -20,7 +20,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: lscr.io/linuxserver/calibre-web:0.6.24
+        image: lscr.io/linuxserver/calibre-web:0.6.25
         env:
           PUID: "{{ common_user_id | string }}"
           PGID: "{{ common_root_group | string }}"
