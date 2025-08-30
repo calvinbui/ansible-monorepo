@@ -46,7 +46,7 @@ cards:
           type: custom:button-card
           template: card_title
       -
-        entity: light.living_room_lights_downlights
+        entity: light.living_room_downlights
         <<: &lighting_card_switch
           type: custom:button-card
           template: card_light
@@ -91,7 +91,7 @@ cards:
                 }
               {% endif %}
       -
-        entity: light.living_room_lights_leds
+        entity: light.living_room_leds
         <<: *lighting_card_switch
       -
         entity: light.lamp
@@ -105,10 +105,10 @@ cards:
         name: 🍳 Kitchen
         <<: *lighting_card_title
       -
-        entity: light.kitchen_lights_downlights
+        entity: light.kitchen_downlights
         <<: *lighting_card_switch
       -
-        entity: light.kitchen_lights_leds
+        entity: light.kitchen_leds
         <<: *lighting_card_switch
 
   - type: vertical-stack
@@ -119,10 +119,10 @@ cards:
         name: 🍴 Dining
         <<: *lighting_card_title
       -
-        entity: light.dining_room_lights_downlights
+        entity: light.dining_room_downlights
         <<: *lighting_card_switch
       -
-        entity: light.dining_room_lights_leds
+        entity: light.dining_room_leds
         <<: *lighting_card_switch
 
   - type: vertical-stack
@@ -133,10 +133,10 @@ cards:
         name: 👟 Downstairs Hallway
         <<: *lighting_card_title
       -
-        entity: light.downstairs_hallway_lights_downlights
+        entity: light.downstairs_hallway_downlights
         <<: *lighting_card_switch
       -
-        entity: light.downstairs_hallway_lights_leds
+        entity: light.downstairs_hallway_leds
         <<: *lighting_card_switch
       -
         entity: light.under_stairs_light
@@ -152,12 +152,12 @@ cards:
         name: 💻 Study
         <<: *lighting_card_title
       -
-        entity: light.tammy_s_study_lights_downlights
+        entity: light.tammy_s_study_downlights
         <<: *lighting_card_switch
         variables:
           ulm_card_light_name: Tammy's Study
       -
-        entity: light.calvin_s_study_lights_downlights
+        entity: light.calvin_s_study_downlights
         <<: *lighting_card_switch
         variables:
           ulm_card_light_name: Calvin's Study
@@ -170,10 +170,10 @@ cards:
         name: 🛏️ Master Bedroom
         <<: *lighting_card_title
       -
-        entity: light.master_bedroom_lights_downlights
+        entity: light.master_bedroom_downlights
         <<: *lighting_card_switch
       -
-        entity: light.master_bedroom_lights_balcony
+        entity: light.master_bedroom_balcony
         <<: *lighting_card_switch
 
   - type: vertical-stack
@@ -184,33 +184,32 @@ cards:
         name: 📦 Rear Bedrooms
         <<: *lighting_card_title
       -
-        entity: light.walk_in_downlights_downlights
+        entity: light.large_rear_bedroom_downlights
         <<: *lighting_card_switch
         variables:
-          ulm_card_light_name: Walk-In
+          ulm_card_light_name: Large
       -
-        entity: light.rear_balcony_lights_downlights
+        entity: light.small_rear_bedroom_downlights
         <<: *lighting_card_switch
+        variables:
+          ulm_card_light_name: Small
 
   - type: vertical-stack
     view_layout:
       grid-area: room8
     cards:
       -
-        name: 🪜 Stairs
+        name: cont.
         <<: *lighting_card_title
-      # -
-      #   entity: light.stairway_lights_chandelier
-      #   <<: *lighting_card_switch
-      #   variables:
-      #     ulm_card_light_name: Chandelier
-      #     ulm_card_light_icon: mdi:chandelier
-      # -
-      #   entity: light.stairway_lights_staircase
-      #   <<: *lighting_card_switch
-      #   variables:
-      #     ulm_card_light_name: Stairs
-      #     ulm_card_light_icon: mdi:stairs
+      -
+        entity: light.walk_in_lights_downlights
+        <<: *lighting_card_switch
+        variables:
+          ulm_card_light_name: Walk-In
+      -
+        entity: light.rear_balcony_downlights
+        <<: *lighting_card_switch
+
 
   - type: vertical-stack
     view_layout:
@@ -220,10 +219,10 @@ cards:
         name: 🧺 Laundry
         <<: *lighting_card_title
       -
-        entity: light.laundry_lights_downlights
+        entity: light.laundry_downlights
         <<: *lighting_card_switch
       -
-        entity: light.laundry_lights_fan
+        entity: light.laundry_fan
         <<: *lighting_card_switch
 
   - type: vertical-stack
@@ -234,10 +233,10 @@ cards:
         name: 🛁 Upstairs Bathroom
         <<: *lighting_card_title
       -
-        entity: light.upstairs_bathroom_lights_leds
+        entity: light.upstairs_bathroom_leds
         <<: *lighting_card_switch
       -
-        entity: light.upstairs_bathroom_lights_fan
+        entity: light.upstairs_bathroom_fan
         <<: *lighting_card_switch
 
   - type: vertical-stack
@@ -248,10 +247,10 @@ cards:
         name: 🛁 Downstairs Bathroom
         <<: *lighting_card_title
       -
-        entity: light.downstairs_bathroom_lights_leds
+        entity: light.downstairs_bathroom_leds
         <<: *lighting_card_switch
       -
-        entity: light.downstairs_bathroom_lights_fan
+        entity: light.downstairs_bathroom_fan
         <<: *lighting_card_switch
 
   - type: vertical-stack
@@ -262,10 +261,10 @@ cards:
         name: 🛁 Ensuite
         <<: *lighting_card_title
       -
-        entity: light.ensuite_lights_leds
+        entity: light.ensuite_leds
         <<: *lighting_card_switch
       -
-        entity: light.ensuite_lights_fan
+        entity: light.ensuite_fan
         <<: *lighting_card_switch
 
   - type: vertical-stack
@@ -276,7 +275,7 @@ cards:
         name: 🚗 Garage
         <<: *lighting_card_title
       -
-        entity: light.garage_lights_downlights
+        entity: light.garage_downlights
         <<: *lighting_card_switch
 
   - type: vertical-stack
@@ -287,7 +286,7 @@ cards:
         name: 🌱 Alfresco
         <<: *lighting_card_title
       -
-        entity: light.alfresco_lights_downlights
+        entity: light.alfresco_downlights
         <<: *lighting_card_switch
 
   - type: vertical-stack
@@ -298,7 +297,7 @@ cards:
         name: 🚀 Upstairs Hallway
         <<: *lighting_card_title
       -
-        entity: light.upstairs_hallway_lights_downlights
+        entity: light.upstairs_hallway_downlights
         <<: *lighting_card_switch
 
   - type: vertical-stack

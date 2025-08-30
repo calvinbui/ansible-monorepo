@@ -419,9 +419,9 @@ opnsense_dhcp_reservations:
   -
     ip: 192.168.3.80
     subnet: 192.168.3.0/24
-    mac: 4c:75:25:34:d9:a4
+    mac: 7c:2c:67:7b:31:d0
     hostname: shelly-master-bedroom
-    description: "2.5"
+    description: "2PM Gen4"
   -
     ip: 192.168.3.81
     subnet: 192.168.3.0/24
@@ -443,27 +443,27 @@ opnsense_dhcp_reservations:
   -
     ip: 192.168.3.84
     subnet: 192.168.3.0/24
-    mac: 4c:75:25:32:f9:79
-    hostname: shelly-kitchen
-    description: "2.5"
+    mac:  cc:ba:97:c3:71:6c
+    hostname: shelly-large-rear-bedroom
+    description: "1PM Mini Gen4"
   -
     ip: 192.168.3.85
     subnet: 192.168.3.0/24
     mac: 7c:87:ce:65:d8:a0
-    hostname: shelly-alfresco
+    hostname: shelly-small-rear-bedroom
     description: "Plus 1PM"
   -
     ip: 192.168.3.86
     subnet: 192.168.3.0/24
-    mac: 4c:75:25:32:e5:f4
-    hostname: shelly-living
-    description: "2.5"
+    mac: 7c:2c:67:7b:5e:c4
+    hostname: shelly-living-room
+    description: "2PM Gen4"
   -
     ip: 192.168.3.87
     subnet: 192.168.3.0/24
-    mac: 4c:75:25:34:24:2d
-    hostname: shelly-downstairs-hallway
-    description: "2.5"
+    mac: a0:85:e3:be:7b:70
+    hostname: shelly-alfresco
+    description: "1PM Mini Gen4"
   -
     ip: 192.168.3.88
     subnet: 192.168.3.0/24
@@ -491,9 +491,9 @@ opnsense_dhcp_reservations:
   -
     ip: 192.168.3.92
     subnet: 192.168.3.0/24
-    mac: b0:a7:32:48:7e:cc
+    mac: 7c:2c:67:79:23:ac
     hostname: shelly-upstairs-bathroom
-    description: "Plus 2PM"
+    description: "2PM Gen4"
   -
     ip: 192.168.3.93
     subnet: 192.168.3.0/24
@@ -524,6 +524,12 @@ opnsense_dhcp_reservations:
     mac:  e4:b3:23:23:fe:10
     hostname: shelly-rear-balcony
     description: "1PM Mini Gen3"
+  -
+    ip: 192.168.3.98
+    subnet: 192.168.3.0/24
+    mac:  b0:a7:32:48:7e:cc
+    hostname: shelly-kitchen
+    description: "Plus 2PM"
   -
     ip: 192.168.3.101
     subnet: 192.168.3.0/24
