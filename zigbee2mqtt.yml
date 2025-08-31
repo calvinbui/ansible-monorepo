@@ -205,6 +205,25 @@
             '0xa4c1386a70f431d1':
               friendly_name: Garage Window Rain Sensor
 
+            # Shelly 1PM Gen4 Mini (S4SW-001P8EU)
+            '0xa085e3fffebe7b70':
+              friendly_name: Alfresco Lights
+              homeassistant: null
+            '0xccba97fffec3716c':
+              friendly_name: Large Rear Bedroom Lights
+              homeassistant: null
+
+            # Shelly 2PM Gen4 (2PM)
+            '0x7c2c67fffe7923ad':
+              friendly_name: Upstairs Bathroom Lights
+              homeassistant: null
+            '0x7c2c67fffe7b31d1':
+              friendly_name: Master Bedroom Lights
+              homeassistant: null
+            '0x7c2c67fffe7b5ec5':
+              friendly_name: Living Room Lights
+              homeassistant: null
+
         dest: "{{ config_directory }}/configuration.yaml"
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
