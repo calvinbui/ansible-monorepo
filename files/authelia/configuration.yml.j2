@@ -135,13 +135,6 @@ identity_providers:
 
         userinfo_signed_response_alg: none
 
-        {% if k == "guacamole" %}
-        response_types:
-          - id_token
-        grant_types:
-          - implicit
-        {% endif %}
-
         {% if k == "mealie" %}
         grant_types:
           - authorization_code

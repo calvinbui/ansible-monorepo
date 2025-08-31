@@ -267,15 +267,6 @@
       matchPackageNames: ['/mbentley\\/omada-controller$/'],
       changelogUrl: 'https://community.tp-link.com/en/business/forum/topic/245226',
     },
-    /* guacamole */
-    {
-      groupName: 'Guacamole',
-      matchPackageNames: [
-        '/.*\\/guacamole$/',
-        '/.*\\/guacd$/',
-      ],
-      changelogUrl: 'https://guacamole.apache.org/releases/{{newVersion}}',
-    },
     /* nvidia dcgm-exporter */
     {
       matchPackageNames: ['/.*\\/dcgm-exporter$/'],
