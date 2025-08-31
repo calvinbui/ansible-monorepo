@@ -73,29 +73,13 @@
             zigbee_ota_override_index_location: ota.json
 
           devices:
-            # Sonoff ZBDongle-P
-            '0x00124b002a2e833f':
-              friendly_name: Subwoofer ZBDongle-P Router
-
             # LELLKI WK33 (TS011F_plug_1)
             '0xa4c138468fc0b4c2':
-              friendly_name: Master Bedroom Power Outlet
+              friendly_name: Dishwasher Power Outlet
             '0xa4c138a7b8754bcb':
-              friendly_name: Tammy's Study Power Outlet
+              friendly_name: Living Room TV Power Outlet
             '0xa4c138292d686d5c':
               friendly_name: Dryer Power Outlet
-
-            # IKEA TRÅDFRI Control Outlet (E1603/E1702/E1708)
-            '0xf082c0fffeff36d8':
-              friendly_name: Fridge Power Outlet
-            '0xf082c0fffeff2db9':
-              friendly_name: Upstairs Bathroom Power Outlet
-            '0x3425b4fffef75348':
-              friendly_name: Calvin's Study Power Outlet
-
-            # IKEA TRÅDFRI Signal Repeater (E1746)
-            '0x2c1165fffec421d2':
-              friendly_name: Large Rear Bedroom Power Repeater
 
             # Aqara Water Leak Sensor (SJCGQ11LM)
             '0x00158d0008e0193f':
