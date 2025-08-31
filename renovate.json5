@@ -357,7 +357,7 @@
     /* act_runner */
     {
       matchPackageNames: ['/.*\\/act_runner$/'],
-      changelogUrl: 'https://gitea.com/gitea/act_runner/releases',
+      sourceUrl: 'https://gitea.com/gitea/act_runner',
     },
     /* zigbee2mqtt */
     {
