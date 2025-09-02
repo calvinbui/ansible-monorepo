@@ -89,7 +89,7 @@
         settings:
           sys:
             device:
-              name: Upstairs Hallway Lights
+              name: Large Rear Bedroom Lights
         relay:
           - name: Downlights
       -
@@ -117,7 +117,7 @@
         settings:
           sys:
             device:
-              name: Large Rear Bedroom Lights
+              name: Upstairs Hallway Lights
         relay:
           - name: Downlights
       -
@@ -145,7 +145,7 @@
         settings:
           sys:
             device:
-              name: Alfresco Lights
+              name: Rear Balcony Lights
         relay:
           - name: Downlights
       -
@@ -240,7 +240,7 @@
         settings:
           sys:
             device:
-              name: Rear Balcony Lights
+              name: Alfresco Lights
         relay:
           - name: Downlights
       -

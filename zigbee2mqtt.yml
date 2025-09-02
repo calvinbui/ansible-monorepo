@@ -191,10 +191,10 @@
 
             # Shelly 1PM Gen4 Mini (S4SW-001P8EU)
             '0xa085e3fffebe7b70':
-              friendly_name: Alfresco Lights
+              friendly_name: Rear Balcony Lights
               homeassistant: null
             '0xccba97fffec3716c':
-              friendly_name: Large Rear Bedroom Lights
+              friendly_name: Upstairs Hallway Lights
               homeassistant: null
 
             # Shelly 2PM Gen4 (2PM)
