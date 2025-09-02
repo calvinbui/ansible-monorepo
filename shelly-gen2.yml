@@ -305,6 +305,16 @@
             method: Modbus.SetConfig
             config_key: modbus
 
+    - name: Set profile
+      ansible.builtin.uri:
+        url: "http://{{ item.ip }}/rpc"
+        body:
+          id: 1
+          method: "Shelly.SetProfile"
+          params:
+            name: "switch"
+      loop: "{{ shelly_devices }}"
+
     - name: Configure relays
       ansible.builtin.uri:
         url: "http://{{ item.0.ip }}/rpc"
