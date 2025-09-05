@@ -1,0 +1,63 @@
+---
+
+- hosts: homelab
+
+  vars:
+    application: watchyourlan
+
+    shoutrrr_mattermost_webhook_id: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      32316339643164326661326462346564363762393662393034656561653336303163333465643166
+      3465653336326463613037356230663031626231633765320a306566323834313264373261633666
+      35666134373366363465633964383030313736653535386531643362626264616362366339383839
+      6365656463313635620a656231366337336630613831393065356430343031646534396462666438
+      31616434336462343636623432383766636334326238653164333965646330303764
+
+    docker_network: "{{ networks.user }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}/config"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0771"
+
+    - name: Create postgres container
+      ansible.builtin.include_role:
+        name: postgres
+      vars:
+        postgres_version: 17
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          66326165333364626536353335363434396132633866336564663065626630383534353561633133
+          3862313362316335313563393134646164376465653431350a383231626539353734663061666332
+          30633766346234313832306162366362656663633830616637376630653434323634623432353666
+          3937646265646531360a643939656339343366636636373439346262363339623630653933313161
+          38303066386365376562363933303363356138646465343461313239333536336230
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: docker_container
+      vars:
+        image: ghcr.io/aceberg/watchyourlan:2.1.3
+        env:
+          TZ: "{{ common_timezone }}"
+          IFACES: "eth0 eth1"
+          SHOUTRRR_URL: "mattermost://mattermost.{{ common_tld }}/{{ shoutrrr_mattermost_webhook_id }}"
+          PROMETHEUS_ENABLE: "false"
+          PG_CONNECT: "{{ _postgres_url }}"
+        volumes:
+          - "{{ config_directory }}/config:/data/WatchYourLAN"
+        network:
+          - name: "{{ networks.user.name }}"
+          - name: "{{ networks.iot.name }}"
+        traefik:
+          - port: 8840
+            auth: page
+        homepage:
+          name: WatchYourLAN
+          group: Networking
+          weight: 450
+          description: "Network IP Scanner"
