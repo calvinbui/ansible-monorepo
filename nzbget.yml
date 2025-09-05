@@ -48,10 +48,10 @@
         force: true
         update: true
 
-    - name: Clone Extended Unrar
+    - name: Clone ExtendedUnpacker
       ansible.builtin.git:
-        repo: https://github.com/nzbgetcom/Extension-ExtendedUnrar.git
-        dest: "{{ config_directory }}/scripts/extended-unrar"
+        repo: https://github.com/nzbgetcom/Extension-ExtendedUnpacker.git
+        dest: "{{ config_directory }}/scripts/extendedunpacker"
         force: true
         update: true
 
@@ -297,11 +297,14 @@
           UnpackPassFile: '/config/unpackpassfile.txt'
 
           # EXTENSION SCRIPTS
-          Extensions: 'unzip, ExtendedUnrar'
-          ScriptOrder: 'unzip, ExtendedUnrar'
+          Extensions: 'unzip, ExtendedUnpacker'
+          ScriptOrder: 'unzip, ExtendedUnpacker'
           ScriptPauseQueue: 'yes'
 
-          # EXTENDED UNRAR
-          ExtendedUnrar:UnrarCmd: 'unrar e -idp -ai -o-'
-          ExtendedUnrar:WaitTime: '0'
-          ExtendedUnrar:DeleteLeftover: 'yes'
+          # EXTENDED UNPACKER
+          ExtendedUnpacker:UnrarCmd: 'unrar'
+          ExtendedUnpacker:UnrarArgs: 'e -idp -ai -o-'
+          ExtendedUnpacker:SevenZipCmd: '7z'
+          ExtendedUnpacker:SevenZipArgs: 'e -aos'
+          ExtendedUnpacker:WaitTime: '0'
+          ExtendedUnpacker:DeleteLeftover: 'yes'
