@@ -12,13 +12,14 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: ghcr.io/containrrr/watchtower:1.7.1
+        image: ghcr.io/nicholas-fedor/watchtower:1.11.8
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock:ro
           - /etc/localtime:/etc/localtime:ro
         env:
           TZ: "{{ common_timezone }}"
           WATCHTOWER_SCHEDULE: "0 0 4 * * *"
+          WATCHTOWER_INCLUDE_RESTARTING: "true"
           WATCHTOWER_CLEANUP: "true"
           WATCHTOWER_REMOVE_VOLUMES: "true"
           # WATCHTOWER_NOTIFICATIONS: "slack"
