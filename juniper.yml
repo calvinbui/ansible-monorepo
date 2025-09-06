@@ -89,12 +89,20 @@
       # TESTING
       #
       -
+        port: "20"
+        description: "testing-0"
+        access: "{{ networks.user.vlan }}"
+      -
+        port: "21"
+        description: "testing-1"
+        access: "{{ networks.user.vlan }}"
+      -
         port: "22"
-        description: "testing-01"
+        description: "testing-2"
         access: "{{ networks.user.vlan }}"
       -
         port: "23"
-        description: "testing-02"
+        description: "testing-3"
         access: "{{ networks.user.vlan }}"
       #
       # ROOMS
