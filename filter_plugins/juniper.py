@@ -83,6 +83,11 @@ class FilterModule(object):
 
             port["name"] = f"{interface}-{fpc}/{pic}/{k['port']}"
             port["description"] = k["description"]
+
+            for field in ["speed", "duplex"]:
+                if field in k:
+                    port[field] = k[field]
+
             ports.append(port)
 
         return ports

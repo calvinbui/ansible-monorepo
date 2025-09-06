@@ -160,6 +160,8 @@
         trunk:
           - "{{ networks.iot.name }}"
           - "{{ networks.granny.name }}"
+        duplex: "full-duplex"
+        speed: "1g"
       -
         port: "41"
         description: "wifi-02"
@@ -167,6 +169,8 @@
         trunk:
           - "{{ networks.iot.name }}"
           - "{{ networks.granny.name }}"
+        duplex: "full-duplex"
+        speed: "1g"
       -
         port: "42"
         description: "wifi-03"
@@ -174,6 +178,8 @@
         trunk:
           - "{{ networks.iot.name }}"
           - "{{ networks.granny.name }}"
+        duplex: "full-duplex"
+        speed: "1g"
       -
         port: "43"
         description: "wifi-04"
@@ -181,6 +187,8 @@
         trunk:
           - "{{ networks.iot.name }}"
           - "{{ networks.granny.name }}"
+        duplex: "full-duplex"
+        speed: "1g"
       #
       # OTHER
       #
