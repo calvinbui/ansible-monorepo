@@ -3,6 +3,11 @@
 Converts my vars to the format that the Juniper modules expects
 """
 
+interface_pics = {
+    'ge': '0',
+    'xe': '1',
+}
+
 
 class FilterModule(object):
     """Ansible filter class"""
@@ -44,11 +49,8 @@ class FilterModule(object):
             port["unit"] = 0
 
             interface = k.get('interface', 'ge')
+            pic = interface_pics.get('interface', '0')
             fpc = '0'
-            if interface == 'ge':
-                pic = '0'
-            elif interface == 'xe':
-                pic = '1'
 
             port["name"] = f"{interface}-{fpc}/{pic}/{k['port']}"
 
@@ -76,11 +78,8 @@ class FilterModule(object):
             port = {}
 
             interface = k.get('interface', 'ge')
+            pic = interface_pics.get('interface', '0')
             fpc = '0'
-            if interface == 'ge':
-                pic = '0'
-            elif interface == 'xe':
-                pic = '1'
 
             port["name"] = f"{interface}-{fpc}/{pic}/{k['port']}"
             port["description"] = k["description"]
