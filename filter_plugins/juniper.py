@@ -20,6 +20,9 @@ class FilterModule(object):
         vlan_config = []
 
         for _, val in networks.items():
+            if "vlan" not in val:
+                continue
+
             vlan = {}
             vlan["name"] = val["name"]
             vlan["vlan_id"] = val["vlan"]
