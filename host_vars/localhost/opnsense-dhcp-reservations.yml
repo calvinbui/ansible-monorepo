@@ -60,7 +60,7 @@ opnsense_dhcp_reservations:
   -
     ip: 192.168.2.10
     subnet: 192.168.2.0/24
-    mac: 70:85:c2:5c:89:61
+    mac: 08:8a:f1:0c:b4:2f
     hostname: CALVIN-PC
   -
     ip: 192.168.2.250
