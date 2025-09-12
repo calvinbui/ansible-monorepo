@@ -409,6 +409,11 @@
       sourceUrl: 'https://github.com/gtsteffaniak/filebrowser',
       changelogUrl: 'https://github.com/gtsteffaniak/filebrowser/blob/main/CHANGELOG.md',
     },
+    /* watchyourlan */
+    {
+      matchPackageNames: ['/.*\\/watchyourlan$/'],
+      sourceUrl: 'https://github.com/aceberg/WatchYourLAN',
+    },
   ],
 
   prBodyTemplate: '{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}',
