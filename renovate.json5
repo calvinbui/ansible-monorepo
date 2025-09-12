@@ -1,6 +1,13 @@
 {
   $schema: 'https://docs.renovatebot.com/renovate-schema.json',
 
+  enabledManagers: [
+    "ansible",
+    "ansible-galaxy",
+    "dockerfile",
+    "github-actions",
+  ],
+
   branchConcurrentLimit: 0,
   prConcurrentLimit: 0,
   prHourlyLimit: 0,
@@ -26,10 +33,6 @@
     You should order your packageRules in order of importance so that later rules can override settings from earlier rules if needed.
   */
   packageRules: [
-    {
-      matchCategories: ['python'],
-      enabled: false,
-    },
     /* Ignore latest and localhost tags */
     {
       matchDatasources: ['docker'],
