@@ -29,7 +29,7 @@ opnsense_dhcp_reservations:
   -
     ip: 192.168.2.2
     subnet: 192.168.2.0/24
-    mac: 80:cc:9c:9f:51:58
+    mac: 84:78:48:6c:45:4b
     hostname: switch-study
     description: "In Calvin's Room"
   -
