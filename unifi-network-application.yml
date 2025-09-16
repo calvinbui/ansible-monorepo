@@ -34,7 +34,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: lscr.io/linuxserver/unifi-network-application:9.3.45
+        image: lscr.io/linuxserver/unifi-network-application:9.4.19
         ipv4_address: "{{ docker_network.prefix }}.254"
         env:
           PUID: "{{ common_user_id | string }}"
