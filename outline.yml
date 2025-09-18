@@ -64,7 +64,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: outlinewiki/outline:0.87.3
+        image: outlinewiki/outline:0.87.4
         command:
           - sh
           - -c
