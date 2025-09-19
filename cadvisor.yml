@@ -37,7 +37,7 @@
           - --max_housekeeping_interval=35s
           - --storage_duration=1m0s
           - --store_container_labels=false
-          - "--disable_metrics={{ cadvisor_disabled_metrics | join(',') }}"
+          - "--disable_metrics={{ cadvisor_disabled_metrics | ansible.builtin.join(',') }}"
         volumes:
           - /:/rootfs:ro
           - /var/run:/var/run:ro

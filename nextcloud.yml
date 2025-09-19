@@ -68,18 +68,18 @@
             64663865643961313431333430373362353366323836386238623831646139356537
 
           NEXTCLOUD_TRUSTED_DOMAINS: "{{ application }} {{ application }}.{{ docker_network.name }} {{ application }}.{{ common_local_tld }} {{ application }}.{{ common_tld }}"
-          TRUSTED_PROXIES: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] | string }} {{ docker_network.subnet }}"
+          TRUSTED_PROXIES: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] | ansible.builtin.string }} {{ docker_network.subnet }}"
           OVERWRITEPROTOCOL: "https"
           OVERWRITEHOST: "{{ application }}.{{ common_tld }}"
           OVERWRITECLIURL: "https://{{ application }}.{{ common_tld }}"
 
           REDIS_HOST: "{{ _valkey_hostname }}"
-          REDIS_HOST_PORT: "{{ _valkey_port | string }}"
+          REDIS_HOST_PORT: "{{ _valkey_port | ansible.builtin.string }}"
           REDIS_HOST_PASSWORD: "{{ _valkey_password }}"
 
           SMTP_NAME: "{{ common_email_username }}"
           SMTP_PASSWORD: "{{ common_email_password }}"
-          SMTP_PORT: "{{ common_email_port | string }}"
+          SMTP_PORT: "{{ common_email_port | ansible.builtin.string }}"
           SMTP_HOST: "{{ common_email_server }}"
           SMTP_SECURE: "tls"
 
@@ -373,14 +373,14 @@
       community.docker.docker_container_exec:
         container: "{{ application }}"
         user: www-data
-        command: "php occ config:system:set {{ item.key }} {% if item.value | type_debug == 'bool' %}--type=boolean{% elif item.value | type_debug == 'int' %}--type=integer{% endif %} --value='{{ item.value }}'"
+        command: "php occ config:system:set {{ item.key }} {% if item.value | ansible.builtin.type_debug == 'bool' %}--type=boolean{% elif item.value | ansible.builtin.type_debug == 'int' %}--type=integer{% endif %} --value='{{ item.value }}'"
       register: _command_result
       failed_when: "'set to' not in _command_result.stdout"
       changed_when: false
       until: _command_result is success
       retries: 3
       delay: 2
-      loop: "{{ _nextcloud_oidc_config | dict2items }}"
+      loop: "{{ _nextcloud_oidc_config | ansible.builtin.dict2items }}"
       vars:
         _nextcloud_oidc_config:
           hide_login_form: true
@@ -391,7 +391,7 @@
           oidc_login_client_secret: "{{ oidc_auth.nextcloud.secret }}"
           oidc_login_auto_redirect: false
           oidc_login_end_session_redirect: false
-          oidc_login_button_text: "Log in with {{ oidc_provider | title }}"
+          oidc_login_button_text: "Log in with {{ oidc_provider | ansible.builtin.title }}"
           oidc_login_hide_password_form: true
           oidc_login_use_id_token: true
           oidc_login_attributes id: "preferred_username"

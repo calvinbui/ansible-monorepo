@@ -71,7 +71,7 @@
 
           OG_SSH_GIT_ENABLED: "false"
 
-          OG_OIDC_PROVIDER_NAME: "{{ oidc_provider | title }}"
+          OG_OIDC_PROVIDER_NAME: "{{ oidc_provider | ansible.builtin.title }}"
           OG_OIDC_DISCOVERY_URL: "{{ oidc_discovery_url }}"
           OG_OIDC_CLIENT_KEY: "{{ application }}"
           OG_OIDC_SECRET: "{{ oidc_auth.opengist.secret }}"

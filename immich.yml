@@ -51,13 +51,13 @@
         image: ghcr.io/immich-app/immich-server:v1.142.1
         env: &immich_shared_env
           DB_HOSTNAME: "{{ _postgres_hostname }}"
-          DB_PORT: "{{ _postgres_port | string }}"
+          DB_PORT: "{{ _postgres_port | ansible.builtin.string }}"
           DB_USERNAME: "{{ _postgres_username }}"
           DB_PASSWORD: "{{ _postgres_password }}"
           DB_DATABASE_NAME: "{{ _postgres_database }}"
 
           REDIS_HOSTNAME: "{{ _valkey_hostname }}"
-          REDIS_PORT: "{{ _valkey_port | string }}"
+          REDIS_PORT: "{{ _valkey_port | ansible.builtin.string }}"
           REDIS_PASSWORD: "{{ _valkey_password }}"
 
           UPLOAD_LOCATION: "/usr/src/app/upload"

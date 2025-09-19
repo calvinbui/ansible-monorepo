@@ -3,20 +3,20 @@
 - name: "Generating Prometheus service discovery labels"
   when: metrics is defined
   ansible.builtin.set_fact:
-    metrics_labels: "{{ metrics_labels | default({}) | combine({item.key: item.value}) }}"
+    metrics_labels: "{{ metrics_labels | ansible.builtin.default({}) | ansible.builtin.combine({item.key: item.value}) }}"
   loop:
     -
       key: "prometheus.enable"
       value: "true"
     -
       key: "prometheus.job"
-      value: "{{ metric.job | default(name) | default(application) }}"
+      value: "{{ metric.job | ansible.builtin.default(name) | ansible.builtin.default(application) }}"
     -
       key: "prometheus.port"
-      value: "{{ metric.port | default('9090') | string }}"
+      value: "{{ metric.port | ansible.builtin.default('9090') | ansible.builtin.string }}"
     -
       key: "prometheus.scheme"
-      value: "{{ metric.scheme | default('http') }}"
+      value: "{{ metric.scheme | ansible.builtin.default('http') }}"
     -
       key: "prometheus.path"
-      value: "{{ metric.path | default('/metrics') }}"
+      value: "{{ metric.path | ansible.builtin.default('/metrics') }}"

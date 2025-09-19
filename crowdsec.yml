@@ -215,7 +215,7 @@
             {{
               [
                 "crowdsecurity/traefik",
-              ] | join(' ')
+              ] | ansible.builtin.join(' ')
             }}
 
           # LAPI

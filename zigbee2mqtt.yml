@@ -69,7 +69,7 @@
             last_seen: ISO_8601_local
             transmit_power: 20
             network_key:
-            {% for item in _zigbee2mqtt_network_encryption_key | string | from_json %}
+            {% for item in _zigbee2mqtt_network_encryption_key | ansible.builtin.string | ansible.builtin.from_json %}
             - {{ item }}
             {% endfor %}
 

@@ -28,7 +28,7 @@
         image: quay.io/prometheuscommunity/systemd-exporter:v0.7.0
         command:
           - --systemd.collector.private
-          - --systemd.collector.unit-include={{ systemd_exporter_processes | join('|') }}
+          - --systemd.collector.unit-include={{ systemd_exporter_processes | ansible.builtin.join('|') }}
         volumes:
           - /proc:/host/proc:ro
           - /run/systemd:/run/systemd:ro
@@ -74,7 +74,7 @@
           Group=root
           ExecStart={{ systemd_exporter_install_dir }}/systemd_exporter \
             --web.listen-address=0.0.0.0:9558 \
-            --systemd.collector.unit-include="{{ systemd_exporter_processes | join("|") }}"
+            --systemd.collector.unit-include="{{ systemd_exporter_processes | ansible.builtin.join("|") }}"
           Restart=always
           RestartSec=1
 

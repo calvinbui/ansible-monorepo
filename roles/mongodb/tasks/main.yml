@@ -16,13 +16,13 @@
     state: started
 
     hostname: "{{ mongo_name }}"
-    published_ports: "{{ mongo_ports | default(omit) }}"
+    published_ports: "{{ mongo_ports | ansible.builtin.default(omit) }}"
     networks:
-      - name: "{{ docker_network.name | default('bridge') }}"
-    network_mode: "{{ docker_network.name | default('omit') }}"
-    networks_cli_compatible: "{{ mongo_networks_cli_compatible | default(true) }}"
+      - name: "{{ docker_network.name | ansible.builtin.default('bridge') }}"
+    network_mode: "{{ docker_network.name | ansible.builtin.default('omit') }}"
+    networks_cli_compatible: "{{ mongo_networks_cli_compatible | ansible.builtin.default(true) }}"
 
-    command: "{{ mongo_command | default(omit) }}"
+    command: "{{ mongo_command | ansible.builtin.default(omit) }}"
 
     env:
       MONGO_INITDB_ROOT_USERNAME: "{{ mongo_username }}"
@@ -41,7 +41,7 @@
 
     restart_policy: unless-stopped
 
-    container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
+    container_default_behavior: "{{ container_default_behavior | ansible.builtin.default('no_defaults') }}"
 
     comparisons:
       networks: strict

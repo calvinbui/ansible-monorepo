@@ -38,8 +38,8 @@
           # https://docs.mealie.io/documentation/getting-started/installation/backend-config/
 
           ## General
-          PUID: "{{ common_user_id | string }}"
-          PGID: "{{ common_group_id | string }}"
+          PUID: "{{ common_user_id | ansible.builtin.string }}"
+          PGID: "{{ common_group_id | ansible.builtin.string }}"
           BASE_URL: "https://{{ application }}.{{ common_tld }}"
           TZ: "{{ common_timezone }}"
           ALLOW_SIGNUP: "false"
@@ -50,13 +50,13 @@
           POSTGRES_USER: "{{ _postgres_username }}"
           POSTGRES_PASSWORD: "{{ _postgres_password }}"
           POSTGRES_SERVER: "{{ _postgres_hostname }}"
-          POSTGRES_PORT: "{{ _postgres_port | string }}"
+          POSTGRES_PORT: "{{ _postgres_port | ansible.builtin.string }}"
           POSTGRES_DB: "{{ _postgres_database }}"
 
           ## Email
           SMTP_HOST: "{{ common_email_server }}"
-          SMTP_PORT: "{{ common_email_port | string }}"
-          SMTP_FROM_NAME: "{{ application | title }}"
+          SMTP_PORT: "{{ common_email_port | ansible.builtin.string }}"
+          SMTP_FROM_NAME: "{{ application | ansible.builtin.title }}"
           SMTP_AUTH_STRATEGY: "{{ 'tls' if common_email_protocol == 'tls' else 'ssl' }}"
           SMTP_FROM_EMAIL: "{{ application }}{{ common_email_to }}"
           SMTP_USER: "{{ common_email_username }}"
@@ -67,7 +67,7 @@
           OIDC_CONFIGURATION_URL: "{{ oidc_discovery_url }}"
           OIDC_CLIENT_ID: "{{ application }}"
           OIDC_CLIENT_SECRET: "{{ oidc_auth.mealie.secret }}"
-          OIDC_PROVIDER_NAME: "{{ oidc_provider | title }}"
+          OIDC_PROVIDER_NAME: "{{ oidc_provider | ansible.builtin.title }}"
         volumes:
           - "{{ config_directory }}/data:/app/data"
         traefik:

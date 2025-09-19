@@ -178,7 +178,7 @@
       loop: "{{ borgmatic_backups }}"
 
     - name: Create backup locations
-      ansible.builtin.command: ssh -p{{ borgmatic_hetzner_storage_box_port }} {{ borgmatic_hetzner_storage_box_host }} mkdir -p borg/{{ '{' }}{{ borgmatic_backups | map(attribute='name') | flatten | join(',') }}{{ '}' }}
+      ansible.builtin.command: ssh -p{{ borgmatic_hetzner_storage_box_port }} {{ borgmatic_hetzner_storage_box_host }} mkdir -p borg/{{ '{' }}{{ borgmatic_backups | ansible.builtin.map(attribute='name') | ansible.builtin.flatten | ansible.builtin.join(',') }}{{ '}' }}
       changed_when: false
       become: false
       delegate_to: localhost

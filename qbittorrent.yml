@@ -32,8 +32,8 @@
         env:
           QBT_LEGAL_NOTICE: "confirm"
 
-          PUID: "{{ common_user_id | string }}"
-          PGID: "{{ common_root_group | string }}"
+          PUID: "{{ common_user_id | ansible.builtin.string }}"
+          PGID: "{{ common_root_group | ansible.builtin.string }}"
 
           TZ: "{{ common_timezone }}"
           UMASK: "022"
@@ -72,7 +72,7 @@
         value: "{{ item.value }}"
         no_extra_spaces: true
         mode: "0770"
-      loop: "{{ qbittorrent_config | dict2items }}"
+      loop: "{{ qbittorrent_config | ansible.builtin.dict2items }}"
       check_mode: true
       register: _qbittorrent_config
       vars:
@@ -127,7 +127,7 @@
 
           # Web UI
           ## Language
-          Preferences.General\Locale: "{{ common_locale | regex_replace('-', '_') }}"
+          Preferences.General\Locale: "{{ common_locale | ansible.builtin.regex_replace('-', '_') }}"
 
           ## Web User Interface (Remote Control)
           Preferences.WebUI\UseUPnP: "false" # Use UPnP / NAT-PMP to forward the port from my router
@@ -158,7 +158,7 @@
         value: "{{ item.value }}"
         no_extra_spaces: true
         mode: "0770"
-      loop: "{{ _qbittorrent_config.results | selectattr('changed', 'equalto', true) | map(attribute='item') }}"
+      loop: "{{ _qbittorrent_config.results | ansible.builtin.selectattr('changed', 'equalto', true) | ansible.builtin.map(attribute='item') }}"
       when: _qbittorrent_config.changed
       notify: Restart
 
@@ -217,8 +217,8 @@
           ansible.builtin.file:
             path: "{{ config_directory }}/data/nova3/engines"
             state: directory
-            owner: "{{ common_user_id | string }}"
-            group: "{{ common_root_group | string }}"
+            owner: "{{ common_user_id | ansible.builtin.string }}"
+            group: "{{ common_root_group | ansible.builtin.string }}"
             mode: "0755"
 
         - name: Download Prowlarr search plugin

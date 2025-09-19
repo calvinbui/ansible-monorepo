@@ -64,11 +64,11 @@
           - "{{ config_directory }}/config:/config"
           - "{{ common_directory_storage }}:{{ common_mounted_directory }}"
         env:
-          PUID: "{{ common_user_id | string }}"
-          PGID: "{{ common_root_group | string }}"
+          PUID: "{{ common_user_id | ansible.builtin.string }}"
+          PGID: "{{ common_root_group | ansible.builtin.string }}"
           TZ: "{{ common_timezone }}"
 
-          RADARR__APP__INSTANCENAME: "{{ application | replace('-', ' ') | title }}"
+          RADARR__APP__INSTANCENAME: "{{ application | ansible.builtin.replace('-', ' ') | ansible.builtin.title }}"
           RADARR__APP__LAUNCHBROWSER: "False"
           RADARR__AUTH__APIKEY: "{{ radarr_api_key }}"
           RADARR__AUTH__METHOD: "External"
@@ -77,7 +77,7 @@
 
           # https://wiki.servarr.com/radarr/postgres-setup
           RADARR__POSTGRES__HOST: "{{ _postgres_hostname }}"
-          RADARR__POSTGRES__PORT: "{{ _postgres_port | string }}"
+          RADARR__POSTGRES__PORT: "{{ _postgres_port | ansible.builtin.string }}"
           RADARR__POSTGRES__MAINDB: "{{ _postgres_database }}"
           RADARR__POSTGRES__LOGDB: "{{ application }}-log"
           RADARR__POSTGRES__USER: "{{ _postgres_username }}"

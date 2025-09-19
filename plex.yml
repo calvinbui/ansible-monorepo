@@ -31,8 +31,8 @@
         image: plexinc/pms-docker:1.42.1.10060-4e8b05daf
         ipv4_address: "{{ docker_network.prefix }}.253"
         env:
-          PLEX_UID: "{{ common_user_id | string }}"
-          PLEX_GID: "{{ common_root_group | string }}"
+          PLEX_UID: "{{ common_user_id | ansible.builtin.string }}"
+          PLEX_GID: "{{ common_root_group | ansible.builtin.string }}"
           TZ: "{{ common_timezone }}"
           NVIDIA_VISIBLE_DEVICES: "all"
           NVIDIA_DRIVER_CAPABILITIES: "all"
@@ -76,7 +76,7 @@
         path: "{{ config_directory }}/Library/Application Support/Plex Media Server/Preferences.xml"
         xpath: "/Preferences"
         attribute: "{{ item.attribute }}"
-        value: "{{ item.value | string }}"
+        value: "{{ item.value | ansible.builtin.string }}"
       loop:
         # General
         -

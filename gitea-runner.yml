@@ -123,7 +123,7 @@
       community.docker.docker_image:
         build:
           path: "{{ item.path }}"
-        name: "calvinbui/{{ item.path.split('/') | last }}:localhost"
+        name: "calvinbui/{{ item.path.split('/') | ansible.builtin.last }}:localhost"
         tag: latest
         push: false
         source: build

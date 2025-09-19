@@ -38,7 +38,7 @@
       loop: >-
         {{
           ['nut-monitor', 'nut-server'] +
-          (nut_ups_devices | dict2items | map(attribute='key') | map('string') | map('regex_replace', '^', 'nut-driver@') | list)
+          (nut_ups_devices | ansible.builtin.dict2items | ansible.builtin.map(attribute='key') | ansible.builtin.map('string') | ansible.builtin.map('regex_replace', '^', 'nut-driver@') | ansible.builtin.list)
         }}
 
   tasks:
@@ -66,7 +66,7 @@
     - name: Install NUT configuration files.
       ansible.builtin.template:
         src: "{{ item }}"
-        dest: "/etc/nut/{{ item | basename | regex_replace('\\.j2$', '') }}"
+        dest: "/etc/nut/{{ item | ansible.builtin.basename | ansible.builtin.regex_replace('\\.j2$', '') }}"
         owner: root
         group: nut
         mode: "0655"
@@ -103,7 +103,7 @@
         comment: homelab
       loop:
         - https://github.com/calvinbui.keys
-        - "{{ hostvars['homelab.' + common_local_tld]['__homelab_public_key']['content'] | b64decode }}"
+        - "{{ hostvars['homelab.' + common_local_tld]['__homelab_public_key']['content'] | ansible.builtin.b64decode }}"
 
     - name: Update apt cache
       ansible.builtin.apt:
@@ -141,4 +141,4 @@
           loop:
             - file: upsmon
               name: monitors
-              block: "{{ nut_ups_monitors | string }}"
+              block: "{{ nut_ups_monitors | ansible.builtin.string }}"

@@ -64,8 +64,8 @@
           - "{{ config_directory }}:/config"
           - "{{ common_directory_download }}:{{ common_mounted_directory_download }}"
         env:
-          PUID: "{{ common_user_id | string }}"
-          PGID: "{{ common_root_group | string }}"
+          PUID: "{{ common_user_id | ansible.builtin.string }}"
+          PGID: "{{ common_root_group | ansible.builtin.string }}"
           TZ: "{{ common_timezone }}"
           UMASK: "022"
 
@@ -101,7 +101,7 @@
         dest: "{{ config_directory }}/nzbget.conf"
         regexp: "^{{ item.key }}="
         line: "{{ item.key }}={{ item.value }}"
-      loop: "{{ nzbget_config | dict2items }}"
+      loop: "{{ nzbget_config | ansible.builtin.dict2items }}"
       notify: Restart
       vars:
         nzbget_config:

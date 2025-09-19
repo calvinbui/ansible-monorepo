@@ -34,11 +34,11 @@
           - "{{ config_directory }}:/config"
           - "{{ common_directory_books }}:/books"
         env:
-          PUID: "{{ common_user_id | string }}"
-          PGID: "{{ common_root_group | string }}"
+          PUID: "{{ common_user_id | ansible.builtin.string }}"
+          PGID: "{{ common_root_group | ansible.builtin.string }}"
           TZ: "{{ common_timezone }}"
 
-          TITLE: "{{ application | title }}"
+          TITLE: "{{ application | ansible.builtin.title }}"
         security_opts:
           - seccomp=unconfined
         traefik:

@@ -84,7 +84,7 @@
           - op: add
             path: "{{ item.key }}"
             value: "{{ item.value }}"
-      loop: "{{ _mattermost_configuration | dict2items }}"
+      loop: "{{ _mattermost_configuration | ansible.builtin.dict2items }}"
       notify: Restart
       vars:
         _mattermost_configuration:
@@ -107,7 +107,7 @@
           # https://docs.mattermost.com/configure/environment-configuration-settings.html#smtp
           # https://docs.mattermost.com/configure/smtp-email.html#gmail
           EmailSettings/SMTPServer: "{{ common_email_server }}"
-          EmailSettings/SMTPPort: "{{ common_email_port | string }}"
+          EmailSettings/SMTPPort: "{{ common_email_port | ansible.builtin.string }}"
           EmailSettings/ConnectionSecurity: "STARTTLS"
           EmailSettings/EnableSMTPAuth: true
           EmailSettings/SMTPUsername: "{{ common_email_username }}"

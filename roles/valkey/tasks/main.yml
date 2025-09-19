@@ -16,11 +16,11 @@
     state: started
 
     hostname: "{{ valkey_name }}"
-    published_ports: "{{ valkey_ports | default(omit) }}"
+    published_ports: "{{ valkey_ports | ansible.builtin.default(omit) }}"
     networks:
-      - name: "{{ docker_network.name | default('bridge') }}"
-    network_mode: "{{ docker_network.name | default('omit') }}"
-    networks_cli_compatible: "{{ valkey_networks_cli_compatible | default(true) }}"
+      - name: "{{ docker_network.name | ansible.builtin.default('bridge') }}"
+    network_mode: "{{ docker_network.name | ansible.builtin.default('omit') }}"
+    networks_cli_compatible: "{{ valkey_networks_cli_compatible | ansible.builtin.default(true) }}"
 
     env:
       TZ: "{{ common_timezone }}"
@@ -39,7 +39,7 @@
 
     restart_policy: unless-stopped
 
-    container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
+    container_default_behavior: "{{ container_default_behavior | ansible.builtin.default('no_defaults') }}"
 
     comparisons:
       networks: strict

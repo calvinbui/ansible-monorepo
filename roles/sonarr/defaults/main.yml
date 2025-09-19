@@ -7,11 +7,11 @@ docker_network: "{{ networks.pub }}"
 postgresdb_password: replaceme
 
 homepage_config:
-  name: "{{ application | replace('-', ' ') | title }}"
+  name: "{{ application | ansible.builtin.replace('-', ' ') | ansible.builtin.title }}"
   icon: "/icons/sonarr.svg"
-  group: "{{ homepage_group | default('Favourites') }}"
-  weight: "{{ homepage_weight | default('400') }}"
-  description: "{{ homepage_description | default('Manage and download TV shows') }}"
+  group: "{{ homepage_group | ansible.builtin.default('Favourites') }}"
+  weight: "{{ homepage_weight | ansible.builtin.default('400') }}"
+  description: "{{ homepage_description | ansible.builtin.default('Manage and download TV shows') }}"
   widget:
     type: sonarr
     key: "{{ sonarr_api_key }}"

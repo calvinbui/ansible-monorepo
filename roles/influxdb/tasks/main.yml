@@ -16,19 +16,19 @@
     state: started
 
     hostname: "{{ influxdb_name }}"
-    published_ports: "{{ influxdb_ports | default(omit) }}"
+    published_ports: "{{ influxdb_ports | ansible.builtin.default(omit) }}"
     networks:
-      - name: "{{ docker_network.name | default('bridge') }}"
-    network_mode: "{{ docker_network.name | default('omit') }}"
-    networks_cli_compatible: "{{ influxdb_networks_cli_compatible | default(true) }}"
+      - name: "{{ docker_network.name | ansible.builtin.default('bridge') }}"
+    network_mode: "{{ docker_network.name | ansible.builtin.default('omit') }}"
+    networks_cli_compatible: "{{ influxdb_networks_cli_compatible | ansible.builtin.default(true) }}"
 
-    command: "{{ influxdb_command | default(omit) }}"
+    command: "{{ influxdb_command | ansible.builtin.default(omit) }}"
 
     env:
       DOCKER_INFLUXDB_INIT_MODE: "setup"
       DOCKER_INFLUXDB_INIT_USERNAME: "{{ influxdb_username }}"
       DOCKER_INFLUXDB_INIT_PASSWORD: "{{ influxdb_password }}"
-      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "{{ influxdb_token | default(omit) }}"
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "{{ influxdb_token | ansible.builtin.default(omit) }}"
       DOCKER_INFLUXDB_INIT_ORG: "{{ influxdb_org }}"
       DOCKER_INFLUXDB_INIT_BUCKET: "{{ influxdb_bucket }}"
 
@@ -38,14 +38,14 @@
 
     labels:
       '{
-        "homepage.name": "{{ influxdb_homepage.name | default(omit) }}",
-        "homepage.group": "{{ influxdb_homepage.group | default(omit) }}",
-        "homepage.description": "{{ influxdb_homepage.description | default(omit) }}",
-        "homepage.href": "{{ influxdb_homepage.href | default("https://" + influxdb_name + "." + common_tld) if influxdb_homepage.enable else omit }}",
-        "homepage.weight": "{{ influxdb_homepage.weight | default(omit) }}",
+        "homepage.name": "{{ influxdb_homepage.name | ansible.builtin.default(omit) }}",
+        "homepage.group": "{{ influxdb_homepage.group | ansible.builtin.default(omit) }}",
+        "homepage.description": "{{ influxdb_homepage.description | ansible.builtin.default(omit) }}",
+        "homepage.href": "{{ influxdb_homepage.href | ansible.builtin.default("https://" + influxdb_name + "." + common_tld) if influxdb_homepage.enable else omit }}",
+        "homepage.weight": "{{ influxdb_homepage.weight | ansible.builtin.default(omit) }}",
         "homepage.icon": "{{ "/icons/influxdb.svg" if influxdb_homepage.enable else omit }}",
 
-        "traefik.enable": "{{ influxdb_homepage.enable | default(false) | string }}",
+        "traefik.enable": "{{ influxdb_homepage.enable | ansible.builtin.default(false) | ansible.builtin.string }}",
         "traefik.http.routers.{{ influxdb_name }}-secure.entrypoints": "web-secure",
         "traefik.http.routers.{{ influxdb_name }}-secure.rule": "Host(`{{ influxdb_name }}.{{ common_tld }}`)",
         "traefik.http.routers.{{ influxdb_name }}-secure.service": "{{ influxdb_name }}",
@@ -60,7 +60,7 @@
 
     restart_policy: unless-stopped
 
-    container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
+    container_default_behavior: "{{ container_default_behavior | ansible.builtin.default('no_defaults') }}"
 
     comparisons:
       networks: strict
@@ -70,7 +70,7 @@
     _influxdb_hostname: "{{ influxdb_name }}.{{ docker_network.name }}"
     _influxdb_username: "{{ influxdb_username }}"
     _influxdb_password: "{{ influxdb_password }}"
-    _influxdb_token: "{{ influxdb_token | default(omit) }}"
+    _influxdb_token: "{{ influxdb_token | ansible.builtin.default(omit) }}"
     _influxdb_org: "{{ influxdb_org }}"
     _influxdb_bucket: "{{ influxdb_bucket }}"
     _influxdb_port: 8086

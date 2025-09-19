@@ -41,7 +41,7 @@ cards:
           | Season | Active Days |
           |--------|-------------|
           {% for k, v in home_assistant_gardening.schedule.items() %}
-          | {{ k | title }} | {{ v | join(", ") }} |
+          | {{ k | ansible.builtin.title }} | {{ v | ansible.builtin.join(", ") }} |
           {% endfor %}
         card_mod:
           style:
@@ -67,7 +67,7 @@ cards:
       -
         type: 'custom:button-card'
         template: card_input_boolean
-        entity: automation.gardening_{{ g.name | lower | replace(" ", "_") }}
+        entity: automation.gardening_{{ g.name | ansible.builtin.lower | ansible.builtin.replace(" ", "_") }}
         variables:
           ulm_card_input_boolean_name: {{ g.name }}
           ulm_card_input_boolean_icon: mdi:{{ g.icon }}
@@ -92,10 +92,10 @@ cards:
                 type: custom:multiple-entity-row
                 name: Duration
                 icon: mdi:timer
-                entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
+                entity: sensor.smart_irrigation_{{ g.name | ansible.builtin.lower | ansible.builtin.replace(" ", "_") }}
                 show_state: false
                 entities:
-                  - entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
+                  - entity: sensor.smart_irrigation_{{ g.name | ansible.builtin.lower | ansible.builtin.replace(" ", "_") }}
                     name: Next
                     format: duration
                     hide_if: 0
@@ -108,7 +108,7 @@ cards:
                 attribute: bucket
                 icon: mdi:pail
                 unit: mm
-                entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
+                entity: sensor.smart_irrigation_{{ g.name | ansible.builtin.lower | ansible.builtin.replace(" ", "_") }}
               -
                 type: divider
               -
@@ -151,10 +151,10 @@ cards:
                 type: custom:multiple-entity-row
                 name: Duration
                 icon: mdi:timer
-                entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
+                entity: sensor.smart_irrigation_{{ g.name | ansible.builtin.lower | ansible.builtin.replace(" ", "_") }}
                 show_state: false
                 entities:
-                  - entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
+                  - entity: sensor.smart_irrigation_{{ g.name | ansible.builtin.lower | ansible.builtin.replace(" ", "_") }}
                     name: Next
                     format: duration
                     hide_if: 0
@@ -167,7 +167,7 @@ cards:
                 attribute: bucket
                 icon: mdi:pail
                 unit: mm
-                entity: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
+                entity: sensor.smart_irrigation_{{ g.name | ansible.builtin.lower | ansible.builtin.replace(" ", "_") }}
               -
                 type: divider
               -

@@ -63,8 +63,8 @@
         image: ghcr.io/jakewharton/mbsync:1.4.1
         env:
           CRON: "23 * * * *"
-          PUID: "{{ common_user_id | string }}"
-          PGID: "{{ common_group_id | string }}"
+          PUID: "{{ common_user_id | ansible.builtin.string }}"
+          PGID: "{{ common_group_id | ansible.builtin.string }}"
         volumes:
           - "{{ config_directory }}:/config"
           - "{{ common_directory_backup }}/emails:/mail"
@@ -175,7 +175,7 @@
     - name: Create virtual users
       ansible.builtin.copy:
         content: |
-          {{ email_backups[0].username }}:{SHA512}{{ email_backups[0].password | hash('sha512') }}::::::
+          {{ email_backups[0].username }}:{SHA512}{{ email_backups[0].password | ansible.builtin.hash('sha512') }}::::::
         dest: "{{ config_directory }}/conf/passwd"
         mode: "0644"
       notify: Restart
@@ -230,7 +230,7 @@
 
           ROUNDCUBEMAIL_DB_TYPE: "pgsql"
           ROUNDCUBEMAIL_DB_HOST: "{{ _postgres_hostname }}"
-          ROUNDCUBEMAIL_DB_PORT: "{{ _postgres_port | string }}"
+          ROUNDCUBEMAIL_DB_PORT: "{{ _postgres_port | ansible.builtin.string }}"
           ROUNDCUBEMAIL_DB_USER: "{{ _postgres_username }}"
           ROUNDCUBEMAIL_DB_PASSWORD: "{{ _postgres_password }}"
           ROUNDCUBEMAIL_DB_NAME: "{{ _postgres_database }}"

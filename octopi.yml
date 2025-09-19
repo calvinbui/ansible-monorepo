@@ -275,7 +275,7 @@
         key: "{{ item.key }}"
         value: "{{ item.value }}"
       notify: Restart OctoPrint
-      loop: "{{ _octoprint_config | dict2items }}"
+      loop: "{{ _octoprint_config | ansible.builtin.dict2items }}"
       vars:
         _octoprint_config:
           api.allowCrossOrigin: true

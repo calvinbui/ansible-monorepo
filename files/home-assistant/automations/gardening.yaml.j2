@@ -1,15 +1,15 @@
 #jinja2: lstrip_blocks: "true", trim_blocks: "false"
 ---
 {% for g in home_assistant_gardening.systems %}
-- id: gardening_{{ g.name | lower | replace(" ", "_") }}
+- id: gardening_{{ g.name | ansible.builtin.lower | ansible.builtin.replace(" ", "_") }}
   alias: Gardening - {{ g.name }}
   description: ""
   triggers:
     - platform: time
-      at: "{{ g.time | string }}"
+      at: "{{ g.time | ansible.builtin.string }}"
   conditions:
     - condition: numeric_state
-      entity_id: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
+      entity_id: sensor.smart_irrigation_{{ g.name | ansible.builtin.lower | ansible.builtin.replace(" ", "_") }}
       above: 0
     - condition: not
       conditions:
@@ -21,7 +21,7 @@
       condition: or
       conditions:
       {% for k, v in home_assistant_gardening.schedule.items() %}
-        - alias: {{ k | title }}
+        - alias: {{ k | ansible.builtin.title }}
           condition: and
           conditions:
             - condition: state
@@ -30,7 +30,7 @@
             - condition: time
               weekday:
               {% for s in v %}
-                - {{ s[:3] | lower }}
+                - {{ s[:3] | ansible.builtin.lower }}
               {% endfor %}
       {% endfor %}
   actions:
@@ -38,11 +38,11 @@
       target:
         entity_id: valve.linktap_{{ g.linktap }}
       data:
-        seconds: "{% raw %}{{ states(\"sensor.smart_irrigation_{% endraw %}{{ g.name | lower | replace(" ", "_") }}{% raw %}\") }}{% endraw %}"
+        seconds: "{% raw %}{{ states(\"sensor.smart_irrigation_{% endraw %}{{ g.name | ansible.builtin.lower | ansible.builtin.replace(" ", "_") }}{% raw %}\") }}{% endraw %}"
     - action: smart_irrigation.reset_bucket
       metadata: {}
       data: {}
       target:
-        entity_id: sensor.smart_irrigation_{{ g.name | lower | replace(" ", "_") }}
+        entity_id: sensor.smart_irrigation_{{ g.name | ansible.builtin.lower | ansible.builtin.replace(" ", "_") }}
   mode: single
 {% endfor %}

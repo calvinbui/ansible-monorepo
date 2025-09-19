@@ -16,13 +16,13 @@
     state: started
 
     hostname: "{{ postgres_name }}"
-    published_ports: "{{ postgres_ports | default(omit) }}"
+    published_ports: "{{ postgres_ports | ansible.builtin.default(omit) }}"
     networks:
-      - name: "{{ docker_network.name | default('bridge') }}"
-    network_mode: "{{ docker_network.name | default('omit') }}"
-    networks_cli_compatible: "{{ postgres_networks_cli_compatible | default(true) }}"
+      - name: "{{ docker_network.name | ansible.builtin.default('bridge') }}"
+    network_mode: "{{ docker_network.name | ansible.builtin.default('omit') }}"
+    networks_cli_compatible: "{{ postgres_networks_cli_compatible | ansible.builtin.default(true) }}"
 
-    command: "{{ postgres_command | default(omit) }}"
+    command: "{{ postgres_command | ansible.builtin.default(omit) }}"
 
     volumes: "{{ postgres_directories }}"
 
@@ -32,10 +32,10 @@
       POSTGRES_PASSWORD: "{{ postgres_password }}"
       POSTGRES_DB: "{{ postgres_database }}"
       TZ: "{{ common_timezone }}"
-      POSTGRES_INITDB_ARGS: "{{ postgres_initdb_args | default(omit) }}"
-      LC_COLLATE: "{{ lc_collate | default(omit) }}"
-      LC_CTYPE: "{{ lc_ctype | default(omit) }}"
-      POSTGRES_HOST_AUTH_METHOD: "{{ postgres_host_auth_method | default(omit) }}"
+      POSTGRES_INITDB_ARGS: "{{ postgres_initdb_args | ansible.builtin.default(omit) }}"
+      LC_COLLATE: "{{ lc_collate | ansible.builtin.default(omit) }}"
+      LC_CTYPE: "{{ lc_ctype | ansible.builtin.default(omit) }}"
+      POSTGRES_HOST_AUTH_METHOD: "{{ postgres_host_auth_method | ansible.builtin.default(omit) }}"
 
     healthcheck:
       test:
@@ -50,7 +50,7 @@
 
     restart_policy: unless-stopped
 
-    container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
+    container_default_behavior: "{{ container_default_behavior | ansible.builtin.default('no_defaults') }}"
 
     comparisons:
       env: allow_more_present

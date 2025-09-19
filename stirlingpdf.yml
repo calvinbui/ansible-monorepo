@@ -35,7 +35,7 @@
           SECURITY_OAUTH2_CLIENTSECRET: "{{ oidc_auth.stirlingpdf.secret }}"
           SECURITY_OAUTH2_USEASUSERNAME: "preferred_username"
           SECURITY_OAUTH2_SCOPES: "openid,profile,email"
-          SECURITY_OAUTH2_PROVIDER: "{{ oidc_provider | title }}"
+          SECURITY_OAUTH2_PROVIDER: "{{ oidc_provider | ansible.builtin.title }}"
 
           SYSTEM_DEFAULTLOCALE: "{{ common_language_iso_639 }}-{{ common_country_iso_3166 }}"
           SYSTEM_SHOWUPDATE: "false"

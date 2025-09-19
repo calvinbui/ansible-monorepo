@@ -116,7 +116,7 @@
           - op: add
             path: "{{ item.key }}"
             value: "{{ item.value }}"
-      loop: "{{ _overseerr_configuration | dict2items }}"
+      loop: "{{ _overseerr_configuration | ansible.builtin.dict2items }}"
       notify: Restart
       vars:
         _overseerr_configuration:
@@ -183,11 +183,11 @@
           notifications/agents/webhook/options/jsonPayload: >-
             {{
               _overseer_webhook_payload
-              | to_json
-              | regex_replace('"', '\\"')
-              | regex_replace('^', '"')
-              | regex_replace('$', '"')
-              | b64encode
+              | ansible.builtin.to_json
+              | ansible.builtin.regex_replace('"', '\\"')
+              | ansible.builtin.regex_replace('^', '"')
+              | ansible.builtin.regex_replace('$', '"')
+              | ansible.builtin.b64encode
             }}
 
         _overseerr_mattermost_webhook_id: !vault |

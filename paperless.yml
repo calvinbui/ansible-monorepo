@@ -19,7 +19,7 @@
           "APPS": [
             {
               "provider_id": "{{ oidc_provider }}",
-              "name": "{{ oidc_provider | title }}",
+              "name": "{{ oidc_provider | ansible.builtin.title }}",
               "client_id": "{{ application }}",
               "secret": "{{ oidc_auth.paperless.secret }}",
               "settings": {
@@ -46,7 +46,7 @@
         name: "{{ users.paperless.username }}"
         create_home: false
         home: "{{ users.paperless.home }}"
-        password: "{{ users.paperless.password | string | password_hash('sha512') }}"
+        password: "{{ users.paperless.password | ansible.builtin.string | ansible.builtin.password_hash('sha512') }}"
         update_password: on_create
         password_expire_max: -1
       register: _paperless_user
@@ -111,13 +111,13 @@
           - "{{ config_directory }}/export:/usr/src/paperless/export"
           - "{{ config_directory }}/consume:/usr/src/paperless/consume"
         env:
-          USERMAP_UID: "{{ _paperless_user.uid | string }}"
-          USERMAP_GID: "{{ common_group_id | string }}"
+          USERMAP_UID: "{{ _paperless_user.uid | ansible.builtin.string }}"
+          USERMAP_GID: "{{ common_group_id | ansible.builtin.string }}"
 
           PAPERLESS_REDIS: "{{ _valkey_url }}"
 
           PAPERLESS_DBHOST: "{{ _postgres_hostname }}"
-          PAPERLESS_DBPORT: "{{ _postgres_port | string }}"
+          PAPERLESS_DBPORT: "{{ _postgres_port | ansible.builtin.string }}"
           PAPERLESS_DBNAME: "{{ _postgres_database }}"
           PAPERLESS_DBUSER: "{{ _postgres_username }}"
           PAPERLESS_DBPASS: "{{ _postgres_password }}"
@@ -141,7 +141,7 @@
           PAPERLESS_ALLOWED_HOSTS: "https://{{ application }}.{{ common_tld }}"
           PAPERLESS_CORS_ALLOWED_HOSTS: "https://{{ application }}.{{ common_tld }}"
 
-          PAPERLESS_SOCIALACCOUNT_PROVIDERS: "{{ paperless_oidc | to_json }}"
+          PAPERLESS_SOCIALACCOUNT_PROVIDERS: "{{ paperless_oidc | ansible.builtin.to_json }}"
           PAPERLESS_DISABLE_REGULAR_LOGIN: "true"
 
           PAPERLESS_OCR_LANGUAGE: "eng"
@@ -150,7 +150,7 @@
           PAPERLESS_APPS: "allauth.socialaccount.providers.openid_connect"
 
           PAPERLESS_EMAIL_HOST: "{{ common_email_server }}"
-          PAPERLESS_EMAIL_PORT: "{{ common_email_port | string }}"
+          PAPERLESS_EMAIL_PORT: "{{ common_email_port | ansible.builtin.string }}"
           PAPERLESS_EMAIL_HOST_USER: "{{ common_email_username }}"
           PAPERLESS_EMAIL_FROM: "{{ application }}{{ common_email_to }}"
           PAPERLESS_EMAIL_HOST_PASSWORD: "{{ common_email_password }}"
@@ -200,7 +200,7 @@
         dest: "{{ config_directory }}/ai/.env"
         regexp: "^{{ item.key }}="
         line: "{{ item.key }}={{ item.value }}"
-      loop: "{{ paperless_ai_config | dict2items }}"
+      loop: "{{ paperless_ai_config | ansible.builtin.dict2items }}"
       notify: Restart AI
       vars:
         paperless_ai_config:

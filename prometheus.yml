@@ -41,7 +41,7 @@
     - name: Copy rules
       ansible.builtin.copy:
         src: "{{ files_directory }}/rules/"
-        dest: "{{ _dir.results | selectattr('item', 'match', 'rules') | flatten | map(attribute='path') | first }}/"
+        dest: "{{ _dir.results | ansible.builtin.selectattr('item', 'match', 'rules') | ansible.builtin.flatten | ansible.builtin.map(attribute='path') | ansible.builtin.first }}/"
         owner: "65534"  # nobody user
         group: "{{ common_group }}"
         mode: "0444"
@@ -51,7 +51,7 @@
     - name: Template configs
       ansible.builtin.template:
         src: "{{ files_directory }}/prometheus.yml.j2"
-        dest: "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}/prometheus.yml"
+        dest: "{{ _dir.results | ansible.builtin.selectattr('item', 'match', 'config') | ansible.builtin.flatten | ansible.builtin.map(attribute='path') | ansible.builtin.first }}/prometheus.yml"
         owner: "65534"  # nobody user
         group: "{{ common_group }}"
         mode: "0444"
@@ -86,9 +86,9 @@
           - --storage.tsdb.min-block-duration=2h
           - --storage.tsdb.max-block-duration=2h
         volumes:
-          - "{{ _dir.results | selectattr('item', 'match', 'config') | flatten | map(attribute='path') | first }}:/etc/prometheus"
-          - "{{ _dir.results | selectattr('item', 'match', 'rules') | flatten | map(attribute='path') | first }}:/rules"
-          - "{{ _dir.results | selectattr('item', 'match', 'data') | flatten | map(attribute='path') | first }}:/prometheus"
+          - "{{ _dir.results | ansible.builtin.selectattr('item', 'match', 'config') | ansible.builtin.flatten | ansible.builtin.map(attribute='path') | ansible.builtin.first }}:/etc/prometheus"
+          - "{{ _dir.results | ansible.builtin.selectattr('item', 'match', 'rules') | ansible.builtin.flatten | ansible.builtin.map(attribute='path') | ansible.builtin.first }}:/rules"
+          - "{{ _dir.results | ansible.builtin.selectattr('item', 'match', 'data') | ansible.builtin.flatten | ansible.builtin.map(attribute='path') | ansible.builtin.first }}:/prometheus"
 
           - "{{ prometheus_scrape_directory }}:/scrape_config_files"
 

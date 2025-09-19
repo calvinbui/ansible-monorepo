@@ -16,7 +16,7 @@
       weight: {{ item.weight }}
       {% if 'widget' in item %}
       widget:
-        {{ item.widget | to_json(vault_to_text=True) | from_json | to_nice_yaml | indent(8) }}
+        {{ item.widget | ansible.builtin.to_json(vault_to_text=True) | ansible.builtin.from_json | ansible.builtin.to_nice_yaml | ansible.builtin.indent(8) }}
       {% endif %}
   {% endfor %}
 {% endif %}

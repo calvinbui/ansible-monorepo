@@ -74,7 +74,7 @@ identity_providers:
   oidc:
     jwks:
       - key: |
-          {{ _authelia_private_key.privatekey | indent(10) }}
+          {{ _authelia_private_key.privatekey | ansible.builtin.indent(10) }}
 
     cors:
       endpoints:
@@ -100,9 +100,9 @@ identity_providers:
     clients:
       {% for k, v in oidc_auth.items() %}
       - client_id: {{ k }}
-        client_name: {{ k | title }}
+        client_name: {{ k | ansible.builtin.title }}
         {% if 'secret' in v %}
-        client_secret: "{{ v.secret | string | argon2(authelia_salt) }}"
+        client_secret: "{{ v.secret | ansible.builtin.string | argon2(authelia_salt) }}"
         public: false
         {% else %}
         public: true

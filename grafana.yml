@@ -88,7 +88,7 @@
           GF_AUTH_DISABLE_LOGIN_FORM: "true"
 
           GF_AUTH_GENERIC_OAUTH_ENABLED: "true"
-          GF_AUTH_GENERIC_OAUTH_NAME: "{{ oidc_provider | title }}"
+          GF_AUTH_GENERIC_OAUTH_NAME: "{{ oidc_provider | ansible.builtin.title }}"
           GF_AUTH_GENERIC_OAUTH_ICON: signin
           GF_AUTH_GENERIC_OAUTH_CLIENT_ID: "{{ application }}"
           GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET: "{{ oidc_auth.grafana.secret }}"
@@ -108,7 +108,7 @@
           GF_DATE_FORMATS_DEFAULT_WEEK_START: "monday"
 
           GF_DATABASE_TYPE: "postgres"
-          GF_DATABASE_HOST: "{{ _postgres_hostname }}:{{ _postgres_port | string }}"
+          GF_DATABASE_HOST: "{{ _postgres_hostname }}:{{ _postgres_port | ansible.builtin.string }}"
           GF_DATABASE_NAME: "{{ _postgres_database }}"
           GF_DATABASE_USER: "{{ _postgres_username }}"
           GF_DATABASE_PASSWORD: "{{ _postgres_password }}"

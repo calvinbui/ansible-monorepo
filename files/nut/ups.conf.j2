@@ -2,5 +2,5 @@ maxretry = {{ nut_max_retry }}
 
 {% for k, v in nut_ups_devices.items() %}
 [{{ k }}]
-  {{ v | indent(2) }}
+  {{ v | ansible.builtin.indent(2) }}
 {% endfor %}

@@ -23,15 +23,15 @@
     state: started
 
     hostname: "{{ elasticsearch_name }}"
-    published_ports: "{{ elasticsearch_ports | default(omit) }}"
+    published_ports: "{{ elasticsearch_ports | ansible.builtin.default(omit) }}"
     networks:
-      - name: "{{ docker_network.name | default('bridge') }}"
-    network_mode: "{{ docker_network.name | default('omit') }}"
-    networks_cli_compatible: "{{ elasticsearch_networks_cli_compatible | default(true) }}"
+      - name: "{{ docker_network.name | ansible.builtin.default('bridge') }}"
+    network_mode: "{{ docker_network.name | ansible.builtin.default('omit') }}"
+    networks_cli_compatible: "{{ elasticsearch_networks_cli_compatible | ansible.builtin.default(true) }}"
 
-    command: "{{ elasticsearch_command | default(omit) }}"
+    command: "{{ elasticsearch_command | ansible.builtin.default(omit) }}"
 
-    memory: "{{ elasticsearch_memory | default('1G') }}"
+    memory: "{{ elasticsearch_memory | ansible.builtin.default('1G') }}"
 
     env: "{{
         {
@@ -41,7 +41,7 @@
           'ES_SETTING_XPACK_SECURITY_ENABLED': 'false',
           'ES_SETTING_BOOTSTRAP_MEMORY__LOCK': 'true',
           'ES_SETTING_LOGGER_ORG_ELASTICSEARCH': 'WARN'
-        } | combine(elasticsearch_environment)
+        } | ansible.builtin.combine(elasticsearch_environment)
       }}"
 
     volumes:
@@ -52,7 +52,7 @@
 
     restart_policy: unless-stopped
 
-    container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
+    container_default_behavior: "{{ container_default_behavior | ansible.builtin.default('no_defaults') }}"
 
     comparisons:
       networks: strict

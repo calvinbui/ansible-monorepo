@@ -25,8 +25,8 @@
       vars:
         image: ghcr.io/wizarrrr/wizarr:v2025.9.4
         env:
-          PUID: "{{ common_user_id | string }}"
-          PGID: "{{ common_group_id | string }}"
+          PUID: "{{ common_user_id | ansible.builtin.string }}"
+          PGID: "{{ common_group_id | ansible.builtin.string }}"
           DISABLE_BUILTIN_AUTH: "false"
           TZ: "{{ common_timezone }}"
         volumes:

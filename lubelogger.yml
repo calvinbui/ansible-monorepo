@@ -50,7 +50,7 @@
 
           MailConfig__EmailServer: "{{ common_email_server }}"
           MailConfig__EmailFrom: "{{ application }}{{ common_email_to }}"
-          MailConfig__Port: "{{ common_email_port | string }}"
+          MailConfig__Port: "{{ common_email_port | ansible.builtin.string }}"
           MailConfig__Username: "{{ common_email_username }}"
           MailConfig__Password: "{{ common_email_password }}"
 
@@ -60,7 +60,7 @@
 
           LUBELOGGER_ALLOWED_FILE_EXTENSIONS: "*"
 
-          OpenIDConfig__Name: "{{ oidc_provider | title }}"
+          OpenIDConfig__Name: "{{ oidc_provider | ansible.builtin.title }}"
           OpenIDConfig__ClientId: "{{ application }}"
           OpenIDConfig__ClientSecret: "{{ oidc_auth.lubelogger.secret }}"
           OpenIDConfig__AuthURL: "{{ oidc_auth_url }}"
@@ -106,7 +106,7 @@
           - op: add
             path: "{{ item.key }}"
             value: "{{ item.value }}"
-      loop: "{{ _lubelogger_configuration | dict2items }}"
+      loop: "{{ _lubelogger_configuration | ansible.builtin.dict2items }}"
       vars:
         _lubelogger_configuration:
           UseSystemColorMode: true

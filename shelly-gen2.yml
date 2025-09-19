@@ -271,7 +271,7 @@
           params:
             user: "{{ shelly_common_config.auth.user }}"
             realm: "{{ item.device_id }}"
-            ha1: "{{ [shelly_common_config.auth.user, item.device_id, shelly_common_config.auth.pass] | join(':') | hash('sha256') }}"
+            ha1: "{{ [shelly_common_config.auth.user, item.device_id, shelly_common_config.auth.pass] | ansible.builtin.join(':') | ansible.builtin.hash('sha256') }}"
       loop: "{{ shelly_devices }}"
 
     - name: Configure settings
@@ -281,8 +281,8 @@
           id: 1
           method: "{{ item.1.method }}"
           params:
-            config: "{{ shelly_common_config[item.1.config_key] | combine((item.0.settings[item.1.config_key] | default({})), recursive=True) }}"
-      loop: "{{ shelly_devices | product(config_methods) | list }}"
+            config: "{{ shelly_common_config[item.1.config_key] | ansible.builtin.combine((item.0.settings[item.1.config_key] | ansible.builtin.default({})), recursive=True) }}"
+      loop: "{{ shelly_devices | ansible.builtin.product(config_methods) | ansible.builtin.list }}"
       register: _shelly_gen2_results
       vars:
         config_methods:
@@ -323,8 +323,8 @@
           method: Switch.SetConfig
           params:
             id: "{{ item.1 }}"
-            config: "{{ item.0.relay[item.1] | combine(shelly_common_config.relay) }}"
-      loop: "{{ shelly_devices | product(range(2)) | list }}"
+            config: "{{ item.0.relay[item.1] | ansible.builtin.combine(shelly_common_config.relay) }}"
+      loop: "{{ shelly_devices | ansible.builtin.product(range(2)) | ansible.builtin.list }}"
       register: _shelly_gen2_relay
       when: "item.0.relay is defined and item.0.relay[item.1] is defined"
       failed_when: "'error' in _shelly_gen2_relay.json"
@@ -335,7 +335,7 @@
       ansible.builtin.set_fact:
         devices_to_restart: >-
           {{
-            shelly_devices | selectattr('ip', 'in',
+            shelly_devices | ansible.builtin.selectattr('ip', 'in',
               _shelly_gen2_results.results |
               selectattr('json.result.restart_required', 'true') |
               map(attribute='item.0.ip') |

@@ -104,7 +104,7 @@
           - port: 80
             rule: Host(`{{ application }}.{{ common_tld }}`)
         homepage:
-          name: "{{ application | title }} Server"
+          name: "{{ application | ansible.builtin.title }} Server"
           group: Programming
           weight: 400
           description: "CI"
@@ -138,7 +138,7 @@
           - port: 3000
             rule: Host(`{{ application }}-runner.{{ common_tld }}`)
         homepage:
-          name: "{{ application | title }} Runner"
+          name: "{{ application | ansible.builtin.title }} Runner"
           href: "https://{{ application }}-runner.{{ common_tld }}"
           group: Programming
           weight: 400
@@ -166,7 +166,7 @@
       community.docker.docker_image:
         build:
           path: "{{ item.path }}"
-        name: "calvinbui/{{ item.path.split('/') | last }}:localhost"
+        name: "calvinbui/{{ item.path.split('/') | ansible.builtin.last }}:localhost"
         tag: latest
         push: false
         source: build

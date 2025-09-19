@@ -3,5 +3,5 @@
 labels: {}
 
 network:
-  - name: "{{ docker_network.name | default('bridge') }}"
-    ipv4_address: "{{ ipv4_address | default(omit) }}"
+  - name: "{{ docker_network.name | ansible.builtin.default('bridge') }}"
+    ipv4_address: "{{ ipv4_address | ansible.builtin.default(omit) }}"

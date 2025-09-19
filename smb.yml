@@ -66,4 +66,4 @@
         executable: /bin/bash
       register: samba_verify_users
       changed_when: "'New SMB password' in samba_verify_users.stdout"
-      loop: "{{ users | dict2items }}"
+      loop: "{{ users | ansible.builtin.dict2items }}"

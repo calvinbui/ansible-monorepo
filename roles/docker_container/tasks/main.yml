@@ -12,7 +12,7 @@
 # User-provided labels
 - name: Merge labels into combined_labels
   ansible.builtin.set_fact:
-    combined_labels: "{{ labels }}"
+    combined_labels: "{{ labels if labels is not string else labels | ansible.builtin.from_json }}"
 
 # Prometheus service discovery
 - name: Generate Prometheus service discovery labels
@@ -24,7 +24,7 @@
 
 - name: Merge generated Prometheus and Docker labels
   ansible.builtin.set_fact:
-    combined_labels: "{{ combined_labels | combine(metrics_labels, recursive=True) }}"
+    combined_labels: "{{ combined_labels | ansible.builtin.combine(metrics_labels, recursive=True) }}"
   when: metrics is defined
 
 # Traefik labels
@@ -35,16 +35,16 @@
   loop_control:
     loop_var: route
   vars:
-    route_name: "{{ route.name | default(name) | default(application) }}"
+    route_name: "{{ route.name | ansible.builtin.default(name) | ansible.builtin.default(application) }}"
 
 - name: Merge generated Traefik and Docker labels
   ansible.builtin.set_fact:
-    combined_labels: "{{ combined_labels | combine(traefik_labels, recursive=True) }}"
+    combined_labels: "{{ combined_labels | ansible.builtin.combine(traefik_labels, recursive=True) }}"
   when: traefik is defined
 
 - name: Disable Traefik labels
   ansible.builtin.set_fact:
-    combined_labels: "{{ {'traefik.enable': 'false'} | combine(combined_labels) }}"
+    combined_labels: "{{ {'traefik.enable': 'false'} | ansible.builtin.combine(combined_labels) }}"
   when: traefik is undefined
 
 # homepage labels
@@ -52,11 +52,11 @@
   ansible.builtin.include_tasks: homepage.yml
   when: homepage is defined
   vars:
-    app_name: "{{ name | default(application) }}"
+    app_name: "{{ name | ansible.builtin.default(application) }}"
 
 - name: Merge generated Homepage and Docker labels
   ansible.builtin.set_fact:
-    combined_labels: "{{ combined_labels | combine(homepage_labels, recursive=True) }}"
+    combined_labels: "{{ combined_labels | ansible.builtin.combine(homepage_labels, recursive=True) }}"
   when: homepage is defined
 
 # Prometheus Blackbox service discovery using Traefik
@@ -64,12 +64,12 @@
   ansible.builtin.include_tasks: blackbox.yml
   when: (traefik is defined or blackbox is defined) and (blackbox.enable is true or blackbox.enable is undefined) and ((route.type is defined and route.type != "udp") or route.type is undefined)
   vars:
-    route: "{{ traefik | first }}"  # only loop once on the main entrypoint
-    route_name: "{{ route.name | default(name) | default(application) }}"
+    route: "{{ traefik | ansible.builtin.first }}"  # only loop once on the main entrypoint
+    route_name: "{{ route.name | ansible.builtin.default(name) | ansible.builtin.default(application) }}"
 
 - name: Merge generated Blackbox and Docker labels
   ansible.builtin.set_fact:
-    combined_labels: "{{ combined_labels | combine(blackbox_labels, recursive=True) }}"
+    combined_labels: "{{ combined_labels | ansible.builtin.combine(blackbox_labels, recursive=True) }}"
   when: blackbox_labels is defined
 
 # Watchtower labels
@@ -79,65 +79,65 @@
 
 - name: Merge generated Watchtower and Docker labels
   ansible.builtin.set_fact:
-    combined_labels: "{{ combined_labels | combine(watchtower_labels, recursive=True) }}"
+    combined_labels: "{{ combined_labels | ansible.builtin.combine(watchtower_labels, recursive=True) }}"
   when: watchtower_labels is defined
 
 # Create container
-- name: "Create docker container for {{ name | default(application) }}"
+- name: "Create docker container for {{ name | ansible.builtin.default(application) }}"
   community.docker.docker_container:
-    name: "{{ name | default(application) }}"
+    name: "{{ name | ansible.builtin.default(application) }}"
 
-    image: "{{ image | default(omit) }}"
-    entrypoint: "{{ entrypoint | default(omit) }}"
-    command: "{{ command | default(omit) }}"
+    image: "{{ image | ansible.builtin.default(omit) }}"
+    entrypoint: "{{ entrypoint | ansible.builtin.default(omit) }}"
+    command: "{{ command | ansible.builtin.default(omit) }}"
 
-    state: "{{ state | default('started') }}"
-    recreate: "{{ recreate | default(false) }}"
-    restart_policy: "{{ restart_policy | default('unless-stopped') }}"
-    auto_remove: "{{ auto_remove | default(omit) }}"
+    state: "{{ state | ansible.builtin.default('started') }}"
+    recreate: "{{ recreate | ansible.builtin.default(false) }}"
+    restart_policy: "{{ restart_policy | ansible.builtin.default('unless-stopped') }}"
+    auto_remove: "{{ auto_remove | ansible.builtin.default(omit) }}"
 
-    user: "{{ user | default(omit) }}"
+    user: "{{ user | ansible.builtin.default(omit) }}"
 
-    env: "{{ env | default(omit) }}"
+    env: "{{ env | ansible.builtin.default(omit) }}"
 
-    read_only: "{{ read_only | default(omit) }}"
-    volumes: "{{ volumes | default(omit) }}"
-    keep_volumes: "{{ keep_volumes | default(false) }}"
-    tmpfs: "{{ tmpfs | default(omit) }}"
-    shm_size: "{{ shm_size | default(omit) }}"
+    read_only: "{{ read_only | ansible.builtin.default(omit) }}"
+    volumes: "{{ volumes | ansible.builtin.default(omit) }}"
+    keep_volumes: "{{ keep_volumes | ansible.builtin.default(false) }}"
+    tmpfs: "{{ tmpfs | ansible.builtin.default(omit) }}"
+    shm_size: "{{ shm_size | ansible.builtin.default(omit) }}"
 
-    hostname: "{{ name | default(omit) }}"
+    hostname: "{{ name | ansible.builtin.default(omit) }}"
     networks: "{{ network }}"
-    dns_servers: "{{ docker_network.dns | default(omit) }}"
+    dns_servers: "{{ docker_network.dns | ansible.builtin.default(omit) }}"
     dns_search_domains: "{{ docker_network.name }}"
-    network_mode: "{{ docker_network.name | default(omit) }}"
-    published_ports: "{{ published_ports | default(omit) }}"
-    exposed_ports: "{{ exposed_ports | default(omit) }}"
-    networks_cli_compatible: "{{ networks_cli_compatible | default(true) }}"
+    network_mode: "{{ docker_network.name | ansible.builtin.default(omit) }}"
+    published_ports: "{{ published_ports | ansible.builtin.default(omit) }}"
+    exposed_ports: "{{ exposed_ports | ansible.builtin.default(omit) }}"
+    networks_cli_compatible: "{{ networks_cli_compatible | ansible.builtin.default(true) }}"
 
-    security_opts: "{{ security_opts | default(omit) }}"
-    sysctls: "{{ sysctls | default(omit) }}"
-    capabilities: "{{ capabilities | default(omit) }}"
-    cap_drop: "{{ cap_drop | default(omit) }}"
-    pid_mode: "{{ pid_mode | default(omit) }}"
-    privileged: "{{ privileged | default(omit) }}"
-    devices: "{{ devices | default(omit) }}"
-    device_requests: "{{ device_requests | default(omit) }}"
+    security_opts: "{{ security_opts | ansible.builtin.default(omit) }}"
+    sysctls: "{{ sysctls | ansible.builtin.default(omit) }}"
+    capabilities: "{{ capabilities | ansible.builtin.default(omit) }}"
+    cap_drop: "{{ cap_drop | ansible.builtin.default(omit) }}"
+    pid_mode: "{{ pid_mode | ansible.builtin.default(omit) }}"
+    privileged: "{{ privileged | ansible.builtin.default(omit) }}"
+    devices: "{{ devices | ansible.builtin.default(omit) }}"
+    device_requests: "{{ device_requests | ansible.builtin.default(omit) }}"
 
-    container_default_behavior: "{{ container_default_behavior | default('no_defaults') }}"
-    command_handling: "{{ command_handling | default('correct') }}"
-    init: "{{ init | default(omit) }}"
+    container_default_behavior: "{{ container_default_behavior | ansible.builtin.default('no_defaults') }}"
+    command_handling: "{{ command_handling | ansible.builtin.default('correct') }}"
+    init: "{{ init | ansible.builtin.default(omit) }}"
 
-    healthcheck: "{{ healthcheck | default(omit) }}"
+    healthcheck: "{{ healthcheck | ansible.builtin.default(omit) }}"
 
-    log_driver: "{{ log_driver | default('json-file') }}"
+    log_driver: "{{ log_driver | ansible.builtin.default('json-file') }}"
     log_options:
       max-size: "1m"
       max-file: "1"
 
-    interactive: "{{ interactive | default(omit) }}"
-    tty: "{{ tty | default(omit) }}"
+    interactive: "{{ interactive | ansible.builtin.default(omit) }}"
+    tty: "{{ tty | ansible.builtin.default(omit) }}"
 
     labels: "{{ combined_labels }}"
 
-    comparisons: "{{ {'volumes': 'strict', 'networks': 'strict'} | combine(comparisons | default({})) }}"
+    comparisons: "{{ {'volumes': 'strict', 'networks': 'strict'} | ansible.builtin.combine(comparisons | ansible.builtin.default({})) }}"

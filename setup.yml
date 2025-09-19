@@ -190,7 +190,7 @@
         regex: "^{{ item.key }}"
         line: "{{ item.key }} {{ item.value }};"
         validate: "echo %s && unattended-upgrades --dry-run"
-      loop: "{{ items | dict2items }}"
+      loop: "{{ items | ansible.builtin.dict2items }}"
       vars:
         items:
           "Unattended-Upgrade::MinimalSteps": "true"

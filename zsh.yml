@@ -55,8 +55,8 @@
       ansible.builtin.git:
         repo: "{{ item.repo }}"
         dest: "~/.oh-my-zsh/custom/plugins/{{ item.name }}"
-        version: "{{ item.version | default(omit) }}"
-        update: "{{ item.update | bool | default(false) }}"
+        version: "{{ item.version | ansible.builtin.default(omit) }}"
+        update: "{{ item.update | ansible.builtin.bool | ansible.builtin.default(false) }}"
       when: item.repo is defined
       loop: "{{ zsh_plugins }}"
       become: false
@@ -65,8 +65,8 @@
     - name: Clone theme
       ansible.builtin.git:
         repo: "{{ zsh_theme.repo }}"
-        dest: "~/.oh-my-zsh/custom/themes/{{ zsh_theme.repo.split('/') | last | regex_replace('.git$', '') }}"
-        version: "{{ zsh_theme.version | default(omit) }}"
+        dest: "~/.oh-my-zsh/custom/themes/{{ zsh_theme.repo.split('/') | ansible.builtin.last | ansible.builtin.regex_replace('.git$', '') }}"
+        version: "{{ zsh_theme.version | ansible.builtin.default(omit) }}"
       become: false
       become_user: "{{ common_user }}"
 
@@ -116,7 +116,7 @@
         mode: "0700"
       become: false
       become_user: "{{ common_user }}"
-      loop: "{{ _zsh_scripts | dict2items }}"
+      loop: "{{ _zsh_scripts | ansible.builtin.dict2items }}"
       vars:
         _zsh_scripts:
           show-updates: |

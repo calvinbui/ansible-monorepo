@@ -69,7 +69,7 @@
 
           NTFY_AUTH_USERS: >-
             {%- for user in ntfy_users -%}
-            {{ user.username }}:{{ user.password | string | ansible.builtin.password_hash('bcrypt', salt=(ntfy_salt | string)) }}:{{ user.role }}
+            {{ user.username }}:{{ user.password | ansible.builtin.string | ansible.builtin.password_hash('bcrypt', salt=(ntfy_salt | ansible.builtin.string)) }}:{{ user.role }}
             {%- if not loop.last -%},{%- endif -%}
             {%- endfor -%}
 

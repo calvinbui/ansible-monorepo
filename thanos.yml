@@ -36,7 +36,7 @@
           - sidecar
           - --prometheus.url=http://prometheus.{{ docker_network.name }}:9090
           - --tsdb.path=/prometheus-data
-          - --objstore.config={{ thanos_objstore_config | to_nice_yaml }}
+          - --objstore.config={{ thanos_objstore_config | ansible.builtin.to_nice_yaml }}
         volumes:
           - "{{ common_directory }}/prometheus/data:/prometheus-data"
           - "{{ config_directory }}/data:/thanos-data"
@@ -52,7 +52,7 @@
         command:
           - store
           - --data-dir=/store
-          - --objstore.config={{ thanos_objstore_config | to_nice_yaml }}
+          - --objstore.config={{ thanos_objstore_config | ansible.builtin.to_nice_yaml }}
         volumes:
           - "{{ config_directory }}/store:/store"
           - "{{ config_directory }}/data:/thanos-data:ro"
@@ -69,7 +69,7 @@
         command:
           - compact
           - --data-dir=/compactor
-          - --objstore.config={{ thanos_objstore_config | to_nice_yaml }}
+          - --objstore.config={{ thanos_objstore_config | ansible.builtin.to_nice_yaml }}
 
           - --wait
           - --retention.resolution-raw=7d
@@ -128,7 +128,7 @@
           - tools
           - bucket
           - web
-          - --objstore.config={{ thanos_objstore_config | to_nice_yaml }}
+          - --objstore.config={{ thanos_objstore_config | ansible.builtin.to_nice_yaml }}
         volumes:
           - "{{ config_directory }}/data:/thanos-data:ro"
         traefik:

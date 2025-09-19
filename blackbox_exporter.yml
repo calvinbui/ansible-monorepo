@@ -51,7 +51,7 @@
     - name: Create scrape config for Prometheus
       ansible.builtin.template:
         src: "{{ item }}"
-        dest: "{{ prometheus_scrape_directory }}/{{ application }}-{{ item | basename | regex_replace('\\.j2$', '') }}"
+        dest: "{{ prometheus_scrape_directory }}/{{ application }}-{{ item | ansible.builtin.basename | ansible.builtin.regex_replace('\\.j2$', '') }}"
         mode: "0755"
         owner: "65534"  # nobody user
         group: "{{ common_group }}"

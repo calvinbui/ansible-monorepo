@@ -6,7 +6,7 @@
 
 - name: "Add additional HTTPS middlewares"
   ansible.builtin.set_fact:
-    route_middlewares: "{{ route_middlewares + route.middlewares | default([]) }}"
+    route_middlewares: "{{ route_middlewares + route.middlewares | ansible.builtin.default([]) }}"
 
 - name: Add forward auth
   when:
@@ -18,7 +18,7 @@
 - name: "Generating HTTP Traefik labels for {{ route_name }}"
   when: traefik and (route.type is undefined or (route.type is defined and route.type == "http"))
   ansible.builtin.set_fact:
-    traefik_labels: "{{ traefik_labels | default({}) | combine({item.key: item.value}) }}"
+    traefik_labels: "{{ traefik_labels | ansible.builtin.default({}) | ansible.builtin.combine({item.key: item.value}) }}"
   loop:
     # service
     - key: "traefik.http.routers.{{ route_name }}.service"
@@ -26,58 +26,58 @@
     - key: "traefik.http.routers.{{ route_name }}-secure.service"
       value: "{{ route_name }}"
     - key: "traefik.http.services.{{ route_name }}.loadbalancer.server.port"
-      value: "{{ route.port | string }}"
+      value: "{{ route.port | ansible.builtin.string }}"
 
     # http
     - key: "traefik.http.routers.{{ route_name }}.entrypoints"
-      value: "{{ route.http.entrypoints | default('web') }}"
+      value: "{{ route.http.entrypoints | ansible.builtin.default('web') }}"
     - key: "traefik.http.routers.{{ route_name }}.middlewares"
-      value: "{{ route.http.middlewares | default('redirect@file') }}"
+      value: "{{ route.http.middlewares | ansible.builtin.default('redirect@file') }}"
     - key: "traefik.http.routers.{{ route_name }}.rule"
-      value: "{{ route.rule | default('Host(`{{ route_name }}.{{ common_tld }}`)') }}"
+      value: "{{ route.rule | ansible.builtin.default('Host(`{{ route_name }}.{{ common_tld }}`)') }}"
 
     # https
     - key: "traefik.http.routers.{{ route_name }}-secure.entrypoints"
-      value: "{{ route.https.entrypoints | default('web-secure') }}"
+      value: "{{ route.https.entrypoints | ansible.builtin.default('web-secure') }}"
     - key: "traefik.http.routers.{{ route_name }}-secure.rule"
-      value: "{{ route.rule | default('Host(`{{ route_name }}.{{ common_tld }}`)') }}"
+      value: "{{ route.rule | ansible.builtin.default('Host(`{{ route_name }}.{{ common_tld }}`)') }}"
     - key: "traefik.http.routers.{{ route_name }}-secure.tls"
-      value: "{{ route.tls.enabled | default(true) | string | lower }}"
+      value: "{{ route.tls.enabled | ansible.builtin.default(true) | ansible.builtin.string | ansible.builtin.lower }}"
     - key: "traefik.http.routers.{{ route_name }}-secure.tls.certresolver"
-      value: "{{ route.tls.certresolver | default(traefik_certresolver) }}"
+      value: "{{ route.tls.certresolver | ansible.builtin.default(traefik_certresolver) }}"
     - key: "traefik.http.routers.{{ route_name }}-secure.middlewares"
       value: "{{ ','.join(route_middlewares) }}"
 
 - name: "Generating UDP Traefik labels for {{ route_name }}"
   when: traefik and (route.type is defined and route.type == "udp")
   ansible.builtin.set_fact:
-    traefik_labels: "{{ traefik_labels | default({}) | combine({item.key: item.value}) }}"
+    traefik_labels: "{{ traefik_labels | ansible.builtin.default({}) | ansible.builtin.combine({item.key: item.value}) }}"
   loop:
     - key: "traefik.udp.routers.{{ route_name }}.entrypoints"
       value: "{{ route_name }}"
     - key: "traefik.udp.routers.{{ route_name }}.service"
       value: "{{ route_name }}"
     - key: "traefik.udp.services.{{ route_name }}.loadbalancer.server.port"
-      value: "{{ route.port | string }}"
+      value: "{{ route.port | ansible.builtin.string }}"
 
 - name: "Generating TCP Traefik labels for {{ route_name }}"
   when: traefik and (route.type is defined and route.type == "tcp")
   ansible.builtin.set_fact:
-    traefik_labels: "{{ traefik_labels | default({}) | combine({item.key: item.value}) }}"
+    traefik_labels: "{{ traefik_labels | ansible.builtin.default({}) | ansible.builtin.combine({item.key: item.value}) }}"
   loop:
     - key: "traefik.tcp.routers.{{ route_name }}.entrypoints"
       value: "{{ route_name }}"
     - key: "traefik.tcp.routers.{{ route_name }}.service"
       value: "{{ route_name }}"
     - key: "traefik.tcp.services.{{ route_name }}.loadbalancer.server.port"
-      value: "{{ route.port | string }}"
+      value: "{{ route.port | ansible.builtin.string }}"
     - key: "traefik.tcp.routers.{{ route_name }}.rule"
-      value: "{{ route.rule | default('HostSNI(`*`)') }}"
+      value: "{{ route.rule | ansible.builtin.default('HostSNI(`*`)') }}"
 
 - name: Add {{ route_name }} priority
   when: route.priority is defined
   ansible.builtin.set_fact:
-    traefik_labels: "{{ traefik_labels | default({}) | combine({item.key: item.value}) }}"
+    traefik_labels: "{{ traefik_labels | ansible.builtin.default({}) | ansible.builtin.combine({item.key: item.value}) }}"
   loop:
-    - key: "traefik.{{ route.type | default('http') }}.routers.{{ route_name }}-secure.priority"
-      value: "{{ route.priority | string }}"
+    - key: "traefik.{{ route.type | ansible.builtin.default('http') }}.routers.{{ route_name }}-secure.priority"
+      value: "{{ route.priority | ansible.builtin.string }}"

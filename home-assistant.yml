@@ -92,7 +92,7 @@
         - name: Template integrations
           ansible.builtin.template:
             src: "{{ item }}"
-            dest: "{{ home_assistant_integrations_dir }}/{{ item | basename | regex_replace('\\.j2$', '') }}"
+            dest: "{{ home_assistant_integrations_dir }}/{{ item | ansible.builtin.basename | ansible.builtin.regex_replace('\\.j2$', '') }}"
             mode: "0644"
           notify: Restart
           with_fileglob:
@@ -101,8 +101,8 @@
         - name: Include integration config within main configuration file
           ansible.builtin.lineinfile:
             path: "{{ home_assistant_configuration }}"
-            regexp: "^{{ item | basename | regex_replace('\\.yaml.j2$', '') }}"
-            line: "{{ item | basename | regex_replace('\\.yaml.j2$', '') }}: !include integrations/{{ item | basename | regex_replace('\\.j2$', '') }}"
+            regexp: "^{{ item | ansible.builtin.basename | ansible.builtin.regex_replace('\\.yaml.j2$', '') }}"
+            line: "{{ item | ansible.builtin.basename | ansible.builtin.regex_replace('\\.yaml.j2$', '') }}: !include integrations/{{ item | ansible.builtin.basename | ansible.builtin.regex_replace('\\.j2$', '') }}"
             state: present
           notify: Restart
           with_fileglob:
@@ -193,7 +193,7 @@
                 6338613462656433343035393333663239323331316563303266
 
               GOVEE_MQTT_HOST: "{{ mqtt_host }}"
-              GOVEE_MQTT_PORT: "{{ mqtt_port | string }}"
+              GOVEE_MQTT_PORT: "{{ mqtt_port | ansible.builtin.string }}"
               GOVEE_MQTT_USER: "govee2mqtt"
               GOVEE_MQTT_PASSWORD: !vault |
                 $ANSIBLE_VAULT;1.1;AES256
@@ -235,7 +235,7 @@
         - name: Copy custom automations
           ansible.builtin.copy:
             src: "{{ item }}"
-            dest: "{{ home_assistant_automations_dir }}/{{ item | basename }}"
+            dest: "{{ home_assistant_automations_dir }}/{{ item | ansible.builtin.basename }}"
             mode: "0644"
           notify: Restart
           with_fileglob:
@@ -244,7 +244,7 @@
         - name: Template custom automations
           ansible.builtin.template:
             src: "{{ item }}"
-            dest: "{{ home_assistant_automations_dir }}/{{ item | basename | regex_replace('\\.j2$', '') }}"
+            dest: "{{ home_assistant_automations_dir }}/{{ item | ansible.builtin.basename | ansible.builtin.regex_replace('\\.j2$', '') }}"
             mode: "0644"
           notify: Restart
           with_fileglob:
@@ -266,7 +266,7 @@
         - dashboard
       ansible.builtin.template:
         src: "{{ item }}"
-        dest: "{{ config_directory }}/config/ui_lovelace_minimalist/dashboard/pages/{{ item | basename | regex_replace('\\.j2$', '') }}"
+        dest: "{{ config_directory }}/config/ui_lovelace_minimalist/dashboard/pages/{{ item | ansible.builtin.basename | ansible.builtin.regex_replace('\\.j2$', '') }}"
         mode: "0644"
         owner: "root"
         group: "root"

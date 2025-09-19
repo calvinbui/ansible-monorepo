@@ -29,7 +29,7 @@ modules:
     http:
       <<: *probe
       headers:
-        Proxy-Authorization: Basic {{ (blackbox_auth_username + ":" + blackbox_auth_password) | b64encode }}
+        Proxy-Authorization: Basic {{ (blackbox_auth_username + ":" + blackbox_auth_password) | ansible.builtin.b64encode }}
 
   icmp:
     prober: icmp

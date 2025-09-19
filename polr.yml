@@ -39,12 +39,12 @@
         env:
           DB_CONNECTION: "mysql"
           DB_HOST: "{{ _mariadb_hostname }}"
-          DB_PORT: "{{ _mariadb_port | string }}"
+          DB_PORT: "{{ _mariadb_port | ansible.builtin.string }}"
           DB_DATABASE: "{{ _mariadb_database }}"
           DB_USERNAME: "{{ _mariadb_username }}"
           DB_PASSWORD: "{{ _mariadb_password }}"
 
-          APP_NAME: "{{ application | capitalize }}"
+          APP_NAME: "{{ application | ansible.builtin.capitalize }}"
           APP_PROTOCOL: "https://"
           APP_ADDRESS: "s.{{ common_tld }}"
 
@@ -62,7 +62,7 @@
           ADMIN_EMAIL: "{{ application }}{{ common_email_to }}"
 
           MAIL_HOST: "{{ common_email_server }}"
-          MAIL_PORT: "{{ common_email_port | string }}"
+          MAIL_PORT: "{{ common_email_port | ansible.builtin.string }}"
           MAIL_USERNAME: "{{ common_email_username }}"
           MAIL_PASSWORD: "{{ common_email_password }}"
           MAIL_FROM_ADDRESS: "{{ common_email_username }}"

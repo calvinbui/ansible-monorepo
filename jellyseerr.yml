@@ -45,7 +45,7 @@
         env:
           DB_TYPE: "postgres"
           DB_HOST: "{{ _postgres_hostname }}"
-          DB_PORT: "{{ _postgres_port | string }}"
+          DB_PORT: "{{ _postgres_port | ansible.builtin.string }}"
           DB_USER: "{{ _postgres_username }}"
           DB_PASS: "{{ _postgres_password }}"
           DB_NAME: "{{ _postgres_database }}"
@@ -139,7 +139,7 @@
           - op: add
             path: "{{ item.key }}"
             value: "{{ item.value }}"
-      loop: "{{ _jellyseerr_configuration | dict2items }}"
+      loop: "{{ _jellyseerr_configuration | ansible.builtin.dict2items }}"
       notify: Restart
       vars:
         _jellyseerr_configuration:
@@ -234,11 +234,11 @@
           notifications/agents/webhook/options/jsonPayload: >-
             {{
               _jellyseerr_webhook_payload
-              | to_json
-              | regex_replace('"', '\\"')
-              | regex_replace('^', '"')
-              | regex_replace('$', '"')
-              | b64encode
+              | ansible.builtin.to_json
+              | ansible.builtin.regex_replace('"', '\\"')
+              | ansible.builtin.regex_replace('^', '"')
+              | ansible.builtin.regex_replace('$', '"')
+              | ansible.builtin.b64encode
             }}
 
         _jellyseerr_mattermost_webhook_id: !vault |
@@ -276,7 +276,7 @@
           - op: add
             path: "{{ item.key }}"
             value: "{{ item.value }}"
-      loop: "{{ _jellyseerr_configuration | dict2items }}"
+      loop: "{{ _jellyseerr_configuration | ansible.builtin.dict2items }}"
       vars:
         _jellyseerr_configuration:
           # will error and cause duplicates if plex isn't configured yet

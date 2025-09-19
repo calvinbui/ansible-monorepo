@@ -70,6 +70,6 @@
           path: /api/heartbeat
         labels:
           '{
-            "traefik.http.middlewares.{{ application }}-script-path.replacepathregex.regex": "^/{{ application | b64encode }}.js",
+            "traefik.http.middlewares.{{ application }}-script-path.replacepathregex.regex": "^/{{ application | ansible.builtin.b64encode }}.js",
             "traefik.http.middlewares.{{ application }}-script-path.replacepathregex.replacement": "/script.js"
           }'

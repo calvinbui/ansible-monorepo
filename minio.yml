@@ -51,7 +51,7 @@
           MINIO_IDENTITY_OPENID_CONFIG_URL: "{{ oidc_discovery_url }}"
           MINIO_IDENTITY_OPENID_CLIENT_ID: "{{ application }}"
           MINIO_IDENTITY_OPENID_CLIENT_SECRET: "{{ oidc_auth.minio.secret }}"
-          MINIO_IDENTITY_OPENID_DISPLAY_NAME: "{{ oidc_provider | title }}"
+          MINIO_IDENTITY_OPENID_DISPLAY_NAME: "{{ oidc_provider | ansible.builtin.title }}"
           MINIO_IDENTITY_OPENID_CLAIM_PREFIX: "{{ oidc_provider }}"
           MINIO_IDENTITY_OPENID_SCOPES: "openid,profile,email"
           MINIO_IDENTITY_OPENID_ROLE_POLICY: "consoleAdmin"

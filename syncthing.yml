@@ -31,8 +31,8 @@
         image: ghcr.io/syncthing/syncthing:2.0.9
         ipv4_address: "{{ docker_network.prefix }}.249"
         env:
-          PUID: "{{ common_user_id | string }}"
-          PGID: "{{ common_group_id | string }}"
+          PUID: "{{ common_user_id | ansible.builtin.string }}"
+          PGID: "{{ common_group_id | ansible.builtin.string }}"
         volumes:
           - "{{ common_directory_backup }}/{{ application }}:/var/syncthing"
         traefik:
@@ -52,9 +52,9 @@
       community.general.xml:
         path: "{{ common_directory_backup }}/{{ application }}/config/config.xml"
         xpath: "{{ item.xpath }}"
-        value: "{{ item.value | default(omit) | string }}"
-        attribute: "{{ item.attribute | default(omit) }}"
-        state: "{{ item.state | default(omit) }}"
+        value: "{{ item.value | ansible.builtin.default(omit) | ansible.builtin.string }}"
+        attribute: "{{ item.attribute | ansible.builtin.default(omit) }}"
+        state: "{{ item.state | ansible.builtin.default(omit) }}"
       notify: Restart
       loop:
         -
@@ -99,7 +99,7 @@
       community.general.xml:
         path: "{{ common_directory_backup }}/{{ application }}/config/config.xml"
         xpath: "/configuration/gui/password"
-        value: "{{ _password | to_json(vault_to_text=True) | from_json | ansible.builtin.password_hash(hashtype='bcrypt') }}"
+        value: "{{ _password | ansible.builtin.to_json(vault_to_text=True) | ansible.builtin.from_json | ansible.builtin.password_hash(hashtype='bcrypt') }}"
       changed_when: false
       vars:
         _password: !vault |

@@ -63,11 +63,11 @@
         volumes:
           - "{{ config_directory }}/config:/config"
         env:
-          PUID: "{{ common_user_id | string }}"
-          PGID: "{{ common_root_group | string }}"
+          PUID: "{{ common_user_id | ansible.builtin.string }}"
+          PGID: "{{ common_root_group | ansible.builtin.string }}"
           TZ: "{{ common_timezone }}"
 
-          PROWLARR__APP__INSTANCENAME: "{{ application | replace('-', ' ') | title }}"
+          PROWLARR__APP__INSTANCENAME: "{{ application | ansible.builtin.replace('-', ' ') | ansible.builtin.title }}"
           PROWLARR__APP__LAUNCHBROWSER: "False"
           PROWLARR__AUTH__APIKEY: "{{ prowlarr_api_key }}"
           PROWLARR__AUTH__METHOD: "External"
@@ -76,7 +76,7 @@
 
           # https://wiki.servarr.com/prowlarr/postgres-setup
           PROWLARR__POSTGRES__HOST: "{{ _postgres_hostname }}"
-          PROWLARR__POSTGRES__PORT: "{{ _postgres_port | string }}"
+          PROWLARR__POSTGRES__PORT: "{{ _postgres_port | ansible.builtin.string }}"
           PROWLARR__POSTGRES__MAINDB: "{{ _postgres_database }}"
           PROWLARR__POSTGRES__LOGDB: "{{ application }}-log"
           PROWLARR__POSTGRES__USER: "{{ _postgres_username }}"

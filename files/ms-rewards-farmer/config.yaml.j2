@@ -12,5 +12,5 @@ logging:
 
 accounts:
 {% for account in ms_rewards_farmer_accounts %}
-- {{ account | to_json(vault_to_text=True) | from_json | to_nice_yaml | indent(2) }}
+- {{ account | ansible.builtin.to_json(vault_to_text=True) | ansible.builtin.from_json | ansible.builtin.to_nice_yaml | ansible.builtin.indent(2) }}
 {% endfor %}

@@ -56,10 +56,10 @@
           - "opnsense::{{ common_user_id }}"
         volumes:
           - "{{ _opnsense_backup_ed25519_key.filename }}:/etc/ssh/ssh_host_ed25519_key"
-          - "{{ _opnsense_backup_ed25519_key.filename }}.pub:/home/opnsense/.ssh/keys/{{ _opnsense_backup_ed25519_key.filename | basename  }}.pub"
+          - "{{ _opnsense_backup_ed25519_key.filename }}.pub:/home/opnsense/.ssh/keys/{{ _opnsense_backup_ed25519_key.filename | ansible.builtin.basename }}.pub"
 
           - "{{ _opnsense_backup_rsa_key.filename }}:/etc/ssh/ssh_host_rsa_key"
-          - "{{ _opnsense_backup_rsa_key.filename }}.pub:/home/opnsense/.ssh/keys/{{ _opnsense_backup_rsa_key.filename | basename  }}.pub"
+          - "{{ _opnsense_backup_rsa_key.filename }}.pub:/home/opnsense/.ssh/keys/{{ _opnsense_backup_rsa_key.filename | ansible.builtin.basename }}.pub"
 
 
           - "{{ common_directory_backup }}/opnsense:/home/opnsense/share"
@@ -133,7 +133,7 @@
         name: "{{ networks[item].description }}"
         vlan: "{{ networks[item].vlan }}"
         priority: "{{ networks[item].priority }}"
-      loop: "{{ networks.keys() | list }}"
+      loop: "{{ networks.keys() | ansible.builtin.list }}"
       notify: Reload VLANs
       tags: vlans
 
@@ -165,7 +165,7 @@
 
     - name: Unbound - DNS-over-TLS
       ansibleguy.opnsense.unbound_dot:
-        domain: "{{ item.domain | default('') }}"
+        domain: "{{ item.domain | ansible.builtin.default('') }}"
         target: "{{ item.address }}"
         port: "853"
         verify: "{{ item.hostname }}"
@@ -196,10 +196,10 @@
         subnet: "{{ networks[item].subnet | ansible.utils.ipsubnet }}"
         pools: "{{ networks[item].iprange.dhcp }}"
         auto_options: true # auto-configures router, dns and ntp
-        next_server: "{{ networks[item].tftp_server | default(omit) }}"
-        tftp_server: "{{ networks[item].tftp_server | default(omit) }}"
-        tftp_file: "{{ networks[item].tftp_file | default(omit) }}"
-      loop: "{{ networks.keys() | list }}"
+        next_server: "{{ networks[item].tftp_server | ansible.builtin.default(omit) }}"
+        tftp_server: "{{ networks[item].tftp_server | ansible.builtin.default(omit) }}"
+        tftp_file: "{{ networks[item].tftp_file | ansible.builtin.default(omit) }}"
+      loop: "{{ networks.keys() | ansible.builtin.list }}"
       when:
         - networks[item].iprange is defined
         - networks[item].iprange.dhcp is defined
@@ -211,7 +211,7 @@
         mac: "{{ item.mac }}"
         subnet: "{{ item.subnet }}"
         hostname: "{{ item.hostname }}"
-        description: "{{ item.description | default(omit) }}"
+        description: "{{ item.description | ansible.builtin.default(omit) }}"
         reload: false
       loop: "{{ opnsense_dhcp_reservations }}"
       notify: Reload KEA

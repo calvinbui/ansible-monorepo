@@ -49,8 +49,8 @@
           - /etc/timezone:/etc/timezone:ro
           - /etc/localtime:/etc/localtime:ro
         env:
-          USER_UID: "{{ common_user_id | string }}"
-          USER_GID: "{{ common_group_id | string }}"
+          USER_UID: "{{ common_user_id | ansible.builtin.string }}"
+          USER_GID: "{{ common_group_id | ansible.builtin.string }}"
 
           # https://docs.gitea.com/next/administration/config-cheat-sheet
           GITEA__repository__DEFAULT_BRANCH: "master"
@@ -72,7 +72,7 @@
           GITEA__server__LANDING_PAGE: "/user/login"
 
           GITEA__database__DB_TYPE: postgres
-          GITEA__database__HOST: "{{ _postgres_hostname }}:{{ _postgres_port | string }}"
+          GITEA__database__HOST: "{{ _postgres_hostname }}:{{ _postgres_port | ansible.builtin.string }}"
           GITEA__database__NAME: "{{ _postgres_database }}"
           GITEA__database__USER: "{{ _postgres_username }}"
           GITEA__database__PASSWD: "{{ _postgres_password }}"
@@ -84,7 +84,7 @@
           GITEA__mailer__ENABLED: "true"
           GITEA__mailer__PROTOCOL: "smtp+starttls"
           GITEA__mailer__SMTP_ADDR: "{{ common_email_server }}"
-          GITEA__mailer__SMTP_PORT: "{{ common_email_port | string }}"
+          GITEA__mailer__SMTP_PORT: "{{ common_email_port | ansible.builtin.string }}"
           GITEA__mailer__USER: "{{ common_email_username }}"
           GITEA__mailer__PASSWD: "{{ common_email_password }}"
           GITEA__mailer__FROM: "{{ application }}{{ common_email_to }}"
@@ -167,7 +167,7 @@
         user: 1000
         command: >-
           gitea admin auth add-oauth
-            --name {{ oidc_provider | title }}
+            --name {{ oidc_provider | ansible.builtin.title }}
             --provider openidConnect
             --key {{ application }}
             --secret {{ oidc_auth.gitea.secret }}
@@ -189,7 +189,7 @@
 
     - name: Set source id
       ansible.builtin.set_fact:
-        _gitea_auth_id: "{{ _gitea_auth_sources.stdout_lines[1] | split('\t') | first }}"
+        _gitea_auth_id: "{{ _gitea_auth_sources.stdout_lines[1] | ansible.builtin.split('\t') | ansible.builtin.first }}"
 
     - name: Update OIDC source
       community.docker.docker_container_exec:
@@ -198,7 +198,7 @@
         command: >-
           gitea admin auth update-oauth
             --id {{ _gitea_auth_id }}
-            --name {{ oidc_provider | title }}
+            --name {{ oidc_provider | ansible.builtin.title }}
             --provider openidConnect
             --key {{ application }}
             --secret {{ oidc_auth.gitea.secret }}

@@ -55,7 +55,7 @@
     - name: Create configs
       ansible.builtin.template:
         src: "{{ item }}"
-        dest: "{{ config_directory }}/{{ item | basename | regex_replace('\\.j2$', '') }}"
+        dest: "{{ config_directory }}/{{ item | ansible.builtin.basename | ansible.builtin.regex_replace('\\.j2$', '') }}"
         mode: "0755"
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"

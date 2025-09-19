@@ -37,14 +37,14 @@
         image: lscr.io/linuxserver/unifi-network-application:9.3.45
         ipv4_address: "{{ docker_network.prefix }}.254"
         env:
-          PUID: "{{ common_user_id | string }}"
-          PGID: "{{ common_group_id | string }}"
+          PUID: "{{ common_user_id | ansible.builtin.string }}"
+          PGID: "{{ common_group_id | ansible.builtin.string }}"
           TZ: "{{ common_timezone }}"
 
           MONGO_USER: "{{ _mongo_username }}"
           MONGO_PASS: "{{ _mongo_password }}"
           MONGO_HOST: "{{ _mongo_hostname }}"
-          MONGO_PORT: "{{ _mongo_port | string }}"
+          MONGO_PORT: "{{ _mongo_port | ansible.builtin.string }}"
           MONGO_DBNAME: "{{ _mongo_database }}"
           MONGO_AUTHSOURCE: admin
         volumes:

@@ -26,13 +26,13 @@
 
     - name: Configure users
       ansible.builtin.copy:
-        dest: "{{ config_directory }}/users/{{ item.name | lower }}.conf"
+        dest: "{{ config_directory }}/users/{{ item.name | ansible.builtin.lower }}.conf"
         owner: "{{ common_user }}"
         group: "{{ common_root_group }}"
         mode: "600"
         content: |
-          TM_USERNAME={{ item.name | lower }}
-          TM_GROUPNAME={{ item.name | lower }}
+          TM_USERNAME={{ item.name | ansible.builtin.lower }}
+          TM_GROUPNAME={{ item.name | ansible.builtin.lower }}
           PASSWORD={{ item.password }}
           SHARE_NAME={{ item.share }}
           VOLUME_SIZE_LIMIT="{{ item.limit }}"
@@ -78,8 +78,8 @@
           HIDE_SHARES: "yes"
           TM_USERNAME: "timemachine"
           TM_GROUPNAME: "timemachine"
-          TM_UID: "{{ common_user_id | string }}"
-          TM_GID: "{{ common_group_id | string }}"
+          TM_UID: "{{ common_user_id | ansible.builtin.string }}"
+          TM_GID: "{{ common_group_id | ansible.builtin.string }}"
           PASSWORD: *_time_machine_password
           SET_PERMISSIONS: "true"
           SHARE_NAME: "TimeMachine"

@@ -69,7 +69,7 @@
         image: ghcr.io/danny-avila/librechat-rag-api-dev-lite:v0.6.0
         env:
           DB_HOST: "{{ _postgres_hostname }}"
-          DB_PORT: "{{ _postgres_port | string }}"
+          DB_PORT: "{{ _postgres_port | ansible.builtin.string }}"
           POSTGRES_DB: "{{ _postgres_database }}"
           POSTGRES_USER: "{{ _postgres_username }}"
           POSTGRES_PASSWORD: "{{ _postgres_password }}"
@@ -91,8 +91,8 @@
 
           DEBUG_LOGGING: "false"
 
-          UID: "{{ common_user_id | string }}"
-          GID: "{{ common_group_id | string }}"
+          UID: "{{ common_user_id | ansible.builtin.string }}"
+          GID: "{{ common_group_id | ansible.builtin.string }}"
 
           OPENAI_API_KEY: "{{ openai_api_key }}"
           # GPT-4.1: more input tokens and precise text work
@@ -102,7 +102,7 @@
               [
                 "gpt-4.1-mini",
                 "o4-mini",
-              ] | join(",")
+              ] | ansible.builtin.join(",")
             }}
 
           IMAGE_GEN_OAI_API_KEY: "{{ openai_api_key }}"
@@ -173,7 +173,7 @@
           OPENID_CALLBACK_URL: /oauth/openid/callback
           OPENID_USERNAME_CLAIM: preferred_username
           OPENID_NAME_CLAIM: name
-          OPENID_BUTTON_LABEL: "Log in with {{ oidc_provider | title }}"
+          OPENID_BUTTON_LABEL: "Log in with {{ oidc_provider | ansible.builtin.title }}"
           OPENID_IMAGE_URL: "https://minio.{{ common_tld }}/public/authelia-logo-cropped.png"
           OPENID_AUTO_REDIRECT: "false"
         volumes:

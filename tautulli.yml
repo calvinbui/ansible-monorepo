@@ -30,8 +30,8 @@
       vars:
         image: tautulli/tautulli:v2.16.0
         env:
-          PUID: "{{ common_user_id | string }}"
-          PGID: "{{ common_root_group | string }}"
+          PUID: "{{ common_user_id | ansible.builtin.string }}"
+          PGID: "{{ common_root_group | ansible.builtin.string }}"
           TZ: "{{ common_timezone }}"
         volumes:
           - "{{ config_directory }}:/config"
@@ -55,11 +55,11 @@
         path: "{{ config_directory }}/config.ini"
         section: "{{ item.key.split('.')[0] }}"
         option: "{{ item.key.split('.')[1] }}"
-        value: "{{ item.value | string }}"
+        value: "{{ item.value | ansible.builtin.string }}"
         owner: "{{ common_user }}"
         group: "{{ common_root_group }}"
         mode: "0640"
-      loop: "{{ _tautulli_config | dict2items }}"
+      loop: "{{ _tautulli_config | ansible.builtin.dict2items }}"
       notify: Restart
       vars:
         _tautulli_config:

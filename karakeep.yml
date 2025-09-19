@@ -73,7 +73,7 @@
           OAUTH_WELLKNOWN_URL: "{{ oidc_discovery_url }}"
           OAUTH_CLIENT_SECRET: "{{ oidc_auth.karakeep.secret }}"
           OAUTH_CLIENT_ID: "{{ application }}"
-          OAUTH_PROVIDER_NAME: "{{ oidc_provider | title }}"
+          OAUTH_PROVIDER_NAME: "{{ oidc_provider | ansible.builtin.title }}"
 
           OPENAI_API_KEY: "{{ openai_api_key }}"
 
