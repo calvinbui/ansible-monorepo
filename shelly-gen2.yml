@@ -192,10 +192,10 @@
         settings:
           sys:
             device:
-              name: Upstairs Bathroom Lights
+              name: Downstairs Hallway Lights
         relay:
+          - name: Downlights
           - name: LEDs
-          - name: Fan
       -
         ip: "{{ networks.iot.prefix }}.93"
         device_id: shellyplus2pm-fce8c0ff3c24
@@ -212,10 +212,10 @@
         settings:
           sys:
             device:
-              name: Downstairs Hallway Lights
+              name: Upstairs Bathroom Lights
         relay:
+          - name: Fan
           - name: LEDs
-          - name: Downlights
       -
         ip: "{{ networks.iot.prefix }}.95"
         device_id: shelly1pmminig3-8cbfea922594

@@ -87,7 +87,7 @@
 
             # Shelly 2PM Gen4 (S4SW-002P16EU-SWITCH)
             '0x7c2c67fffe7923ad':
-              friendly_name: Upstairs Bathroom Lights
+              friendly_name: Downstairs Hallway Lights
               homeassistant: null
             '0x7c2c67fffe7b31d1':
               friendly_name: Master Bedroom Lights

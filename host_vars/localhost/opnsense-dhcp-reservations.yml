@@ -497,7 +497,7 @@ opnsense_dhcp_reservations:
     ip: 192.168.3.92
     subnet: 192.168.3.0/24
     mac: 7c:2c:67:79:23:ac
-    hostname: shelly-upstairs-bathroom
+    hostname: shelly-downstairs-hallway
     description: "2PM Gen4"
   -
     ip: 192.168.3.93
@@ -509,7 +509,7 @@ opnsense_dhcp_reservations:
     ip: 192.168.3.94
     subnet: 192.168.3.0/24
     mac: 88:13:bf:d2:f8:1c
-    hostname: shelly-stairway
+    hostname: shelly-downstairs-hallway
     description: "Plus 2PM"
   -
     ip: 192.168.3.95
