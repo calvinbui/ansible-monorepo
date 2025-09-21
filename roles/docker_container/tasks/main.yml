@@ -62,7 +62,9 @@
 # Prometheus Blackbox service discovery using Traefik
 - name: Generate blackbox service discovery labels via Traefik
   ansible.builtin.include_tasks: blackbox.yml
-  when: (traefik is defined or blackbox is defined) and (blackbox.enable is true or blackbox.enable is undefined) and ((route.type is defined and route.type != "udp") or route.type is undefined)
+  when:
+    - traefik is defined or (blackbox is defined and (blackbox.enable is true or blackbox.enable is undefined))
+    - ((route.type is defined and route.type != "udp") or route.type is undefined)
   vars:
     route: "{{ traefik | ansible.builtin.first }}"  # only loop once on the main entrypoint
     route_name: "{{ route.name | ansible.builtin.default(name) | ansible.builtin.default(application) }}"

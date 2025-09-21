@@ -1,4 +1,4 @@
-#jinja2: lstrip_blocks: "true", trim_blocks: "false"
+#jinja2: lstrip_blocks: True, trim_blocks: False
 ---
 {% for g in home_assistant_gardening.systems %}
 - id: gardening_{{ g.name | ansible.builtin.lower | ansible.builtin.replace(" ", "_") }}

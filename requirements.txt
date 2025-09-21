@@ -1,4 +1,4 @@
-ansible==11.1.0
+ansible==12.0.0
 ansible-lint==25.9.0
 paramiko==3.5.0
 

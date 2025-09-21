@@ -335,12 +335,13 @@
       ansible.builtin.set_fact:
         devices_to_restart: >-
           {{
-            shelly_devices | ansible.builtin.selectattr('ip', 'in',
-              _shelly_gen2_results.results |
-              selectattr('json.result.restart_required', 'true') |
-              map(attribute='item.0.ip') |
-              unique |
-              list
+            shelly_devices |
+            ansible.builtin.selectattr('ip', 'in', _shelly_gen2_results.results |
+              ansible.builtin.selectattr('json.result', 'defined') |
+              ansible.builtin.selectattr('json.result.restart_required', 'equalto', 'true') |
+              ansible.builtin.map(attribute='item.0.ip') |
+              ansible.builtin.unique |
+              ansible.builtin.list
             )
           }}
 

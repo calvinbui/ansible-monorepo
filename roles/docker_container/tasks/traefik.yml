@@ -34,13 +34,13 @@
     - key: "traefik.http.routers.{{ route_name }}.middlewares"
       value: "{{ route.http.middlewares | ansible.builtin.default('redirect@file') }}"
     - key: "traefik.http.routers.{{ route_name }}.rule"
-      value: "{{ route.rule | ansible.builtin.default('Host(`{{ route_name }}.{{ common_tld }}`)') }}"
+      value: "{{ route.rule | ansible.builtin.default('Host(`' + route_name + '.' + common_tld + '`)') }}"
 
     # https
     - key: "traefik.http.routers.{{ route_name }}-secure.entrypoints"
       value: "{{ route.https.entrypoints | ansible.builtin.default('web-secure') }}"
     - key: "traefik.http.routers.{{ route_name }}-secure.rule"
-      value: "{{ route.rule | ansible.builtin.default('Host(`{{ route_name }}.{{ common_tld }}`)') }}"
+      value: "{{ route.rule | ansible.builtin.default('Host(`' + route_name + '.' + common_tld + '`)') }}"
     - key: "traefik.http.routers.{{ route_name }}-secure.tls"
       value: "{{ route.tls.enabled | ansible.builtin.default(true) | ansible.builtin.string | ansible.builtin.lower }}"
     - key: "traefik.http.routers.{{ route_name }}-secure.tls.certresolver"
