@@ -62,8 +62,9 @@
             enabled: true
 
           advanced:
+            channel: 25
             log_namespaced_levels:
-                z2m:mqtt: warning
+              z2m:mqtt: warning
             log_output:
               - console
             last_seen: ISO_8601_local
