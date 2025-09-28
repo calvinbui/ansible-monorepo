@@ -3,7 +3,7 @@
 # requires xmltodict: pip3 install xmltodict
 # check inventory for endpoint, especially on first run
 
-- hosts: switch
+- hosts: juniper
 
   gather_facts: false
   connection: ansible.netcommon.netconf
@@ -237,6 +237,15 @@
       junipernetworks.junos.junos_netconf:
         state: present
       connection: ansible.netcommon.network_cli
+
+    - name: Configure system identity
+      junipernetworks.junos.junos_system:
+        hostname: juniper
+        domain_name: "{{ common_local_tld }}"
+        domain_search:
+          - "{{ common_local_tld }}"
+        name_servers:
+          - "{{ networks.mgmt.dns }}"
 
     - name: Configure Layer 3 interfaces
       junipernetworks.junos.junos_l3_interfaces:
