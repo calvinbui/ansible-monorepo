@@ -231,6 +231,16 @@
         port: "1"
         description: "nvr-sfp"
         access: "{{ networks.iot.vlan }}"
+      -
+        interface: xe
+        port: "3"
+        description: "engenius-10g-switch"
+        trunk:
+          - "{{ networks.mgmt.name }}"
+          - "{{ networks.user.name }}"
+          - "{{ networks.iot.name }}"
+          - "{{ networks.pub.name }}"
+          - "{{ networks.granny.name }}"
 
   tasks:
     - name: Enable netconf service
