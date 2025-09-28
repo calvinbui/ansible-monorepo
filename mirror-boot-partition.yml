@@ -1,0 +1,110 @@
+---
+
+# https://wiki.debian.org/UEFI#RAID_for_the_EFI_System_Partition
+# https://dahlem-consulting.de/install-debian-on-raid1/
+
+- hosts: homeserver
+
+  handlers:
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Update grub
+      ansible.builtin.command: update-grub
+      changed_when: true
+
+  tasks:
+    - name: Read content of /etc/fstab
+      ansible.builtin.slurp:
+        src: /etc/fstab
+      register: fstab_content
+
+    - name: Find UUID for /boot/efi2 in fstab
+      ansible.builtin.set_fact:
+        efi2_uuid: "{{ fstab_content.content | ansible.builtin.b64decode | ansible.builtin.regex_findall('UUID=([A-Za-z0-9-]+)\\s+/boot/efi2') | ansible.builtin.first }}"
+
+    - name: Update /boot/efi
+      ansible.posix.mount:
+        path: /boot/efi
+        fstype: vfat
+        src: "UUID={{ fstab_content.content | ansible.builtin.b64decode | ansible.builtin.regex_findall('UUID=([A-Za-z0-9-]+)\\s+/boot/efi\\s') | ansible.builtin.first }}"
+        opts: umask=0077,errors=remount-ro,nofail
+        dump: "0"
+        passno: "1"
+        state: mounted
+      notify:
+        - Reload systemd
+
+    - name: Update /boot/efi2
+      ansible.posix.mount:
+        path: /boot/efi2
+        fstype: vfat
+        src: "UUID={{ fstab_content.content | ansible.builtin.b64decode | ansible.builtin.regex_findall('UUID=([A-Za-z0-9-]+)\\s+/boot/efi2\\s') | ansible.builtin.first }}"
+        opts: utf8,errors=remount-ro,nofail,noauto
+        dump: "0"
+        passno: "0"
+        state: mounted
+      notify:
+        - Reload systemd
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 86400
+      changed_when: false
+
+    - name: Install rsync
+      ansible.builtin.apt:
+        name: rsync
+        state: present
+
+    - name: Create /etc/grub.d/90_copy_to_boot_efi2
+      ansible.builtin.copy:
+        content: |
+          #!/bin/sh
+          # https://wiki.debian.org/UEFI#RAID_for_the_EFI_System_Partition
+          set -e
+
+          if mountpoint --quiet --nofollow /boot/efi; then
+              mount /boot/efi2 || :
+              rsync --times --recursive --delete /boot/efi/ /boot/efi2/
+              # Being FAT it is even better when not mounted, won't be damaged in case of computer crash or power outage.
+              # Ref: https://forums.debian.net/viewtopic.php?p=759692&sid=ff62e9207a064b027f041d2cd0a612a4#p759692
+              umount /boot/efi2
+          fi
+          exit 0
+        dest: "/etc/grub.d/90_copy_to_boot_efi2"
+        owner: root
+        group: root
+        mode: "0755"
+      notify:
+        - Update grub
+
+    - name: Get current boot entries to find a match
+      ansible.builtin.command: efibootmgr -v
+      register: efiboot_output
+      changed_when: false
+
+    - name: Set fact with the entry ID if it exists
+      ansible.builtin.set_fact:
+        boot_entry_id: "{{ (efiboot_output.stdout | ansible.builtin.regex_search('Boot(\\d{4})\\* debian2', '\\1') | ansible.builtin.default([], true) | ansible.builtin.first) | ansible.builtin.default(None) }}"
+
+    - name: Find disk and partition number for /boot/efi2
+      ansible.builtin.set_fact:
+        efi_device: "{{ ansible_facts.mounts | ansible.builtin.selectattr('mount', 'equalto', '/boot/efi2') | ansible.builtin.map(attribute='device') | ansible.builtin.first }}"
+      when: boot_entry_id == None
+
+    - name: Determine disk and partition number from device path
+      ansible.builtin.set_fact:
+        efi_disk: "{{ efi_device | ansible.builtin.regex_replace('p\\d+$', '') }}"
+        efi_part_num: "{{ efi_device | ansible.builtin.regex_replace('.*(p\\d+)$', '\\1') }}"
+      when: efi_device is defined
+
+    - name: Create new boot entry with efibootmgr
+      ansible.builtin.command:
+        cmd: "efibootmgr -c -d {{ efi_disk }} -p {{ efi_part_num | ansible.builtin.regex_replace('p','') }} -w -L 'debian2' -l '\\EFI\\DEBIAN\\SHIMX64.EFI'"
+      changed_when: true
+      when:
+        - efi_disk is defined
+        - efi_part_num is defined
