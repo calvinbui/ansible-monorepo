@@ -1,0 +1,156 @@
+---
+
+# https://wiki.debian.org/NetworkInterfaceNames#CUSTOM_SCHEMES_USING_.LINK_FILES
+# https://wiki.debian.org/Bonding#Using_systemd-networkd
+# https://manpages.debian.org/trixie/systemd/systemd.netdev.5.en.html
+# https://manpages.debian.org/trixie/systemd/systemd.network.5.en.html
+
+- hosts: homeserver
+
+  vars:
+    network_interfaces:
+      -
+        name: lan_2.5g_left
+        mac: 10:7c:61:40:7f:bc
+      -
+        name: lan_2.5g_right
+        mac: 10:7c:61:40:7f:bd
+
+    network_bond:
+      name: "bond0"
+      mode: "802.3ad" # LACP
+
+  handlers:
+    - name: Regenerate the kernel initramfs
+      ansible.builtin.command: update-initramfs -u
+      changed_when: true
+
+    - name: Restart systemd-networkd
+      ansible.builtin.service:
+        name: systemd-networkd
+        state: restarted
+
+    - name: Reboot
+      ansible.builtin.reboot:
+        reboot_timeout: 360
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 86400
+      changed_when: false
+
+    # `systemd-networkd` sets what DNS servers to use, but it doesn’t actually do DNS lookups.
+    # `systemd-resolved` is the resolver that reads those DNS servers and answers queries.
+    # Without `systemd-resolved`, nothing updates /etc/resolv.conf, so it stays empty.
+    # `libnss-resolve` plugs systemd-resolved into /etc/nsswitch.conf, so apps actually use it.
+    - name: Install DNS resolver
+      ansible.builtin.apt:
+        name: systemd-resolved
+        state: present
+
+    # doesn't auto-start by default on many distros because they use a different service for network management
+    - name: Enable systemd-networkd to start at boot
+      ansible.builtin.service:
+        name: systemd-networkd
+        enabled: true
+
+    - name: Create systemd .link files for interface renaming
+      ansible.builtin.copy:
+        content: |
+          [Match]
+          MACAddress={{ item.mac }}
+
+          [Link]
+          Name={{ item.name }}
+        dest: "/etc/systemd/network/10-{{ item.name }}.link"
+        mode: "0644"
+      loop: "{{ network_interfaces }}"
+      notify:
+        - Regenerate the kernel initramfs
+        - Reboot
+
+    - name: Configure bond device
+      ansible.builtin.copy:
+        content: |
+          [NetDev]
+          Name={{ network_bond.name }}
+          Kind=bond
+
+          [Bond]
+          Mode={{ network_bond.mode }}
+          TransmitHashPolicy=layer3+4
+          LACPTransmitRate=fast
+          MIIMonitorSec=100ms
+        dest: "/etc/systemd/network/20-{{ network_bond.name }}.netdev"
+        mode: "0644"
+      notify:
+        - Restart systemd-networkd
+
+    - name: Add interfaces for the bond
+      ansible.builtin.copy:
+        content: |
+          [Match]
+          Name={{ item.name }}
+
+          [Network]
+          Bond={{ network_bond.name }}
+          DHCP=no
+          LinkLocalAddressing=no
+        dest: "/etc/systemd/network/30-{{ item.name }}.network"
+        mode: "0644"
+      loop: "{{ network_interfaces }}"
+      notify:
+        - Restart systemd-networkd
+
+    - name: Create VLAN networks
+      ansible.builtin.copy:
+        content: |
+          [NetDev]
+          Name={{ network_bond.name }}.{{ item.value.vlan }}
+          Kind=vlan
+
+          [VLAN]
+          Id={{ item.value.vlan }}
+        dest: "/etc/systemd/network/40-{{ network_bond.name }}.{{ item.value.vlan }}.netdev"
+        mode: "0644"
+      loop: "{{ networks | ansible.builtin.dict2items }}"
+      when: item.value.vlan is defined
+      notify:
+        - Restart systemd-networkd
+
+    - name: Configure bond network
+      ansible.builtin.copy:
+        content: |
+          [Match]
+          Name={{ network_bond.name }}
+
+          [Network]
+          LinkLocalAddressing=no
+          DHCP=no
+          {% for network in networks.values() %}
+          {% if 'vlan' in network %}
+          VLAN={{ network_bond.name }}.{{ network.vlan }}
+          {% endif %}
+          {% endfor %}
+        dest: "/etc/systemd/network/50-{{ network_bond.name }}.network"
+        mode: "0644"
+      notify:
+        - Restart systemd-networkd
+
+    - name: Configure VLAN networks
+      ansible.builtin.copy:
+        content: |
+          [Match]
+          Name={{ network_bond.name }}.{{ item.value.vlan }}
+
+          [Network]
+          DHCP={{ item.value.dhcp }}
+          LinkLocalAddressing=no
+        dest: "/etc/systemd/network/60-{{ network_bond.name }}.{{ item.value.vlan }}.network"
+        mode: "0644"
+      loop: "{{ networks | ansible.builtin.dict2items }}"
+      when: item.value.vlan is defined
+      notify:
+        - Restart systemd-networkd
