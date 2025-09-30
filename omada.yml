@@ -5,7 +5,7 @@
   vars:
     application: omada
 
-    docker_network: "{{ networks.user }}"
+    docker_network: "{{ networks.mgmt }}"
 
   tasks:
     - name: Create config folder
@@ -28,7 +28,7 @@
           - "{{ config_directory }}/data:/opt/tplink/EAPController/data"
           - "{{ config_directory }}/work:/opt/tplink/EAPController/work"
           - "{{ config_directory }}/logs:/opt/tplink/EAPController/logs"
-        ipv4_address: "{{ docker_network.prefix }}.252"
+        ipv4_address: "{{ docker_network.prefix }}.29"
         homepage:
           name: TP-Link Omada Controller
           group: Networking

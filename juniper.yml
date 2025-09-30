@@ -22,72 +22,54 @@
     # access = .vlan
     # trunk = .name
     juniper_l2_interfaces:
-      #
-      # ROUTER
-      #
       -
         port: "0"
-        description: "opnsense-lan"
+        description: "homeserver-ipmi"
+        access: "{{ networks.mgmt.vlan }}"
       -
         port: "1"
-        description: "opnsense-vlans"
-        trunk:
-          - "{{ networks.mgmt.name }}"
-          - "{{ networks.user.name }}"
-          - "{{ networks.iot.name }}"
-          - "{{ networks.pub.name }}"
-          - "{{ networks.granny.name }}"
-      #
-      # CAMERAS
-      #
-      -
-        port: "2"
-        description: "nvr-ethernet"
-        access: "{{ networks.iot.vlan }}"
-      -
-        port: "3"
         description: "cam-01"
         access: "{{ networks.iot.vlan }}"
       -
-        port: "4"
+        port: "2"
         description: "cam-02"
         access: "{{ networks.iot.vlan }}"
       -
-        port: "5"
+        port: "3"
         description: "cam-03"
         access: "{{ networks.iot.vlan }}"
       -
-        port: "6"
+        port: "4"
         description: "cam-04"
         access: "{{ networks.iot.vlan }}"
       -
-        port: "7"
+        port: "5"
         description: "cam-05"
         access: "{{ networks.iot.vlan }}"
       -
-        port: "8"
+        port: "6"
         description: "cam-06"
         access: "{{ networks.iot.vlan }}"
       -
-        port: "9"
+        port: "7"
         description: "cam-07"
         access: "{{ networks.iot.vlan }}"
       -
-        port: "10"
+        port: "8"
         description: "cam-08"
         access: "{{ networks.iot.vlan }}"
       -
-        port: "11"
+        port: "9"
         description: "cam-09"
         access: "{{ networks.iot.vlan }}"
       -
-        port: "12"
+        port: "10"
         description: "cam-10"
         access: "{{ networks.iot.vlan }}"
-
-      #
-      # TESTING
-      #
+      -
+        port: "11"
+        description: "cam-11"
+        access: "{{ networks.iot.vlan }}"
       -
         port: "20"
         description: "testing-0"
@@ -104,9 +86,6 @@
         port: "23"
         description: "testing-3"
         access: "{{ networks.user.vlan }}"
-      #
-      # ROOMS
-      #
       -
         port: "24"
         description: "master-bedroom"
@@ -121,8 +100,8 @@
         access: "{{ networks.iot.vlan }}"
       -
         port: "27"
-        description: "doorbell"
-        access: "{{ networks.iot.vlan }}"
+        description: "reserved-1"
+        access: "{{ networks.user.vlan }}"
       -
         port: "28"
         description: "reserved-2"
@@ -131,28 +110,30 @@
         port: "29"
         description: "reserved-3"
         access: "{{ networks.user.vlan }}"
-      #
-      # STATIC DEVICES
-      #
       -
         port: "30"
-        description: "eufy-homebase-lan"
+        description: "doorbell"
         access: "{{ networks.iot.vlan }}"
       -
         port: "31"
         description: "linktap-gateway-1"
         access: "{{ networks.iot.vlan }}"
       -
-        port: "36"
-        description: "3d-printer"
-        access: "{{ networks.iot.vlan }}"
-      -
         port: "37"
-        description: "printer"
-        access: "{{ networks.user.vlan }}"
-      #
-      # WIFI
-      #
+        description: "homelab-ipmi"
+        access: "{{ networks.mgmt.vlan }}"
+      -
+        port: "38"
+        description: "opnsense-lan"
+      -
+        port: "39"
+        description: "opnsense-vlan"
+        trunk:
+          - "{{ networks.mgmt.name }}"
+          - "{{ networks.user.name }}"
+          - "{{ networks.iot.name }}"
+          - "{{ networks.pub.name }}"
+          - "{{ networks.granny.name }}"
       -
         port: "40"
         description: "wifi-01"
@@ -189,33 +170,22 @@
           - "{{ networks.granny.name }}"
         duplex: "full-duplex"
         speed: "1g"
-      #
-      # OTHER
-      #
       -
         port: "44"
-        description: "homelab-ethernet"
-        trunk:
-          - "{{ networks.mgmt.name }}"
-          - "{{ networks.user.name }}"
-          - "{{ networks.iot.name }}"
-          - "{{ networks.pub.name }}"
-          - "{{ networks.granny.name }}"
+        description: "octopi"
+        access: "{{ networks.iot.vlan }}"
       -
         port: "45"
-        description: "homelab-ipmi"
-        access: "{{ networks.mgmt.vlan }}"
+        description: "printer"
+        access: "{{ networks.user.vlan }}"
       -
         port: "46"
-        description: "zigbee-router"
+        description: "smlight-slzb-06m"
         access: "{{ networks.iot.vlan }}"
       -
         port: "47"
         description: "alarm"
         access: "{{ networks.iot.vlan }}"
-      #
-      # XE/SFP
-      #
       -
         interface: xe
         port: "0"

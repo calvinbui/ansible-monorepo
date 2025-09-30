@@ -17,6 +17,23 @@ opnsense_dhcp_reservations:
     mac: ac:1f:6b:4c:0f:93
     hostname: homelab-ipmi
   -
+    ip: 192.168.1.5
+    subnet: 192.168.1.0/24
+    mac: b8:27:eb:51:d8:a1
+    hostname: nut
+    description: "raspberry pi"
+  -
+    ip: 192.168.1.6
+    subnet: 192.168.1.0/24
+    mac: 88:dc:97:53:58:57
+    hostname: engenius
+  -
+    ip: 192.168.1.7
+    subnet: 192.168.1.0/24
+    mac: 84:78:48:6c:45:4b
+    hostname: switch-study
+    description: "In Calvin's Room"
+  -
     ip: 192.168.1.10
     subnet: 192.168.1.0/24
     mac: 5a:71:2b:b8:df:65
@@ -30,8 +47,33 @@ opnsense_dhcp_reservations:
   -
     ip: 192.168.1.20
     subnet: 192.168.1.0/24
-    mac: 88:dc:97:53:58:57
-    hostname: engenius  
+    mac: ff:00:ff:00:f0:20
+    hostname: unifi
+  -
+    ip: 192.168.1.25
+    subnet: 192.168.1.0/24
+    mac: e8:48:b8:9b:64:1a
+    hostname: wifi-downstairs-common
+  -
+    ip: 192.168.1.26
+    subnet: 192.168.1.0/24
+    mac: e8:48:b8:9b:64:20
+    hostname: wifi-front-bedrooms
+  -
+    ip: 192.168.1.27
+    subnet: 192.168.1.0/24
+    mac: e8:48:b8:9b:64:12
+    hostname: wifi-rear-bedrooms
+  -
+    ip: 192.168.1.28
+    subnet: 192.168.1.0/24
+    mac: 10:27:f5:66:ae:2a
+    hostname: wifi-foyer
+  -
+    ip: 192.168.1.29
+    subnet: 192.168.1.0/24
+    mac: ff:00:ff:00:f2:52
+    hostname: omada
   -
     ip: 192.168.1.254
     subnet: 192.168.1.0/24
@@ -43,41 +85,16 @@ opnsense_dhcp_reservations:
     mac: ff:00:ff:00:ff:00
     hostname: opnsense-web
   -
-    ip: 192.168.2.2
-    subnet: 192.168.2.0/24
-    mac: 84:78:48:6c:45:4b
-    hostname: switch-study
-    description: "In Calvin's Room"
-  -
     ip: 192.168.2.4
     subnet: 192.168.2.0/24
     mac: 3c:2a:f4:05:73:24
     hostname: printer
   -
-    ip: 192.168.2.5
-    subnet: 192.168.2.0/24
-    mac: e8:48:b8:9b:64:1a
-    hostname: wifi-downstairs-common
-  -
-    ip: 192.168.2.6
-    subnet: 192.168.2.0/24
-    mac: e8:48:b8:9b:64:20
-    hostname: wifi-front-bedrooms
-  -
-    ip: 192.168.2.7
-    subnet: 192.168.2.0/24
-    mac: e8:48:b8:9b:64:12
-    hostname: wifi-rear-bedrooms
-  -
-    ip: 192.168.2.8
-    subnet: 192.168.2.0/24
-    mac: 10:27:f5:66:ae:2a
-    hostname: wifi-foyer
-  -
-    ip: 192.168.2.10
+    ip: 192.168.2.20
     subnet: 192.168.2.0/24
     mac: 08:8a:f1:0c:b4:2f
     hostname: CALVIN-PC
+    description: 2.5G PCIe Adapter
   -
     ip: 192.168.2.250
     subnet: 192.168.2.0/24
@@ -89,20 +106,10 @@ opnsense_dhcp_reservations:
     mac: ff:00:ff:00:f2:51
     hostname: wakeupbr-user
   -
-    ip: 192.168.2.252
-    subnet: 192.168.2.0/24
-    mac: ff:00:ff:00:f2:52
-    hostname: omada
-  -
     ip: 192.168.2.253
     subnet: 192.168.2.0/24
     mac: ff:00:ff:00:f2:53
     hostname: time-machine
-  -
-    ip: 192.168.2.254
-    subnet: 192.168.2.0/24
-    mac: ff:00:ff:00:f2:54
-    hostname: prometheus
   -
     ip: 192.168.3.2
     subnet: 192.168.3.0/24
