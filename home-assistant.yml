@@ -55,7 +55,7 @@
         volumes:
           - "{{ config_directory }}/config:/config"
           - /etc/localtime:/etc/localtime:ro
-        ipv4_address: "{{ docker_network.prefix }}.100"
+        ipv4_address: "{{ docker_network.subnet | ansible.utils.nthhost(100) }}"
         traefik:
           -
             name: "{{ application }}-short"

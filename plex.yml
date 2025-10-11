@@ -29,7 +29,7 @@
         name: docker_container
       vars:
         image: plexinc/pms-docker:1.42.1.10060-4e8b05daf
-        ipv4_address: "{{ docker_network.prefix }}.4"
+        ipv4_address: "{{ docker_network.subnet | ansible.utils.nthhost(4) }}"
         env:
           PLEX_UID: "{{ common_user_id | ansible.builtin.string }}"
           PLEX_GID: "{{ common_root_group | ansible.builtin.string }}"

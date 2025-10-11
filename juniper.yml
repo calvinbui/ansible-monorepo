@@ -133,41 +133,45 @@
           - "{{ networks.user.name }}"
           - "{{ networks.iot.name }}"
           - "{{ networks.pub.name }}"
-          - "{{ networks.granny.name }}"
+          - "{{ networks.guest.name }}"
       -
         port: "40"
         description: "wifi-01"
-        access: "{{ networks.user.vlan }}"
+        access: "{{ networks.mgmt.vlan }}"
         trunk:
+          - "{{ networks.user.name }}"
           - "{{ networks.iot.name }}"
-          - "{{ networks.granny.name }}"
+          - "{{ networks.guest.name }}"
         duplex: "full-duplex"
         speed: "1g"
       -
         port: "41"
         description: "wifi-02"
-        access: "{{ networks.user.vlan }}"
+        access: "{{ networks.mgmt.vlan }}"
         trunk:
+          - "{{ networks.user.name }}"
           - "{{ networks.iot.name }}"
-          - "{{ networks.granny.name }}"
+          - "{{ networks.guest.name }}"
         duplex: "full-duplex"
         speed: "1g"
       -
         port: "42"
         description: "wifi-03"
-        access: "{{ networks.user.vlan }}"
+        access: "{{ networks.mgmt.vlan }}"
         trunk:
+          - "{{ networks.user.name }}"
           - "{{ networks.iot.name }}"
-          - "{{ networks.granny.name }}"
+          - "{{ networks.guest.name }}"
         duplex: "full-duplex"
         speed: "1g"
       -
         port: "43"
         description: "wifi-04"
-        access: "{{ networks.user.vlan }}"
+        access: "{{ networks.mgmt.vlan }}"
         trunk:
+          - "{{ networks.user.name }}"
           - "{{ networks.iot.name }}"
-          - "{{ networks.granny.name }}"
+          - "{{ networks.guest.name }}"
         duplex: "full-duplex"
         speed: "1g"
       -
@@ -195,7 +199,7 @@
           - "{{ networks.user.name }}"
           - "{{ networks.iot.name }}"
           - "{{ networks.pub.name }}"
-          - "{{ networks.granny.name }}"
+          - "{{ networks.guest.name }}"
       -
         interface: xe
         port: "1"
@@ -210,7 +214,7 @@
           - "{{ networks.user.name }}"
           - "{{ networks.iot.name }}"
           - "{{ networks.pub.name }}"
-          - "{{ networks.granny.name }}"
+          - "{{ networks.guest.name }}"
 
   tasks:
     - name: Enable netconf service
@@ -225,7 +229,7 @@
         domain_search:
           - "{{ common_local_tld }}"
         name_servers:
-          - "{{ networks.mgmt.dns }}"
+          - "{{ networks.mgmt.subnet | ansible.utils.ipaddr('addressname }}"
 
     - name: Configure Layer 3 interfaces
       junipernetworks.junos.junos_l3_interfaces:

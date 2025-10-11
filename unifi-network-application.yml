@@ -35,7 +35,7 @@
         name: docker_container
       vars:
         image: lscr.io/linuxserver/unifi-network-application:9.3.45
-        ipv4_address: "{{ docker_network.prefix }}.31"
+        ipv4_address: "{{ docker_network.subnet | ansible.utils.nthhost(31) }}"
         env:
           PUID: "{{ common_user_id | ansible.builtin.string }}"
           PGID: "{{ common_group_id | ansible.builtin.string }}"

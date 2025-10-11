@@ -21,7 +21,7 @@
         name: docker_container
       vars:
         image: adguard/adguardhome:v0.107.66
-        ipv4_address: "{{ docker_network.prefix }}.103"
+        ipv4_address: "{{ docker_network.subnet | ansible.utils.nthhost(103) }}"
         homepage:
           name: AdGuard Home
           group: Networking

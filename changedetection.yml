@@ -55,7 +55,7 @@
         name: docker_container
       vars:
         image: ghcr.io/dgtlmoon/changedetection.io:0.50.14
-        ipv4_address: "{{ docker_network.prefix }}.9"
+        ipv4_address: "{{ docker_network.subnet | ansible.utils.nthhost(9) }}"
         volumes:
           - "{{ config_directory }}:/datastore"
         env:

@@ -30,7 +30,7 @@
         network:
           -
             name: "{{ docker_network.name }}"
-            ipv4_address: "{{ docker_network.prefix }}.30"
+            ipv4_address: "{{ docker_network.subnet | ansible.utils.nthhost(30) }}"
           -
             name: "{{ networks.granny.name }}"
-            ipv4_address: "{{ networks.granny.prefix }}.30"
+            ipv4_address: "{{ networks.granny.subnet | ansible.utils.nthhost(30) }}"

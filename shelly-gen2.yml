@@ -74,7 +74,7 @@
 
     shelly_devices:
       -
-        ip: "{{ networks.iot.prefix }}.80"
+        ip: "{{ networks.iot.subnet | ansible.utils.nthhost(80) }}"
         device_id: shelly2pmg4-7c2c677b31d0
         settings:
           sys:
@@ -84,7 +84,7 @@
           - name: Balcony
           - name: Downlights
       -
-        ip: "{{ networks.iot.prefix }}.81"
+        ip: "{{ networks.iot.subnet | ansible.utils.nthhost(81) }}"
         device_id: shellyplus1pm-441793d4646c
         settings:
           sys:
@@ -93,7 +93,7 @@
         relay:
           - name: Downlights
       -
-        ip: "{{ networks.iot.prefix }}.82"
+        ip: "{{ networks.iot.subnet | ansible.utils.nthhost(82) }}"
         device_id: shellyplus1pm-441793942e24
         settings:
           sys:
@@ -102,7 +102,7 @@
         relay:
           - name: Downlights
       -
-        ip: "{{ networks.iot.prefix }}.83"
+        ip: "{{ networks.iot.subnet | ansible.utils.nthhost(83) }}"
         device_id: shellyplus2pm-b0a732485960
         settings:
           sys:
@@ -112,7 +112,7 @@
           - name: Downlights
           - name: LEDs
       -
-        ip: "{{ networks.iot.prefix }}.84"
+        ip: "{{ networks.iot.subnet | ansible.utils.nthhost(84) }}"
         device_id: shelly1pmminig4-ccba97c3716c
         settings:
           sys:
@@ -121,7 +121,7 @@
         relay:
           - name: Downlights
       -
-        ip: "{{ networks.iot.prefix }}.85"
+        ip: "{{ networks.iot.subnet | ansible.utils.nthhost(85) }}"
         device_id: shellyplus1pm-7c87ce65d8a0
         settings:
           sys:
@@ -130,7 +130,7 @@
         relay:
           - name: Downlights
       -
-        ip: "{{ networks.iot.prefix }}.86"
+        ip: "{{ networks.iot.subnet | ansible.utils.nthhost(86) }}"
         device_id: shelly2pmg4-7c2c677b5ec4
         settings:
           sys:
@@ -140,7 +140,7 @@
           - name: LEDs
           - name: Downlights
       -
-        ip: "{{ networks.iot.prefix }}.87"
+        ip: "{{ networks.iot.subnet | ansible.utils.nthhost(87) }}"
         device_id: shelly1pmminig4-a085e3be7b70
         settings:
           sys:
@@ -149,7 +149,7 @@
         relay:
           - name: Downlights
       -
-        ip: "{{ networks.iot.prefix }}.88"
+        ip: "{{ networks.iot.subnet | ansible.utils.nthhost(88) }}"
         device_id: shellyplus1pm-441793943264
         settings:
           sys:
@@ -158,7 +158,7 @@
         relay:
           - name: Light
       -
-        ip: "{{ networks.iot.prefix }}.89"
+        ip: "{{ networks.iot.subnet | ansible.utils.nthhost(89) }}"
         device_id: shellyplus2pm-b0a732484988
         settings:
           sys:
@@ -168,7 +168,7 @@
           - name: Fan
           - name: Downlights
       -
-        ip: "{{ networks.iot.prefix }}.90"
+        ip: "{{ networks.iot.subnet | ansible.utils.nthhost(90) }}"
         device_id: shellyplus2pm-b0a7324852fc
         settings:
           sys:
@@ -178,7 +178,7 @@
           - name: Fan
           - name: LEDs
       -
-        ip: "{{ networks.iot.prefix }}.91"
+        ip: "{{ networks.iot.subnet | ansible.utils.nthhost(91) }}"
         device_id: shelly1pmminig3-e4b32316c17c
         settings:
           sys:
@@ -187,7 +187,7 @@
         relay:
           - name: Downlights
       -
-        ip: "{{ networks.iot.prefix }}.92"
+        ip: "{{ networks.iot.subnet | ansible.utils.nthhost(92) }}"
         device_id: shelly2pmg4-7c2c677923ac
         settings:
           sys:
@@ -197,7 +197,7 @@
           - name: Downlights
           - name: LEDs
       -
-        ip: "{{ networks.iot.prefix }}.93"
+        ip: "{{ networks.iot.subnet | ansible.utils.nthhost(93) }}"
         device_id: shellyplus2pm-fce8c0ff3c24
         settings:
           sys:
@@ -207,7 +207,7 @@
           - name: Fan
           - name: LEDs
       -
-        ip: "{{ networks.iot.prefix }}.94"
+        ip: "{{ networks.iot.subnet | ansible.utils.nthhost(94) }}"
         device_id: shellyplus2pm-8813bfd2f81c
         settings:
           sys:
@@ -217,7 +217,7 @@
           - name: Fan
           - name: LEDs
       -
-        ip: "{{ networks.iot.prefix }}.95"
+        ip: "{{ networks.iot.subnet | ansible.utils.nthhost(95) }}"
         device_id: shelly1pmminig3-8cbfea922594
         settings:
           sys:
@@ -226,7 +226,7 @@
         relay:
           - name: Downlights
       -
-        ip: "{{ networks.iot.prefix }}.96"
+        ip: "{{ networks.iot.subnet | ansible.utils.nthhost(96) }}"
         device_id: shelly1pmminig3-e4b323181ba0
         settings:
           sys:
@@ -235,7 +235,7 @@
         relay:
           - name: Downlights
       -
-        ip: "{{ networks.iot.prefix }}.97"
+        ip: "{{ networks.iot.subnet | ansible.utils.nthhost(97) }}"
         device_id: shelly1pmminig3-e4b32323fe10
         settings:
           sys:
@@ -244,7 +244,7 @@
         relay:
           - name: Downlights
       -
-        ip: "{{ networks.iot.prefix }}.98"
+        ip: "{{ networks.iot.subnet | ansible.utils.nthhost(98) }}"
         device_id: shellyplus2pm-b0a732487ecc
         settings:
           sys:

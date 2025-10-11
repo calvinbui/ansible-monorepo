@@ -122,9 +122,9 @@
         parent: "{{ opnsense_hardware_interfaces.vlan }}"
         vlan: "{{ item.value.vlan }}"
         priority: 0
-        description: "{{ item.key | ansible.builtin.upper }}"
+        description: "{{ item.value.name | ansible.builtin.upper }}"
       loop: "{{ networks | ansible.builtin.dict2items }}"
-      when: "'vlan' in item.value"
+      when: item.value.vlan is defined
       notify: Reload VLANs
       tags:
         - interfaces
@@ -462,7 +462,7 @@
     - name: KEA - DHCP Settings
       oxlorg.opnsense.dhcp_general:
         enabled: true
-        interfaces: "{{ networks | ansible.builtin.dict2items | ansible.builtin.selectattr('value.kea_dhcp_pool', 'defined') | ansible.builtin.map(attribute='value.opnsense_identifier') | ansible.builtin.list }}"
+        interfaces: "{{ networks | ansible.builtin.dict2items | ansible.builtin.selectattr('value.dhcp_pool', 'defined') | ansible.builtin.map(attribute='value.opnsense_identifier') | ansible.builtin.list }}"
         fw_rules: true
         socket_type: raw
         lifetime: 4000
@@ -473,15 +473,14 @@
     - name: KEA - DHCP Subnets
       oxlorg.opnsense.dhcp_subnet:
         subnet: "{{ item.value.subnet | ansible.utils.ipsubnet }}"
-        description: "{{ item.key }}"
-        pools: "{{ item.value.kea_dhcp_pool }}"
+        description: "{{ item.value.name }}"
+        pools: "{{ item.value.dhcp_pool }}"
         auto_options: true # auto-configures router, dns and ntp
         next_server: "{{ item.value.tftp_server | ansible.builtin.default(omit) }}"
         tftp_server: "{{ item.value.tftp_server | ansible.builtin.default(omit) }}"
         tftp_file: "{{ item.value.tftp_file | ansible.builtin.default(omit) }}"
       loop: "{{ networks | ansible.builtin.dict2items }}"
-      when:
-        - "'kea_dhcp_pool' in item.value"
+      when: item.value.dhcp_pool is defined
       notify: Reload KEA
       tags:
         - kea

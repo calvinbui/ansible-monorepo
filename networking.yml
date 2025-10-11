@@ -146,7 +146,7 @@
           Name={{ network_bond.name }}.{{ item.value.vlan }}
 
           [Network]
-          DHCP={{ item.value.dhcp }}
+          DHCP={{ "yes" if item.value.name == "mgmt" else "no" }}
           LinkLocalAddressing=no
         dest: "/etc/systemd/network/60-{{ network_bond.name }}.{{ item.value.vlan }}.network"
         mode: "0644"

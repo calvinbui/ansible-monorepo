@@ -27,7 +27,7 @@ access_control:
       # homepage
       domain_regex: "^(bazarr|calibre-web|esphome|glances|nzbget|peanut|prometheus|prowlarr|qbittorrent|radarr|scrutiny|sonarr|sonarr-anime|tubearchivist).({{ common_local_tld }}|{{ common_tld }})$"
       policy: bypass
-      networks: ['{{ networks.pub.prefix}}.251/32']
+      networks: ['{{ networks.pub.subnet | ansible.utils.nthhost(6) }}/32']
     -
       domain:
         - "*.{{ common_tld }}"

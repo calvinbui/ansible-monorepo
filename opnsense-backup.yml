@@ -49,7 +49,7 @@
         name: docker_container
       vars:
         image: ghcr.io/atmoz/sftp/debian:latest
-        ipv4_address: "{{ docker_network.prefix }}.30"
+        ipv4_address: "{{ docker_network.subnet | ansible.utils.nthhost(30) }}"
         command:
           - "opnsense::{{ common_user_id }}"
         volumes:

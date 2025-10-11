@@ -75,7 +75,7 @@
         name: docker_container
       vars:
         image: alexxit/go2rtc:1.9.9-hardware
-        ipv4_address: "{{ docker_network.prefix }}.102"
+        ipv4_address: "{{ docker_network.subnet | ansible.utils.nthhost(102) }}"
         device_requests:
           - driver: nvidia
             count: -1

@@ -2,47 +2,49 @@
 
 networks:
   lan:
+    name: lan
     opnsense_identifier: lan
     subnet: 10.127.0.1/23
-    kea_dhcp_pool: [10.127.0.64-10.127.0.254]
+    dhcp_pool: [10.127.0.64-10.127.0.254]
 
   mgmt:
+    name: mgmt
     vlan: 10
     opnsense_identifier: opt1
     subnet: 10.127.10.1/23
-    kea_dhcp_pool: [10.127.10.64-10.127.10.255]
-    container_dhcp_pool: 10.127.11.0/24
+    dhcp_pool: [10.127.10.64-10.127.11.254]
     tftp_server: 192.168.2.250
     tftp_file: netboot.xyz.efi
 
   user:
+    name: user
     vlan: 20
     opnsense_identifier: opt2
     subnet: 10.127.20.1/23
-    kea_dhcp_pool: [10.127.20.64-10.127.20.255]
-    container_dhcp_pool: 10.127.21.0/24
+    dhcp_pool: [10.127.20.64-10.127.21.254]
     tftp_server: 192.168.2.250
     tftp_file: netboot.xyz.efi
 
   iot:
+    name: iot
     vlan: 30
     opnsense_identifier: opt3
     subnet: 10.127.30.1/23
-    kea_dhcp_pool: [10.127.31.0-10.127.31.127]
-    container_dhcp_pool: 10.127.31.128/25
+    dhcp_pool: [10.127.31.0-10.127.31.254]
 
   pub:
+    name: pub
     vlan: 40
     opnsense_identifier: opt4
     subnet: 10.127.40.1/23
-    kea_dhcp_pool: [10.127.40.64-10.127.41.254]
-    container_dhcp_pool: 10.127.41.0/24
+    dhcp_pool: [10.127.40.64-10.127.41.254]
 
   guest:
+    name: guest
     vlan: 50
     opnsense_identifier: opt5
     subnet: 10.127.50.1/23
-    kea_dhcp_pool: [10.127.50.128-10.127.51.254]
+    dhcp_pool: [10.127.50.128-10.127.51.254]
     tftp_server: 192.168.6.250
     tftp_file: netboot.xyz.efi
 

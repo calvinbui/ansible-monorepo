@@ -60,9 +60,9 @@
         name: docker_container
       vars:
         image: ghcr.io/gethomepage/homepage:v1.4.6
-        ipv4_address: "{{ docker_network.prefix }}.6"
+        ipv4_address: "{{ docker_network.subnet | ansible.utils.nthhost(6) }}"
         env:
-          HOMEPAGE_ALLOWED_HOSTS: "{{ common_tld }},{{ docker_network.prefix }}.6"
+          HOMEPAGE_ALLOWED_HOSTS: "{{ common_tld }},{{ docker_network.subnet | ansible.utils.nthhost(6) }}"
           HOMEPAGE_PROXY_DISABLE_IPV6: "true"
         volumes:
           - "{{ config_directory }}/config:/app/config"
