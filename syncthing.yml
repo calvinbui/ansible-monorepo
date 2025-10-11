@@ -29,7 +29,7 @@
         name: docker_container
       vars:
         image: ghcr.io/syncthing/syncthing:2.0.9
-        ipv4_address: "{{ docker_network.prefix }}.249"
+        ipv4_address: "{{ docker_network.prefix }}.5"
         env:
           PUID: "{{ common_user_id | ansible.builtin.string }}"
           PGID: "{{ common_group_id | ansible.builtin.string }}"

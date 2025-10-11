@@ -55,7 +55,7 @@
         volumes:
           - "{{ config_directory }}:/app/config"
           - "{{ common_directory_games }}/Switch/Games:/games:ro"
-        ipv4_address: "{{ docker_network.prefix }}.250"
+        ipv4_address: "{{ docker_network.prefix }}.105"
         homepage:
           name: Ownfoil
           group: Gaming

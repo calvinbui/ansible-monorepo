@@ -21,7 +21,7 @@
         name: docker_container
       vars:
         image: jlesage/jdownloader-2:v25.07.2
-        ipv4_address: "{{ docker_network.prefix }}.247"
+        ipv4_address: "{{ docker_network.prefix }}.8"
         env:
           TZ: "{{ common_timezone }}"
 

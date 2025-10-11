@@ -1,8 +1,8 @@
 ---
 
 collections:
-  - name: ansibleguy.opnsense
-    version: 1.2.16
+  - name: oxlorg.opnsense
+    version: 25.7.3
 
 roles:
   - name: mrlesmithjr.netplan

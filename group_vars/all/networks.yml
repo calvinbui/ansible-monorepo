@@ -1,127 +1,54 @@
 ---
 
 networks:
-  # 192.168.1.1: gateway + dns
-  # 192.168.1.2 - 192.168.1.63: static
-  # 192.168.1.64 - 192.168.1.191: dynamic
-  # 192.168.1.192 - 192.168.1.254: docker
-  # 192.168.1.255: broadcast
+  lan:
+    opnsense_identifier: lan
+    subnet: 10.127.0.1/23
+    kea_dhcp_pool: [10.127.0.64-10.127.0.254]
+
   mgmt:
-    name: mgmt
-    description: Mgmt
-    subnet: 192.168.1.1/24
-    dns: 192.168.1.1
-    dhcp: true
-    iprange:
-      dhcp:
-        - 192.168.1.64-192.168.1.191
-      docker: 192.168.1.192/26
-    prefix: 192.168.1
-    tftp_server: 192.168.2.250
-    tftp_file: netboot.xyz.efi
-    parent: ens3f0
-    driver: macvlan
     vlan: 10
-    priority: 7
-
-  # 192.168.2.1: gateway + dns
-  # 192.168.2.2 - 192.168.2.63: static
-  # 192.168.2.64 - 192.168.2.191: dynamic
-  # 192.168.2.192 - 192.168.2.254: docker
-  # 192.168.2.255: broadcast
-  user:
-    name: user
-    description: Userland
-    subnet: 192.168.2.1/24
-    dns: 192.168.2.1
-    dhcp: false
-    iprange:
-      dhcp:
-        - 192.168.2.64-192.168.2.191
-      docker: 192.168.2.192/26
-    prefix: 192.168.2
+    opnsense_identifier: opt1
+    subnet: 10.127.10.1/23
+    kea_dhcp_pool: [10.127.10.64-10.127.10.255]
+    container_dhcp_pool: 10.127.11.0/24
     tftp_server: 192.168.2.250
     tftp_file: netboot.xyz.efi
-    parent: ens3f0
-    driver: macvlan
+
+  user:
     vlan: 20
-    priority: 6
+    opnsense_identifier: opt2
+    subnet: 10.127.20.1/23
+    kea_dhcp_pool: [10.127.20.64-10.127.20.255]
+    container_dhcp_pool: 10.127.21.0/24
+    tftp_server: 192.168.2.250
+    tftp_file: netboot.xyz.efi
 
-  # 192.168.3.1: gateway + dns
-  # 192.168.3.2 - 192.168.3.127: static
-  # 192.168.3.128 - 192.168.3.191: dynamic
-  # 192.168.3.192 - 192.168.3.254: docker
-  # 192.168.3.255: broadcast
   iot:
-    name: iot
-    description: IOT
-    subnet: 192.168.3.1/24
-    dns: 192.168.3.1
-    dhcp: false
-    iprange:
-      dhcp:
-        - 192.168.3.128-192.168.3.191
-      docker: 192.168.3.192/26
-    prefix: 192.168.3
-    parent: ens3f0
-    driver: macvlan
     vlan: 30
-    priority: 0
-    wifi:
-      ssid: "Robot Uprising"
-      password: !vault |
-        $ANSIBLE_VAULT;1.1;AES256
-        31636433646535616238376331373731396531346261646166653330366666386233633464616539
-        3435373237653763663664353139316265373664323662650a343032363535626536393761663935
-        33356136633765376339653137343735356332363365396266336630656336336630636166303334
-        6237633631393363310a313834333336336461316565383361663630633435653161333132656431
-        6466
+    opnsense_identifier: opt3
+    subnet: 10.127.30.1/23
+    kea_dhcp_pool: [10.127.31.0-10.127.31.127]
+    container_dhcp_pool: 10.127.31.128/25
 
-  # 192.168.4.1: gateway + dns
-  # 192.168.4.2 - 192.168.4.63: static
-  # 192.168.4.64 - 192.168.4.127: dynamic
-  # 192.168.4.128 - 192.168.4.254: docker
-  # 192.168.4.255: broadcast
   pub:
-    name: pub
-    description: Public
-    subnet: 192.168.4.1/24
-    dns: 192.168.4.1
-    dhcp: false
-    iprange:
-      dhcp:
-        - 192.168.4.64-192.168.4.127
-      docker: 192.168.4.128/25
-    prefix: 192.168.4
-    parent: ens3f0
-    driver: macvlan
     vlan: 40
-    priority: 0
+    opnsense_identifier: opt4
+    subnet: 10.127.40.1/23
+    kea_dhcp_pool: [10.127.40.64-10.127.41.254]
+    container_dhcp_pool: 10.127.41.0/24
 
-  # 192.168.6.1: gateway + dns
-  # 192.168.6.2 - 192.168.6.63: static
-  # 192.168.6.64 - 192.168.6.127: dynamic
-  # 192.168.6.128 - 192.168.6.254: docker
-  # 192.168.6.255: broadcast
-  granny:
-    name: granny
-    description: Granny
-    subnet: 192.168.6.1/24
-    dns: 192.168.6.1
-    dhcp: false
-    iprange:
-      dhcp:
-        - 192.168.6.64-192.168.6.127
-      docker: 192.168.6.128/25
-    prefix: 192.168.6
+  guest:
+    vlan: 50
+    opnsense_identifier: opt5
+    subnet: 10.127.50.1/23
+    kea_dhcp_pool: [10.127.50.128-10.127.51.254]
     tftp_server: 192.168.6.250
     tftp_file: netboot.xyz.efi
-    parent: ens3f0
-    driver: macvlan
-    vlan: 50
-    priority: 6
 
-  vpn:
-    name: vpn
-    subnet: 192.168.5.1/24
-    dns: 192.168.5.1
+  vpn_home:
+    opnsense_identifier: opt6
+    subnet: 10.127.60.1/23
+
+  vpn_purevpn_sydney:
+    opnsense_identifier: opt7

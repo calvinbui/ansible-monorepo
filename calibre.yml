@@ -29,7 +29,7 @@
         name: docker_container
       vars:
         image: lscr.io/linuxserver/calibre:8.10.0
-        ipv4_address: "{{ docker_network.prefix }}.248"
+        ipv4_address: "{{ docker_network.prefix }}.104"
         volumes:
           - "{{ config_directory }}:/config"
           - "{{ common_directory_books }}:/books"

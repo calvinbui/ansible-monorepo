@@ -51,7 +51,7 @@
             30616635643437356566303535313663616466396437643838636437653964353233
         volumes:
           - "{{ config_directory }}:/opt/emqx/data"
-        ipv4_address: "{{ docker_network.prefix }}.247"
+        ipv4_address: "{{ docker_network.prefix }}.101"
         homepage:
           name: EMQX
           group: Home Automation

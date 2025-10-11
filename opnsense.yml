@@ -1,170 +1,426 @@
 ---
 
-- hosts: homelab
-
-  vars:
-    application: opnsense-backup
-
-    docker_network: "{{ networks.mgmt }}"
-
-  tasks:
-    - name: Create config folder
-      ansible.builtin.file:
-        path: "{{ config_directory }}"
-        state: directory
-        owner: "{{ common_user }}"
-        group: "{{ common_root_group }}"
-        mode: "0771"
-
-    - name: Create backup folder
-      ansible.builtin.file:
-        path: "{{ common_directory_backup }}/opnsense"
-        state: directory
-        owner: "{{ common_user_id }}"
-        group: "{{ common_group_id }}"
-        mode: "0771"
-
-    - name: Generate ED25519 SSH key pair
-      community.crypto.openssh_keypair:
-        path: "{{ config_directory }}/id_ed25519"
-        type: ed25519
-        state: present
-      register: _opnsense_backup_ed25519_key
-
-    - name: Generate ED25519 SSH key pair
-      community.crypto.openssh_keypair:
-        path: "{{ config_directory }}/id_ed25519"
-        type: ed25519
-        state: present
-      register: _opnsense_backup_ed25519_key
-
-    - name: Generate RSA SSH key pair
-      community.crypto.openssh_keypair:
-        path: "{{ config_directory }}/id_rsa"
-        type: rsa
-        size: 4096
-        state: present
-      register: _opnsense_backup_rsa_key
-
-    - name: Create container
-      ansible.builtin.include_role:
-        name: docker_container
-      vars:
-        image: ghcr.io/atmoz/sftp/debian:latest
-        ipv4_address: "{{ docker_network.prefix }}.254"
-        command:
-          - "opnsense::{{ common_user_id }}"
-        volumes:
-          - "{{ _opnsense_backup_ed25519_key.filename }}:/etc/ssh/ssh_host_ed25519_key"
-          - "{{ _opnsense_backup_ed25519_key.filename }}.pub:/home/opnsense/.ssh/keys/{{ _opnsense_backup_ed25519_key.filename | ansible.builtin.basename }}.pub"
-
-          - "{{ _opnsense_backup_rsa_key.filename }}:/etc/ssh/ssh_host_rsa_key"
-          - "{{ _opnsense_backup_rsa_key.filename }}.pub:/home/opnsense/.ssh/keys/{{ _opnsense_backup_rsa_key.filename | ansible.builtin.basename }}.pub"
-
-
-          - "{{ common_directory_backup }}/opnsense:/home/opnsense/share"
-
 - hosts: localhost
 
   become: false
 
+  connection: local
+
   gather_facts: false
 
+  vars:
+    opnsense_hardware_interfaces:
+      lan:
+        - igc0
+        - igc1
+        - igc2
+        - igc3
+      wan: ix1
+      vlan: ix0
+
+    opnsense_wireguard_vpn:
+      -
+        provider: PureVPN
+        location: Sydney
+        server:
+          address: 172.21.7.54
+          private_key: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            31383831313364313564316138616435616365653637633439303662376235316638353639306436
+            3637343665643763323965363735346566373733373937360a396466333933323631633030323964
+            65373565613762643739366631326163656466363266306239303263323334363436303939323462
+            3035633263373634650a646533313866353263623334393235343261323361656333366230316432
+            64356366656537346664623632656131333562316630623030346137653835633335656263303738
+            3462353766313633323930666631363636666566663065663566
+          public_key: /Qj+WFIfU0dTiqCIR4h39jipApkM/YFRQlTdLZWCG2w=
+        peer:
+          endpoint: "{{ query('community.dns.lookup', 'sx150901-ikev.ptoserver.com.') | ansible.builtin.first }}"
+          port: 51820
+          public_key: QukvJQh07tpWug+RtwGTWoi/UCXHcK1PFf/Z8HUS23A=
+          keepalive: 21
+        interface: "{{ networks.vpn_purevpn_sydney.opnsense_identifier }}"
+        used_by:
+          - "{{ networks.iot.opnsense_identifier }}"
+          - "{{ networks.pub.opnsense_identifier }}"
+
   module_defaults:
-    group/ansibleguy.opnsense.all:
+    group/oxlorg.opnsense.all:
       firewall: "opnsense-web.{{ common_local_tld }}"
       api_key: !vault |
         $ANSIBLE_VAULT;1.1;AES256
-        39316665636563343938653932626633343665383130633763396332626562363631383733643830
-        3139353338643737616539636232343835623831366135360a306432396133653934313438313462
-        37366133316362663364636431373933633332316135653736326166643238376238363931306137
-        3939363239383461660a663135636462303365383932356633616365303030653937343963623132
-        34313738336462356264353438323362393730653538623361623234653839313763633966646139
-        34303465303530393035616237326533396665616666626531613737633166373165643138346130
-        61616465633136346662666638333432353538333162363665303132636562666538306338366533
-        37386131613661313361316138656434346532666433623437396439393837323665333563376563
-        6434
+        38323538346534353462376365613939373264376130623061363436306664323665656332616434
+        6234363736396463666361393436333361373566393864390a316139343936613433326665343736
+        30323131336666386464383664303236363634376634656138313638643632396261633738313435
+        3236383365333764370a306230333061653632633739313234323232633862353736396234646233
+        30343061646364663636323163376533343738363535303638336236643630306563323236623162
+        65656136366666316530626138313238376465613662353534333662303764613937623639616263
+        61633865313939313461363434386633393936393634333362376236336134633736616632623634
+        31636639336333333265306539613864343735323335636537633262376566393235663532396366
+        6466
       api_secret: !vault |
         $ANSIBLE_VAULT;1.1;AES256
-        32653564666439343233356263336530393238326339326434326264356364363464656235303433
-        3735636462616238643639316631623133366663616333340a303434333665333538616362373939
-        34313137626336313461336262356363633033333862386438626165306637643266633732306333
-        6533326465343566370a383463376665373237666434646532383233323837623966623135363832
-        34653938383662313533326237663431653965393038306237303030316162396438653730303030
-        66383732663064636636663931356466376339346165376330336437623865383861613138656237
-        61626165633831373465346238626635333633376636306133626262663265306633333837353634
-        31623632343361303562343731346533336330633137633835363737313463373561653062643436
-        6263
+        31333234653232666536646164633839366331656161643638383237663162313765326563323564
+        3164303035353633653739373133383261313935366439660a333862613964653433303034643362
+        31306238396666313032353163333363613535343339653032396234313266343666333662373562
+        3230353737303738360a353937633964346332353735663432373033373664613930636363343663
+        36336233363932623738333965316535303737613465323861663066373462386333636133613064
+        65633635623539653963656439613632353865366530333265643238393130613334613434653639
+        30376562383562323833306237666430666430346237666261656330373532636230663532626337
+        36303265396339633762303735383863363338636363663862653639656630663966363962396666
+        6132
+    oxlorg.opnsense.rule:
+      match_fields: ["interface", "description"]
 
   handlers:
     - name: Reload Unbound
-      ansibleguy.opnsense.reload:
+      oxlorg.opnsense.reload:
         target: unbound
 
     - name: Reload VLANs
-      ansibleguy.opnsense.reload:
+      oxlorg.opnsense.reload:
         target: interface_vlan
 
+    - name: Reload LAGG
+      oxlorg.opnsense.reload:
+        target: interface_lagg
+
+    - name: Reload ACME
+      oxlorg.opnsense.reload:
+        target: acme_certificate
+
     - name: Reload Monit
-      ansibleguy.opnsense.reload:
+      oxlorg.opnsense.reload:
         target: monit
 
     - name: Reload KEA
-      ansibleguy.opnsense.reload:
+      oxlorg.opnsense.reload:
         target: kea
 
   tasks:
-    - name: Install Packages
-      ansibleguy.opnsense.package:
-        name:
-          - os-acme-client
-          - os-ddclient
-          - os-nut
-          - os-sftp-backup
-          - os-smart
-          - os-theme-cicada
-          - os-udpbroadcastrelay
-        action: install
-      tags: packages
+    #  _       _             __
+    # (_)_ __ | |_ ___ _ __ / _| __ _  ___ ___ ___
+    # | | '_ \| __/ _ | '__| |_ / _` |/ __/ _ / __|
+    # | | | | | ||  __| |  |  _| (_| | (_|  __\__ \
+    # |_|_| |_|\__\___|_|  |_|  \__,_|\___\___|___/
+    - name: Gateway - WAN
+      oxlorg.opnsense.gateway:
+        name: WAN
+        interface: wan
+        ip_protocol: inet
+        priority: 1
+        default_gw: true
+        monitor_disable: false
+        match_fields:
+          - name
+      tags:
+        - interfaces
+        - gateways
 
     - name: Interface - VLANs
-      ansibleguy.opnsense.interface_vlan:
-        parent: igb2
-        name: "{{ networks[item].description }}"
-        vlan: "{{ networks[item].vlan }}"
-        priority: "{{ networks[item].priority }}"
-      loop: "{{ networks.keys() | ansible.builtin.list }}"
+      oxlorg.opnsense.interface_vlan:
+        device: "{{ opnsense_hardware_interfaces.vlan }}_vlan{{ item.value.vlan }}"
+        parent: "{{ opnsense_hardware_interfaces.vlan }}"
+        vlan: "{{ item.value.vlan }}"
+        priority: 0
+        description: "{{ item.key | ansible.builtin.upper }}"
+      loop: "{{ networks | ansible.builtin.dict2items }}"
+      when: "'vlan' in item.value"
       notify: Reload VLANs
-      tags: vlans
+      tags:
+        - interfaces
+        - vlans
 
-    - name: Monit
-      ansibleguy.opnsense.monit_alert:
+    # pending https://github.com/O-X-L/ansible-opnsense/pull/321
+    - name: Interface - LAGG
+      oxlorg.opnsense.interface_lagg:
+        device: lagg0
+        members: "{{ opnsense_hardware_interfaces.lan }}"
+        proto: failover
+      notify: Reload LAGG
+      tags:
+        - interfaces
+        - lagg
+
+    #        _ _
+    #   __ _| (_) __ _ ___
+    #  / _` | | |/ _` / __|
+    # | (_| | | | (_| \__ \
+    #  \__,_|_|_|\__,_|___/
+
+    - name: Alias
+      oxlorg.opnsense.alias:
+        aliases:
+          -
+            name: rfc1918
+            type: network
+            content:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+          -
+            name: traefik
+            content: 10.127.10.10
+          -
+            name: calvin_pc
+            content: 10.127.20.20
+          -
+            name: ntp_host
+            content: 10.127.40.2
+          -
+            name: syncthing
+            content: 10.127.40.5
+          -
+            name: plex
+            content: 10.127.40.4
+          -
+            name: daikin_airbase
+            content: 10.127.30.2
+          -
+            name: google_cast_devices
+            content:
+              - 10.127.30.41
+              - 10.127.30.42
+              - 10.127.30.43
+              - 10.127.30.44
+              - 10.127.30.45
+          -
+            name: adguard
+            content: 10.127.30.103
+          -
+            name: google_dns
+            content:
+              - 8.8.8.8
+              - 8.8.4.4
+          -
+            name: nvidia_gamestream_tcp
+            type: port
+            content:
+              - 47984
+              - 47989
+              - 48010
+          -
+            name: nvidia_gamestream_udp
+            type: port
+            content:
+              - 47998
+              - 47999
+              - 48000
+              - 48002
+              - 48010
+          -
+            name: home_assistant
+            content: 10.127.30.100
+          -
+            name: home_assistant_targets
+            content:
+              - 10.127.10.1 # opnsense
+              - 10.127.10.31 # unifi network application
+          -
+            name: homepage
+            content: 10.127.40.6
+          -
+            name: homepage_targets
+            content:
+              - 10.127.10.1 # opnsense
+              - 10.127.10.31 # unifi network application
+          -
+            name: denon_heos
+            type: port
+            content:
+              - 80
+              - 10101
+              - 60006
+          -
+            name: denon_avr
+            content: 10.127.30.19
+          -
+            name: bypass_vpn
+            content:
+              - 10.127.30.16  # living room tv
+              - 10.127.30.17  # nvidia shield tv
+              - 10.127.30.22  # nintendo switch dock
+              - 10.127.30.23  # nintendo switch wi-fi
+              - 10.127.30.40  # chromecast master bedroom
+              - 10.127.40.4   # plex
+              - 10.127.40.8   # jdownloader
+              - 10.127.40.9   # changedetection
+      tags:
+        - alias
+
+    #        _             _
+    #  _ __ | |_   _  __ _(_)_ __  ___
+    # | '_ \| | | | |/ _` | | '_ \/ __|
+    # | |_) | | |_| | (_| | | | | \__ \
+    # | .__/|_|\__,_|\__, |_|_| |_|___/
+    # |_|            |___/
+
+    - name: Install Packages
+      oxlorg.opnsense.package:
+        name: "{{ item }}"
+        action: install
+      loop:
+        - os-acme-client
+        - os-cpu-microcode-intel
+        - os-ddclient
+        - os-nut
+        - os-sftp-backup
+        - os-smart
+        - os-udpbroadcastrelay
+      tags:
+        - packages
+
+    #   __ _  ___ _ __ ___   ___
+    #  / _` |/ __| '_ ` _ \ / _ \
+    # | (_| | (__| | | | | |  __/
+    #  \__,_|\___|_| |_| |_|\___|
+
+    - name: ACME - Settings
+      oxlorg.opnsense.acme_general:
+        enabled: true
+        auto_renewal: true
+        show_intro: false
+      notify: Reload ACME
+      tags:
+        - acme
+
+    - name: ACME - Accounts
+      oxlorg.opnsense.acme_account:
+        name: "{{ common_user }}"
+        ca: letsencrypt
+      notify: Reload ACME
+      register: _acme_account
+      tags:
+        - acme
+
+    - name: ACME - Challenge Types
+      oxlorg.opnsense.acme_validation:
+        name: Cloudflare
+        method: dns01
+        dns_service: dns_cf
+        dns_sleep: 120
+        dns_cf_account_id: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          61393964323234653539336138363136333338393837343561663834653835646432346335633335
+          3239343638356630383234343438663533383861613132310a393534383530303236636134626134
+          64323361643330613963373832343464643933373437656538656537373334363433326538643666
+          3938646530663236360a313330363862343238353934623136643963346562636330373731333639
+          38363536313939333164656135663836333432386662333739383035366131373265646237366365
+          6437303130646234626236396562393734383032306135356561
+        dns_cf_token: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          35313530336261373863383131313433373934356264656433613539393831633665363335396338
+          6366626334303461653432613231323436343765373965370a393438616631343661656165323433
+          35663965363832316331623936343163633836313134643666303739643631633633313962633661
+          3236363334303738310a366562643332346639353063626335333230396436613132303165393962
+          32616664313633323239353239383234393761313865356434346562316133336364616435663930
+          3335303765393461623831663131613564623039613631326265
+      notify: Reload ACME
+      register: _acme_challenge
+      tags:
+        - acme
+
+    - name: ACME - Automation
+      oxlorg.opnsense.acme_action:
+        enabled: true
+        name: Reload OPNsense Web UI
+        type: configd_restart_gui
+      notify: Reload ACME
+      register: _acme_automation
+      tags:
+        - acme
+
+    - name: ACME - Certificate
+      oxlorg.opnsense.acme_certificate:
+        enabled: true
+        name: "opnsense-web.{{ common_local_tld }}"
+        description: ""
+        account: "{{ _acme_account.diff.after.name }}"
+        validation: "{{ _acme_challenge.diff.after.name }}"
+        auto_renewal: true
+        renew_interval: 60
+        key_length: key_ec256
+        ocsp: false
+        restart_actions: "{{ _acme_automation.diff.after.name }}"
+        aliasmode: automatic
+      notify: Reload ACME
+      tags:
+        - acme
+
+    #                        _ _
+    #  _ __ ___   ___  _ __ (_| |_
+    # | '_ ` _ \ / _ \| '_ \| | __|
+    # | | | | | | (_) | | | | | |_
+    # |_| |_| |_|\___/|_| |_|_|\__|
+
+    - name: Monit - Alert Settings
+      oxlorg.opnsense.monit_alert:
         recipient: "opnsense{{ common_email_to }}"
-        not_on: false
+        not_on: true
+        events:
+          - instance
         reminder: 10
       notify: Reload Monit
-      tags: monit
+      tags:
+        - monit
+
+    - name: Monit - Start
+      oxlorg.opnsense.monit_test:
+        name: Start
+        condition: "status != 0"
+        action: start
+      notify: Reload Monit
+      tags:
+        - monit
+
+    - name: Monit - OpenVPN Service
+      oxlorg.opnsense.monit_service:
+        name: openvpn_client_connected
+        type: custom
+        path: "/bin/sh -c 'echo state | nc -w 1 -U /var/etc/openvpn/instance-*.sock | grep -q CONNECTED'"
+        start: "/bin/sh -c 'pluginctl -s openvpn restart; sleep 10; pluginctl -s unbound restart'"
+        tests:
+          - Start
+      notify: Reload Monit
+      tags:
+        - monit
+
+    #              _                           _
+    #  _   _ _ __ | |__   ___  _   _ _ __   __| |
+    # | | | | '_ \| '_ \ / _ \| | | | '_ \ / _` |
+    # | |_| | | | | |_) | (_) | |_| | | | | (_| |
+    #  \__,_|_| |_|_.__/ \___/ \__,_|_| |_|\__,_|
 
     - name: Unbound - General
-      ansibleguy.opnsense.unbound_general:
-        enabled: true
-        port: 53
+      oxlorg.opnsense.unbound_general:
         dnssec: true
-        dns64: false
-        dns64_prefix: '64:ff9b::/96'
-        aaaa_only_mode: false
-        register_dhcp_leases: true
-        register_dhcp_static_mappings: true
         register_ipv6_link_local: false
-        register_system_records: true
-        txt_records: false
-        flush_dns_cache: true
-        local_zone_type: 'transparent'
+        register_dhcp_static_mappings: true
       notify: Reload Unbound
-      tags: unbound
+      tags:
+        - unbound
+
+    - name: Unbound - Overrides
+      oxlorg.opnsense.unbound_host:
+        hostname: "*"
+        domain: "{{ common_tld }}"
+        value: "10.127.10.10"
+        description: "Internal resolution for {{ common_tld }}"
+      notify: Reload Unbound
+      tags:
+        - unbound
+
+    - name: Unbound - Query Forwarding
+      oxlorg.opnsense.unbound_forward:
+        domain: plex.direct
+        server: 192.5.5.241
+        port: 53
+        description: Send plex.direct to root name server F
+      notify: Reload Unbound
+      tags:
+        - unbound
 
     - name: Unbound - DNS-over-TLS
-      ansibleguy.opnsense.unbound_dot:
+      oxlorg.opnsense.unbound_dot:
         domain: "{{ item.domain | ansible.builtin.default('') }}"
         target: "{{ item.address }}"
         port: "853"
@@ -172,41 +428,66 @@
       notify: Reload Unbound
       loop:
         -
-          domain: plex.direct
           address: 1.1.1.1
           hostname: cloudflare-dns.com
         -
-          domain: plex.direct
           address: 1.0.0.1
           hostname: cloudflare-dns.com
         -
           address: 76.76.2.11
-          hostname: p1.freedns.controld.com
+          hostname: p0.freedns.controld.com
         -
-          address: 9.9.9.9
-          hostname: dns.quad9.net
+          address: 9.9.9.10
+          hostname: dns10.quad9.net
         -
-          address: 149.112.112.112
-          hostname: dns.quad9.net
-      tags: unbound
+          address: 149.112.112.10
+          hostname: dns10.quad9.net
+      tags:
+        - unbound
+
+    #  _
+    # | | _____  __ _
+    # | |/ / _ \/ _` |
+    # |   |  __| (_| |
+    # |_|\_\___|\__,_|
+
+    - name: Dnsmasq - Disable
+      oxlorg.opnsense.dnsmasq_general:
+        enabled: false
+        reload: true
+      tags:
+        - kea
+        - dnsmasq
+
+    - name: KEA - DHCP Settings
+      oxlorg.opnsense.dhcp_general:
+        enabled: true
+        interfaces: "{{ networks | ansible.builtin.dict2items | ansible.builtin.selectattr('value.kea_dhcp_pool', 'defined') | ansible.builtin.map(attribute='value.opnsense_identifier') | ansible.builtin.list }}"
+        fw_rules: true
+        socket_type: raw
+        lifetime: 4000
+      notify: Reload KEA
+      tags:
+        - kea
 
     - name: KEA - DHCP Subnets
-      ansibleguy.opnsense.dhcp_subnet:
-        description: "{{ networks[item].description }}"
-        subnet: "{{ networks[item].subnet | ansible.utils.ipsubnet }}"
-        pools: "{{ networks[item].iprange.dhcp }}"
+      oxlorg.opnsense.dhcp_subnet:
+        subnet: "{{ item.value.subnet | ansible.utils.ipsubnet }}"
+        description: "{{ item.key }}"
+        pools: "{{ item.value.kea_dhcp_pool }}"
         auto_options: true # auto-configures router, dns and ntp
-        next_server: "{{ networks[item].tftp_server | ansible.builtin.default(omit) }}"
-        tftp_server: "{{ networks[item].tftp_server | ansible.builtin.default(omit) }}"
-        tftp_file: "{{ networks[item].tftp_file | ansible.builtin.default(omit) }}"
-      loop: "{{ networks.keys() | ansible.builtin.list }}"
+        next_server: "{{ item.value.tftp_server | ansible.builtin.default(omit) }}"
+        tftp_server: "{{ item.value.tftp_server | ansible.builtin.default(omit) }}"
+        tftp_file: "{{ item.value.tftp_file | ansible.builtin.default(omit) }}"
+      loop: "{{ networks | ansible.builtin.dict2items }}"
       when:
-        - networks[item].iprange is defined
-        - networks[item].iprange.dhcp is defined
+        - "'kea_dhcp_pool' in item.value"
       notify: Reload KEA
+      tags:
+        - kea
 
     - name: KEA - DHCP Leases
-      ansibleguy.opnsense.dhcp_reservation:
+      oxlorg.opnsense.dhcp_reservation:
         ip: "{{ item.ip }}"
         mac: "{{ item.mac }}"
         subnet: "{{ item.subnet }}"
@@ -215,9 +496,18 @@
         reload: false
       loop: "{{ opnsense_dhcp_reservations }}"
       notify: Reload KEA
+      tags:
+        - kea
 
-    - name: WireGuard - Create server
-      ansibleguy.opnsense.wireguard_server:
+    #           _                                    _
+    # __      _(_)_ __ ___  __ _ _   _  __ _ _ __ __| |
+    # \ \ /\ / | | '__/ _ \/ _` | | | |/ _` | '__/ _` |
+    #  \ V  V /| | | |  __| (_| | |_| | (_| | | | (_| |
+    #   \_/\_/ |_|_|  \___|\__, |\__,_|\__,_|_|  \__,_|
+    #                      |___/
+
+    - name: WireGuard - Home Instance
+      oxlorg.opnsense.wireguard_server:
         name: Home
         public_key: LyOL+HkCzjVUGMoeSoYt2oLUO5Vu8SGUoguMtMcqxHg=
         private_key: !vault |
@@ -231,3 +521,368 @@
         port: 51820
         tunnel_address: "{{ networks.vpn.subnet }}"
         link_peers: false
+      tags:
+        - wireguard
+
+    - name: WireGuard - VPN Instance
+      oxlorg.opnsense.wireguard_server:
+        name: "{{ item.provider }}-{{ item.location }}"
+        public_key: "{{ item.server.public_key }}"
+        private_key: "{{ item.server.private_key }}"
+        port: "{{ 51820 + ansible_loop.index }}"
+        mtu: 1420
+        tunnel_address: "{{ item.server.address }}/32"
+        link_peers: false
+        disable_routes: true
+        gateway: "{{ item.server.address }}"
+      loop: "{{ opnsense_wireguard_vpn }}"
+      loop_control:
+        extended: true
+      tags:
+        - wireguard
+
+    - name: WireGuard - Peers
+      oxlorg.opnsense.wireguard_peer:
+        name: "{{ item.provider }}-{{ item.location }}"
+        public_key: "{{ item.peer.public_key }}"
+        endpoint: "{{ item.peer.endpoint }}"
+        port: "{{ item.peer.port }}"
+        allowed_ips: ["0.0.0.0/0"]
+        keepalive: "{{ item.peer.keepalive }}"
+        link_servers: true
+        servers: ["{{ item.provider }}-{{ item.location }}"]
+      loop: "{{ opnsense_wireguard_vpn }}"
+      tags:
+        - wireguard
+
+    # An interface needs to be assigned and enabled manually for this step (API doesn't exist for that yet)
+    # Also set the MSS on the interface to 1380
+
+    - name: WireGuard - Gateway
+      oxlorg.opnsense.gateway:
+        name: "{{ item.provider | ansible.builtin.upper }}_{{ item.location | ansible.builtin.upper }}"
+        interface: "{{ item.interface }}"
+        ip_protocol: inet
+        gateway: "{{ item.peer.endpoint }}"
+        default_gw: false
+        far_gw: true
+        monitor_disable: false
+        monitor: "{{ item.peer.endpoint }}"
+        match_fields:
+          - name
+        priority: 255
+      loop: "{{ opnsense_wireguard_vpn }}"
+      tags:
+        - wireguard
+        - gateways
+
+    - name: WireGuard - Firewall Rule
+      oxlorg.opnsense.rule:
+        rules:
+          -
+            sequence: 200
+            quick: false
+            interface: []
+            action: pass
+            source_net: "{{ item.interface }}ip"
+            destination_net: "{{ item.interface }}"
+            gateway: "{{ opnsense_wireguard_vpn[0].provider | ansible.builtin.upper }}_{{ opnsense_wireguard_vpn[0].location | ansible.builtin.upper }}"
+            description: "{{ opnsense_wireguard_vpn[0].provider | ansible.builtin.upper }}_{{ opnsense_wireguard_vpn[0].location | ansible.builtin.upper }}"
+      loop: "{{ opnsense_wireguard_vpn }}"
+      tags:
+        - wireguard
+        - firewall
+
+    # - name: WireGuard - Next steps
+    #   ansible.builtin.debug:
+    #     msg:
+    #       - Need to be done manually as the API doesn't exist
+    #       - 1. Add NAT Outbound - https://opnsense-web.{{ common_local_tld }}/firewall_nat_out.php
+    #   tags:
+    #     - wireguard
+
+    # - name: WireGuard - Add NAT rule
+    #   oxlorg.opnsense.nat_source:
+    #     interface: "{{ item.interface }}"
+    #     source: "opt1"
+    #     target: any
+    #     description: "{{ opnsense_wireguard_vpn[0].provider | ansible.builtin.upper }}_{{ opnsense_wireguard_vpn[0].location | ansible.builtin.upper }}"
+    #     match_fields: ["description"]
+    #   loop: "{{ opnsense_wireguard_vpn }}"
+    #   tags:
+    #     - wireguard
+    #     - firewall
+
+    #            _       _                         _               _            _
+    #  _   _  __| |_ __ | |__  _ __ ___   __ _  __| | ___ __ _ ___| |_ _ __ ___| | __ _ _   _
+    # | | | |/ _` | '_ \| '_ \| '__/ _ \ / _` |/ _` |/ __/ _` / __| __| '__/ _ | |/ _` | | | |
+    # | |_| | (_| | |_) | |_) | | | (_) | (_| | (_| | (_| (_| \__ | |_| | |  __| | (_| | |_| |
+    #  \__,_|\__,_| .__/|_.__/|_|  \___/ \__,_|\__,_|\___\__,_|___/\__|_|  \___|_|\__,_|\__, |
+    #             |_|                                                                   |___/
+
+    - name: UDP Broadcast Relay - Firewall Rules
+      oxlorg.opnsense.rule:
+        rules:
+          # Floating
+          -
+            sequence: 10
+            interface: []
+            action: pass
+            protocol: UDP
+            source_net: any
+            destination_net: 239.255.255.250
+            destination_port: 1900
+            description: SSDP DLNA UPnP
+          -
+            sequence: 11
+            interface: []
+            action: pass
+            protocol: UDP
+            source_net: any
+            destination_net: 224.0.0.251
+            destination_port: 5353
+            description: mDNS Multicast DNS
+
+          # User
+          -
+            sequence: 10
+            interface: "{{ networks.user.opnsense_identifier }}"
+            action: pass
+            protocol: TCP
+            source_net: denon_avr
+            source_port: denon_heos
+            destination_net: "{{ networks.user.opnsense_identifier }}"
+            destination_port: 30000-60000
+            description: Denon HEOS
+
+          # IOT
+          -
+            sequence: 10
+            interface: "{{ networks.iot.opnsense_identifier }}"
+            action: pass
+            protocol: UDP
+            source_net: "{{ networks.user.opnsense_identifier }}"
+            source_port: any
+            destination_net: "{{ networks.iot.subnet | ansible.utils.ipaddr('broadcast') }}"
+            destination_port: 30050
+            description: Access to Daikin UDP Broadcast
+          -
+            sequence: 11
+            interface: "{{ networks.iot.opnsense_identifier }}"
+            action: pass
+            protocol: UDP
+            source_net: 10.127.30.2
+            source_port: any
+            destination_net: "{{ networks.user.opnsense_identifier }}"
+            destination_port: 30000
+            description: Daikin Broadcast Response
+
+          -
+            sequence: 12
+            interface: "{{ networks.iot.opnsense_identifier }}"
+            action: pass
+            protocol: TCP
+            source_net: denon_avr
+            source_port: 51000-53000
+            destination_net: "{{ networks.user.opnsense_identifier }}"
+            destination_port: 49200
+            description: Denon HEOS Response 1
+          -
+            sequence: 13
+            interface: "{{ networks.iot.opnsense_identifier }}"
+            action: pass
+            protocol: TCP
+            source_net: denon_avr
+            source_port: 56000-57000
+            destination_net: "{{ networks.user.opnsense_identifier }}"
+            destination_port: 49201
+            description: Denon HEOS Response 2
+      tags:
+        - udpbroadcastrelay
+        - firewall
+
+    #   __ _                        _ _
+    #  / _(_)_ __ _____      ____ _| | |
+    # | |_| | '__/ _ \ \ /\ / / _` | | |
+    # |  _| | | |  __/\ V  V | (_| | | |
+    # |_| |_|_|  \___| \_/\_/ \__,_|_|_|
+
+    - name: Firewall Rules - floating
+      oxlorg.opnsense.rule:
+        rules:
+          -
+            sequence: 1
+            interface: []
+            action: pass
+            source_net: any
+            destination_net: 10.127.20.10
+            description: Printer access
+          -
+            sequence: 2
+            interface: []
+            action: pass
+            source_net: homepage
+            destination_net: homepage_targets
+            description: Homepage Widgets
+          -
+            sequence: 3
+            interface: []
+            action: pass
+            source_net: home_assistant
+            destination_net: home_assistant_targets
+            description: Home Assistant Integrations
+          -
+            sequence: 4
+            interface:
+              - "{{ networks.iot.opnsense_identifier }}"
+              - "{{ networks.pub.opnsense_identifier }}"
+            action: pass
+            protocol: TCP/UDP
+            source_net: "{{ networks.iot.opnsense_identifier }},{{ networks.pub.opnsense_identifier }}"
+            destination_net: traefik
+            destination_port: 443
+            description: Allow Traefik HTTPS
+          -
+            sequence: 5
+            interface:
+              - "{{ networks.iot.opnsense_identifier }}"
+              - "{{ networks.pub.opnsense_identifier }}"
+            action: pass
+            protocol: TCP
+            source_net: "{{ networks.iot.opnsense_identifier }},{{ networks.pub.opnsense_identifier }}"
+            destination_net: traefik
+            destination_port: 80
+            description: Allow Traefik HTTP
+          -
+            sequence: 6
+            interface:
+              - "{{ networks.iot.opnsense_identifier }}"
+              - "{{ networks.pub.opnsense_identifier }}"
+            action: pass
+            source_net: bypass_vpn
+            destination_invert: true
+            destination_net: "rfc1918"
+            gateway: "WAN"
+            description: Bypass VPN
+      tags:
+        - firewall
+
+    - name: Firewall Rules - mgmt
+      oxlorg.opnsense.rule:
+        rules:
+          -
+            sequence: 1
+            interface: "{{ networks.mgmt.opnsense_identifier }}"
+            action: pass
+            source_net: "{{ networks.mgmt.opnsense_identifier }}"
+            destination_invert: true
+            destination_net: "rfc1918"
+            gateway: WAN
+            description: Gateway
+          -
+            sequence: 2
+            interface: "{{ networks.mgmt.opnsense_identifier }}"
+            action: pass
+            source_net: "{{ networks.mgmt.opnsense_identifier }}"
+            destination_net: any
+            description: Allow all
+      tags:
+        - firewall
+
+    - name: Firewall Rules - user
+      oxlorg.opnsense.rule:
+        rules:
+          -
+            sequence: 1
+            interface: "{{ networks.user.opnsense_identifier }}"
+            action: pass
+            source_net: "{{ networks.user.opnsense_identifier }}"
+            destination_invert: true
+            destination_net: "rfc1918"
+            gateway: WAN
+            description: Gateway
+          -
+            sequence: 2
+            interface: "{{ networks.user.opnsense_identifier }}"
+            action: pass
+            source_net: "{{ networks.user.opnsense_identifier }}"
+            destination_net: any
+            description: Allow all
+      tags:
+        - firewall
+
+    - name: Firewall Rules - iot
+      oxlorg.opnsense.rule:
+        rules:
+          -
+            sequence: 1
+            interface: "{{ networks.iot.opnsense_identifier }}"
+            action: pass
+            source_net: "{{ networks.iot.opnsense_identifier }}"
+            destination_net: "{{ networks.iot.opnsense_identifier }}"
+            description: Allow same network
+          -
+            sequence: 2
+            interface: "{{ networks.iot.opnsense_identifier }}"
+            action: pass
+            source_net: "{{ networks.iot.opnsense_identifier }}"
+            destination_net: "{{ networks.pub.opnsense_identifier }}"
+            description: Allow pub network
+          -
+            sequence: 3
+            interface: "{{ networks.iot.opnsense_identifier }}"
+            action: pass
+            protocol: "TCP"
+            source_net: "{{ networks.iot.opnsense_identifier }}"
+            destination_net: calvin_pc
+            destination_port: nvidia_gamestream_tcp
+            description: Allow NVIDIA Gamestream TCP
+          -
+            sequence: 4
+            interface: "{{ networks.iot.opnsense_identifier }}"
+            action: pass
+            protocol: "UDP"
+            source_net: "{{ networks.iot.opnsense_identifier }}"
+            destination_net: calvin_pc
+            destination_port: nvidia_gamestream_udp
+            description: Allow NVIDIA Gamestream UDP
+          -
+            sequence: 100
+            interface: "{{ networks.iot.opnsense_identifier }}"
+            action: pass
+            source_net: "{{ networks.iot.opnsense_identifier }}"
+            destination_invert: true
+            destination_net: "rfc1918"
+            gateway: "{{ opnsense_wireguard_vpn[0].provider | ansible.builtin.upper }}_{{ opnsense_wireguard_vpn[0].location | ansible.builtin.upper }}"
+            description: Gateway
+      tags:
+        - firewall
+
+    - name: Firewall Rules - pub
+      oxlorg.opnsense.rule:
+        rules:
+          -
+            sequence: 1
+            interface: "{{ networks.pub.opnsense_identifier }}"
+            action: pass
+            source_net: "{{ networks.pub.opnsense_identifier }}"
+            destination_net: "{{ networks.pub.opnsense_identifier }}"
+            description: Allow same network
+          -
+            sequence: 2
+            interface: "{{ networks.pub.opnsense_identifier }}"
+            action: pass
+            source_net: "{{ networks.pub.opnsense_identifier }}"
+            destination_net: "{{ networks.iot.opnsense_identifier }}"
+            description: Allow iot network
+          -
+            sequence: 100
+            interface: "{{ networks.pub.opnsense_identifier }}"
+            action: pass
+            source_net: "{{ networks.pub.opnsense_identifier }}"
+            destination_invert: true
+            destination_net: "rfc1918"
+            gateway: "{{ opnsense_wireguard_vpn[0].provider | ansible.builtin.upper }}_{{ opnsense_wireguard_vpn[0].location | ansible.builtin.upper }}"
+            description: Gateway
+      tags:
+        - firewall

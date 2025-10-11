@@ -30,7 +30,7 @@
         network:
           -
             name: "{{ docker_network.name }}"
-            ipv4_address: "{{ docker_network.prefix }}.250"
+            ipv4_address: "{{ docker_network.prefix }}.30"
           -
             name: "{{ networks.granny.name }}"
-            ipv4_address: "{{ networks.granny.prefix }}.250"
+            ipv4_address: "{{ networks.granny.prefix }}.30"
