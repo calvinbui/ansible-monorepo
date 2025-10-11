@@ -47,6 +47,7 @@
         env:
           LC_ALL: "{{ common_language_iso_639 }}_{{ common_country_iso_3166 }}.UTF-8"
           LANG: "{{ common_language_iso_639 }}_{{ common_country_iso_3166 }}.UTF-8"
+          TZ: "{{ common_timezone }}"
 
           MailConfig__EmailServer: "{{ common_email_server }}"
           MailConfig__EmailFrom: "{{ application }}{{ common_email_to }}"
