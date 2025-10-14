@@ -23,18 +23,18 @@
         provider: PureVPN
         location: Sydney
         server:
-          address: 172.21.7.54
+          address: 172.21.6.238
           private_key: !vault |
             $ANSIBLE_VAULT;1.1;AES256
-            31383831313364313564316138616435616365653637633439303662376235316638353639306436
-            3637343665643763323965363735346566373733373937360a396466333933323631633030323964
-            65373565613762643739366631326163656466363266306239303263323334363436303939323462
-            3035633263373634650a646533313866353263623334393235343261323361656333366230316432
-            64356366656537346664623632656131333562316630623030346137653835633335656263303738
-            3462353766313633323930666631363636666566663065663566
-          public_key: /Qj+WFIfU0dTiqCIR4h39jipApkM/YFRQlTdLZWCG2w=
+            61666136626261333766383436386333366464663565313930323530646236343337373933366532
+            6338386332323165386666336365336133663666346663660a303032613135653230343139383065
+            66373536393632643366623561333431346333326434306235663666646139323763323466646539
+            6664623735626535310a363735373838353036316334353036613438343731316361633065363731
+            37643736376333373038636638346638373865376330613936343339656566396636646265633466
+            3937343865613433393233383864383033376432653730376632
+          public_key: 83Har1I19CqpQpatRtFWl4D+3gDB7S4MUB4SNkbMOU4=
         peer:
-          endpoint: "{{ query('community.dns.lookup', 'sx150901-ikev.ptoserver.com.') | ansible.builtin.first }}"
+          endpoint: sx150901-ikev.ptoserver.com
           port: 51820
           public_key: QukvJQh07tpWug+RtwGTWoi/UCXHcK1PFf/Z8HUS23A=
           keepalive: 21
@@ -537,7 +537,7 @@
           62663963373334326261313638363539653363346463633035313838303037613463376336643836
           3735363738356534393261303962626562393463643331666336
         port: 51820
-        tunnel_address: "{{ networks.vpn.subnet }}"
+        tunnel_address: "{{ networks.vpn_home.subnet }}"
         link_peers: false
       tags:
         - wireguard
@@ -581,11 +581,11 @@
         name: "{{ item.provider | ansible.builtin.upper }}_{{ item.location | ansible.builtin.upper }}"
         interface: "{{ item.interface }}"
         ip_protocol: inet
-        gateway: "{{ item.peer.endpoint }}"
+        gateway: "{{ query('community.dns.lookup', item.peer.endpoint) | ansible.builtin.first }}"
         default_gw: false
         far_gw: true
         monitor_disable: false
-        monitor: "{{ item.peer.endpoint }}"
+        monitor: "{{ query('community.dns.lookup', item.peer.endpoint) | ansible.builtin.first }}"
         match_fields:
           - name
         priority: 255
