@@ -5,7 +5,7 @@ paramiko==3.5.0
 # argon2 stuff for authelia
 argon2_cffi==23.1.0
 
-# ansibleguy.opnsense
+# oxlorg.opnsense
 httpx==0.28.1
 
 # json_query

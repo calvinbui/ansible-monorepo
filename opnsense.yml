@@ -73,6 +73,10 @@
       oxlorg.opnsense.reload:
         target: kea
 
+    - name: Reload dnsmasq
+      oxlorg.opnsense.reload:
+        target: dnsmasq
+
   tasks:
     #  _       _             __
     # (_)_ __ | |_ ___ _ __ / _| __ _  ___ ___ ___
@@ -422,58 +426,96 @@
       tags:
         - unbound
 
-    #  _
-    # | | _____  __ _
-    # | |/ / _ \/ _` |
-    # |   |  __| (_| |
-    # |_|\_\___|\__,_|
+    #      _
+    #   __| |_ __  ___ _ __ ___   __ _ ___  __ _
+    #  / _` | '_ \/ __| '_ ` _ \ / _` / __|/ _` |
+    # | (_| | | | \__ | | | | | | (_| \__ | (_| |
+    #  \__,_|_| |_|___|_| |_| |_|\__,_|___/\__, |
+    #                                         |_|
 
-    - name: Dnsmasq - Disable
-      oxlorg.opnsense.dnsmasq_general:
+    - name: KEA - Disable
+      oxlorg.opnsense.dhcp_general:
         enabled: false
         reload: true
       tags:
         - kea
         - dnsmasq
 
-    - name: KEA - DHCP Settings
-      oxlorg.opnsense.dhcp_general:
+    - name: Dnsmasq - General
+      oxlorg.opnsense.dnsmasq_general:
+        # Default
         enabled: true
-        interfaces: "{{ networks | ansible.builtin.dict2items | ansible.builtin.selectattr('value.dhcp_pool', 'defined') | ansible.builtin.map(attribute='value.opnsense_identifier') | ansible.builtin.list }}"
-        fw_rules: true
-        socket_type: raw
-        lifetime: 4000
-      notify: Reload KEA
-      tags:
-        - kea
+        interfaces: "{{ networks | ansible.builtin.dict2items | selectattr('value.dhcp_pool', 'defined') | map(attribute='value.opnsense_identifier') | list }}"
 
-    - name: KEA - DHCP Subnets
-      oxlorg.opnsense.dhcp_subnet:
-        subnet: "{{ item.value.subnet | ansible.utils.ipsubnet }}"
+        # DNS
+        dns_port: 53053
+        local_ttl: 30
+
+        # DNS Query Forwarding
+        resolv_system: true
+        forward_private_reverse: false
+
+        # DHCP
+        dhcp_disable_interfaces: "{{ networks | ansible.builtin.dict2items | selectattr('value.dhcp_pool', 'undefined') | map(attribute='value.opnsense_identifier') | list }}"
+        dhcp_fqdn: true
+        dhcp_domain: "{{ common_local_tld }}"
+        dhcp_local: true
+        dhcp_authoritative: true
+      notify: Reload dnsmasq
+      tags:
+        - dnsmasq
+
+    - name: Dnsmasq - DHCP ranges
+      oxlorg.opnsense.dnsmasq_range:
+        interface: "{{ item.value.opnsense_name }}"
+        start_addr: "{{ item.value.dhcp_pool.start }}"
+        end_addr: "{{ item.value.dhcp_pool.end }}"
+        domain: "{{ common_local_tld }}"
+        ra_mode: []
         description: "{{ item.value.name }}"
-        pools: "{{ item.value.dhcp_pool }}"
-        auto_options: true # auto-configures router, dns and ntp
-        next_server: "{{ item.value.tftp_server | ansible.builtin.default(omit) }}"
-        tftp_server: "{{ item.value.tftp_server | ansible.builtin.default(omit) }}"
-        tftp_file: "{{ item.value.tftp_file | ansible.builtin.default(omit) }}"
       loop: "{{ networks | ansible.builtin.dict2items }}"
       when: item.value.dhcp_pool is defined
-      notify: Reload KEA
+      notify: Reload dnsmasq
       tags:
-        - kea
+        - dnsmasq
 
-    - name: KEA - DHCP Leases
-      oxlorg.opnsense.dhcp_reservation:
-        ip: "{{ item.ip }}"
-        mac: "{{ item.mac }}"
-        subnet: "{{ item.subnet }}"
-        hostname: "{{ item.hostname }}"
-        description: "{{ item.description | ansible.builtin.default(omit) }}"
-        reload: false
+    - name: Dnsmasq - Hosts
+      oxlorg.opnsense.dnsmasq_host:
+        host: "{{ item.hostname }}"
+        domain: "{{ common_local_tld }}"
+        local: true
+        ip:
+          - "{{ item.ip }}"
+        hardware_addr: "{{ item.mac | ansible.builtin.default(omit) }}"
+        description: "{{ item.hostname }} - Created by Ansible"
+        comments: "{{ item.comment | ansible.builtin.default(omit) }}"
       loop: "{{ opnsense_dhcp_reservations }}"
-      notify: Reload KEA
+      notify: Reload dnsmasq
       tags:
-        - kea
+        - dnsmasq
+
+    - name: Unbound - Forward internal domain to dnsmasq
+      oxlorg.opnsense.unbound_forward:
+        domain: "{{ common_local_tld }}"
+        server: 127.0.0.1
+        port: 53053
+        description: Forward internal domain to dnsmasq
+      notify: Reload Unbound
+      tags:
+        - dnsmasq
+        - unbound
+
+    - name: Dnsmasq - DHCP Boot
+      oxlorg.opnsense.dnsmasq_boot:
+        interface: "{{ item.value.opnsense_name }}"
+        filename: "{{ item.value.tftp.file }}"
+        address: "{{ item.value.tftp.server }}"
+        description: "{{ item.value.name }}"
+      loop: "{{ networks | ansible.builtin.dict2items }}"
+      when: item.value.tftp is defined
+      notify: Reload dnsmasq
+      tags:
+        - dnsmasq
 
     #           _                                    _
     # __      _(_)_ __ ___  __ _ _   _  __ _ _ __ __| |

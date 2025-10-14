@@ -3,50 +3,76 @@
 networks:
   lan:
     name: lan
+    opnsense_name: LAN
     opnsense_identifier: lan
     subnet: 10.127.0.1/23
-    dhcp_pool: [10.127.0.64-10.127.0.254]
+    dhcp_pool:
+      start: 10.127.1.0
+      end: 10.127.1.254
+
+  wan:
+    name: wan
+    opnsense_name: WAN
+    opnsense_identifier: wan
 
   mgmt:
     name: mgmt
     vlan: 10
+    opnsense_name: VLAN10_MGMT
     opnsense_identifier: opt1
     subnet: 10.127.10.1/23
-    dhcp_pool: [10.127.10.64-10.127.11.254]
-    tftp_server: 192.168.2.250
-    tftp_file: netboot.xyz.efi
+    dhcp_pool:
+      start: 10.127.11.0
+      end: 10.127.11.254
+    tftp:
+      server: 192.168.2.250
+      file: netboot.xyz.efi
 
   user:
     name: user
     vlan: 20
+    opnsense_name: VLAN20_USER
     opnsense_identifier: opt2
     subnet: 10.127.20.1/23
-    dhcp_pool: [10.127.20.64-10.127.21.254]
-    tftp_server: 192.168.2.250
-    tftp_file: netboot.xyz.efi
+    dhcp_pool:
+      start: 10.127.21.0
+      end: 10.127.21.254
+    tftp:
+      server: 192.168.2.250
+      file: netboot.xyz.efi
 
   iot:
     name: iot
     vlan: 30
+    opnsense_name: VLAN30_IOT
     opnsense_identifier: opt3
     subnet: 10.127.30.1/23
-    dhcp_pool: [10.127.31.0-10.127.31.254]
+    dhcp_pool:
+      start: 10.127.31.0
+      end: 10.127.31.254
 
   pub:
     name: pub
     vlan: 40
+    opnsense_name: VLAN40_PUB
     opnsense_identifier: opt4
     subnet: 10.127.40.1/23
-    dhcp_pool: [10.127.40.64-10.127.41.254]
+    dhcp_pool:
+      start: 10.127.40.64
+      end: 10.127.41.254
 
   guest:
     name: guest
     vlan: 50
+    opnsense_name: VLAN50_GUEST
     opnsense_identifier: opt5
     subnet: 10.127.50.1/23
-    dhcp_pool: [10.127.50.128-10.127.51.254]
-    tftp_server: 192.168.6.250
-    tftp_file: netboot.xyz.efi
+    dhcp_pool:
+      start: 10.127.51.0
+      end: 10.127.51.254
+    tftp:
+      server: 192.168.6.250
+      file: netboot.xyz.efi
 
   vpn_home:
     opnsense_identifier: opt6
