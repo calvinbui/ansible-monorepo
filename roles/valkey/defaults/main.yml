@@ -1,5 +1,4 @@
 ---
 
-valkey_image: valkey/valkey
 valkey_name: "{{ application }}-valkey"
 valkey_directory: "{{ config_directory }}/valkey"

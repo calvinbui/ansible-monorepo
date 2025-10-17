@@ -11,7 +11,7 @@
 - name: Create valkey container
   community.docker.docker_container:
     name: "{{ valkey_name }}"
-    image: "{{ valkey_image }}:{{ valkey_version }}"
+    image: "ghcr.io/valkey-io/valkey:{{ valkey_version }}"
 
     state: started
 

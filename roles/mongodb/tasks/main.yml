@@ -11,7 +11,6 @@
 - name: Create MongoDB container
   community.docker.docker_container:
     name: "{{ mongo_name }}"
-    image: "mongo:{{ mongo_version }}"
 
     state: started
 
@@ -21,6 +20,7 @@
       - name: "{{ docker_network.name | ansible.builtin.default('bridge') }}"
     network_mode: "{{ docker_network.name | ansible.builtin.default('omit') }}"
     networks_cli_compatible: "{{ mongo_networks_cli_compatible | ansible.builtin.default(true) }}"
+    image: "public.ecr.aws/docker/library/mongo:{{ mongo_version }}"
 
     command: "{{ mongo_command | ansible.builtin.default(omit) }}"
 

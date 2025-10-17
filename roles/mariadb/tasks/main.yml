@@ -11,7 +11,6 @@
 - name: Create MariaDB container
   community.docker.docker_container:
     name: "{{ mariadb_name }}"
-    image: "mariadb:{{ mariadb_version }}"
 
     state: started
 
@@ -21,6 +20,7 @@
       - name: "{{ docker_network.name | ansible.builtin.default('bridge') }}"
     network_mode: "{{ docker_network.name | ansible.builtin.default('omit') }}"
     networks_cli_compatible: "{{ mariadb_networks_cli_compatible | ansible.builtin.default(true) }}"
+    image: "public.ecr.aws/docker/library/mariadb:{{ mariadb_version }}"
 
     command: "{{ mariadb_command | ansible.builtin.default(omit) }}"
 

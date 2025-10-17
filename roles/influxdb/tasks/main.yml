@@ -11,7 +11,7 @@
 - name: Create InfluxDB container
   community.docker.docker_container:
     name: "{{ influxdb_name }}"
-    image: "influxdb:{{ influxdb_version }}"
+    image: "public.ecr.aws/docker/library/influxdb:{{ influxdb_version }}"
 
     state: started
 

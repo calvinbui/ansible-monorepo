@@ -114,7 +114,7 @@
       ansible.builtin.include_role:
         name: docker_container
       vars:
-        image: httpd:2.4.65
+        image: public.ecr.aws/docker/library/httpd:2.4.65
         volumes:
           - "{{ config_directory }}/webdav:/var/www/webdav"
           - "{{ config_directory }}/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro"
