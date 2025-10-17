@@ -9,12 +9,6 @@ filters:
   custom_components.govee:
     - "API is back online."
 
-  # localtuya
-  custom_components.localtuya.common:
-    # suppress error when electric blanket are off
-    - ".*Connect to {{ docker_network.prefix }}.4(4|5) failed"
-    - ".*Failed to connect to {{ docker_network.prefix }}.4(4|5)"
-
   homeassistant.components.recorder.db_schema:
     # roborock maps
     - ".*State attributes for camera.*_map exceed maximum size.*"
@@ -26,9 +20,3 @@ filters:
   homeassistant.loader:
     # HACS custom integrations
     - "We found a custom integration .* which has not been tested by Home Assistant.*"
-
-# to debug shellies discovery scripts
-# logs:
-#   homeassistant.components.python_script: debug
-#   homeassistant.components.automation: info
-#   homeassistant.components.mqtt.discovery: info
