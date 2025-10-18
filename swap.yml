@@ -1,0 +1,44 @@
+---
+
+- hosts: homeserver
+
+  handlers:
+    - name: Activate swap
+      ansible.builtin.command: "swapon {{ swapfile_path }}"
+      changed_when: true
+
+  tasks:
+    - name: Create swap file
+      community.general.filesize:
+        path: /swapfile
+        size: 32GiB
+        owner: root
+        group: root
+        mode: "0600"
+      notify: Activate swap
+
+    - name: Format swap file
+      community.general.filesystem:
+        dev: /swapfile
+        fstype: swap
+      notify: Activate swap
+
+    - name: Add swap file to /etc/fstab
+      ansible.posix.mount:
+        src: /swapfile
+        path: none
+        fstype: swap
+        opts: sw
+        state: present
+
+    - name: Update sysctls
+      ansible.posix.sysctl:
+        name: "{{ item.key }}"
+        value: "{{ item.value }}"
+        sysctl_file: /etc/sysctl.d/99-swap.conf
+        ignoreerrors: true
+      loop: "{{ sysctl_settings | ansible.builtin.dict2items }}"
+      vars:
+        sysctl_settings:
+          vm.swappiness: 10
+          vm.vfs_cache_pressure: 50

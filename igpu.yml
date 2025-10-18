@@ -1,0 +1,37 @@
+---
+# TODO - add aliases for nvtop and intel_gpu_top
+- hosts: homeserver
+
+  handlers:
+    - name: Reboot
+      ansible.builtin.reboot:
+        reboot_timeout: 360
+
+  tasks:
+    - name: Enable non-free
+      ansible.builtin.deb822_repository:
+        name: debian-non-free
+        uris: http://deb.debian.org/debian
+        suites: "{{ ansible_distribution_release }}"
+        components:
+          - non-free
+        signed_by: /usr/share/keyrings/debian-archive-keyring.gpg
+
+    - name: Install firmware and drivers
+      ansible.builtin.apt:
+        name:
+          - firmware-intel-graphics
+          - intel-media-va-driver-non-free
+        state: present
+        update_cache: true
+        cache_valid_time: 86400
+      notify: Reboot
+
+    - name: Install tools
+      ansible.builtin.apt:
+        name:
+          - intel-gpu-tools
+          - nvtop
+        state: present
+        update_cache: true
+        cache_valid_time: 86400

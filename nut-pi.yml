@@ -1,0 +1,14 @@
+---
+# TODO - do. can it turn off the unifi aps?
+- hosts: nut
+
+  tasks:
+    - name: Remove motd
+      ansible.builtin.file:
+        path: /etc/motd
+        state: absent
+
+    - name: Install nut
+      community.general.apk:
+        name: nut
+        update_cache: true

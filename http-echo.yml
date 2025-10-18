@@ -1,0 +1,22 @@
+---
+
+- hosts: homeserver
+
+  vars:
+    application: http-echo
+
+    container_network: "{{ networks.guest }}"
+
+  tasks:
+    - name: Create container
+      ansible.builtin.include_role:
+        name: podman_container
+      vars:
+        image: docker.io/hashicorp/http-echo
+        command: -text=fuck1
+        labels:
+          - "traefik.http.routers.{{ application }}.entrypoints={{ application }}"
+          - "traefik.http.routers.{{ application }}.rule=Host(`{{ application }}.{{ common_tld }}`)"
+          - "traefik.http.routers.{{ application }}.service={{ application }}"
+          - "traefik.http.routers.{{ application }}.tls=true"
+          - "traefik.http.routers.{{ application }}.tls.certresolver=letsencrypt"

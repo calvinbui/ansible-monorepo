@@ -1,0 +1,77 @@
+---
+
+- hosts: homeserver
+
+  vars:
+    application: podman
+
+  tasks:
+    - name: Install podman
+      ansible.builtin.apt:
+        name:
+          - podman
+          - python3-podman
+        state: present
+        update_cache: true
+        cache_valid_time: 86400
+
+    - name: Create override directory for netavark-dhcp-proxy
+      ansible.builtin.file:
+        path: /etc/systemd/system/netavark-dhcp-proxy.service.d
+        state: directory
+        mode: "0755"
+
+    - name: Create netavark-dhcp-proxy ExecStart override
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/netavark-dhcp-proxy.service.d/override.conf
+        content: |
+          [Service]
+          ExecStart=
+          ExecStart=/usr/lib/podman/netavark dhcp-proxy
+        mode: "0644"
+
+    - name: Restart netavark-dhcp-proxy service
+      ansible.builtin.systemd:
+        name: netavark-dhcp-proxy.service
+        state: restarted
+        daemon_reload: true
+
+    - name: Create networks
+      containers.podman.podman_network:
+        name: "{{ item.key }}"
+        driver: macvlan
+        interface_name: "bond0.{{ item.value.vlan }}"
+      loop: "{{ networks | ansible.builtin.dict2items }}"
+      when:
+        - item.value.vlan is defined
+        - item.value.dhcp_pool is defined
+
+    - name: Create a script to alias podman to 'sudo podman' for all users
+      ansible.builtin.copy:
+        content: |
+          # using macvlan requires sudo for all podman commands
+          alias podman='sudo podman'
+        dest: /etc/profile.d/99-podman_alias.sh
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Enable and start the podman.socket service
+      ansible.builtin.systemd:
+        name: podman.socket
+        state: started
+        enabled: true
+
+    - name: Copy podman-startup.service systemd unit
+      ansible.builtin.copy:
+        src: "{{ files_directory }}/podman-startup.service"
+        dest: /etc/systemd/system/podman-startup.service
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Enable podman-startup service
+      ansible.builtin.systemd_service:
+        name: podman-startup.service
+        enabled: true
+        daemon_reload: true

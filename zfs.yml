@@ -1,0 +1,135 @@
+---
+
+- hosts: homeserver
+
+  vars:
+    zfs_pool: files
+    zfs_datasets:
+      -
+        name: Applications
+      -
+        name: Audiobooks
+      -
+        name: Backups
+      -
+        name: Backups/Time Machine
+        recordsize: 1M
+      -
+        name: Books
+      -
+        name: Downloads
+        recordsize: 1M
+      -
+        name: Games
+        recordsize: 1M
+      -
+        name: ISO
+        recordsize: 1M
+      -
+        name: Misc
+      -
+        name: Movies
+        recordsize: 1M
+      -
+        name: Photos
+      -
+        name: TV
+        recordsize: 1M
+      -
+        name: Work
+
+  handlers:
+    - name: Regenerate the kernel initramfs
+      ansible.builtin.command: update-initramfs -u
+      changed_when: true
+
+    - name: Reboot
+      ansible.builtin.reboot:
+        reboot_timeout: 360
+
+  tasks:
+    # https://openzfs.github.io/openzfs-docs/Getting%20Started/Debian/index.html
+    - name: Install openzfs dependencies
+      ansible.builtin.apt:
+        name:
+          - dpkg-dev
+          - linux-headers-generic
+          - linux-image-generic
+        update_cache: true
+        cache_valid_time: 86400
+
+    # requires contrib
+    - name: Install openzfs
+      ansible.builtin.apt:
+        name:
+          - zfs-dkms
+          - zfsutils-linux
+        update_cache: true
+        cache_valid_time: 86400
+
+    - name: Create zpool
+      community.general.zpool:
+        name: "{{ zfs_pool }}"
+        mountpoint: "{{ common_directory_storage }}"
+        pool_properties:
+          ashift: 12
+        filesystem_properties:
+          compression: lz4
+          atime: false
+          xattr: sa
+          acltype: posixacl
+          recordsize: 1M
+        vdevs:
+          - type: raidz2
+            disks:
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0H2SX
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0HG3N
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0HHGA
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0HYBX
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0LDCL
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0MPKG
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0MW3B
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0NM4E
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0P2HF
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0P9MD
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0PFAJ
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0RZRY
+      # https://github.com/ansible-collections/community.general/issues/10744
+      register: _zpool_result
+      failed_when: false
+
+    - name: Set correct permissions on the ZFS mount point
+      ansible.builtin.file:
+        path: "{{ common_directory_storage }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0755"
+
+    - name: Create datasets
+      community.general.zfs:
+        name: "{{ zfs_pool }}/{{ item.name }}"
+        state: present
+        extra_zfs_properties: "{{ properties | default(omit) }}"
+      loop: "{{ zfs_datasets }}"
+
+    - name: Set correct permissions on the dataset
+      ansible.builtin.file:
+        path: "{{ common_directory_storage }}/{{ item.name }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0755"
+      loop: "{{ zfs_datasets }}"
+
+    - name: Set ZFS ARC max size
+      ansible.builtin.copy:
+        content: |
+          options zfs zfs_arc_max={{ 128 * 1024 * 1024 * 1024 }}
+        dest: /etc/modprobe.d/zfs-arc-max-size.conf
+        owner: root
+        group: root
+        mode: "0644"
+      notify:
+        - Regenerate the kernel initramfs
+        - Reboot

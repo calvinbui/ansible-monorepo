@@ -1,0 +1,54 @@
+---
+
+groups:
+  - name: podman-exporter
+    rules:
+      -
+        alert: PodmanExporterDown
+        expr: up{job="podman-exporter"} != 1
+        for: 5m
+        annotations:
+          title: podman-exporter is down
+          description: "The exporter could not be reached"
+
+      - alert: PodmanContainerDown
+        expr: podman_container_state > 2 or podman_container_state == -1
+        for: 5m
+        annotations:
+          title: "Container is not running"
+          description: "Container {{ $labels.name }} ({{ $labels.image }}) has been in a non-running state ({{ $value }}) for 5 minutes.\nState codes: -1=unknown, 3=stopped, 4=paused, 5=exited."
+
+      - alert: PodmanContainerUnhealthy
+        expr: podman_container_health == 1
+        for: 5m
+        annotations:
+          title: "Container is unhealthy"
+          description: "Container {{ $labels.name }} ({{ $labels.image }}) is reporting as 'unhealthy' (code 1) for 5 minutes."
+
+      - alert: PodmanContainerCrashed
+        expr: (podman_container_exit_code * (podman_container_state == 5)) != 0
+        for: 0m
+        annotations:
+          title: "Container has crashed"
+          description: "Container {{ $labels.name }} ({{ $labels.image }}) has exited with a non-zero exit code: {{ $value }}."
+
+      - alert: PodmanContainerHighCPU
+        expr: rate(podman_container_cpu_seconds_total[5m]) > 1.5
+        for: 10m
+        annotations:
+          title: "Container has high CPU usage"
+          description: "Container {{ $labels.name }} ({{ $labels.image }}) has been using more than 1.5 CPU cores for 10 minutes.\nCurrent value: {{ $value | humanize }} cores."
+
+      - alert: PodmanContainerHighMemory
+        expr: (podman_container_mem_usage_bytes / podman_container_mem_limit_bytes * 100) > 90 and podman_container_mem_limit_bytes > 0
+        for: 10m
+        annotations:
+          title: "Container has high memory usage"
+          description: "Container {{ $labels.name }} ({{ $labels.image }}) has been using more than 90% of its memory limit for 10 minutes.\nCurrent usage: {{ $value | humanizePercentage }}."
+
+      - alert: PodmanContainerNetworkErrors
+        expr: (rate(podman_container_net_input_dropped_total[5m]) + rate(podman_container_net_input_errors_total[5m]) + rate(podman_container_net_output_dropped_total[5m]) + rate(podman_container_net_output_errors_total[5m])) > 0
+        for: 5m
+        annotations:
+          title: "Container is experiencing network errors"
+          description: "Container {{ $labels.name }} ({{ $labels.image }}) is dropping packets or experiencing network errors. Current rate: {{ $value | humanize }} errors/sec."

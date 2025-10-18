@@ -1,0 +1,7 @@
+---
+
+labels: {}
+
+network:
+  - name: "{{ container_network.name }}"
+    ip: "{{ ip | default(omit) }}"
