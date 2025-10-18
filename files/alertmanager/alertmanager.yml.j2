@@ -5,12 +5,10 @@ global:
   slack_api_url: {{ alertmanager_slack_url }}
 
 inhibit_rules:
-  - target_matchers:
+  - source_matchers:
       - alertname = "BlackboxInternetConnectivity"
-    source_matchers:
+    target_matchers:
       - alertname =~ "BlackboxConnection|BlackboxHTTPEndpointMissing|ClockSync|ContainerRestarting|ContainerDown"
-    equal:
-      - alertstate
 
 templates:
   - "/etc/alertmanager/template/*.tmpl"
@@ -21,19 +19,14 @@ receivers:
       - &commonMattermostConfig
         channel: '#home-lab-alerts'
         send_resolved: true
-      {%- raw %}
+        {%- raw %}
         title: |-
           {{ with index .Alerts 0 }}{{ if .Annotations.title }}{{ .Annotations.title }}{{ end }}{{ end }}
         text: >-
           {{ range .Alerts }}
             {{ .Annotations.description }}
           {{ end }}
-      {% endraw %}
-
-  - name: mattermost-home-lab-alerts-no-resolve
-    slack_configs:
-      - <<: *commonMattermostConfig
-        send_resolved: false
+        {% endraw %}
 
   - name: "null"
 
@@ -44,18 +37,3 @@ route:
   group_wait: 10s
   group_interval: 30s
   repeat_interval: 24h
-
-  routes:
-    -
-      receiver: "mattermost-home-lab-alerts-no-resolve"
-      group_by:
-        - alertname
-      group_wait: 10s
-      group_interval: 30s
-      repeat_interval: 24h
-      matchers:
-        - send_resolved = "false"
-    -
-      receiver: "null"
-      matchers:
-        - name = "ms-rewards-farmer"
