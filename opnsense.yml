@@ -141,20 +141,8 @@
               - 172.16.0.0/12
               - 192.168.0.0/16
           -
-            name: traefik
-            content: 10.127.10.10
-          -
             name: calvin_pc
             content: 10.127.20.20
-          -
-            name: ntp_host
-            content: 10.127.40.2
-          -
-            name: syncthing
-            content: 10.127.40.5
-          -
-            name: plex
-            content: 10.127.40.4
           -
             name: daikin_airbase
             content: 10.127.30.2
@@ -166,9 +154,6 @@
               - 10.127.30.43
               - 10.127.30.44
               - 10.127.30.45
-          -
-            name: adguard
-            content: 10.127.30.103
           -
             name: google_dns
             content:
@@ -190,9 +175,6 @@
               - 48000
               - 48002
               - 48010
-          -
-            name: home_assistant
-            content: 10.127.30.100
           -
             name: home_assistant_targets
             content:
