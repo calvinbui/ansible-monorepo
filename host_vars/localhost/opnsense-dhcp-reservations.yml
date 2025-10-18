@@ -149,7 +149,7 @@ opnsense_dhcp_reservations:
     ip: 10.127.30.6
     subnet: 10.127.30.0/23
     mac: 00:04:63:78:28:a9
-    hostname: alarm-wifi
+    hostname: alarm
     comment: "Bosch B426M Module"
   -
     ip: 10.127.30.7
