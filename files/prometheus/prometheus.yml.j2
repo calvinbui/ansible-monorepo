@@ -2,8 +2,8 @@
 ---
 
 global:
-  scrape_interval: 60s
-  evaluation_interval: 60s
+  scrape_interval: 15s
+  evaluation_interval: 15s
   external_labels:
     server: homelab
 
@@ -50,7 +50,6 @@ scrape_configs:
 
 alerting:
   alertmanagers:
-    - scheme: http
-      static_configs:
+    - static_configs:
         - targets:
           - alertmanager.{{ docker_network.name }}:9093
