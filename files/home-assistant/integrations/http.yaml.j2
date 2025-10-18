@@ -4,4 +4,4 @@
 
 use_x_forwarded_for: true
 trusted_proxies:
-  - "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] | ansible.builtin.string }}"
+  - {{ traefik_ip }}
