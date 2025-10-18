@@ -6,6 +6,8 @@
 
   connection: local
 
+  force_handlers: true
+
   gather_facts: false
 
   vars:
