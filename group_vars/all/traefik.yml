@@ -1,5 +1,7 @@
 ---
 
+traefik_ip: "{{ networks.mgmt.subnet | ansible.utils.nthhost(33) }}"
+
 traefik_certresolver: letsencrypt
 
 traefik_bypass_auth_header:

@@ -372,7 +372,7 @@
       oxlorg.opnsense.unbound_host:
         hostname: "*"
         domain: "{{ common_tld }}"
-        value: "10.127.10.10"
+        value: "{{ traefik_ip }}"
         description: "Internal resolution for {{ common_tld }}"
       notify: Reload Unbound
       tags:

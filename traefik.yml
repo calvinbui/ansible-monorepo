@@ -55,6 +55,7 @@
         name: docker_container
       vars:
         image: public.ecr.aws/docker/library/traefik:v3.5.2
+        ip: "{{ traefik_ip }}"
         restart_policy: always
         env:
           CF_API_EMAIL: "{{ cloudflare_email }}"
