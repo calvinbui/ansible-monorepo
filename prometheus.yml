@@ -38,6 +38,14 @@
         - data
       register: _dir
 
+    - name: Create scrape config directory
+      ansible.builtin.file:
+        path: "{{ prometheus_scrape_directory }}"
+        state: directory
+        mode: "0771"
+        owner: "65534"  # nobody user
+        group: "{{ common_group }}"
+
     - name: Copy rules
       ansible.builtin.copy:
         src: "{{ files_directory }}/rules/"
