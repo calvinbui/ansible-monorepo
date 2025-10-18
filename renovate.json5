@@ -180,11 +180,6 @@
       matchPackageNames: ['/containrrr\\/watchtower$/'],
       sourceUrl: 'https://github.com/containrrr/watchtower',
     },
-    /* cadvisor */
-    {
-      matchPackageNames: ['/.*\\/cadvisor$/'],
-      sourceUrl: 'https://github.com/google/cadvisor',
-    },
     /* psitransfer */
     {
       matchPackageNames: ['/psitrax\\/psitransfer$/'],

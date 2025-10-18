@@ -1,0 +1,26 @@
+---
+
+- hosts: homeserver
+
+  vars:
+    application: podman-exporter
+
+    container_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create container
+      ansible.builtin.include_role:
+        name: podman_container
+      vars:
+        image: quay.io/navidys/prometheus-podman-exporter:v1.19.0
+        user: root
+        command:
+          - --collector.enhance-metrics
+        env:
+          CONTAINER_HOST: unix:///run/podman/podman.sock
+        volumes:
+          - /run/podman/podman.sock:/run/podman/podman.sock
+        security_opt:
+          - label=disable
+        metrics:
+          - port: 9882
