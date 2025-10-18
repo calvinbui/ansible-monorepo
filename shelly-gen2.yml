@@ -74,16 +74,6 @@
 
     shelly_devices:
       -
-        ip: "{{ networks.iot.subnet | ansible.utils.nthhost(80) }}"
-        device_id: shelly2pmg4-7c2c677b31d0
-        settings:
-          sys:
-            device:
-              name: Master Bedroom Lights
-        relay:
-          - name: Balcony
-          - name: Downlights
-      -
         ip: "{{ networks.iot.subnet | ansible.utils.nthhost(81) }}"
         device_id: shellyplus1pm-441793d4646c
         settings:
@@ -236,6 +226,16 @@
           - name: Downlights
       -
         ip: "{{ networks.iot.subnet | ansible.utils.nthhost(97) }}"
+        device_id: shelly2pmg4-7c2c677b31d0
+        settings:
+          sys:
+            device:
+              name: Master Bedroom Lights
+        relay:
+          - name: Balcony
+          - name: Downlights
+      -
+        ip: "{{ networks.iot.subnet | ansible.utils.nthhost(98) }}"
         device_id: shelly1pmminig3-e4b32323fe10
         settings:
           sys:
@@ -244,7 +244,7 @@
         relay:
           - name: Downlights
       -
-        ip: "{{ networks.iot.subnet | ansible.utils.nthhost(98) }}"
+        ip: "{{ networks.iot.subnet | ansible.utils.nthhost(99) }}"
         device_id: shellyplus2pm-b0a732487ecc
         settings:
           sys:
