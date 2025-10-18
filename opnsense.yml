@@ -79,6 +79,10 @@
       oxlorg.opnsense.reload:
         target: dnsmasq
 
+    - name: Reload firewall rules
+      oxlorg.opnsense.reload:
+        target: rule
+
   tasks:
     #  _       _             __
     # (_)_ __ | |_ ___ _ __ / _| __ _  ___ ___ ___
@@ -592,6 +596,7 @@
             gateway: "{{ opnsense_wireguard_vpn[0].provider | ansible.builtin.upper }}_{{ opnsense_wireguard_vpn[0].location | ansible.builtin.upper }}"
             description: "{{ opnsense_wireguard_vpn[0].provider | ansible.builtin.upper }}_{{ opnsense_wireguard_vpn[0].location | ansible.builtin.upper }}"
       loop: "{{ opnsense_wireguard_vpn }}"
+      notify: Reload firewall rules
       tags:
         - wireguard
         - firewall
@@ -767,6 +772,7 @@
             destination_net: "rfc1918"
             gateway: "WAN"
             description: Bypass VPN
+      notify: Reload firewall rules
       tags:
         - firewall
 
@@ -789,6 +795,7 @@
             source_net: "{{ networks.mgmt.opnsense_identifier }}"
             destination_net: any
             description: Allow all
+      notify: Reload firewall rules
       tags:
         - firewall
 
@@ -811,6 +818,7 @@
             source_net: "{{ networks.user.opnsense_identifier }}"
             destination_net: any
             description: Allow all
+      notify: Reload firewall rules
       tags:
         - firewall
 
@@ -858,6 +866,7 @@
             destination_net: "rfc1918"
             gateway: "{{ opnsense_wireguard_vpn[0].provider | ansible.builtin.upper }}_{{ opnsense_wireguard_vpn[0].location | ansible.builtin.upper }}"
             description: Gateway
+      notify: Reload firewall rules
       tags:
         - firewall
 
@@ -887,5 +896,29 @@
             destination_net: "rfc1918"
             gateway: "{{ opnsense_wireguard_vpn[0].provider | ansible.builtin.upper }}_{{ opnsense_wireguard_vpn[0].location | ansible.builtin.upper }}"
             description: Gateway
+      notify: Reload firewall rules
+      tags:
+        - firewall
+
+    - name: Firewall Rules - guest
+      oxlorg.opnsense.rule:
+        rules:
+          -
+            sequence: 1
+            interface: "{{ networks.guest.opnsense_identifier }}"
+            action: pass
+            source_net: "{{ networks.guest.opnsense_identifier }}"
+            destination_invert: true
+            destination_net: "rfc1918"
+            gateway: WAN
+            description: Gateway
+          -
+            sequence: 2
+            interface: "{{ networks.guest.opnsense_identifier }}"
+            action: pass
+            source_net: "{{ networks.guest.opnsense_identifier }}"
+            destination_net: "{{ networks.guest.opnsense_identifier }}"
+            description: Allow same network
+      notify: Reload firewall rules
       tags:
         - firewall
