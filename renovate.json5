@@ -143,11 +143,6 @@
       sourceUrl: 'https://github.com/nextcloud/server',
       changelogUrl: 'https://nextcloud.com/changelog/',
     },
-    /* chadburn */
-    {
-      matchPackageNames: ['/.*\\/chadburn$/'],
-      sourceUrl: 'https://github.com/PremoWeb/Chadburn',
-    },
     /* grafana */
     {
       matchPackageNames: ['/.*\\/grafana$/'],

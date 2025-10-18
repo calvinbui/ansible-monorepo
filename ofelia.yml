@@ -1,0 +1,21 @@
+---
+
+- hosts: homeserver
+
+  vars:
+    application: ofelia
+
+    container_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create container
+      ansible.builtin.include_role:
+        name: podman_container
+      vars:
+        image: docker.io/mcuadros/ofelia:0.4.0-beta.1
+        command:
+          - daemon
+          - --docker
+        volumes:
+          - /run/podman/podman.sock:/var/run/docker.sock:ro
+          - /etc/localtime:/etc/localtime:ro
