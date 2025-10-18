@@ -4,7 +4,6 @@
 scrape_configs:
   - job_name: blackbox_docker_http
     scrape_interval: 120s
-    scrape_timeout: 30s
     metrics_path: /probe
     params:
       module: [http]
