@@ -17,12 +17,12 @@
           '*': ignore
 
   tasks:
-    - name: Create config folder
+    - name: Create logs folder
       ansible.builtin.file:
-        path: "{{ config_directory }}"
+        path: "{{ config_directory }}/logs"
         state: directory
         owner: "{{ common_user }}"
-        group: "{{ common_group }}"
+        group: "root"
         mode: "0771"
 
     - name: Create acme.json

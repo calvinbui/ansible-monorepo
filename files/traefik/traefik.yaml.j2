@@ -11,9 +11,6 @@ providers:
 entryPoints:
   web:
     address: ':80/tcp'
-    http:
-      middlewares:
-        - crowdsec-bouncer@file
 
   web-secure:
     address: ':443'
@@ -21,9 +18,9 @@ entryPoints:
       advertisedPort: 443
     http:
       middlewares:
-        - crowdsec-bouncer@file
         - security-headers@file
         - compression@file
+        - crowdsec@file
 
   metrics:
     address: ':8082/tcp'
@@ -45,8 +42,18 @@ certificatesResolvers:
 api: {}
 
 log:
-  level: 'INFO'
-  filePath: '/var/log/traefik/traefik.log'
+  level: INFO
 
 accessLog:
-  filePath: '/var/log/traefik/access.log'
+  filePath: /var/log/traefik/access.log
+  format: json
+  filters:
+    statusCodes:
+      - "400-499"
+      - "500-599"
+
+experimental:
+  plugins:
+    crowdsec-bouncer-traefik-plugin:
+      moduleName: github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin
+      version: v1.4.5
