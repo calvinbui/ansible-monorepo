@@ -73,10 +73,8 @@
     homepage: "{{ homepage_config }}"
     blackbox:
       path: /ping
-    healthcheck:
-      test: "curl -f http://localhost:8989/ping || exit 1"
-      start_period: 5s
-      interval: 5s
-      retries: 5
-    labels:
-      autoheal: "true"
+    healthcheck: "curl -f http://localhost:8989/ping || exit 1"
+    healthcheck_failure_action: restart
+    healthcheck_start_period: 60s
+    healthcheck_interval: 5s
+    healthcheck_retries: 5
