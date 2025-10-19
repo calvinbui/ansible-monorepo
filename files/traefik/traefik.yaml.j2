@@ -33,8 +33,9 @@ certificatesResolvers:
       keyType: 'EC384'
       dnsChallenge:
         provider: cloudflare
-        delayBeforeCheck: 100
-        disablePropagationCheck: true
+        propagation:
+          delayBeforeChecks: 100
+          disableChecks: true
         resolvers:
           - 1.1.1.1:53
           - 1.0.0.1:53
