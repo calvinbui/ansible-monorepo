@@ -25,16 +25,15 @@
         provider: PureVPN
         location: Sydney
         server:
-          address: 172.21.6.238
+          address: 172.21.7.116
           private_key: !vault |
             $ANSIBLE_VAULT;1.1;AES256
-            61666136626261333766383436386333366464663565313930323530646236343337373933366532
-            6338386332323165386666336365336133663666346663660a303032613135653230343139383065
-            66373536393632643366623561333431346333326434306235663666646139323763323466646539
-            6664623735626535310a363735373838353036316334353036613438343731316361633065363731
-            37643736376333373038636638346638373865376330613936343339656566396636646265633466
-            3937343865613433393233383864383033376432653730376632
-          public_key: 83Har1I19CqpQpatRtFWl4D+3gDB7S4MUB4SNkbMOU4=
+            65653139313739323562343739343032393764633537663432366562326664366237376336396637
+            3139626464316338303736376133383237666232633062300a383836393365653233323137363464
+            62396433666638626238323733346635633863626433643663343336636533633535303662363037
+            6237363934346331640a643830373365326330653530613565313133613334323263376464353334
+            63383536663330393839336661636364326661666638363239336366613965336262373538326134
+            6163623337613665303833316538646164623233633230616131
         peer:
           endpoint: sx150901-ikev.ptoserver.com
           port: 51820
@@ -146,18 +145,18 @@
               - 192.168.0.0/16
           -
             name: calvin_pc
-            content: 10.127.20.20
+            content: "{{ networks.user.subnet | ansible.utils.nthhost(20) }}"
           -
             name: daikin_airbase
-            content: 10.127.30.2
+            content: "{{ networks.iot.subnet | ansible.utils.nthhost(2) }}"
           -
             name: google_cast_devices
             content:
-              - 10.127.30.41
-              - 10.127.30.42
-              - 10.127.30.43
-              - 10.127.30.44
-              - 10.127.30.45
+              - "{{ networks.iot.subnet | ansible.utils.nthhost(41) }}"
+              - "{{ networks.iot.subnet | ansible.utils.nthhost(42) }}"
+              - "{{ networks.iot.subnet | ansible.utils.nthhost(43) }}"
+              - "{{ networks.iot.subnet | ansible.utils.nthhost(44) }}"
+              - "{{ networks.iot.subnet | ansible.utils.nthhost(45) }}"
           -
             name: google_dns
             content:
@@ -182,16 +181,13 @@
           -
             name: home_assistant_targets
             content:
-              - 10.127.10.1 # opnsense
-              - 10.127.10.31 # unifi network application
-          -
-            name: homepage
-            content: 10.127.40.6
+              - "{{ networks.mgmt.subnet | ansible.utils.nthhost(1) }}" # opnsense
+              - "{{ networks.mgmt.subnet | ansible.utils.nthhost(31) }}" # unifi network application
           -
             name: homepage_targets
             content:
-              - 10.127.10.1 # opnsense
-              - 10.127.10.31 # unifi network application
+              - "{{ networks.mgmt.subnet | ansible.utils.nthhost(1) }}" # opnsense
+              - "{{ networks.mgmt.subnet | ansible.utils.nthhost(31) }}" # unifi network application
           -
             name: denon_heos
             type: port
@@ -201,18 +197,18 @@
               - 60006
           -
             name: denon_avr
-            content: 10.127.30.19
+            content: "{{ networks.iot.subnet | ansible.utils.nthhost(19) }}"
           -
             name: bypass_vpn
             content:
-              - 10.127.30.16  # living room tv
-              - 10.127.30.17  # nvidia shield tv
-              - 10.127.30.22  # nintendo switch dock
-              - 10.127.30.23  # nintendo switch wi-fi
-              - 10.127.30.40  # chromecast master bedroom
-              - 10.127.40.4   # plex
-              - 10.127.40.8   # jdownloader
-              - 10.127.40.9   # changedetection
+              - "{{ networks.iot.subnet | ansible.utils.nthhost(16) }}"  # living room tv
+              - "{{ networks.iot.subnet | ansible.utils.nthhost(17) }}"  # nvidia shield tv
+              - "{{ networks.iot.subnet | ansible.utils.nthhost(22) }}"  # nintendo switch dock
+              - "{{ networks.iot.subnet | ansible.utils.nthhost(23) }}"  # nintendo switch wi-fi
+              - "{{ networks.iot.subnet | ansible.utils.nthhost(40) }}"  # chromecast master bedroom
+              - "{{ networks.pub.subnet | ansible.utils.nthhost(4) }}"   # plex
+              - "{{ networks.pub.subnet | ansible.utils.nthhost(8) }}"   # jdownloader
+              - "{{ networks.pub.subnet | ansible.utils.nthhost(9) }}"   # changedetection
       tags:
         - alias
 
@@ -267,6 +263,7 @@
         method: dns01
         dns_service: dns_cf
         dns_sleep: 120
+        dns_cf_zone_id: fdab030df06b16c36c704bff2da42a7e
         dns_cf_account_id: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           61393964323234653539336138363136333338393837343561663834653835646432346335633335
@@ -374,16 +371,6 @@
         domain: "{{ common_tld }}"
         value: "{{ traefik_ip }}"
         description: "Internal resolution for {{ common_tld }}"
-      notify: Reload Unbound
-      tags:
-        - unbound
-
-    - name: Unbound - Query Forwarding
-      oxlorg.opnsense.unbound_forward:
-        domain: plex.direct
-        server: 192.5.5.241
-        port: 53
-        description: Send plex.direct to root name server F
       notify: Reload Unbound
       tags:
         - unbound
@@ -534,7 +521,6 @@
     - name: WireGuard - VPN Instance
       oxlorg.opnsense.wireguard_server:
         name: "{{ item.provider }}-{{ item.location }}"
-        public_key: "{{ item.server.public_key }}"
         private_key: "{{ item.server.private_key }}"
         port: "{{ 51820 + ansible_loop.index }}"
         mtu: 1420
@@ -679,7 +665,7 @@
             interface: "{{ networks.iot.opnsense_identifier }}"
             action: pass
             protocol: UDP
-            source_net: 10.127.30.2
+            source_net: "{{ networks.iot.subnet | ansible.utils.nthhost(2) }}"
             source_port: any
             destination_net: "{{ networks.user.opnsense_identifier }}"
             destination_port: 30000
@@ -723,7 +709,7 @@
             interface: []
             action: pass
             source_net: any
-            destination_net: 10.127.20.10
+            destination_net: "{{ networks.user.subnet | ansible.utils.nthhost(10) }}"
             description: Printer access
           -
             sequence: 2
