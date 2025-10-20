@@ -13,11 +13,11 @@
       - unit: 0
         name: vlan
         ipv4:
-          - address: 192.168.0.2/24
+          - address: "{{ networks.lan.subnet | ansible.utils.nthhost(2) }}/{{ networks.lan.subnet | ansible.utils.ipaddr('prefix') }}"
       - unit: 1
         name: vlan
         ipv4:
-          - address: 192.168.1.2/24
+          - address: "{{ networks.mgmt.subnet | ansible.utils.nthhost(2) }}/{{ networks.mgmt.subnet | ansible.utils.ipaddr('prefix') }}"
 
     # access = .vlan
     # trunk = .name
@@ -234,6 +234,17 @@
     - name: Configure Layer 3 interfaces
       junipernetworks.junos.junos_l3_interfaces:
         config: "{{ juniper_l3_interfaces }}"
+        state: merged
+
+    - name: Configure routing
+      junipernetworks.junos.junos_static_routes:
+        config:
+          - address_families:
+              - afi: ipv4
+                routes:
+                  - dest: 0.0.0.0/0
+                    next_hop:
+                      - forward_router_address: "{{ networks.mgmt.subnet | ansible.utils.nthhost(1) }}"
         state: merged
 
     - name: Configure VLANs
