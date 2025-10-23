@@ -39,17 +39,10 @@ cards:
         type: custom:webrtc-camera
         server: http://go2rtc:1984/
         streams:
-          -
-            name: 🗣️
-            url: reolink_doorbell
-          -
-            name: 🤐
-            url: reolink_doorbell
-            mode: webrtc
-            media: video,audio,microphone
+          - url: reolink_doorbell
         muted: true
         background: false
-        ui: true
+        ui: false
         poster: https://wallpapers.com/images/hd/please-stand-by-fallout-76-ye5n5c08piahzmne.jpg
         style: >-
           .screenshot {display: none}

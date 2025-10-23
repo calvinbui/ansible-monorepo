@@ -38,6 +38,9 @@
             outdoor_side: rtsp://{{ container_network.subnet | ansible.utils.nthhost(255) }}:7447/zUs5nXcCogxPqbzi
             rear_balcony: rtsp://{{ container_network.subnet | ansible.utils.nthhost(255) }}:7447/E82ebu7JnaHYUv9u
             upstairs_hallway: rtsp://{{ container_network.subnet | ansible.utils.nthhost(255) }}:7447/QGDEqJaMlkK8volh
+
+            reolink_doorbell:
+              - rtsp://admin:{{ reolink_doorbell_password }}@reolink-doorbell.{{ common_local_tld }}:554/h264Preview_01_sub
         dest: "{{ config_directory }}/go2rtc.yaml"
         mode: "0660"
         owner: "{{ common_user }}"
