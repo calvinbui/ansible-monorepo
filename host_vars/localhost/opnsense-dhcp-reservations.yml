@@ -273,7 +273,7 @@ opnsense_dhcp_reservations:
     ip: "{{ networks.iot.subnet | ansible.utils.nthhost(34) }}"
     subnet: "{{ networks.iot.subnet | ansible.utils.ipaddr('subnet') }}"
     mac: 02:4b:5c:2d:1c:33
-    hostname: linktap-gateway-1
+    hostname: linktap-gateway
   -
     ip: "{{ networks.iot.subnet | ansible.utils.nthhost(35) }}"
     subnet: "{{ networks.iot.subnet | ansible.utils.ipaddr('subnet') }}"
