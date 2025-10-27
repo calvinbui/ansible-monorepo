@@ -66,14 +66,14 @@ home_assistant_gardening:
       name: Backyard Sprinklers
       time: "09:00:00"
       icon: sprinkler-variant
-      linktap: d1_sprinklers
+      linktap: sprinklers
     -
       name: Frontyard Drippers
       time: "11:00:00"
       icon: water
-      linktap: g2s_plants
+      linktap: frontyard
     -
       name: Side Plants
       time: "13:00:00"
       icon: flower-tulip
-      linktap: d1_plants
+      linktap: side
