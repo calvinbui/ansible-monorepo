@@ -149,6 +149,8 @@ cards:
               type: custom:mushroom-template-card
               layout: vertical
               icon_color: '{{ "#253e5c" if is_state(config.entity, "on") else "" }}'
+              tap_action:
+                action: toggle
               card_mod:
                 style: |
                   {% if is_state(config.entity, "on") %}
