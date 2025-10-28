@@ -1,0 +1,121 @@
+---
+
+# install openssh-server and python3 first: `$ sudo apt install openssh-server python3`
+# reboot afterwards as dbus will also be installed on a minimal system: `$ sudo reboot`
+# execute this playbook the first time: `$ ansible-playbook setup-bootstrap.yml -k -K`
+
+- hosts: homeserver
+
+  tasks:
+    - name: No password sudo
+      community.general.sudoers:
+        name: "{{ common_user }}"
+        user: "{{ common_user }}"
+        commands: ALL
+        nopassword: true
+
+    - name: Disable password expiration
+      ansible.builtin.user:
+        name: "{{ common_user }}"
+        password_expire_max: -1
+
+    - name: Install python3-debian
+      ansible.builtin.apt:
+        name: python3-debian
+        state: present
+        update_cache: true
+        cache_valid_time: 86400
+
+    - name: Install apt packages
+      ansible.builtin.apt:
+        name:
+          - curl
+          - git
+          - htop
+          - neovim
+          - rclone
+          - tmux
+          - python3-lxml
+          - python3-passlib
+          - python3-yaml
+          - ripgrep
+          - unzip
+        state: present
+        update_cache: true
+        cache_valid_time: 86400
+
+    - name: Generate SSH keypairs
+      community.crypto.openssh_keypair:
+        path: "/home/{{ common_user }}/.ssh/id_ed25519"
+        type: ed25519
+      become: false
+      become_user: "{{ common_user }}"
+
+    - name: Set authorized keys from GitHub
+      ansible.posix.authorized_key:
+        user: "{{ common_user }}"
+        state: present
+        key: https://github.com/calvinbui.keys
+
+    - name: Set hostname
+      ansible.builtin.hostname:
+        name: "homeserver.{{ common_local_tld }}"
+
+    - name: Set timezone
+      community.general.timezone:
+        name: "{{ common_timezone }}"
+
+    - name: Create common directory
+      ansible.builtin.file:
+        path: "{{ common_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Update sysctls
+      ansible.posix.sysctl:
+        name: "{{ item.key }}"
+        value: "{{ item.value }}"
+        sysctl_file: /etc/sysctl.d/99-tuning.conf
+        ignoreerrors: true
+      loop: "{{ sysctl_settings | ansible.builtin.dict2items }}"
+      vars:
+        sysctl_settings:
+          # file limits/inotify
+          fs.file-max: 2097152
+          fs.inotify.max_user_watches: 1048576
+          fs.inotify.max_user_instances: 8192
+
+          # memory management
+          vm.dirty_background_bytes: 4294967296 # 512MB
+          vm.dirty_bytes: 2147483648 # 2GB
+          vm.max_map_count: 524288 # for some databases like ES, TSDB
+
+          # kernel
+          kernel.pid_max: 4194304
+          kernel.threads-max: 2097152
+
+          # networking
+          net.core.somaxconn: 65536
+          net.core.netdev_max_backlog: 65536
+          net.ipv4.tcp_max_syn_backlog: 32768
+          # net.netfilter.nf_conntrack_max: 524288
+          # net.netfilter.nf_conntrack_buckets: 131072
+
+          # tcp optimisations
+          net.ipv4.tcp_congestion_control: bbr
+          net.core.default_qdisc: fq
+          net.ipv4.tcp_fastopen: 3
+          net.ipv4.tcp_tw_reuse: 1
+          net.ipv4.tcp_fin_timeout: 15
+          net.ipv4.ip_local_port_range: 1024 65535
+          net.ipv4.tcp_mtu_probing: 1
+
+          ## tcp/ip buffer tuning
+          net.core.rmem_max: 33554432 # 32MB
+          net.core.wmem_max: 33554432 # 32MB
+          net.core.rmem_default: 262144 # 256KB
+          net.core.wmem_default: 262144 # 256KB
+          net.ipv4.tcp_rmem: 4096 87380 33554432
+          net.ipv4.tcp_wmem: 4096 65536 33554432
