@@ -30,6 +30,7 @@
             - /games
           shop:
             encrypt: false
+            host: ownfoil.{{ common_local_tld }}:8465
             motd: Welcome to your own shop!
             public: true
           titles:
