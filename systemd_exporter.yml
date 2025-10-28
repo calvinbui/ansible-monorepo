@@ -8,7 +8,7 @@
     systemd_exporter_processes:
       - nut-driver.service
       - nut-monitor.service
-      - nut-server.service
+      - netavark-dhcp-proxy.service
 
     container_network: "{{ networks.pub }}"
 
@@ -39,7 +39,7 @@
 - hosts: nvr
 
   vars:
-    systemd_exporter_version: 0.6.0
+    systemd_exporter_version: 0.7.0
     systemd_exporter_install_dir: /usr/local/bin
     systemd_exporter_processes:
       - nut-monitor.service
