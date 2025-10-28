@@ -1,8 +1,0 @@
----
-
-- name: Restart homepage
-  community.docker.docker_container:
-    name: homepage
-    restart: true
-    comparisons:
-      '*': ignore
