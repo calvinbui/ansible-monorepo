@@ -358,7 +358,7 @@
               gcodeRunCmdOff: ''
               gcodeRunCmdOn: ''
               icon: icon-print
-              ip: 192.168.3.23/3
+              ip: {{ networks.iot.subnet | ansible.utils.nthhost(32) }}/3
               label: Printer & Lights
               sysCmdOff: false
               sysCmdOffDelay: 0
