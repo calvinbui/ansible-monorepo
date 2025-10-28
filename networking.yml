@@ -35,12 +35,6 @@
         reboot_timeout: 360
 
   tasks:
-    - name: Update apt cache
-      ansible.builtin.apt:
-        update_cache: true
-        cache_valid_time: 86400
-      changed_when: false
-
     # `systemd-networkd` sets what DNS servers to use, but it doesn’t actually do DNS lookups.
     # `systemd-resolved` is the resolver that reads those DNS servers and answers queries.
     # Without `systemd-resolved`, nothing updates /etc/resolv.conf, so it stays empty.
@@ -49,6 +43,8 @@
       ansible.builtin.apt:
         name: systemd-resolved
         state: present
+        update_cache: true
+        cache_valid_time: 86400
 
     # doesn't auto-start by default on many distros because they use a different service for network management
     - name: Enable systemd-networkd to start at boot
