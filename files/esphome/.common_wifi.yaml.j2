@@ -3,7 +3,7 @@
 
 # https://esphome.io/components/wifi.html
 wifi:
-  ssid: "{{ networks.iot.wifi.ssid }} 2.4G"
-  password: {{ networks.iot.wifi.password }}
+  ssid: {{ esphome_wifi.ssid }}
+  password: {{ esphome_wifi.password }}
   domain: .{{ common_local_tld }}
   fast_connect: true
