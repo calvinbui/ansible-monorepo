@@ -1,0 +1,82 @@
+---
+
+- hosts: homeserver
+
+  vars:
+    application: samba
+
+    container_network: "{{ networks.user }}"
+
+  handlers:
+    - name: Restart
+      containers.podman.podman_container:
+        name: "{{ application }}"
+        force_restart: true
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0750"
+
+    - name: Create config.yml
+      ansible.builtin.copy:
+        content: |
+          auth:
+            - user: {{ common_user }}
+              group: {{ common_user }}
+              uid: {{ common_user_id }}
+              gid: {{ common_group_id }}
+              password: {{ password }}
+
+          # https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html
+          global:
+            - "server max protocol = SMB3_11"
+            - "server min protocol = SMB3_11"
+            - "server signing = disabled"
+            - "server smb encrypt = disabled"
+            - "use sendfile = yes"
+            - "strict sync = no"
+            - "dfree command = /etc/samba/dfree.sh"
+
+          share:
+            - name: files
+              path: /files
+              readonly: no
+              guestok: no
+              validusers: "{{ common_user }}"
+              writelist: "{{ common_user }}"
+        dest: "{{ config_directory }}/config.yml"
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0640"
+      vars:
+        password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          63346362373339336430313962383361343437376636626131373236303735643138616361626562
+          6131393564613837393763623162336465663138373265390a663636366166633364393065336361
+          36313362396637313838393735643531663739303037353030623635643635313966383331623738
+          3466633131376139370a383039396466366262356539663961383065326437326665383138396664
+          37666366313131363237323733666162326330666537363330303736353832313162
+      notify: Restart
+
+    - name: Create samba container
+      ansible.builtin.include_role:
+        name: podman_container
+      vars:
+        image: ghcr.io/crazy-max/samba:4.21.4
+        env:
+          TZ: "{{ common_timezone }}"
+
+          SAMBA_LOG_LEVEL: "1"
+          SAMBA_HOSTS_ALLOW: "{{ networks.user.subnet | ansible.utils.ipaddr('subnet') }}"
+        volumes:
+          - "{{ config_directory }}:/data"
+          - "{{ common_directory_storage }}:/files"
+        cap_add:
+          - NET_ADMIN
+          - NET_RAW
+        stop_timeout: 1
