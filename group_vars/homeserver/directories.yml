@@ -1,6 +1,6 @@
 ---
 
-common_directory_storage: "/mnt/files"
+common_directory_storage: "/files"
 common_directory_download: "{{ common_directory_storage }}/Downloads"
 common_directory_tv: "{{ common_directory_storage }}/TV"
 common_directory_movies: "{{ common_directory_storage }}/Movies"
@@ -10,9 +10,6 @@ common_directory_photos: "{{ common_directory_storage }}/Photos"
 common_directory_misc: "{{ common_directory_storage }}/Misc"
 common_directory_backup: "{{ common_directory_storage }}/Backups"
 common_directory_games: "{{ common_directory_storage }}/Games"
-
-config_directory: "{{ common_directory }}/{{ application }}"
-files_directory: "files/{{ application }}"
 
 # for hardlinks/atomic moves
 common_mounted_directory: /data

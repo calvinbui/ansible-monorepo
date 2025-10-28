@@ -25,3 +25,6 @@ common_local_tld: !vault |
 common_language_iso_639: "en"
 common_country_iso_3166: "AU"
 common_locale: "{{ common_language_iso_639 }}-{{ common_country_iso_3166 }}"
+
+config_directory: "{{ common_directory }}/{{ application }}"
+files_directory: "files/{{ application }}"
