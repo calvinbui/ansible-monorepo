@@ -97,27 +97,31 @@
 
             # LELLKI WK33 (TS011F_plug_1)
             '0xa4c138468fc0b4c2':
-              friendly_name: Dishwasher Power Outlet
-            '0xa4c138a7b8754bcb':
               friendly_name: Calvin's Study Power Outlet
+            '0xa4c138a7b8754bcb':
+              friendly_name: Living Room TV Power Outlet
             '0xa4c138292d686d5c':
               friendly_name: Dryer Power Outlet
 
-            # IKEA TRÅDFRI Control Outlet (E1603/E1702/E1708)
-            '0xf082c0fffeff2db9':
-              friendly_name: Living Room TV Power Outlet
-            '0x3425b4fffef75348':
-              friendly_name: Fridge Power Outlet
-            '0xf082c0fffeff36d8':
+            # SIXWGH (TS011F_plug_1)
+            '0xa4c138974debfcff':
               friendly_name: Upstairs Bathroom Power Outlet
-
-            # IKEA TRÅDFRI Signal Repeater (E1746)
-            '0x2c1165fffec421d2':
-              friendly_name: Tammy's Study Power Repeater
+            '0xa4c1384886aba4b4':
+              friendly_name: Dishwasher Power Outlet
 
             # Sonoff ZBDongle-P
             '0x00124b002a2e833f':
               friendly_name: Master Bedroom ZBDongle-P Router
+
+            # Sonoff ZBDongle-E
+            '0x94b216fffea0b765':
+              friendly_name: Fridge ZBDongle-E Router
+            '0x94b216fffea0b78c':
+              friendly_name: Sideboard ZBDongle-E Router
+            '0x94b216fffea0b6db':
+              friendly_name: Tammy's Study ZBDongle-E Router
+            '0x94b216fffea0b837':
+              friendly_name: Large Rear Bedroom ZBDongle-E Router
 
             # Aqara Water Leak Sensor (SJCGQ11LM)
             '0x00158d0008e0193f':
