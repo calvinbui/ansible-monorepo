@@ -64,7 +64,7 @@
               scrape_interval: 120s
               static_configs:
                 - targets:
-                  - switch.{{ common_local_tld }}
+                  - juniper.{{ common_local_tld }}
               params:
                 config: ['default']
               relabel_configs:
