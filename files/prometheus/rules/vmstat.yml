@@ -1,0 +1,33 @@
+---
+
+groups:
+  - name: VMStats
+    rules:
+      -
+        alert: OOMKillerActive
+        expr: rate(node_vmstat_oom_kill[5m]) > 0
+        for: 1m
+        annotations:
+          summary: OOM Killer Active
+          description: "System is killing processes due to out of memory condition ({{ $value | humanize }} kills per second)"
+      -
+        alert: MajorPageFaultsHigh
+        expr: rate(node_vmstat_pgmajfault[5m]) > 1000
+        for: 15m
+        annotations:
+          summary: High Major Page Faults
+          description: "System experiencing {{ $value | humanize }} major page faults per second - possible memory pressure or excessive paging"
+      -
+        alert: SwapActivityDetected
+        expr: rate(node_vmstat_pswpin[5m]) > 0 or rate(node_vmstat_pswpout[5m]) > 0
+        for: 10m
+        annotations:
+          summary: Swap Activity Detected
+          description: "System is swapping pages to/from disk - memory pressure detected"
+      -
+        alert: PageFaultRateHigh
+        expr: rate(node_vmstat_pgfault[5m]) > 100000
+        for: 30m
+        annotations:
+          summary: High Page Fault Rate
+          description: "System experiencing {{ $value | humanize }} page faults per second"

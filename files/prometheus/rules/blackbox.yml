@@ -1,40 +1,40 @@
 ---
 
 groups:
-  - name: BlackboxExporter
+  - name: Blackbox
     rules:
       -
         alert: BlackboxConnection
         expr: probe_success == 0
         for: 5m
         annotations:
-          title: "Endpoint Connection"
+          summary: "Endpoint Connection"
           description: "The endpoint {{ $labels.instance }} is not responding successfully"
       -
         alert: BlackboxHTTPSSL
         expr: probe_http_ssl{instance!~"^http://.*"} == 0 AND probe_success == 1
         for: 5m
         annotations:
-          title: "SSL Connection"
+          summary: "SSL Connection"
           description: "The SSL Connection to {{ $labels.instance }} is unsuccessful"
       -
         alert: BlackboxCertificateExpiration
         expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 7
         for: 5m
         annotations:
-          title: "Certificate is expiring soon"
+          summary: "Certificate is expiring soon"
           description: "The certificate for {{ $labels.instance }} is expiring soon"
       -
         alert: BlackboxHTTPEndpointMissing
         expr: max_over_time(probe_success[15m]) == 1 unless probe_success
         for: 10m
         annotations:
-          title: "Endpoint Missing"
+          summary: "Endpoint Missing"
           description: "The endpoint {{ $labels.instance }} has disappeared"
       -
         alert: BlackboxInternetConnectivity
         expr: sum(probe_success{job="blackbox_internet_connectivity"}) == 0
         for: 2m
         annotations:
-          title: "Internet Connectivity"
+          summary: "Internet Connectivity"
           description: "Pings to the Internet endpoints are unsuccessful"

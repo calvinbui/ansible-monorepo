@@ -1,0 +1,47 @@
+---
+
+groups:
+  - name: Stat
+    rules:
+      -
+        alert: ProcessesRunnableHigh
+        expr: node_procs_running > on(instance) count(node_cpu_seconds_total{mode="idle"}) by (instance) * 2
+        for: 15m
+        annotations:
+          summary: High Number of Runnable Processes
+          description: "{{ $value }} runnable processes exceeds 2x CPU count - possible CPU saturation"
+      -
+        alert: ForkRateHigh
+        expr: rate(node_forks_total[5m]) > 1000
+        for: 15m
+        annotations:
+          summary: High Process Fork Rate
+          description: "System is forking {{ $value | humanize }} processes per second"
+      -
+        alert: ForkRateCritical
+        expr: rate(node_forks_total[5m]) > 5000
+        for: 5m
+        annotations:
+          summary: Critical Process Fork Rate
+          description: "System is forking {{ $value | humanize }} processes per second - possible fork bomb"
+      -
+        alert: ProcessesBlockedHigh
+        expr: node_procs_blocked > 10
+        for: 15m
+        annotations:
+          summary: High Number of Blocked Processes
+          description: "{{ $value }} processes blocked waiting for I/O"
+      -
+        alert: InterruptRateHigh
+        expr: rate(node_intr_total[5m]) > 50000
+        for: 15m
+        annotations:
+          summary: High Interrupt Rate
+          description: "System handling {{ $value | humanize }} interrupts per second"
+      -
+        alert: InterruptRateCritical
+        expr: rate(node_intr_total[5m]) > 100000
+        for: 10m
+        annotations:
+          summary: Critical Interrupt Rate
+          description: "System handling {{ $value | humanize }} interrupts per second - possible hardware or driver issue"

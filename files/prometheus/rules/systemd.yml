@@ -4,29 +4,30 @@ groups:
   - name: systemd-exporter
     rules:
       -
-        alert: systemd-exporter is down
+        alert: SystemdExporterDown
         expr: up{job="systemd-exporter"} != 1
         for: 5m
         annotations:
-          title: systemd-exporter is down
+          summary: systemd-exporter is down
           description: "The exporter could not be reached"
-
       -
-        alert: systemd-exporter-inactive-service
+        alert: SystemdExporterInactiveService
         expr: systemd_unit_state{state="active"} != 1
         for: 5m
-        labels:
-          severity: error
         annotations:
-          title: "Service Not Running"
+          summary: "Service Not Running"
           description: "The service {{ $labels.name }} is not active"
-
       -
-        alert: systemd-exporter-missing-service
+        alert: SystemdExporterMissingService
         expr: absent(systemd_unit_state{name="nut-monitor.service", instance=~"nvr\\..*", state="active"})
         for: 1h
-        labels:
-          severity: error
         annotations:
-          title: "Service Missing"
+          summary: "Service Missing"
           description: "The nut-monitor service is missing on the NVR"
+      -
+        alert: SystemdExporterNetavarkDHCPProxyRestarted
+        expr: increase(systemd_service_restart_total{name="netavark-dhcp-proxy.service"}[1m]) > 0
+        for: 1m
+        annotations:
+          summary: netavark-dhcp-proxy has restarted
+          description: "DHCP renewals will begin failing. Restart the host or all pods to fix."

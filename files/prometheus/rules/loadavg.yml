@@ -1,0 +1,26 @@
+---
+
+groups:
+  - name: LoadAverage
+    rules:
+      -
+        alert: LoadAverageHigh
+        expr: node_load5 / on(instance) count(node_cpu_seconds_total{mode="idle"}) by (instance) > 2
+        for: 15m
+        annotations:
+          summary: High Load Average
+          description: "5-minute load average is {{ $value | humanize }}x CPU count"
+      -
+        alert: LoadAverageCritical
+        expr: node_load5 / on(instance) count(node_cpu_seconds_total{mode="idle"}) by (instance) > 4
+        for: 10m
+        annotations:
+          summary: Critical Load Average
+          description: "5-minute load average is {{ $value | humanize }}x CPU count - system heavily overloaded"
+      -
+        alert: LoadAverageIncreasing
+        expr: (node_load5 - node_load15) / node_load15 > 0.5 and node_load5 > 10
+        for: 10m
+        annotations:
+          summary: Load Average Rapidly Increasing
+          description: "Load average increased {{ $value | humanizePercentage }} from 15min ({{ query \"node_load15\" | first | value | humanize }}) to 5min ({{ query \"node_load5\" | first | value | humanize }})"

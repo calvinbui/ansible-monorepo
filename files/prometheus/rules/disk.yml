@@ -1,0 +1,61 @@
+---
+
+groups:
+  - name: Disk
+    rules:
+      -
+        alert: DiskIOUtilizationHigh
+        expr: rate(node_disk_io_time_seconds_total[5m]) > 0.85
+        for: 15m
+        annotations:
+          summary: High Disk I/O Utilization
+          description: "{{ $labels.device }} I/O utilization is {{ $value | humanizePercentage }}"
+      -
+        alert: DiskIOSaturated
+        expr: rate(node_disk_io_time_weighted_seconds_total[5m]) / rate(node_disk_io_time_seconds_total[5m]) > 10
+        for: 15m
+        annotations:
+          summary: Disk I/O Queue Saturated
+          description: "{{ $labels.device }} has high I/O queue depth - average {{ $value | humanize }} operations queued"
+      -
+        alert: DiskReadLatencyHigh
+        expr: rate(node_disk_read_time_seconds_total[5m]) / rate(node_disk_reads_completed_total[5m]) > 0.1
+        for: 15m
+        annotations:
+          summary: High Disk Read Latency
+          description: "{{ $labels.device }} average read latency is {{ $value | humanizeDuration }}"
+      -
+        alert: DiskWriteLatencyHigh
+        expr: rate(node_disk_write_time_seconds_total[5m]) / rate(node_disk_writes_completed_total[5m]) > 0.1
+        for: 15m
+        annotations:
+          summary: High Disk Write Latency
+          description: "{{ $labels.device }} average write latency is {{ $value | humanizeDuration }}"
+      -
+        alert: DiskFlushLatencyHigh
+        expr: rate(node_disk_flush_requests_time_seconds_total[5m]) / rate(node_disk_flush_requests_total[5m]) > 1
+        for: 15m
+        annotations:
+          summary: High Disk Flush Latency
+          description: "{{ $labels.device }} average flush latency is {{ $value | humanizeDuration }}"
+      -
+        alert: DiskWriteCacheDisabled
+        expr: node_disk_ata_write_cache_enabled{device=~"sd.*"} == 0 and node_disk_ata_write_cache{device=~"sd.*"} == 1
+        for: 5m
+        annotations:
+          summary: Disk Write Cache Disabled
+          description: "{{ $labels.device }} has write cache capability but it is disabled - performance may be degraded"
+      -
+        alert: DiskIOPSHigh
+        expr: rate(node_disk_reads_completed_total[5m]) + rate(node_disk_writes_completed_total[5m]) > 2000
+        for: 30m
+        annotations:
+          summary: High Disk IOPS
+          description: "{{ $labels.device }} is handling {{ $value | humanize }} IOPS"
+      -
+        alert: DiskThroughputHigh
+        expr: (rate(node_disk_read_bytes_total[5m]) + rate(node_disk_written_bytes_total[5m])) / 1024 / 1024 > 200
+        for: 30m
+        annotations:
+          summary: High Disk Throughput
+          description: "{{ $labels.device }} throughput is {{ $value | humanize }} MB/s"

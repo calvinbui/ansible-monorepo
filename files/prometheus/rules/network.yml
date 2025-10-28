@@ -1,0 +1,68 @@
+---
+
+groups:
+  - name: Network
+    rules:
+      -
+        alert: NetworkReceiveErrors
+        expr: rate(node_network_receive_errs_total{device!="lo"}[5m]) > 10
+        for: 10m
+        annotations:
+          summary: Network Receive Errors
+          description: "{{ $labels.device }} has {{ $value | humanize }} receive errors per second"
+      -
+        alert: NetworkTransmitErrors
+        expr: rate(node_network_transmit_errs_total{device!="lo"}[5m]) > 10
+        for: 10m
+        annotations:
+          summary: Network Transmit Errors
+          description: "{{ $labels.device }} has {{ $value | humanize }} transmit errors per second"
+      -
+        alert: NetworkReceiveDrops
+        expr: rate(node_network_receive_drop_total{device!="lo"}[5m]) > 100
+        for: 10m
+        annotations:
+          summary: Network Receive Drops
+          description: "{{ $labels.device }} is dropping {{ $value | humanize }} received packets per second - possible buffer overflow"
+      -
+        alert: NetworkTransmitDrops
+        expr: rate(node_network_transmit_drop_total{device!="lo"}[5m]) > 100
+        for: 10m
+        annotations:
+          summary: Network Transmit Drops
+          description: "{{ $labels.device }} is dropping {{ $value | humanize }} transmitted packets per second"
+      -
+        alert: NetworkReceiveFIFO
+        expr: rate(node_network_receive_fifo_total{device!="lo"}[5m]) > 10
+        for: 10m
+        annotations:
+          summary: Network Receive FIFO Errors
+          description: "{{ $labels.device }} has {{ $value | humanize }} receive FIFO errors per second - RX ring buffer overflow"
+      -
+        alert: NetworkTransmitFIFO
+        expr: rate(node_network_transmit_fifo_total{device!="lo"}[5m]) > 10
+        for: 10m
+        annotations:
+          summary: Network Transmit FIFO Errors
+          description: "{{ $labels.device }} has {{ $value | humanize }} transmit FIFO errors per second - TX ring buffer overflow"
+      -
+        alert: NetworkFrameErrors
+        expr: rate(node_network_receive_frame_total{device!="lo"}[5m]) > 10
+        for: 10m
+        annotations:
+          summary: Network Frame Errors
+          description: "{{ $labels.device }} has {{ $value | humanize }} frame errors per second - possible cable or NIC issue"
+      -
+        alert: NetworkCarrierErrors
+        expr: rate(node_network_transmit_carrier_total{device!="lo"}[5m]) > 10
+        for: 10m
+        annotations:
+          summary: Network Carrier Errors
+          description: "{{ $labels.device }} has {{ $value | humanize }} carrier errors per second - link stability issue"
+      -
+        alert: NetworkCollisions
+        expr: rate(node_network_transmit_colls_total{device!="lo"}[5m]) > 50
+        for: 15m
+        annotations:
+          summary: Network Collisions Detected
+          description: "{{ $labels.device }} has {{ $value | humanize }} collisions per second - half-duplex or overloaded network"
