@@ -22,21 +22,11 @@
         force_restart: true
 
   tasks:
-    - name: Create FTP user
-      ansible.builtin.user:
-        name: "{{ users.paperless.username }}"
-        create_home: false
-        home: "{{ users.paperless.home }}"
-        password: "{{ users.paperless.password | ansible.builtin.string | ansible.builtin.password_hash('sha512') }}"
-        update_password: on_create
-        password_expire_max: -1
-      register: _paperless_user
-
     - name: Create config directory
       ansible.builtin.file:
         path: "{{ config_directory }}"
         state: directory
-        owner: "{{ _paperless_user.uid }}"
+        owner: "{{ common_user_id }}"
         group: "{{ common_group_id }}"
         mode: "0750"
 
@@ -91,7 +81,7 @@
           - "{{ config_directory }}/export:/usr/src/paperless/export"
           - "{{ config_directory }}/consume:/usr/src/paperless/consume"
         env:
-          USERMAP_UID: "{{ _paperless_user.uid | ansible.builtin.string }}"
+          USERMAP_UID: "{{ common_user_id | ansible.builtin.string }}"
           USERMAP_GID: "{{ common_group_id | ansible.builtin.string }}"
 
           PAPERLESS_REDIS: "{{ _valkey_url }}"
@@ -256,3 +246,34 @@
         traefik:
           - port: 3000
             rule: Host(`{{ application }}-ai.{{ common_tld }}`)
+
+    - name: Create consume folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}/consume"
+        state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_group_id }}"
+        mode: "0750"
+
+    - name: Create samba container
+      ansible.builtin.include_role:
+        name: podman_container
+      vars:
+        container_name: "{{ application }}-samba"
+        image: ghcr.io/dockur/samba:4.21.6
+        env:
+          NAME: "consume"
+
+          USER: "printer"
+          PASS: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            33643564323032666235333233323935623231666531333965343463643838633736393833353935
+            3132636231383039623332313565306332353631396336360a363038373132646361633234656631
+            31346264376366666561353230313639323434363239643439646635333831333733343435353332
+            6337336130636365660a326532336137363164663731326133626161386261373239653834346464
+            63316639346632346537303039663762663138383063323633393466366537656539
+
+          UID: "{{ common_user_id }}"
+          GID: "{{ common_group_id }}"
+        volumes:
+          - "{{ config_directory }}/consume:/storage"
