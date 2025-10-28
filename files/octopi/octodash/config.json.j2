@@ -50,7 +50,7 @@
       },
       "tpLinkSmartPlug": {
         "enabled": true,
-        "smartPlugIP": "192.168.3.23/3"
+        "smartPlugIP": "{{ networks.iot.subnet | ansible.utils.nthhost(32) }}/3"
       },
       "tasmota": {
         "enabled": false,
