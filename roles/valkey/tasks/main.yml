@@ -1,53 +1,59 @@
 ---
 
-- name: Create valkey directory
+- name: Update vm.overcommit_memory for valkey
+  ansible.posix.sysctl:
+    name: vm.overcommit_memory
+    value: 1
+    sysctl_file: /etc/sysctl.d/99-valkey.conf
+
+- name: Create valkey data directory
   ansible.builtin.file:
-    path: "{{ valkey_directory }}"
+    path: "{{ valkey_directory }}/data"
     state: directory
     owner: 999
-    group: 0
+    group: 999
     mode: "0771"
 
+- name: Create valkey.conf
+  ansible.builtin.copy:
+    content: |
+      user default on allcommands allchannels allkeys ~* >{{ valkey_password }}
+    dest: "{{ valkey_directory }}/valkey.conf"
+    owner: 999
+    group: 999
+    mode: "0644"
+
 - name: Create valkey container
-  community.docker.docker_container:
-    name: "{{ valkey_name }}"
+  ansible.builtin.include_role:
+    name: podman_container
+  vars:
+    container_name: "{{ valkey_name }}"
     image: "ghcr.io/valkey-io/valkey:{{ valkey_version }}"
 
-    state: started
-
-    hostname: "{{ valkey_name }}"
-    published_ports: "{{ valkey_ports | ansible.builtin.default(omit) }}"
-    networks:
-      - name: "{{ docker_network.name | ansible.builtin.default('bridge') }}"
-    network_mode: "{{ docker_network.name | ansible.builtin.default('omit') }}"
-    networks_cli_compatible: "{{ valkey_networks_cli_compatible | ansible.builtin.default(true) }}"
+    command:
+      - valkey-server
+      - /usr/local/etc/valkey/valkey.conf
 
     env:
       TZ: "{{ common_timezone }}"
-      VALKEY_EXTRA_FLAGS: "--requirepass {{ valkey_password }}"
+      VALKEY_PASSWORD: "{{ valkey_password }}"
 
-    volumes: "{{ valkey_directory }}:/data"
+    volumes:
+      - "{{ valkey_directory }}/valkey.conf:/usr/local/etc/valkey/valkey.conf"
+      - "{{ valkey_directory }}/data:/data"
 
-    healthcheck:
-      test: "valkey-cli ping"
-      interval: 10s
-      timeout: 30s
-      retries: 3
+    healthcheck: "valkey-cli -a $VALKEY_PASSWORD ping | grep -i pong"
+    healthcheck_start_period: 30s
+    healthcheck_interval: 10s
+    healthcheck_timeout: 30s
+    healthcheck_retries: 3
 
     labels:
-      traefik.enable: "false"
-
-    restart_policy: unless-stopped
-
-    container_default_behavior: "{{ container_default_behavior | ansible.builtin.default('no_defaults') }}"
-
-    comparisons:
-      networks: strict
-  register: valkey
+      - traefik.enable=false
 
 - name: Set variables
   ansible.builtin.set_fact:
-    _valkey_hostname: "{{ valkey_name }}.{{ docker_network.name }}"
+    _valkey_hostname: "{{ valkey_name }}"
     _valkey_port: "6379"
     _valkey_password: "{{ valkey_password }}"
 
