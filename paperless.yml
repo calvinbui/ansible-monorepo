@@ -13,23 +13,6 @@
       3035303733313362630a626335363735343732666434636336326364326137623161333235346635
       66616131623836326339653631663830313063643762356533353433336463373834
 
-    paperless_oidc: |
-      {
-        "openid_connect": {
-          "APPS": [
-            {
-              "provider_id": "{{ oidc_provider }}",
-              "name": "{{ oidc_provider | ansible.builtin.title }}",
-              "client_id": "{{ application }}",
-              "secret": "{{ oidc_auth.paperless.secret }}",
-              "settings": {
-                "server_url": "{{ oidc_base_url }}"
-              }
-            }
-          ]
-        }
-      }
-
     container_network: "{{ networks.pub }}"
 
   handlers:
@@ -138,7 +121,23 @@
           PAPERLESS_ALLOWED_HOSTS: "https://{{ application }}.{{ common_tld }}"
           PAPERLESS_CORS_ALLOWED_HOSTS: "https://{{ application }}.{{ common_tld }}"
 
-          PAPERLESS_SOCIALACCOUNT_PROVIDERS: "{{ paperless_oidc | ansible.builtin.to_json }}"
+          PAPERLESS_SOCIALACCOUNT_PROVIDERS: |
+            {
+              "openid_connect": {
+                "APPS": [
+                  {
+                    "provider_id": "{{ oidc_provider }}",
+                    "name": "{{ oidc_provider | ansible.builtin.title }}",
+                    "client_id": "{{ application }}",
+                    "secret": "{{ oidc_auth.paperless.secret }}",
+                    "settings": {
+                      "server_url": "{{ oidc_base_url }}"
+                    }
+                  }
+                ]
+              }
+            }
+
           PAPERLESS_DISABLE_REGULAR_LOGIN: "true"
 
           PAPERLESS_OCR_LANGUAGE: "eng"
