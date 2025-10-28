@@ -1,24 +1,29 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: ntp
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart timesyncd
+      ansible.builtin.service:
+        name: systemd-timesyncd
+        state: restarted
 
   tasks:
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: cturra/ntp:latest
-        ipv4_address: "{{ docker_network.subnet | ansible.utils.nthhost(2) }}"
+        image: docker.io/cturra/ntp:latest
         read_only: true
         tmpfs:
-          - /etc/chrony:rw,mode=1750
-          - /run/chrony:rw,mode=1750
-          - /var/lib/chrony:rw,mode=1750
+          /etc/chrony: rw,mode=1750
+          /run/chrony: rw,mode=1750
+          /var/lib/chrony: rw,mode=1750
         env:
           NTP_SERVERS: |-
             {{
@@ -31,3 +36,30 @@
             }}
           LOG_LEVEL: "0"
           TZ: "{{ common_timezone }}"
+        traefik:
+          - port: 123
+            type: udp
+
+    - name: Install systemd-timesyncd
+      ansible.builtin.apt:
+        name: systemd-timesyncd
+        state: present
+        update_cache: true
+        cache_valid_time: 86400
+
+    - name: Crate timesyncd.conf.d
+      ansible.builtin.file:
+        path: /etc/systemd/timesyncd.conf.d
+        state: directory
+        mode: "0755"
+
+    - name: Set custom NTP server configuration
+      ansible.builtin.copy:
+        dest: /etc/systemd/timesyncd.conf.d/custom-ntp.conf
+        content: |
+          [Time]
+          NTP=ntp.{{ common_tld }}
+        owner: "{{ common_root_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0644"
+      notify: Restart timesyncd
