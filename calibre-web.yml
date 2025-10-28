@@ -1,11 +1,11 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: calibre-web
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create config folder
@@ -18,7 +18,7 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: lscr.io/linuxserver/calibre-web:0.6.25
         env:
@@ -52,6 +52,4 @@
               36316438316435653932616331666235326263373834383831386133316535646630
             fields: '["books", "authors"]'
         labels:
-          '{
-            "traefik.http.middlewares.{{ application }}-headers.headers.customrequestheaders.X-Scheme": "https"
-          }'
+          - "traefik.http.middlewares.{{ application }}-headers.headers.customrequestheaders.X-Scheme=https"

@@ -1,19 +1,17 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: prometheus
 
-    docker_network: "{{ networks.user }}"
+    container_network: "{{ networks.user }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create config folder
@@ -53,7 +51,7 @@
         owner: "65534"  # nobody user
         group: "{{ common_group }}"
         mode: "0444"
-        validate: "docker run --rm --name {{ application }}_config_check -v %s:/tmp/rule.yml --entrypoint /bin/promtool prom/prometheus:latest check rules /tmp/rule.yml"
+        validate: "podman run --rm --name {{ application }}_config_check -v %s:/tmp/rule.yml --entrypoint /bin/promtool quay.io/prometheus/prometheus:latest check rules /tmp/rule.yml"
       notify: Restart
 
     - name: Template configs
@@ -63,12 +61,12 @@
         owner: "65534"  # nobody user
         group: "{{ common_group }}"
         mode: "0444"
-        validate: "docker run --rm --name {{ application }}_config_check -v %s:/tmp/config.yml --entrypoint /bin/promtool prom/prometheus:latest check config /tmp/config.yml"
+        validate: "podman run --rm --name {{ application }}_config_check -v %s:/tmp/config.yml --entrypoint /bin/promtool quay.io/prometheus/prometheus:latest check config /tmp/config.yml"
       notify: Restart
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: quay.io/prometheus/prometheus:v3.5.0
         command:
@@ -100,7 +98,7 @@
 
           - "{{ prometheus_scrape_directory }}:/scrape_config_files"
 
-          - /var/run/docker.sock:/var/run/docker.sock:ro
+          - /run/podman/podman.sock:/var/run/docker.sock:ro
         user: root:root
         traefik:
           - port: 9090
@@ -114,7 +112,5 @@
             fields: '["targets_up", "targets_down"]'
         metrics:
           - port: 9090
-        comparisons:
-          labels: allow_more_present
         blackbox:
           path: /-/healthy

@@ -1,19 +1,21 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: sponsorblockcast
 
-    docker_network: "{{ networks.iot }}"
+    container_network: "{{ networks.iot }}"
 
   tasks:
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: ghcr.io/gabe565/castsponsorskip:0.8.2
         env:
+          TZ: "{{ common_timezone }}"
+
           CSS_CATEGORIES: "sponsor selfpromo exclusive_access interaction intro outro preview filler"
           CSS_YOUTUBE_API_KEY: !vault |
             $ANSIBLE_VAULT;1.1;AES256
@@ -24,5 +26,4 @@
             31316235343861343530316233356438623533316362366535623735626232663065646535363562
             6134656631616666386633633366623362376334663138326133
         volumes:
-          - /etc/timezone:/etc/timezone:ro
           - /etc/localtime:/etc/localtime:ro

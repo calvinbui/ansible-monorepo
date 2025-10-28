@@ -2,12 +2,12 @@
 
 # there's no need to support multiple emails yet, but everything is in place for it.
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: mbsync
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create config folder
@@ -58,7 +58,7 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: ghcr.io/jakewharton/mbsync:1.4.1
         env:
@@ -69,20 +69,18 @@
           - "{{ config_directory }}:/config"
           - "{{ common_directory_backup }}/emails:/mail"
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: dovecot
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create config folder
@@ -182,20 +180,21 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: dovecot/dovecot:2.4.1
+        image: docker.io/dovecot/dovecot:2.4.1
+        user: root
         volumes:
           - "{{ config_directory }}/conf:/etc/dovecot"
           - "{{ config_directory }}/users:/home/vmail"
           - "{{ common_directory_backup }}/emails:/srv/mail"
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: roundcube
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create config folder
@@ -221,11 +220,11 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: roundcube/roundcubemail:1.6.11-apache
+        image: docker.io/roundcube/roundcubemail:1.6.11-apache
         env:
-          ROUNDCUBEMAIL_DEFAULT_HOST: dovecot.{{ docker_network.name }}
+          ROUNDCUBEMAIL_DEFAULT_HOST: dovecot.{{ common_local_tld }}
           ROUNDCUBEMAIL_DEFAULT_PORT: "143"
 
           ROUNDCUBEMAIL_DB_TYPE: "pgsql"

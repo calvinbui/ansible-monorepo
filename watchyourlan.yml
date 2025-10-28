@@ -1,6 +1,6 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: watchyourlan
@@ -13,7 +13,7 @@
       6365656463313635620a656231366337336630613831393065356430343031646534396462666438
       31616434336462343636623432383766636334326238653164333965646330303764
 
-    docker_network: "{{ networks.user }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create config folder
@@ -39,7 +39,7 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: ghcr.io/aceberg/watchyourlan:2.1.4
         env:
@@ -61,3 +61,5 @@
           group: Networking
           weight: 450
           description: "Network IP Scanner"
+        labels:
+          - "traefik.docker.network={{ container_network.name }}"

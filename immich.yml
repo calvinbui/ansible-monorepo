@@ -1,11 +1,11 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: immich
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create config folder
@@ -45,10 +45,12 @@
 
     - name: Create server container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        name: "{{ application }}-server"
+        container_name: "{{ application }}-server"
         image: ghcr.io/immich-app/immich-server:v1.142.1
+        group_add:
+          - 992 # 'render'
         env: &immich_shared_env
           DB_HOSTNAME: "{{ _postgres_hostname }}"
           DB_PORT: "{{ _postgres_port | ansible.builtin.string }}"
@@ -64,21 +66,12 @@
 
           LOG_LEVEL: "log"
 
-          NVIDIA_DRIVER_CAPABILITIES: all
           TZ: "{{ common_timezone }}"
         volumes:
           - &immich_upload_volume "{{ common_directory_photos }}/Immich:/usr/src/app/upload"
           - &immich_localtime_volume /etc/localtime:/etc/localtime:ro
-        device_requests:
-          - driver: nvidia
-            count: -1
-            device_ids: []
-            options: {}
-            capabilities:
-              - - gpu
-                - video
-                - compute
-                - utility
+        device:
+          - /dev/dri:/dev/dri
         traefik:
           - port: 2283
             rule: Host(`{{ application }}.{{ common_tld }}`)
@@ -100,21 +93,15 @@
 
     - name: Create machine-learning container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        name: "{{ application }}-machine-learning"
+        container_name: "{{ application }}-machine-learning"
         image: ghcr.io/immich-app/immich-machine-learning:v1.142.1-cuda
-        device_requests:
-          - driver: nvidia
-            count: -1
-            device_ids: []
-            options: {}
-            capabilities:
-              - - gpu
-                - video
-                - compute
-                - utility
+        group_add:
+          - 992 # 'render'
         env: *immich_shared_env
         volumes:
           - *immich_upload_volume
           - "{{ config_directory }}/ml-cache:/cache"
+        device:
+          - /dev/dri:/dev/dri

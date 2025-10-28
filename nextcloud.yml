@@ -1,11 +1,11 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: nextcloud
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create config folder
@@ -44,9 +44,9 @@
 
     - name: Create nextcloud container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: nextcloud:31.0.9
+        image: docker.io/nextcloud:31.0.9
         volumes:
           - "{{ config_directory }}/app:/var/www/html"
         env:
@@ -113,23 +113,20 @@
             middlewares:
               - "{{ application }}-dav"
         labels:
-          # 33 is www-data
-          '{
-            "traefik.http.middlewares.{{ application }}-dav.redirectregex.permanent": "true",
-            "traefik.http.middlewares.{{ application }}-dav.redirectregex.regex": "https://(.*)/.well-known/(card|cal)dav",
-            "traefik.http.middlewares.{{ application }}-dav.redirectregex.replacement": "https://${1}/remote.php/dav/",
+          - "traefik.http.middlewares.{{ application }}-dav.redirectregex.permanent=true"
+          - "traefik.http.middlewares.{{ application }}-dav.redirectregex.regex=https://(.*)/.well-known/(card|cal)dav"
+          - "traefik.http.middlewares.{{ application }}-dav.redirectregex.replacement=https://${1}/remote.php/dav/"
 
-            "chadburn.enabled": "true",
-            "chadburn.job-exec.{{ application }}-cron.user": "33",
-            "chadburn.job-exec.{{ application }}-cron.schedule": "@every 5m",
-            "chadburn.job-exec.{{ application }}-cron.command": "/usr/local/bin/php -f cron.php",
-            "chadburn.job-exec.{{ application }}-cron.tty": "false",
-            "chadburn.job-exec.{{ application }}-cron.no-overlap": "true"
-          }'
+          - "ofelia.enabled=true"
+          - "ofelia.job-exec.{{ application }}-cron.user=33"
+          - "ofelia.job-exec.{{ application }}-cron.schedule=@every 5m"
+          - "ofelia.job-exec.{{ application }}-cron.command=/usr/local/bin/php -f cron.php"
+          - "ofelia.job-exec.{{ application }}-cron.tty=false"
+          - "ofelia.job-exec.{{ application }}-cron.no-overlap=true"
 
     - name: Install onlyoffice app
-      community.docker.docker_container_exec:
-        container: "{{ application }}"
+      containers.podman.podman_container_exec:
+        name: "{{ application }}"
         user: www-data
         command: "php occ app:install onlyoffice"
       register: _command_result
@@ -140,10 +137,10 @@
 
     - name: Create onlyoffice container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        name: "{{ application }}-onlyoffice"
-        image: onlyoffice/documentserver:9.0.4
+        container_name: "{{ application }}-onlyoffice"
+        image: docker.io/onlyoffice/documentserver:9.0.4
         volumes:
           - "{{ config_directory }}/onlyoffice/logs:/var/log/onlyoffice"
           - "{{ config_directory }}/onlyoffice/data:/var/www/onlyoffice/Data"
@@ -164,13 +161,11 @@
             middlewares:
               - "{{ application }}-onlyoffice-sslheaders"
         labels:
-          '{
-            "traefik.http.middlewares.{{ application }}-onlyoffice-sslheaders.headers.customrequestheaders.X-Forwarded-Proto": "https"
-          }'
+          - "traefik.http.middlewares.{{ application }}-onlyoffice-sslheaders.headers.customrequestheaders.X-Forwarded-Proto=https"
 
     - name: Configure onlyoffice app
-      community.docker.docker_container_exec:
-        container: "{{ application }}"
+      containers.podman.podman_container_exec:
+        name: "{{ application }}"
         user: www-data
         command: "php occ config:app:set onlyoffice {{ item.name }} --value={{ item.value }}"
       register: _command_result
@@ -214,15 +209,15 @@
 
     - name: Create imaginary container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        name: "{{ application }}-imaginary"
-        image: h2non/imaginary:1.2.4
+        container_name: "{{ application }}-imaginary"
+        image: docker.io/h2non/imaginary:1.2.4
         command: -enable-url-source
 
     - name: Add imaginary url to config
-      community.docker.docker_container_exec:
-        container: "{{ application }}"
+      containers.podman.podman_container_exec:
+        name: "{{ application }}"
         user: www-data
         command: "php occ config:system:set preview_imaginary_url --value=http://{{ application }}-imaginary.{{ docker_network.name }}:9000"
       register: _command_result
@@ -233,8 +228,8 @@
       delay: 2
 
     - name: Enable preview providers
-      community.docker.docker_container_exec:
-        container: "{{ application }}"
+      containers.podman.podman_container_exec:
+        name: "{{ application }}"
         user: www-data
         command: "php occ config:system:set enabledPreviewProviders {{ ansible_loop.index0 }} --value={{ item }}"
       register: _command_result
@@ -261,8 +256,8 @@
         - 'OC\\Preview\\Movie'
 
     - name: Install notify_push app
-      community.docker.docker_container_exec:
-        container: "{{ application }}"
+      containers.podman.podman_container_exec:
+        name: "{{ application }}"
         user: www-data
         command: "php occ app:install notify_push"
       register: _command_result
@@ -273,13 +268,12 @@
 
     - name: Create nextcloud notify-push container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        name: "{{ application }}-notify-push"
-        image: nextcloud:31.0.9
-        entrypoint:
-          - /var/www/html/custom_apps/notify_push/bin/x86_64/notify_push
-          - /var/www/html/config/config.php
+        container_name: "{{ application }}-notify-push"
+        image: docker.io/nextcloud:31.0.9
+        entrypoint: /var/www/html/custom_apps/notify_push/bin/x86_64/notify_push
+        command: /var/www/html/config/config.php
         env:
           NEXTCLOUD_URL: "http://{{ application }}.{{ docker_network.name }}" # don't go through the proxy to contact the nextcloud server
         volumes:
@@ -292,13 +286,11 @@
         blackbox:
           path: /push/test/remote/1.2.3.4
         labels:
-          '{
-            "traefik.http.middlewares.{{ application }}-notify-push-stripprefix.stripprefix.prefixes": "/push"
-          }'
+          - "traefik.http.middlewares.{{ application }}-notify-push-stripprefix.stripprefix.prefixes=/push"
 
     - name: Configure notify_push
-      community.docker.docker_container_exec:
-        container: "{{ application }}"
+      containers.podman.podman_container_exec:
+        name: "{{ application }}"
         user: www-data
         command: "php occ notify_push:setup https://{{ application }}.{{ common_tld }}/push"
       register: _command_result
@@ -322,8 +314,8 @@
             3961
 
     - name: Install fulltextsearch app
-      community.docker.docker_container_exec:
-        container: "{{ application }}"
+      containers.podman.podman_container_exec:
+        name: "{{ application }}"
         user: www-data
         command: "php occ app:install {{ item }}"
       register: _command_result
@@ -337,8 +329,8 @@
         - files_fulltextsearch
 
     - name: Configure fulltextsearch app
-      community.docker.docker_container_exec:
-        container: "{{ application }}"
+      containers.podman.podman_container_exec:
+        name: "{{ application }}"
         user: www-data
         command: "php occ {{ item.app }}:configure {{ item.value }}"
       register: _command_result
@@ -359,8 +351,8 @@
           value: '{\"files_pdf\":\"1\",\"files_office\":\"1\"}'
 
     - name: Install oidc app
-      community.docker.docker_container_exec:
-        container: "{{ application }}"
+      containers.podman.podman_container_exec:
+        name: "{{ application }}"
         user: www-data
         command: "php occ app:install oidc_login"
       register: _command_result
@@ -370,8 +362,8 @@
       delay: 2
 
     - name: Configure oidc app
-      community.docker.docker_container_exec:
-        container: "{{ application }}"
+      containers.podman.podman_container_exec:
+        name: "{{ application }}"
         user: www-data
         command: "php occ config:system:set {{ item.key }} {% if item.value | ansible.builtin.type_debug == 'bool' %}--type=boolean{% elif item.value | ansible.builtin.type_debug == 'int' %}--type=integer{% endif %} --value='{{ item.value }}'"
       register: _command_result
@@ -415,8 +407,8 @@
           oidc_login_code_challenge_method: "S256"
 
     - name: Install other apps
-      community.docker.docker_container_exec:
-        container: "{{ application }}"
+      containers.podman.podman_container_exec:
+        name: "{{ application }}"
         user: www-data
         command: "php occ app:install {{ item }}"
       register: _command_result

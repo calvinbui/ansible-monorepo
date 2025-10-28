@@ -1,11 +1,11 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: umami
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create config folder
@@ -31,7 +31,7 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: ghcr.io/umami-software/umami:postgresql-v2.19.0
         # https://umami.is/docs/environment-variables
@@ -69,7 +69,5 @@
         blackbox:
           path: /api/heartbeat
         labels:
-          '{
-            "traefik.http.middlewares.{{ application }}-script-path.replacepathregex.regex": "^/{{ application | ansible.builtin.b64encode }}.js",
-            "traefik.http.middlewares.{{ application }}-script-path.replacepathregex.replacement": "/script.js"
-          }'
+          - "traefik.http.middlewares.{{ application }}-script-path.replacepathregex.regex=^/{{ application | ansible.builtin.b64encode }}.js"
+          - "traefik.http.middlewares.{{ application }}-script-path.replacepathregex.replacement=/script.js"

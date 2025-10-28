@@ -1,19 +1,17 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: renovate
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create config folder
@@ -27,24 +25,20 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: ghcr.io/renovatebot/renovate:41
-        entrypoint:
-          - /bin/bash
-          - -c
-          - renovate --version > /tmp/renovate.log && /bin/tail -f /tmp/renovate.log
+        entrypoint: /bin/bash
+        command: -c "renovate --version > /tmp/renovate.log && /bin/tail -f /tmp/renovate.log"
         volumes:
           - "{{ config_directory }}:/base"
         labels:
-          '{
-            "chadburn.enabled": "true",
-            "chadburn.job-exec.{{ application }}-cron.schedule": "0 17 * * *",
-            "chadburn.job-exec.{{ application }}-cron.command": "/usr/local/sbin/renovate-entrypoint.sh renovate",
-            "chadburn.job-exec.{{ application }}-cron.user": "12021",
-            "chadburn.job-exec.{{ application }}-cron.tty": "true",
-            "chadburn.job-exec.{{ application }}-cron.no-overlap": "true"
-          }'
+          - "ofelia.enabled=true"
+          - "ofelia.job-exec.{{ application }}-cron.schedule=0 17 * * *"
+          - "ofelia.job-exec.{{ application }}-cron.command=/usr/local/sbin/renovate-entrypoint.sh renovate"
+          - "ofelia.job-exec.{{ application }}-cron.user=12021"
+          - "ofelia.job-exec.{{ application }}-cron.tty=true"
+          - "ofelia.job-exec.{{ application }}-cron.no-overlap=true"
         env:
           RENOVATE_BASE_DIR: "/base"
 

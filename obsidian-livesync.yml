@@ -1,19 +1,17 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: obsidian-livesync
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create config folder
@@ -59,7 +57,7 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: public.ecr.aws/docker/library/couchdb:3
         env:
@@ -81,11 +79,9 @@
         blackbox:
           path: /_up
         labels:
-          '{
-            "traefik.http.middlewares.{{ application }}-cors.headers.accesscontrolallowmethods": "GET,PUT,POST,HEAD,DELETE",
-            "traefik.http.middlewares.{{ application }}-cors.headers.accesscontrolallowheaders": "accept,authorization,content-type,origin,referer",
-            "traefik.http.middlewares.{{ application }}-cors.headers.accesscontrolalloworiginlist": "app://obsidian.md,capacitor://localhost,http://localhost",
-            "traefik.http.middlewares.{{ application }}-cors.headers.accesscontrolmaxage": "3600",
-            "traefik.http.middlewares.{{ application }}-cors.headers.addvaryheader": "true",
-            "traefik.http.middlewares.{{ application }}-cors.headers.accessControlAllowCredentials": "true"
-          }'
+          - "traefik.http.middlewares.{{ application }}-cors.headers.accesscontrolallowmethods=GET,PUT,POST,HEAD,DELETE"
+          - "traefik.http.middlewares.{{ application }}-cors.headers.accesscontrolallowheaders=accept,authorization,content-type,origin,referer"
+          - "traefik.http.middlewares.{{ application }}-cors.headers.accesscontrolalloworiginlist=app://obsidian.md,capacitor://localhost,http://localhost"
+          - "traefik.http.middlewares.{{ application }}-cors.headers.accesscontrolmaxage=3600"
+          - "traefik.http.middlewares.{{ application }}-cors.headers.addvaryheader=true"
+          - "traefik.http.middlewares.{{ application }}-cors.headers.accessControlAllowCredentials=true"

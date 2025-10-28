@@ -1,11 +1,11 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: adguard
 
-    docker_network: "{{ networks.iot }}"
+    container_network: "{{ networks.iot }}"
 
   tasks:
     - name: Create config folder
@@ -18,10 +18,10 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: adguard/adguardhome:v0.107.66
-        ipv4_address: "{{ docker_network.subnet | ansible.utils.nthhost(103) }}"
+        image: docker.io/adguard/adguardhome:v0.107.66
+        ip: "{{ container_network.subnet | ansible.utils.nthhost(103) }}"
         homepage:
           name: AdGuard Home
           group: Networking

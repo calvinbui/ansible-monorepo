@@ -1,11 +1,11 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: karakeep
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create config folder
@@ -31,9 +31,9 @@
 
     - name: Create browser container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        name: "{{ application }}-chrome"
+        container_name: "{{ application }}-chrome"
         image: gcr.io/zenika-hub/alpine-chrome:124
         command:
           - --no-sandbox
@@ -45,7 +45,7 @@
 
     - name: Create app container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: ghcr.io/karakeep-app/karakeep:0.27.1
         env:

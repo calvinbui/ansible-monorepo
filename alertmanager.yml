@@ -1,6 +1,6 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: alertmanager
@@ -14,15 +14,13 @@
       39633536313162326238386130643032643332363564346632323861643132663161
     alertmanager_slack_url: https://mattermost.{{ common_tld }}/hooks/{{ alertmanager_slack_webhook_id }}
 
-    docker_network: "{{ prometheus_network }}"
+    container_network: "{{ prometheus_network }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create config folder
@@ -51,14 +49,14 @@
         owner: "65534"  # nobody user
         group: "{{ common_group }}"
         mode: "0444"
-        validate: "docker run --rm --name {{ application }}_config_check -v %s:/tmp/config.yml --entrypoint /bin/amtool prom/alertmanager:latest check-config /tmp/config.yml"
+        validate: "podman run --rm --name {{ application }}_config_check -v %s:/tmp/config.yml --entrypoint /bin/amtool quay.io/prometheus/alertmanager:latest check-config /tmp/config.yml"
       notify: Restart
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: prom/alertmanager:v0.28.1
+        image: quay.io/prometheus/alertmanager:v0.28.1
         command:
           - "--config.file=/etc/alertmanager/alertmanager.yml"
           - "--storage.path=/alertmanager"
@@ -76,7 +74,5 @@
           description: "Alerting"
         metrics:
           - port: 9093
-        comparisons:
-          labels: allow_more_present
         blackbox:
           path: /-/ready

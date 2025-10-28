@@ -1,11 +1,11 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: jdownloader
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create config folder
@@ -18,10 +18,10 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: jlesage/jdownloader-2:v25.07.2
-        ipv4_address: "{{ docker_network.subnet | ansible.utils.nthhost(8) }}"
+        image: ghcr.io/jlesage/jdownloader-2:v25.07.2
+        ip: "{{ container_network.subnet | ansible.utils.nthhost(8) }}"
         env:
           TZ: "{{ common_timezone }}"
 

@@ -1,19 +1,17 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: floccus
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create config folder
@@ -86,12 +84,6 @@
           </VirtualHost>
       notify: Restart
 
-    - name: Install passlib
-      ansible.builtin.apt:
-        name:
-          - python3-passlib
-        state: present
-
     - name: Create htpasswd file
       community.general.htpasswd:
         path: "{{ config_directory }}/htpasswd"
@@ -112,7 +104,7 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: public.ecr.aws/docker/library/httpd:2.4.65
         volumes:
@@ -120,6 +112,8 @@
           - "{{ config_directory }}/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro"
           - "{{ config_directory }}/htpasswd:/usr/local/apache2/conf/.htpasswd:ro"
         tmpfs:
-          - /tmp:rw,mode=01777
+          /tmp: rw,mode=01777
         traefik:
           - port: 80
+        blackbox:
+          enable: false

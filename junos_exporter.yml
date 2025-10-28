@@ -1,19 +1,17 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: junos_exporter
 
-    docker_network: "{{ networks.user }}"
+    container_network: "{{ networks.user }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create config folder
@@ -52,9 +50,9 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: tynany/junos_exporter:v1.4.0
+        image: docker.io/tynany/junos_exporter:v1.4.0
         volumes:
           - "{{ config_directory }}/config.yaml:/config.yaml"
 

@@ -1,20 +1,20 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: glances
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: nicolargo/glances:ubuntu-4.3.3-full
+        image: docker.io/nicolargo/glances:ubuntu-4.3.3-full
         volumes:
-          - /var/run/docker.sock:/var/run/docker.sock:ro
+          - /run/podman/podman.sock:/var/run/docker.sock:ro
           - /etc/os-release:/etc/os-release:ro
         env:
           GLANCES_OPT: "-w"
@@ -23,13 +23,6 @@
           - port: 61208
             auth: page
         pid_mode: host
-        device_requests:
-          - driver: nvidia
-            count: -1
-            device_ids: []
-            options: {}
-            capabilities:
-              - - gpu
         homepage:
           group: Monitoring
           weight: 250

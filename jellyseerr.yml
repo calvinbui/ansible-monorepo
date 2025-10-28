@@ -1,19 +1,17 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: jellyseerr
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create config folder
@@ -39,7 +37,7 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: ghcr.io/fallenbagel/jellyseerr:2.7.3
         env:
@@ -55,7 +53,7 @@
         volumes:
           - "{{ config_directory }}/config:/app/config"
         tmpfs:
-          - /app/.next/cache:rw,mode=01777
+          /app/.next/cache: rw,mode=01777
         user: "{{ common_user_id }}:{{ common_group_id }}"
         traefik:
           - port: 5055

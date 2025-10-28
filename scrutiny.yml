@@ -1,6 +1,6 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: scrutiny
@@ -13,15 +13,13 @@
       3363346239376138310a366430306236626330643331386461346266666530643930386465326439
       66333563343334313730353065636338326536613530663862333761303534623062
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}-web"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create config folders
@@ -75,9 +73,9 @@
 
     - name: Create web container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        name: "{{ application }}-web"
+        container_name: "{{ application }}-web"
         image: ghcr.io/analogj/scrutiny:v0.8.1-web
         volumes:
           - "{{ config_directory }}/config:/opt/scrutiny/config"
@@ -95,14 +93,15 @@
 
     - name: Create collector container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        name: "{{ application }}-collector"
+        container_name: "{{ application }}-collector"
         image: ghcr.io/analogj/scrutiny:v0.8.1-collector
+        privileged: true
         env:
           COLLECTOR_CRON_SCHEDULE: "*/5 * * * *"
           COLLECTOR_API_ENDPOINT: "http://{{ application }}-web.{{ docker_network.name }}:8080"
-        capabilities:
+        cap_add:
           - SYS_RAWIO
         volumes:
           - /run/udev:/run/udev:ro

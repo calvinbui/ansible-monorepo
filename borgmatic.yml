@@ -1,6 +1,6 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: borgmatic
@@ -91,7 +91,7 @@
       38386630306635626434366464386234343265333230303965303239323366386565336130306639
       65633139313433323530
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create Borgmatic directories
@@ -116,7 +116,7 @@
         mode: "0744"
       with_nested:
         - "{{ borgmatic_backups }}"
-        - ["config", "borgmatic.d", "ssh", "cache"]
+        - ["borgmatic", "config/borg", "borgmatic.d", "ssh", "cache/borg"]
 
     - name: "Template configuration"
       ansible.builtin.template:
@@ -154,9 +154,9 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        name: "borgmatic-{{ item.name }}"
+        container_name: "borgmatic-{{ item.name }}"
         image: ghcr.io/borgmatic-collective/borgmatic:2.0.7
         volumes:
           # data to backup. mount as rw when a restore is needed
@@ -173,8 +173,6 @@
           TZ: "{{ common_timezone }}"
           BORG_PASSPHRASE: "{{ borgmatic_pass }}"
           BORG_CHECK_I_KNOW_WHAT_I_AM_DOING: "true"
-        comparisons:
-          env: strict
       loop: "{{ borgmatic_backups }}"
 
     - name: Create backup locations
@@ -184,16 +182,16 @@
       delegate_to: localhost
 
     - name: Initialise repos
-      community.docker.docker_container_exec:
-        container: "borgmatic-{{ item.name }}"
+      containers.podman.podman_container_exec:
+        name: "borgmatic-{{ item.name }}"
         command: borgmatic init --encryption=repokey-blake2
       register: _command_result
       changed_when: _command_result.stdout != ''
       loop: "{{ borgmatic_backups }}"
 
     - name: Disable older versions for security
-      community.docker.docker_container_exec:
-        container: "borgmatic-{{ item.name }}"
+      containers.podman.podman_container_exec:
+        name: "borgmatic-{{ item.name }}"
         command: borgmatic borg upgrade --disable-tam
       register: _command_result
       changed_when: _command_result.stdout != ''

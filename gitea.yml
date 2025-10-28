@@ -1,23 +1,20 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: gitea
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create config folder
       ansible.builtin.file:
-        path: "{{ item }}"
+        path: "{{ config_directory }}"
         state: directory
         owner: "{{ common_user }}"
         group: "{{ common_group }}"
         mode: "0771"
-      loop:
-        - "{{ config_directory }}"
-        - /var/log/gitea
 
     - name: Create postgres container
       ansible.builtin.include_role:
@@ -41,14 +38,15 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: gitea/gitea:1.24.6
+        image: docker.io/gitea/gitea:1.24.6
         volumes:
           - "{{ config_directory }}/data:/data"
-          - /etc/timezone:/etc/timezone:ro
           - /etc/localtime:/etc/localtime:ro
         env:
+          TZ: "{{ common_timezone }}"
+
           USER_UID: "{{ common_user_id | ansible.builtin.string }}"
           USER_GID: "{{ common_group_id | ansible.builtin.string }}"
 
@@ -162,8 +160,8 @@
           path: /api/healthz
 
     - name: Add OIDC source
-      community.docker.docker_container_exec:
-        container: "{{ application }}"
+      containers.podman.podman_container_exec:
+        name: "{{ application }}"
         user: 1000
         command: >-
           gitea admin auth add-oauth
@@ -179,8 +177,8 @@
       changed_when: ('login source already exists' not in _command_result.stderr)
 
     - name: Get OIDC source ID
-      community.docker.docker_container_exec:
-        container: "{{ application }}"
+      containers.podman.podman_container_exec:
+        name: "{{ application }}"
         user: 1000
         command: gitea admin auth list
       register: _gitea_auth_sources
@@ -192,8 +190,8 @@
         _gitea_auth_id: "{{ _gitea_auth_sources.stdout_lines[1] | ansible.builtin.split('\t') | ansible.builtin.first }}"
 
     - name: Update OIDC source
-      community.docker.docker_container_exec:
-        container: "{{ application }}"
+      containers.podman.podman_container_exec:
+        name: "{{ application }}"
         user: 1000
         command: >-
           gitea admin auth update-oauth

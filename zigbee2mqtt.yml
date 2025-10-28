@@ -1,19 +1,17 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: zigbee2mqtt
 
-    docker_network: "{{ networks.iot }}"
+    container_network: "{{ networks.iot }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create config folder
@@ -279,9 +277,9 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: koenkk/zigbee2mqtt:2.6.1
+        image: ghcr.io/koenkk/zigbee2mqtt:2.6.1
         env:
           TZ: "{{ common_timezone }}"
         volumes:

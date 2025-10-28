@@ -1,19 +1,17 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: time-machine
 
-    docker_network: "{{ networks.user }}"
+    container_network: "{{ networks.user }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create users folder
@@ -65,9 +63,10 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: mbentley/timemachine:smb
+        image: docker.io/mbentley/timemachine:smb
+        ip: "{{ networks.user.subnet | ansible.utils.nthhost(32) }}"
         env:
           ADVERTISED_HOSTNAME: "{{ application }}.{{ common_local_tld }}"
           CUSTOM_SMB_CONF: "false"
@@ -94,9 +93,6 @@
           - "{{ common_directory_backup }}/Time Machine:/opt"
           - "{{ config_directory }}/users:/users"
         tmpfs:
-          - /var/lib/samba:rw,mode=01777
-          - /var/cache/samba:rw,mode=01777
-          - /run/samba:rw,mode=01777
-        network:
-          - name: "{{ docker_network.name }}"
-            ipv4_address: "{{ networks.user.subnet | ansible.utils.nthhost(32) }}"
+          /var/lib/samba: rw,mode=01777
+          /var/cache/samba: rw,mode=01777
+          /run/samba: rw,mode=01777

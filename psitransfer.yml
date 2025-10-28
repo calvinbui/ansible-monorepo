@@ -1,11 +1,11 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: psitransfer
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create config folder
@@ -18,9 +18,9 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: psitrax/psitransfer:v2.3.0
+        image: ghcr.io/psi-4ward/psitransfer:v2.3.0
         env:
           PSITRANSFER_ADMIN_PASS: !vault |
             $ANSIBLE_VAULT;1.1;AES256

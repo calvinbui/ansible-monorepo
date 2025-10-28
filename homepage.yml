@@ -1,19 +1,17 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: homepage
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create config folder
@@ -57,12 +55,12 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: ghcr.io/gethomepage/homepage:v1.4.6
-        ipv4_address: "{{ docker_network.subnet | ansible.utils.nthhost(6) }}"
+        ip: "{{ container_network.subnet | ansible.utils.nthhost(6) }}"
         env:
-          HOMEPAGE_ALLOWED_HOSTS: "{{ common_tld }},{{ docker_network.subnet | ansible.utils.nthhost(6) }}"
+          HOMEPAGE_ALLOWED_HOSTS: "{{ common_tld }},{{ container_network.subnet | ansible.utils.nthhost(6) }}"
           HOMEPAGE_PROXY_DISABLE_IPV6: "true"
         volumes:
           - "{{ config_directory }}/config:/app/config"
@@ -70,11 +68,12 @@
 
           - "{{ common_directory_storage }}:{{ common_directory_storage }}:ro"
 
-          - /var/run/docker.sock:/var/run/docker.sock:ro
-        sysctls:
+          - /run/podman/podman.sock:/var/run/docker.sock:ro
+        sysctl:
           net.ipv6.conf.all.disable_ipv6: 1
           net.ipv6.conf.default.disable_ipv6: 1
           net.ipv6.conf.lo.disable_ipv6: 1
         traefik:
           - port: 3000
             rule: Host(`{{ common_tld }}`)
+        no_healthcheck: true

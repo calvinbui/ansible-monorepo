@@ -1,19 +1,17 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: gitea-runner
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create config folder
@@ -82,11 +80,11 @@
 
     - name: Create runner container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: gitea/act_runner:0.2.13
+        image: docker.io/gitea/act_runner:0.2.13
         volumes:
-          - /var/run/docker.sock:/var/run/docker.sock
+          - /run/podman/podman.sock:/var/run/docker.sock
           - "{{ config_directory }}/data:/data"
           - "{{ config_directory }}/cache:/root/.cache"
           - "{{ config_directory }}/config.yaml:/config.yaml"
@@ -120,15 +118,13 @@
       register: _gitea_dockerfiles_location
 
     - name: Build local Docker images
-      community.docker.docker_image:
-        build:
-          path: "{{ item.path }}"
+      containers.podman.podman_image:
+        path: "{{ item.path }}"
         name: "calvinbui/{{ item.path.split('/') | ansible.builtin.last }}:localhost"
         tag: latest
         push: false
-        source: build
-        state: present
-        force_source: "{{ true if _gitea_dockerfiles_copy.changed else false }}"
+        state: build
+        force: "{{ true if _gitea_dockerfiles_copy.changed else false }}"
       loop: "{{ _gitea_dockerfiles_location.files }}"
 
 - hosts: nvr:octopi
@@ -142,7 +138,7 @@
       ansible.posix.authorized_key:
         user: "{{ ssh_user[inventory_hostname.split('.')[0]] }}"
         state: present
-        key: "{{ hostvars['homelab.' + common_local_tld]['gitea_ssh_public_key'] }}"
+        key: "{{ hostvars['homeserver.' + common_local_tld]['gitea_ssh_public_key'] }}"
         comment: gitea-runner
       tags:
         - ssh
