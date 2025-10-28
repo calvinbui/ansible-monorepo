@@ -1,8 +1,6 @@
 ---
 
 - name: Restart
-  community.docker.docker_container:
+  containers.podman.podman_container:
     name: "{{ application }}"
-    restart: true
-    comparisons:
-      '*': ignore
+    force_restart: true
