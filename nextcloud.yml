@@ -312,6 +312,8 @@
             39376566333961386464383061386365386532663237656161353233343965616261663166366463
             3030616430653433360a643763383535376230633438386461353136666365636165636334323662
             3961
+        elasticsearch_environment:
+          ES_JAVA_OPTS: "-Xms512m -Xmx512m"
 
     - name: Install fulltextsearch app
       containers.podman.podman_container_exec:
