@@ -63,6 +63,7 @@
         _tautulli_config:
           General.date_format: "DD-MM-YYYY"
           General.anon_redirect: https://www.nullrefer.com/?
+          General.api_enabled: 1
           General.api_key: "{{ tautulli_api_key }}"
           General.backup_days: 1
           General.backup_interval: 24
@@ -70,7 +71,7 @@
           General.first_run_complete: 1
           General.home_library_cards: 1, 2
           General.https_create_cert: 0
-          General.http_plex_admin: 1
+          General.http_plex_admin: 0
           General.launch_browser: 0
           General.launch_startup: 0
           General.update_show_changelog: 0
