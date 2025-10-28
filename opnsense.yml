@@ -908,3 +908,33 @@
       notify: Reload firewall rules
       tags:
         - firewall
+
+    - name: Firewall Rules - vpn home
+      oxlorg.opnsense.rule:
+        rules:
+          -
+            sequence: 1
+            interface: "{{ networks.vpn_home.opnsense_identifier }}"
+            action: pass
+            source_net: "{{ networks.vpn_home.opnsense_identifier }}"
+            destination_net: any
+            description: Allow all
+      notify: Reload firewall rules
+      tags:
+        - firewall
+
+    - name: Firewall Rules - wan
+      oxlorg.opnsense.rule:
+        rules:
+          -
+            sequence: 1
+            interface: "{{ networks.wan.opnsense_identifier }}"
+            action: pass
+            protocol: UDP
+            source_net: "any"
+            destination_net: "{{ networks.wan.opnsense_identifier }}ip"
+            destination_port: 51820
+            description: WireGuard
+      notify: Reload firewall rules
+      tags:
+        - firewall
