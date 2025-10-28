@@ -48,16 +48,12 @@
       notify:
         - Reload systemd
 
-    - name: Update apt cache
-      ansible.builtin.apt:
-        update_cache: true
-        cache_valid_time: 86400
-      changed_when: false
-
     - name: Install rsync
       ansible.builtin.apt:
         name: rsync
         state: present
+        update_cache: true
+        cache_valid_time: 86400
 
     - name: Create /etc/grub.d/90_copy_to_boot_efi2
       ansible.builtin.copy:
