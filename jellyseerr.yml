@@ -142,7 +142,7 @@
       vars:
         _jellyseerr_configuration:
           main/applicationUrl: "https://{{ application }}.{{ common_tld }}"
-          main/defaultPermissions: 1149239328
+          main/defaultPermissions: 1283473568
           main/localLogin: false
           main/streamingRegion: "{{ common_country_iso_3166 }}"
           main/mediaServerType: 1 # Plex
