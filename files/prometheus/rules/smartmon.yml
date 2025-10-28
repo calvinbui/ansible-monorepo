@@ -1,29 +1,89 @@
 ---
 
 groups:
-  - name: smartmon_temperature
+  - name: Smartmon
     rules:
       -
-        alert: Drive Temperature
-        expr: smartmon_attr_raw_value{name="temperature_celsius"} > 50
+        alert: SmartmonDriveTemperature
+        expr: smartmon_temperature_celsius_value > 50
         for: 10m
         annotations:
-          title: Drive Temperature
-          description: "The temperature from {{ $labels.device }} is high"
-
-  - name: smartmon_smart_healthy
-    rules:
+          summary: Drive Temperature
+          description: "{{ $labels.disk }} is currently {{ $value }}°C"
       -
-        alert: Drive S.M.A.R.T. Health
+        alert: SmartmonDriveHealthStatus
         expr: smartmon_device_smart_healthy != 1
         for: 1h
         annotations:
-          title: Drive S.M.A.R.T.
-          description: "{{ $labels.device }} S.M.A.R.T. status is not healthy"
+          summary: Drive S.M.A.R.T.
+          description: "{{ $labels.disk }} S.M.A.R.T. status is not healthy"
       -
-        alert: Drive S.M.A.R.T. Available
-        expr: smartmon_device_smart_available != 1
+        alert: SmartmonDriveHealthAvailable
+        expr: smartmon_device_smart_available{type!="nvme"} != 1
         for: 1h
         annotations:
-          title: Drive S.M.A.R.T.
-          description: "{{ $labels.device }} S.M.A.R.T. status is not available"
+          summary: Drive S.M.A.R.T.
+          description: "{{ $labels.disk }} S.M.A.R.T. status is not available"
+      -
+        alert: SmartmonPendingSectors
+        expr: smartmon_current_pending_sector_raw_value > 0
+        for: 5m
+        annotations:
+          summary: Pending Sectors Detected
+          description: "{{ $labels.disk }} has {{ $value }} pending sectors waiting to be remapped"
+      -
+        alert: SmartmonOfflineUncorrectable
+        expr: smartmon_offline_uncorrectable_raw_value > 0
+        for: 5m
+        annotations:
+          summary: Offline Uncorrectable Sectors
+          description: "{{ $labels.disk }} has {{ $value }} offline uncorrectable sectors - data loss may have occurred"
+      -
+        alert: SmartmonReportedUncorrectable
+        expr: smartmon_reported_uncorrect_raw_value > 0
+        for: 5m
+        annotations:
+          summary: Reported Uncorrectable Errors
+          description: "{{ $labels.disk }} has {{ $value }} reported uncorrectable errors"
+      -
+        alert: SmartmonCommandTimeoutsCritical
+        expr: smartmon_command_timeout_raw_value > 50
+        for: 15m
+        annotations:
+          summary: Critical Command Timeouts
+          description: "{{ $labels.disk }} has {{ $value }} command timeouts - drive or controller may be failing"
+      -
+        alert: SmartmonUDMACRCErrors
+        expr: smartmon_udma_crc_error_count_raw_value > 0
+        for: 1h
+        annotations:
+          summary: UDMA CRC Errors Detected
+          description: "{{ $labels.disk }} has {{ $value }} UDMA CRC errors - check cables and connections"
+      -
+        alert: SmartmonRawReadErrorRate
+        expr: smartmon_raw_read_error_rate_value < smartmon_raw_read_error_rate_threshold and smartmon_raw_read_error_rate_threshold > 0
+        for: 1h
+        annotations:
+          summary: Raw Read Error Rate Below Threshold
+          description: "{{ $labels.disk }} raw read error rate value ({{ $value }}) is below threshold"
+      -
+        alert: SmartmonSeekErrorRate
+        expr: smartmon_seek_error_rate_value < smartmon_seek_error_rate_threshold and smartmon_seek_error_rate_threshold > 0
+        for: 1h
+        annotations:
+          summary: Seek Error Rate Below Threshold
+          description: "{{ $labels.disk }} seek error rate value ({{ $value }}) is below threshold"
+      -
+        alert: SmartmonStaleData
+        expr: (time() - smartmon_smartctl_run) > 600
+        for: 5m
+        annotations:
+          summary: SMART Monitoring Data Stale
+          description: "{{ $labels.disk }} SMART data has not been updated for {{ $value | humanizeDuration }}"
+      -
+        alert: SmartmonSpinRetryCount
+        expr: smartmon_spin_retry_count_raw_value > 0
+        for: 1h
+        annotations:
+          summary: Spin Retry Count Detected
+          description: "{{ $labels.disk }} has {{ $value }} spin retry attempts - mechanical issues possible"

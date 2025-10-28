@@ -1,0 +1,33 @@
+---
+
+groups:
+  - name: BootTime
+    rules:
+      -
+        alert: NodeRebooted
+        expr: (time() - node_boot_time_seconds) < 600
+        for: 1m
+        annotations:
+          summary: Node Recently Rebooted
+          description: "Node rebooted {{ $value | humanizeDuration }} ago"
+      -
+        alert: NodeUnexpectedReboot
+        expr: changes(node_boot_time_seconds[10m]) > 0
+        for: 1m
+        annotations:
+          summary: Unexpected Node Reboot Detected
+          description: "Node boot time changed - system was rebooted"
+      -
+        alert: ClockSourceNotTSC
+        expr: node_time_clocksource_current_info{clocksource!="tsc"} == 1
+        for: 5m
+        annotations:
+          summary: Clock Source Not TSC
+          description: "System using {{ $labels.clocksource }} instead of TSC - possible timing accuracy issues"
+      -
+        alert: ClockDrift
+        expr: abs(node_time_seconds - time()) > 30
+        for: 5m
+        annotations:
+          summary: System Clock Drift Detected
+          description: "System clock differs from Prometheus server by {{ $value | humanizeDuration }}"

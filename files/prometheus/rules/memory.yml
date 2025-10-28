@@ -1,0 +1,47 @@
+---
+
+groups:
+  - name: Memory
+    rules:
+      -
+        alert: MemoryAvailableLow
+        expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < 0.1
+        for: 10m
+        annotations:
+          summary: Memory Available Low
+          description: "Available memory is {{ $value | humanizePercentage }} ({{ query \"node_memory_MemAvailable_bytes\" | first | value | humanize1024 }}B of {{ query \"node_memory_MemTotal_bytes\" | first | value | humanize1024 }}B)"
+      -
+        alert: MemoryAvailableCritical
+        expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < 0.05
+        for: 5m
+        annotations:
+          summary: Memory Available Critical
+          description: "Available memory is {{ $value | humanizePercentage }} - system may start OOM killing processes"
+      -
+        alert: SwapUsageHigh
+        expr: (node_memory_SwapTotal_bytes - node_memory_SwapFree_bytes) / node_memory_SwapTotal_bytes > 0.5
+        for: 15m
+        annotations:
+          summary: Swap Usage High
+          description: "Swap usage is {{ $value | humanizePercentage }} - system may be thrashing"
+      -
+        alert: SwapUsageCritical
+        expr: (node_memory_SwapTotal_bytes - node_memory_SwapFree_bytes) / node_memory_SwapTotal_bytes > 0.8
+        for: 10m
+        annotations:
+          summary: Swap Usage Critical
+          description: "Swap usage is {{ $value | humanizePercentage }} - severe memory pressure"
+      -
+        alert: MemoryHardwareCorrupted
+        expr: node_memory_HardwareCorrupted_bytes > 0
+        for: 1m
+        annotations:
+          summary: Hardware Memory Corruption Detected
+          description: "{{ $value | humanize1024 }}B of memory is marked as hardware corrupted - possible RAM failure"
+      -
+        alert: MemorySlabUnreclaimableHigh
+        expr: node_memory_SUnreclaim_bytes / node_memory_MemTotal_bytes > 0.1
+        for: 30m
+        annotations:
+          summary: High Unreclaimable Slab Memory
+          description: "Unreclaimable slab memory is {{ $value | humanizePercentage }} of total memory ({{ query \"node_memory_SUnreclaim_bytes\" | first | value | humanize1024 }}B) - possible kernel memory leak"

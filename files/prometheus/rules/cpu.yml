@@ -1,0 +1,68 @@
+---
+
+groups:
+  - name: CPU
+    rules:
+      -
+        alert: CPULoad
+        expr: (sum by (instance) (avg by (mode, instance) (rate(node_cpu_seconds_total{mode!="idle"}[2m]))) > 0.8)
+        for: 10m
+        annotations:
+          summary: Host high CPU load
+          description: "CPU load is > 80%"
+      -
+        alert: CPUSteal
+        expr: avg by(instance) (rate(node_cpu_seconds_total{mode="steal"}[5m])) * 100 > 10
+        for: 0m
+        annotations:
+          summary: Host CPU steal noisy neighbor
+          description: "CPU steal is > 10%. A noisy neighbor is killing performance"
+      -
+        alert: CPUTemps
+        expr: ((node_hwmon_temp_celsius * ignoring(label) group_left(instance, job, node, sensor) node_hwmon_sensor_label{label!="tctl"} > 75))
+        for: 5m
+        annotations:
+          summary: Host physical component too hot
+          description: "Physical hardware component too hot"
+      -
+        alert: CPUTempCritical
+        expr: ((node_hwmon_temp_crit_alarm_celsius == 1) or (node_hwmon_temp_alarm == 1))
+        for: 0m
+        annotations:
+          summary: Host node overtemperature alarm
+          description: "Physical node temperature alarm triggered"
+      -
+        alert: CPUCoreThrottling
+        expr: rate(node_cpu_core_throttles_total[5m]) > 0
+        for: 10m
+        annotations:
+          summary: CPU Core Throttling
+          description: "CPU core {{ $labels.core }} on package {{ $labels.package }} is being throttled"
+      -
+        alert: CPUPackageThrottling
+        expr: rate(node_cpu_package_throttles_total[5m]) > 0
+        for: 10m
+        annotations:
+          summary: CPU Package Throttling
+          description: "CPU package {{ $labels.package }} is being throttled due to thermal or power limits"
+      -
+        alert: CPUContextSwitchingHigh
+        expr: rate(node_context_switches_total[5m]) > 1000000
+        for: 15m
+        annotations:
+          summary: High Context Switching Rate
+          description: "Context switching rate is {{ $value | humanize }} per second"
+      -
+        alert: CPUIowaitHigh
+        expr: avg by (instance) (rate(node_cpu_seconds_total{mode="iowait"}[5m])) * 100 > 20
+        for: 15m
+        annotations:
+          summary: High CPU I/O Wait
+          description: "CPU I/O wait is {{ $value | humanize }}% - possible disk bottleneck"
+      -
+        alert: CPUSoftirqHigh
+        expr: avg by (instance) (rate(node_cpu_seconds_total{mode="softirq"}[5m])) * 100 > 10
+        for: 15m
+        annotations:
+          summary: High CPU Soft IRQ Time
+          description: "CPU soft IRQ time is {{ $value | humanize }}% - possible network saturation"

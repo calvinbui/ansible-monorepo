@@ -1,0 +1,40 @@
+---
+
+groups:
+  - name: Pressure
+    rules:
+      -
+        alert: CPUPressureHigh
+        expr: rate(node_pressure_cpu_waiting_seconds_total[5m]) > 0.1
+        for: 15m
+        annotations:
+          summary: CPU Pressure High
+          description: "Processes waiting for CPU {{ $value | humanizePercentage }} of the time"
+      -
+        alert: IOPressureWaitingHigh
+        expr: rate(node_pressure_io_waiting_seconds_total[5m]) > 0.3
+        for: 10m
+        annotations:
+          summary: I/O Pressure High
+          description: "Some processes waiting for I/O {{ $value | humanizePercentage }} of the time"
+      -
+        alert: IOPressureStalledHigh
+        expr: rate(node_pressure_io_stalled_seconds_total[5m]) > 0.1
+        for: 10m
+        annotations:
+          summary: I/O Pressure Critical
+          description: "All processes stalled on I/O {{ $value | humanizePercentage }} of the time - severe I/O bottleneck"
+      -
+        alert: MemoryPressureWaitingHigh
+        expr: rate(node_pressure_memory_waiting_seconds_total[5m]) > 0.05
+        for: 10m
+        annotations:
+          summary: Memory Pressure Detected
+          description: "Some processes waiting for memory {{ $value | humanizePercentage }} of the time"
+      -
+        alert: MemoryPressureStalledHigh
+        expr: rate(node_pressure_memory_stalled_seconds_total[5m]) > 0.01
+        for: 5m
+        annotations:
+          summary: Memory Pressure Critical
+          description: "All processes stalled on memory {{ $value | humanizePercentage }} of the time - severe memory pressure"

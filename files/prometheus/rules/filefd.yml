@@ -1,0 +1,19 @@
+---
+
+groups:
+  - name: FileDescriptors
+    rules:
+      -
+        alert: FileDescriptorsExhausting
+        expr: node_filefd_allocated / node_filefd_maximum > 0.8
+        for: 10m
+        annotations:
+          summary: File Descriptors Exhausting
+          description: "System file descriptor usage is {{ $value | humanizePercentage }} ({{ query \"node_filefd_allocated\" | first | value | humanize }} of {{ query \"node_filefd_maximum\" | first | value | humanize }})"
+      -
+        alert: FileDescriptorsCritical
+        expr: node_filefd_allocated / node_filefd_maximum > 0.95
+        for: 5m
+        annotations:
+          summary: File Descriptors Critical
+          description: "System file descriptor usage is {{ $value | humanizePercentage }} - processes may fail to open files"

@@ -1,0 +1,68 @@
+---
+
+groups:
+  - name: HardwareMonitor
+    rules:
+      -
+        alert: HwmonCPUTemperatureHigh
+        expr: node_hwmon_temp_celsius{chip="platform_coretemp_0"} > 75
+        for: 5m
+        annotations:
+          summary: CPU Temperature High
+          description: "{{ $labels.chip }} {{ $labels.sensor }} is {{ $value }}°C"
+      -
+        alert: HwmonCPUTemperatureCritical
+        expr: node_hwmon_temp_celsius{chip="platform_coretemp_0"} > 85
+        for: 1m
+        annotations:
+          summary: CPU Temperature Critical
+          description: "{{ $labels.chip }} {{ $labels.sensor }} is {{ $value }}°C - approaching critical threshold"
+      -
+        alert: HwmonMemoryTemperatureHigh
+        expr: node_hwmon_temp_celsius{chip=~"i2c_.*"} > 70
+        for: 10m
+        annotations:
+          summary: Memory Temperature High
+          description: "Memory module {{ $labels.chip }} is {{ $value }}°C"
+      -
+        alert: HwmonMemoryTemperatureCritical
+        expr: node_hwmon_temp_celsius{chip=~"i2c_.*"} > 80
+        for: 5m
+        annotations:
+          summary: Memory Temperature Critical
+          description: "Memory module {{ $labels.chip }} is {{ $value }}°C - approaching critical threshold of 85°C"
+      -
+        alert: HwmonNVMeTemperatureHigh
+        expr: node_hwmon_temp_celsius{chip=~"nvme_.*",sensor="temp1"} > 70
+        for: 10m
+        annotations:
+          summary: NVMe Temperature High
+          description: "{{ $labels.chip }} composite temperature is {{ $value }}°C"
+      -
+        alert: HwmonNVMeTemperatureCritical
+        expr: node_hwmon_temp_celsius{chip=~"nvme_.*",sensor="temp1"} > 80
+        for: 5m
+        annotations:
+          summary: NVMe Temperature Critical
+          description: "{{ $labels.chip }} composite temperature is {{ $value }}°C - approaching critical threshold of 85°C"
+      -
+        alert: HwmonTemperatureAlarm
+        expr: node_hwmon_temp_alarm == 1
+        for: 1m
+        annotations:
+          summary: Hardware Temperature Alarm
+          description: "Temperature alarm triggered on {{ $labels.chip }} {{ $labels.sensor }}"
+      -
+        alert: HwmonCriticalAlarm
+        expr: node_hwmon_temp_crit_alarm_celsius == 1
+        for: 0m
+        annotations:
+          summary: Hardware Critical Temperature Alarm
+          description: "Critical temperature alarm on {{ $labels.chip }} {{ $labels.sensor }} - immediate attention required"
+      -
+        alert: HwmonMaxTemperatureAlarm
+        expr: node_hwmon_temp_max_alarm_celsius == 1
+        for: 1m
+        annotations:
+          summary: Hardware Max Temperature Alarm
+          description: "Max temperature threshold exceeded on {{ $labels.chip }} {{ $labels.sensor }}"

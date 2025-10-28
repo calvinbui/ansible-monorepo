@@ -1,11 +1,166 @@
 ---
 
 groups:
-  - name: zfs
+  - name: ZFS
     rules:
-      - alert: ZfsOfflinePool
-        expr: node_zfs_zpool_state{state!="online"} > 0
+      -
+        alert: ZFSPoolDegraded
+        expr: node_zfs_zpool_state{state="degraded"} == 1
+        for: 5m
+        annotations:
+          summary: ZFS Pool Degraded
+          description: "{{ $labels.zpool }} is in degraded state"
+      -
+        alert: ZFSPoolFaulted
+        expr: node_zfs_zpool_state{state="faulted"} == 1
         for: 1m
         annotations:
-          summary: ZFS offline pool
-          description: "A ZFS zpool is in a unexpected state: {{ $labels.state }}.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+          summary: ZFS Pool Faulted
+          description: "{{ $labels.zpool }} is in faulted state - immediate attention required"
+      -
+        alert: ZFSPoolOffline
+        expr: node_zfs_zpool_state{state="offline"} == 1
+        for: 5m
+        annotations:
+          summary: ZFS Pool Offline
+          description: "{{ $labels.zpool }} is offline"
+      -
+        alert: ZFSPoolSuspended
+        expr: node_zfs_zpool_state{state="suspended"} == 1
+        for: 1m
+        annotations:
+          summary: ZFS Pool Suspended
+          description: "{{ $labels.zpool }} is suspended - I/O operations are blocked"
+      -
+        alert: ZFSPoolUnavailable
+        expr: node_zfs_zpool_state{state="unavail"} == 1
+        for: 5m
+        annotations:
+          summary: ZFS Pool Unavailable
+          description: "{{ $labels.zpool }} is unavailable"
+      -
+        alert: ZFSARCMetadataLimitHigh
+        expr: node_zfs_arc_arc_meta_used / node_zfs_arc_arc_dnode_limit > 0.9
+        for: 30m
+        annotations:
+          summary: ZFS ARC Metadata Limit High
+          description: "ARC metadata usage is {{ $value | humanizePercentage }} of limit"
+      -
+        alert: ZFSARCMemoryPressure
+        expr: node_zfs_arc_memory_throttle_count > 0
+        for: 15m
+        annotations:
+          summary: ZFS ARC Memory Pressure
+          description: "ARC is experiencing memory throttling ({{ $value }} throttle events)"
+      -
+        alert: ZFSARCNoGrow
+        expr: node_zfs_arc_arc_no_grow == 1
+        for: 1h
+        annotations:
+          summary: ZFS ARC Cannot Grow
+          description: "ARC is prevented from growing due to memory pressure"
+      -
+        alert: ZFSDMUTxErrors
+        expr: node_zfs_dmu_tx_dmu_tx_error > 0
+        for: 5m
+        annotations:
+          summary: ZFS DMU Transaction Errors
+          description: "{{ $value }} DMU transaction errors detected"
+      -
+        alert: ZFSDMUTxSuspended
+        expr: node_zfs_dmu_tx_dmu_tx_suspended > 0
+        for: 5m
+        annotations:
+          summary: ZFS DMU Transactions Suspended
+          description: "{{ $value }} DMU transactions are suspended"
+      -
+        alert: ZFSDMUTxDirtyOverMax
+        expr: node_zfs_dmu_tx_dmu_tx_dirty_over_max > 0
+        for: 15m
+        annotations:
+          summary: ZFS Dirty Data Over Max
+          description: "Dirty data exceeded maximum threshold {{ $value }} times"
+      -
+        alert: ZFSZILCommitErrors
+        expr: node_zfs_zil_zil_commit_error_count > 0
+        for: 5m
+        annotations:
+          summary: ZFS ZIL Commit Errors
+          description: "{{ $value }} ZIL commit errors detected"
+      -
+        alert: ZFSZILCommitStalls
+        expr: rate(node_zfs_zil_zil_commit_stall_count[5m]) > 10
+        for: 10m
+        annotations:
+          summary: ZFS ZIL Commit Stalls
+          description: "High rate of ZIL commit stalls detected"
+      -
+        alert: ZFSFaultManagerErrors
+        expr: node_zfs_fm_erpt_dropped > 0
+        for: 10m
+        annotations:
+          summary: ZFS Fault Manager Dropped Reports
+          description: "{{ $value }} fault manager error reports were dropped"
+      -
+        alert: ZFSFaultManagerSetFailed
+        expr: node_zfs_fm_erpt_set_failed > 0 or node_zfs_fm_fmri_set_failed > 0 or node_zfs_fm_payload_set_failed > 0
+        for: 5m
+        annotations:
+          summary: ZFS Fault Manager Set Failed
+          description: "Fault manager failed to set error report properties"
+      -
+        alert: ZFSL2ARCErrors
+        expr: node_zfs_arc_l2_cksum_bad > 0 or node_zfs_arc_l2_io_error > 0
+        for: 5m
+        annotations:
+          summary: ZFS L2ARC Errors
+          description: "L2ARC cache errors detected"
+      -
+        alert: ZFSL2ARCRebuildErrors
+        expr: node_zfs_arc_l2_rebuild_cksum_lb_errors > 0 or node_zfs_arc_l2_rebuild_io_errors > 0 or node_zfs_arc_l2_rebuild_dh_errors > 0
+        for: 5m
+        annotations:
+          summary: ZFS L2ARC Rebuild Errors
+          description: "L2ARC rebuild encountered errors"
+      -
+        alert: ZFSDatasetZILErrors
+        expr: node_zfs_zpool_dataset_zil_commit_error_count > 0
+        for: 5m
+        annotations:
+          summary: ZFS Dataset ZIL Errors
+          description: "{{ $labels.dataset }} has {{ $value }} ZIL commit errors"
+      -
+        alert: ZFSDatasetZILStalls
+        expr: rate(node_zfs_zpool_dataset_zil_commit_stall_count[5m]) > 5
+        for: 10m
+        annotations:
+          summary: ZFS Dataset ZIL Stalls
+          description: "{{ $labels.dataset }} experiencing ZIL commit stalls"
+      -
+        alert: ZFSDatasetZILSuspended
+        expr: node_zfs_zpool_dataset_zil_commit_suspend_count > 0
+        for: 5m
+        annotations:
+          summary: ZFS Dataset ZIL Suspended
+          description: "{{ $labels.dataset }} has {{ $value }} suspended ZIL commits"
+      -
+        alert: ZFSMemoryReclaim
+        expr: rate(node_zfs_dmu_tx_dmu_tx_memory_reclaim[5m]) > 10
+        for: 10m
+        annotations:
+          summary: ZFS Memory Reclaim High
+          description: "High rate of memory reclaim operations"
+      -
+        alert: ZFSDirectMemoryReclaim
+        expr: node_zfs_arc_memory_direct_count > 0
+        for: 15m
+        annotations:
+          summary: ZFS Direct Memory Reclaim
+          description: "{{ $value }} direct memory reclaim events - system under memory pressure"
+      -
+        alert: ZFSIndirectMemoryReclaim
+        expr: node_zfs_arc_memory_indirect_count > 0
+        for: 15m
+        annotations:
+          summary: ZFS Indirect Memory Reclaim
+          description: "{{ $value }} indirect memory reclaim events"

@@ -1,0 +1,47 @@
+---
+
+groups:
+  - name: Filesystem
+    rules:
+      -
+        alert: FilesystemSpaceLow
+        expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) < 0.1
+        for: 15m
+        annotations:
+          summary: Filesystem Space Low
+          description: "{{ $labels.mountpoint }} has {{ $value | humanizePercentage }} space remaining ({{ query \"node_filesystem_avail_bytes{mountpoint='\" $labels.mountpoint \"'}\" | first | value | humanize1024 }}B free)"
+      -
+        alert: FilesystemSpaceCritical
+        expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) < 0.05
+        for: 5m
+        annotations:
+          summary: Filesystem Space Critical
+          description: "{{ $labels.mountpoint }} has only {{ $value | humanizePercentage }} space remaining"
+      -
+        alert: FilesystemInodesLow
+        expr: (node_filesystem_files_free / node_filesystem_files) < 0.1
+        for: 15m
+        annotations:
+          summary: Filesystem Inodes Low
+          description: "{{ $labels.mountpoint }} has {{ $value | humanizePercentage }} inodes remaining"
+      -
+        alert: FilesystemInodesCritical
+        expr: (node_filesystem_files_free / node_filesystem_files) < 0.05
+        for: 5m
+        annotations:
+          summary: Filesystem Inodes Critical
+          description: "{{ $labels.mountpoint }} has only {{ $value | humanizePercentage }} inodes remaining"
+      -
+        alert: FilesystemReadOnly
+        expr: node_filesystem_readonly == 1
+        for: 1m
+        annotations:
+          summary: Filesystem Read-Only
+          description: "{{ $labels.mountpoint }} is mounted read-only - writes will fail"
+      -
+        alert: FilesystemDeviceError
+        expr: node_filesystem_device_error == 1
+        for: 1m
+        annotations:
+          summary: Filesystem Device Error
+          description: "Error accessing {{ $labels.mountpoint }} - filesystem may be failing"
