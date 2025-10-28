@@ -1,0 +1,134 @@
+---
+
+- hosts: homeserver
+
+  vars:
+    application: node-exporter
+
+    container_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create textfiles folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}/textfiles"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0775"
+
+    - name: Create textfiles containers
+      ansible.builtin.include_role:
+        name: podman_container
+      vars:
+        container_name: "node-exporter-textfiles-{{ item.name }}"
+        image: ghcr.io/galexrt/node-exporter-textfiles:v20251016-124517-972
+        privileged: true
+        env:
+          SCRIPT: "{{ item.script }}"
+          OUTPUTFILE: "{{ item.name }}"
+          INTERVAL: 60
+        volumes: "{{ item.volumes | default([]) + [ config_directory + '/textfiles:/var/lib/node_exporter' ] }}"
+      loop:
+        -
+          name: smartmon
+          script: smartmon.sh
+          volumes:
+            - /dev:/dev:ro
+        -
+          name: nvme
+          script: nvme_metrics.py
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: podman_container
+      vars:
+        image: quay.io/prometheus/node-exporter:v1.9.1
+        command:
+          - --path.rootfs=/host
+          - --path.udev.data=/host/run/udev/data
+          - --path.procfs=/host/proc
+          - --path.sysfs=/host/sys
+
+          - --collector.bonding
+          - --collector.cpu
+          - --collector.diskstats
+          - --collector.filefd
+          - --collector.filesystem
+          - --collector.filesystem.mount-points-include=^(/|/files)?$
+          - --collector.hwmon
+          - --collector.loadavg
+          - --collector.mdadm
+          - --collector.meminfo
+          - --collector.netdev
+          - --collector.nvme
+          - --collector.stat
+          - --collector.textfile
+          - --collector.textfile.directory=/textfiles
+          - --collector.pressure
+          - --collector.time
+          - --collector.uname
+          - --collector.vmstat
+          - --collector.zfs
+
+          - --no-collector.arp
+          - --no-collector.bcache
+          - --no-collector.btrfs
+          - --no-collector.buddyinfo
+          - --no-collector.cgroups
+          - --no-collector.conntrack
+          - --no-collector.cpu_vulnerabilities
+          - --no-collector.cpufreq
+          - --no-collector.dmi
+          - --no-collector.drbd
+          - --no-collector.drm
+          - --no-collector.edac
+          - --no-collector.entropy
+          - --no-collector.ethtool
+          - --no-collector.fibrechannel
+          - --no-collector.infiniband
+          - --no-collector.interrupts
+          - --no-collector.ipvs
+          - --no-collector.ksmd
+          - --no-collector.lnstat
+          - --no-collector.logind
+          - --no-collector.meminfo_numa
+          - --no-collector.mountstats
+          - --no-collector.netclass
+          - --no-collector.netstat
+          - --no-collector.network_route
+          - --no-collector.nfs
+          - --no-collector.nfsd
+          - --no-collector.ntp
+          - --no-collector.os
+          - --no-collector.perf
+          - --no-collector.powersupplyclass
+          - --no-collector.processes
+          - --no-collector.qdisc
+          - --no-collector.rapl
+          - --no-collector.runit
+          - --no-collector.schedstat
+          - --no-collector.selinux
+          - --no-collector.slabinfo
+          - --no-collector.sockstat
+          - --no-collector.softirqs
+          - --no-collector.softnet
+          - --no-collector.supervisord
+          - --no-collector.sysctl
+          - --no-collector.systemd
+          - --no-collector.tapestats
+          - --no-collector.tcpstat
+          - --no-collector.thermal_zone
+          - --no-collector.timex
+          - --no-collector.udp_queues
+          - --no-collector.watchdog
+          - --no-collector.wifi
+          - --no-collector.xfrm
+          - --no-collector.xfs
+          - --no-collector.zoneinfo
+        pid_mode: host
+        volumes:
+          - /:/host:ro,rslave
+
+          - "{{ config_directory }}/textfiles:/textfiles:ro"
+        metrics:
+          - port: 9100
