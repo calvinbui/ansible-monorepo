@@ -69,6 +69,21 @@
             group: "{{ common_root_group }}"
             mode: "0771"
 
+        - name: Download vscode.extensions file
+          ansible.builtin.get_url:
+            url: https://raw.githubusercontent.com/hassio-addons/addon-vscode/master/vscode/vscode.extensions
+            dest: "{{ config_directory }}/vsix/vscode.extensions"
+            mode: "0644"
+
+        - name: Read extension list
+          ansible.builtin.slurp:
+            src: "{{ config_directory }}/vsix/vscode.extensions"
+          register: vscode_extensions_file
+
+        - name: Set extension list fact
+          ansible.builtin.set_fact:
+            home_assistant_vscode_extensions: "{{ vscode_extensions_file.content | b64decode | split('\n') | select() }}"
+
         - name: Download extensions
           ansible.builtin.get_url:
             url: "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/{{ item.split('.')[0] }}/vsextensions/{{ item.split('.')[1].split('#')[0] }}/{{ item.split('#')[1] }}/vspackage"
@@ -77,7 +92,7 @@
             http_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"
             headers:
               x-market-user-id: "{{ 1000 | ansible.builtin.random | ansible.builtin.to_uuid }}"
-          loop: &home_assistant_vscode_extensions "{{ lookup('ansible.builtin.url', 'https://raw.githubusercontent.com/hassio-addons/addon-vscode/master/vscode/vscode.extensions', wantlist=True) }}"
+          loop: "{{ home_assistant_vscode_extensions }}"
           register: result
           until: result is success
           retries: 5
@@ -90,16 +105,18 @@
             owner: "{{ common_root_id }}"
             group: "{{ common_root_group }}"
             mode: "0771"
-          loop: *home_assistant_vscode_extensions
+          loop: "{{ home_assistant_vscode_extensions }}"
 
         - name: Install bsdtar
           ansible.builtin.apt:
             name: libarchive-tools
             state: present
+            update_cache: true
+            cache_valid_time: 86400
 
         - name: Unpack extensions
           ansible.builtin.command: "bsdtar --strip-components=1 -xf {{ config_directory }}/vsix/{{ item.split('#')[0] }}-{{ item.split('#')[1] }}.vsix -C {{ config_directory }}/extensions/{{ item.split('#')[0] }}-{{ item.split('#')[1] }} extension"
           args:
             creates: "{{ config_directory }}/extensions/{{ item.split('#')[0] }}-{{ item.split('#')[1] }}/README.md"
-          loop: *home_assistant_vscode_extensions
+          loop: "{{ home_assistant_vscode_extensions }}"
           notify: Restart
