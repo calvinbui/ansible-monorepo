@@ -1,0 +1,61 @@
+---
+
+- name: "Reset networks vars"
+  ansible.builtin.set_fact:
+    networks_enriched: []
+    container_network_list: []
+
+- name: Generate MAC for the container
+  ansible.builtin.set_fact:
+    networks_enriched: "{{ networks_enriched + [final_item] }}"
+  loop: "{{ network }}"
+  vars:
+    calculated_values:
+      mac: "{{ '0a:0a:%02d:%02d:%02d:%02d' | ansible.builtin.format(
+                (networks[item.name].vlan | ansible.builtin.int),
+                ((item.ip | ansible.builtin.split('.'))[2] | ansible.builtin.int),
+                ((item.ip | ansible.builtin.split('.'))[3] | ansible.builtin.int) // 100,
+                ((item.ip | ansible.builtin.split('.'))[3] | ansible.builtin.int) % 100
+              ) | upper if item.ip is defined else omit }}"
+    final_item: "{{ item | combine(calculated_values) }}"
+
+- name: Create OPNsense DHCP reservation for MAC address
+  oxlorg.opnsense.dnsmasq_host:
+    host: "{{ container_name | default(application) }}"
+    local: true
+    ip:
+      - "{{ item.ip }}"
+    hardware_addr: "{{ item.mac }}"
+    description: "{{ item.description | default(container_name) | default(application) }} - Podman"
+    reload: true
+  module_defaults:
+    group/oxlorg.opnsense.all: "{{ oxlorg_opnsense_module_defaults }}"
+  delegate_to: localhost
+  become: false
+  loop: "{{ networks_enriched }}"
+  when:
+    - item.ip is defined
+    - item.mac is defined
+
+- name: Create OPNsense alias for container IP
+  oxlorg.opnsense.alias:
+    name: "{{ container_name | default(application) | ansible.builtin.replace('-', '_') }}"
+    content: "{{ networks_enriched | selectattr('ip','defined') | map(attribute='ip') | list }}"
+    type: host
+    description: "Created by Ansible for Podman"
+    reload: true
+  module_defaults:
+    group/oxlorg.opnsense.all: "{{ oxlorg_opnsense_module_defaults }}"
+  delegate_to: localhost
+  become: false
+  when: (networks_enriched | selectattr('ip','defined') | map(attribute='ip') | list | length) > 0
+
+- name: Build Podman network list
+  ansible.builtin.set_fact:
+    container_network_list: >-
+      {{
+        (container_network_list | default([]))
+        + [ (item.name ~ ':mac=' ~ item.mac) if (item.mac is defined) else item.name ]
+      }}
+  loop: "{{ networks_enriched }}"
+  when: networks_enriched is defined
