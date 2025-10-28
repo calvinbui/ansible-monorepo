@@ -119,22 +119,6 @@
         description: "linktap-gateway-1"
         access: "{{ networks.iot.vlan }}"
       -
-        port: "37"
-        description: "homelab-ipmi"
-        access: "{{ networks.mgmt.vlan }}"
-      -
-        port: "38"
-        description: "opnsense-lan"
-      -
-        port: "39"
-        description: "opnsense-vlan"
-        trunk:
-          - "{{ networks.mgmt.name }}"
-          - "{{ networks.user.name }}"
-          - "{{ networks.iot.name }}"
-          - "{{ networks.pub.name }}"
-          - "{{ networks.guest.name }}"
-      -
         port: "40"
         description: "wifi-01"
         access: "{{ networks.mgmt.vlan }}"
@@ -190,16 +174,6 @@
         port: "47"
         description: "alarm"
         access: "{{ networks.iot.vlan }}"
-      -
-        interface: xe
-        port: "0"
-        description: "homelab-sfp"
-        trunk:
-          - "{{ networks.mgmt.name }}"
-          - "{{ networks.user.name }}"
-          - "{{ networks.iot.name }}"
-          - "{{ networks.pub.name }}"
-          - "{{ networks.guest.name }}"
       -
         interface: xe
         port: "1"
