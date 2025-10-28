@@ -1,2 +1,2 @@
-FROM calvinbui/drone-mattermost:latest
+FROM docker.io/calvinbui/drone-mattermost:latest
 LABEL skip.prune=true
