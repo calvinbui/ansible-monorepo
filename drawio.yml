@@ -1,18 +1,18 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: drawio
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: jgraph/drawio:28.2.3
+        image: &drawio_image docker.io/jgraph/drawio:28.2.3
         env: &drawio_env_vars
           LETS_ENCRYPT_ENABLED: "false"
 
@@ -30,10 +30,10 @@
 
     - name: Create viewer container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        name: "{{ application }}-viewer"
-        image: jgraph/drawio:28.2.3
+        container_name: "{{ application }}-viewer"
+        image: *drawio_image
         env:
           <<: *drawio_env_vars
         traefik:

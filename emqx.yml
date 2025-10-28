@@ -1,11 +1,11 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: emqx
 
-    docker_network: "{{ networks.iot }}"
+    container_network: "{{ networks.iot }}"
 
   tasks:
     - name: Create config folder
@@ -18,9 +18,10 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: emqx/emqx:5.10.1
+        image: docker.io/emqx/emqx:5.10.1
+        ip: "{{ container_network.subnet | ansible.utils.nthhost(101) }}"
         env:
           # https://docs.emqx.com/en/emqx/v5.8.3/hocon
           EMQX_NODE__NAME: "{{ application }}@{{ application }}.{{ common_local_tld }}"
@@ -51,7 +52,6 @@
             30616635643437356566303535313663616466396437643838636437653964353233
         volumes:
           - "{{ config_directory }}:/opt/emqx/data"
-        ipv4_address: "{{ docker_network.subnet | ansible.utils.nthhost(101) }}"
         homepage:
           name: EMQX
           group: Home Automation

@@ -1,19 +1,17 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: go2rtc
 
-    docker_network: "{{ networks.iot }}"
+    container_network: "{{ networks.iot }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create config folder
@@ -57,21 +55,14 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: alexxit/go2rtc:1.9.9-hardware
-        ipv4_address: "{{ docker_network.subnet | ansible.utils.nthhost(102) }}"
-        device_requests:
-          - driver: nvidia
-            count: -1
-            device_ids: []
-            options: {}
-            capabilities:
-              - - gpu
-                - video
-                - compute
-                - utility
+        image: ghcr.io/alexxit/go2rtc:1.9.9-hardware
+        ip: "{{ container_network.subnet | ansible.utils.nthhost(102) }}"
+        privileged: true
         env:
           TZ: "{{ common_timezone }}"
         volumes:
           - "{{ config_directory }}:/config"
+        device:
+          - /dev/dri:/dev/dri

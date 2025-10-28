@@ -1,11 +1,11 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: portainer
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create config folder
@@ -18,9 +18,9 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: portainer/portainer-ee:2.33.1
+        image: docker.io/portainer/portainer-ee:2.33.1
         traefik:
           - port: 9000
         homepage:
@@ -39,9 +39,8 @@
               30623135386161316463633436363661626434353731613339636235633861623361663136653831
               363339323136363865336632383630643961
             fields: '["running", "stopped"]'
-
         blackbox:
           path: /api/status
         volumes:
           - "{{ config_directory }}:/data"
-          - /var/run/docker.sock:/var/run/docker.sock
+          - /run/podman/podman.sock:/var/run/docker.sock

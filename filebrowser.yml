@@ -1,19 +1,17 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: filebrowser
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create config folders
@@ -31,10 +29,11 @@
       ansible.builtin.copy:
         content: |
           server:
+            port: 8080
             sources:
               - path: "/srv"
             externalUrl: "https://{{ application }}.{{ common_tld }}"
-            internalUrl: "http://{{ application }}.{{ docker_network.name }}"
+            internalUrl: "http://{{ application }}.{{ common_local_tld }}"
 
           auth:
             methods:
@@ -71,7 +70,7 @@
           integrations:
             office:
               url: "https://onlyoffice.{{ common_tld }}"
-              internalUrl: "http://nextcloud-onlyoffice.{{ docker_network.name }}"
+              internalUrl: "http://nextcloud-onlyoffice.{{ common_local_tld }}"
               secret: "{{ onlyoffice_jwt_secret }}"
 
         dest: "{{ config_directory }}/config.yaml"
@@ -82,7 +81,7 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: ghcr.io/gtsteffaniak/filebrowser:0.8.5-beta
         user: "{{ common_user_id }}:{{ common_group_id }}"
@@ -91,7 +90,7 @@
           - "{{ config_directory }}/config.yaml:/home/filebrowser/config.yaml"
           - "{{ config_directory }}/data:/home/filebrowser/data"
         traefik:
-          - port: 80
+          - port: 8080
         homepage:
           name: File Browser
           group: Sharing

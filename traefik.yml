@@ -1,20 +1,17 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: traefik
 
-    docker_network:
-      name: bridge
+    container_network: "{{ networks.mgmt }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create logs folder
@@ -52,7 +49,7 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: public.ecr.aws/docker/library/traefik:v3.5.2
         ip: "{{ traefik_ip }}"
@@ -70,29 +67,22 @@
             username: "{{ htpasswd.username }}"
             password: "{{ htpasswd.password }}"
         volumes:
-          - /var/run/docker.sock:/var/run/docker.sock
+          - /run/podman/podman.sock:/var/run/docker.sock
 
           - "{{ config_directory }}/traefik.yaml:/etc/traefik/traefik.yaml"
           - "{{ config_directory }}/acme.json:/acme.json"
           - "{{ config_directory }}/dynamic_conf.yaml:/dynamic_conf.yaml"
 
           - "{{ config_directory }}/logs:/var/log/traefik"
-        published_ports:
-          - 80:80/tcp
-          - 443:443/tcp
-          - 443:443/udp
-          - 123:123/udp
-          - 21115-21117:21115-21117/tcp
-          - 21116:21116/udp
 
     - name: Create logrotate container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        name: "{{ application }}-logrotate"
-        image: vegardit/traefik-logrotate:latest
+        container_name: "{{ application }}-logrotate"
+        image: ghcr.io/vegardit/traefik-logrotate:latest
         volumes:
-          - /var/run/docker.sock:/var/run/docker.sock # required to send USR1 signal to Traefik after log rotation
+          - /run/podman/podman.sock:/var/run/docker.sock # required to send USR1 signal to Traefik after log rotation
           - "{{ config_directory }}/logs:/var/log/traefik"
         env:
           TZ: "{{ common_timezone }}"

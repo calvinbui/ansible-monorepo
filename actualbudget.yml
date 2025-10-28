@@ -1,26 +1,26 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: actualbudget
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create config folder
       ansible.builtin.file:
         path: "{{ config_directory }}"
         state: directory
-        owner: "{{ common_user }}"
-        group: "{{ common_root_group }}"
+        owner: "{{ common_user_id }}"
+        group: "{{ common_group_id }}"
         mode: "0771"
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: actualbudget/actual-server:25.9.0
+        image: ghcr.io/actualbudget/actual:25.9.0
         volumes:
           - "{{ config_directory }}:/data"
         traefik:

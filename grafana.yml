@@ -1,19 +1,17 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: grafana
 
-    docker_network: "{{ networks.user }}"
+    container_network: "{{ networks.user }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create folders
@@ -54,7 +52,7 @@
             - name: Thanos Query
               type: prometheus
               access: proxy
-              url: http://thanos-query.{{ networks.user.name }}:10902
+              url: http://thanos-query.{{ common_local_tld }}:10902
               isDefault: true
               jsonData:
                 prometheusType: Thanos
@@ -67,9 +65,9 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: grafana/grafana:12.1.1
+        image: docker.io/grafana/grafana:12.1.1
         env:
           GF_SERVER_ROOT_URL: "https://grafana.{{ common_tld }}"
           GF_SERVER_ENABLE_GZIP: "true"

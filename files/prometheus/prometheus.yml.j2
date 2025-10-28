@@ -15,7 +15,7 @@ scrape_config_files:
   - '/scrape_config_files/*'
 
 scrape_configs:
-  - job_name: docker_containers
+  - job_name: podman_containers
     docker_sd_configs:
       - host: unix:///var/run/docker.sock
     relabel_configs:

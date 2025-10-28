@@ -1,19 +1,17 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: outline
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create config folder
@@ -62,13 +60,9 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: outlinewiki/outline:0.87.4
-        command:
-          - sh
-          - -c
-          - yarn db:migrate --env=production-ssl-disabled && yarn start --env=production-ssl-disabled
+        image: docker.io/outlinewiki/outline:0.87.4
         volumes:
           - "{{ config_directory }}/storage:/var/lib/outline/data"
         env:
@@ -101,7 +95,7 @@
           REDIS_URL: "{{ _valkey_url }}"
 
           URL: "https://{{ application }}.{{ common_tld }}"
-          PORT: "443"
+          PORT: "3000"
 
           FILE_STORAGE: local
           FILE_STORAGE_UPLOAD_MAX_SIZE: "512000000"
@@ -126,7 +120,7 @@
 
           RATE_LIMITER_ENABLED: "false"
         traefik:
-          - port: 443
+          - port: 3000
         homepage:
           group: Documents
           weight: 150

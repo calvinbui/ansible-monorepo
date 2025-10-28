@@ -1,6 +1,6 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: changedetection
@@ -19,54 +19,35 @@
       stealth: true
       ignoreHTTPSErrors: true
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create playwright container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        name: "{{ application }}-chrome"
+        container_name: "{{ application }}-chrome"
         image: ghcr.io/browserless/chromium:v2.35.0
         env:
           TOKEN: "{{ changedetection_browserless_token }}"
           CONCURRENT: "10"
           TIMEOUT: "60000"
-        log_driver: none
-
-    # - name: Create playwright container
-    #   ansible.builtin.include_role:
-    #     name: docker_container
-    #   vars:
-    #     name: "{{ application }}-chrome"
-    #     image: dgtlmoon/sockpuppetbrowser:latest
-    #     capabilities:
-    #       - SYS_ADMIN
-    #     env:
-    #       SCREEN_WIDTH: "1920"
-    #       SCREEN_HEIGHT: "1024"
-    #       SCREEN_DEPTH: "16"
-    #       MAX_CONCURRENT_CHROME_PROCESSES: "10"
-    #       CONNECTION_TIMEOUT: "300000"
-    #     log_driver: none
 
     - name: Create "{{ application }}" container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: ghcr.io/dgtlmoon/changedetection.io:0.50.14
-        ipv4_address: "{{ docker_network.subnet | ansible.utils.nthhost(9) }}"
+        ip: "{{ container_network.subnet | ansible.utils.nthhost(9) }}"
         volumes:
           - "{{ config_directory }}:/datastore"
         env:
           BASE_URL: "https://{{ application }}.{{ common_tld }}"
 
-          # PLAYWRIGHT_DRIVER_URL: "ws://{{ application }}-chrome:3000"
           PLAYWRIGHT_DRIVER_URL: "ws://{{ application }}-chrome:3000?token={{ changedetection_browserless_token }}&launch={{ changedetection_browserless_launch_args | ansible.builtin.to_json | ansible.builtin.replace(' ', '') }}"
 
           PUID: "{{ common_user_id | ansible.builtin.string }}"
           PGID: "{{ common_group_id | ansible.builtin.string }}"
-        log_driver: none
         traefik:
           - port: 5000
         homepage:
@@ -85,5 +66,3 @@
               3438333933326136660a636333383633613733343930396231623634363430373838356638663634
               64393965306338613135343035353232393132316564336239376361376161653138323936343061
               3633353965653062316564376436373732316237623633343232
-        comparisons:
-          env: strict

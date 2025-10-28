@@ -1,9 +1,11 @@
-- hosts: homelab
+---
+
+- hosts: homeserver
 
   vars:
     application: opnsense-backup
 
-    docker_network: "{{ networks.mgmt }}"
+    container_network: "{{ networks.mgmt }}"
 
   tasks:
     - name: Create config folder
@@ -46,10 +48,10 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: ghcr.io/atmoz/sftp/debian:latest
-        ipv4_address: "{{ docker_network.subnet | ansible.utils.nthhost(30) }}"
+        user: root
         command:
           - "opnsense::{{ common_user_id }}"
         volumes:
@@ -58,6 +60,5 @@
 
           - "{{ _opnsense_backup_rsa_key.filename }}:/etc/ssh/ssh_host_rsa_key"
           - "{{ _opnsense_backup_rsa_key.filename }}.pub:/home/opnsense/.ssh/keys/{{ _opnsense_backup_rsa_key.filename | ansible.builtin.basename }}.pub"
-
 
           - "{{ common_directory_backup }}/opnsense:/home/opnsense/share"

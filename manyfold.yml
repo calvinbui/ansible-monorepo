@@ -1,11 +1,11 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: manyfold
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create folders
@@ -47,7 +47,7 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: ghcr.io/manyfold3d/manyfold:0.122.1
         volumes:
@@ -83,15 +83,6 @@
           PUBLIC_HOSTNAME: "{{ application }}.{{ common_tld }}"
           PUBLIC_PORT: "443"
           HTTPS_ONLY: "enabled"
-        security_opts:
-          - no-new-privileges:true
-        cap_drop:
-          - ALL
-        capabilities:
-          - CHOWN
-          - DAC_OVERRIDE
-          - SETUID
-          - SETGID
         traefik:
           - port: 3214
         homepage:

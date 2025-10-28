@@ -1,19 +1,17 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: privatebin
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create config folders
@@ -58,9 +56,9 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: privatebin/nginx-fpm-alpine:2.0.0
+        image: ghcr.io/privatebin/nginx-fpm-alpine:2.0.1
         volumes:
           - "{{ config_directory }}/data:/srv/data"
           - "{{ config_directory }}/cfg:/srv/cfg"

@@ -1,6 +1,6 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: minio
@@ -17,7 +17,7 @@
       32653732663738323665666563653437376235326534303733633662333233616463646566323737
       35376237343864333036
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create config folder
@@ -30,9 +30,9 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+        image: docker.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
         command:
           - server
           - --anonymous

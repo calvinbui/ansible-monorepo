@@ -1,6 +1,6 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
   roles:
     -
       role: sonarr

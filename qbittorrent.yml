@@ -1,19 +1,17 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: qbittorrent
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create config folder
@@ -26,9 +24,10 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: ghcr.io/qbittorrent/docker-qbittorrent-nox:5.1.2-1
+        ip: "{{ container_network.subnet | ansible.utils.nthhost(10) }}"
         env:
           QBT_LEGAL_NOTICE: "confirm"
 
@@ -40,7 +39,6 @@
         volumes:
           - "{{ config_directory }}:/config/qBittorrent"
           - "{{ common_directory_download }}:{{ common_mounted_directory_download }}"
-        ipv4_address: "{{ docker_network.subnet | ansible.utils.nthhost(10) }}"
         traefik:
           -
             port: 8080
@@ -145,7 +143,7 @@
           Preferences.Connection\ResolvePeerCountries: "false" # Resolve peer countries
 
     - name: Stop to make changes
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
         state: stopped
       when: _qbittorrent_config.changed

@@ -1,11 +1,11 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: otf
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create config folder
@@ -31,9 +31,9 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: leg100/otfd:0.4.1
+        image: docker.io/leg100/otfd:0.4.1
         env:
           OTF_HOSTNAME: "{{ application }}.{{ common_tld }}"
 

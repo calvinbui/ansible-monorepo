@@ -1,22 +1,22 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: wakeupbr
 
-    docker_network: "{{ networks.iot }}"
+    container_network: "{{ networks.iot }}"
 
   tasks:
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: aecampos/wakeupbr:latest
+        image: docker.io/aecampos/wakeupbr:latest
         command:
           - -o
           - "{{ networks.user.subnet | ansible.utils.nthhost(31) }}"
         network:
-          - name: "{{ docker_network.name }}"
+          - name: "{{ networks.iot.name }}"
           - name: "{{ networks.user.name }}"
-            ipv4_address: "{{ networks.user.subnet | ansible.utils.nthhost(31) }}"
+            ip: "{{ networks.user.subnet | ansible.utils.nthhost(31) }}"

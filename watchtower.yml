@@ -1,21 +1,20 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: watchtower
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: ghcr.io/nicholas-fedor/watchtower:1.11.8
         volumes:
-          - /var/run/docker.sock:/var/run/docker.sock:ro
-          - /etc/localtime:/etc/localtime:ro
+          - /run/podman/podman.sock:/var/run/docker.sock
         env:
           TZ: "{{ common_timezone }}"
           WATCHTOWER_SCHEDULE: "0 0 4 * * *"

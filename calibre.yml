@@ -1,19 +1,17 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: calibre
 
-    docker_network: "{{ networks.iot }}"
+    container_network: "{{ networks.iot }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create config folder
@@ -26,10 +24,10 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: lscr.io/linuxserver/calibre:8.10.0
-        ipv4_address: "{{ docker_network.subnet | ansible.utils.nthhost(104) }}"
+        ip: "{{ container_network.subnet | ansible.utils.nthhost(104) }}"
         volumes:
           - "{{ config_directory }}:/config"
           - "{{ common_directory_books }}:/books"
@@ -39,18 +37,16 @@
           TZ: "{{ common_timezone }}"
 
           TITLE: "{{ application | ansible.builtin.title }}"
-        security_opts:
+        security_opt:
           - seccomp=unconfined
         traefik:
           - port: 8080
             auth: page
         labels:
           # https://github.com/linuxserver/docker-baseimage-kasmvnc#lossless
-          '{
-            "traefik.http.middlewares.{{ application }}.headers.customResponseHeaders.Cross-Origin-Embedder-Policy": "require-corp",
-            "traefik.http.middlewares.{{ application }}.headers.customResponseHeaders.Cross-Origin-Opener-Policy": "same-origin",
-            "traefik.http.middlewares.{{ application }}.headers.customResponseHeaders.Cross-Origin-Resource-Policy": "same-site"
-          }'
+          - "traefik.http.middlewares.{{ application }}.headers.customResponseHeaders.Cross-Origin-Embedder-Policy=require-corp"
+          - "traefik.http.middlewares.{{ application }}.headers.customResponseHeaders.Cross-Origin-Opener-Policy=same-origin"
+          - "traefik.http.middlewares.{{ application }}.headers.customResponseHeaders.Cross-Origin-Resource-Policy=same-site"
         homepage:
           group: Media
           weight: 600
@@ -124,8 +120,8 @@
             remote_src: true
 
     - name: Install plugins
-      community.docker.docker_container_exec:
-        container: "{{ application }}"
+      containers.podman.podman_container_exec:
+        name: "{{ application }}"
         command: bash -c "find /config/plugins -name '*.zip' | xargs -l calibre-customize --add-plugin"
       register: _command_result
       failed_when: ('Plugin added:' not in _command_result.stdout)

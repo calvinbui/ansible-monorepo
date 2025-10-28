@@ -1,6 +1,6 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: paperless
@@ -30,15 +30,13 @@
         }
       }
 
-    docker_network: "{{ networks.iot }}"
+    container_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart AI
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}-ai"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create FTP user
@@ -87,22 +85,21 @@
 
     - name: Create tika container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        name: "{{ application }}-tika"
-        image: apache/tika:3.2.3.0
+        container_name: "{{ application }}-tika"
+        image: docker.io/apache/tika:3.2.3.0
 
     - name: Create gotenberg container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        name: "{{ application }}-gotenberg"
-        image: gotenberg/gotenberg:8.23.1
+        container_name: "{{ application }}-gotenberg"
+        image: docker.io/gotenberg/gotenberg:8.23.1
 
     - name: Create app container
       ansible.builtin.include_role:
-        name: docker_container
-      register: _paperless_container
+        name: podman_container
       vars:
         image: ghcr.io/paperless-ngx/paperless-ngx:2.18.3
         volumes:
@@ -180,8 +177,8 @@
         timeout: 30
 
     - name: Create application user
-      community.docker.docker_container_exec:
-        container: "{{ application }}"
+      containers.podman.podman_container_exec:
+        name: "{{ application }}"
         command: bash -c "DJANGO_SUPERUSER_PASSWORD={{ paperless_password }} python3 manage.py createsuperuser --username {{ common_user }} --email {{ application }}{{ common_email_to }} --noinput"
       register: _command_result
       changed_when: "'Superuser created successfully' in _command_result.stdout"
@@ -248,11 +245,11 @@
 
     - name: Create AI container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        name: "{{ application }}-ai"
-        image: clusterzx/paperless-ai:3.0.7
-        environment:
+        container_name: "{{ application }}-ai"
+        image: ghcr.io/clusterzx/paperless-ai:3.0.7
+        env:
           PUID: "{{ common_user_id }}"
           PGID: "{{ common_group_id }}"
         volumes:

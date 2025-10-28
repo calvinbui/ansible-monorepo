@@ -1,6 +1,6 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: systemd-exporter
@@ -10,29 +10,28 @@
       - nut-monitor.service
       - nut-server.service
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: quay.io/prometheuscommunity/systemd-exporter:v0.7.0
+        user: root
         command:
           - --systemd.collector.private
+          - --systemd.collector.enable-restart-count
           - --systemd.collector.unit-include={{ systemd_exporter_processes | ansible.builtin.join('|') }}
         volumes:
           - /proc:/host/proc:ro
           - /run/systemd:/run/systemd:ro
-        user: "{{ common_root_id }}"
         pid_mode: host
         metrics:
           - port: 9558

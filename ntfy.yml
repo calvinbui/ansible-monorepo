@@ -1,6 +1,6 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: ntfy
@@ -33,7 +33,7 @@
         topic: "up*"
         permission: "write-only"
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create config folder
@@ -49,14 +49,16 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: binwiederhier/ntfy:v2.14.0
+        image: docker.io/binwiederhier/ntfy:v2.14.0
         command:
           - serve
         user: "{{ common_user_id }}:{{ common_group_id }}"
         env:
           TZ: "{{ common_timezone }}"
+
+          NTFY_LISTEN_HTTP: ":8080"
 
           NTFY_BASE_URL: "https://{{ application }}.{{ common_tld }}"
 
@@ -89,6 +91,6 @@
           - "{{ config_directory }}/cache:/var/cache/ntfy"
           - "{{ config_directory }}/attachments:/var/cache/ntfy/attachments"
         traefik:
-          - port: 80
+          - port: 8080
         blackbox:
           path: /v1/health

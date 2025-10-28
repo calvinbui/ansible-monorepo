@@ -1,10 +1,10 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: home-assistant
-    docker_network: "{{ networks.iot }}"
+    container_network: "{{ networks.iot }}"
 
     home_assistant_configuration: "{{ config_directory }}/config/configuration.yaml"
     home_assistant_automations_dir: "{{ config_directory }}/config/automations"
@@ -14,11 +14,9 @@
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create config folder
@@ -47,15 +45,15 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: ghcr.io/home-assistant/home-assistant:2025.9.3
+        ip: "{{ container_network.subnet | ansible.utils.nthhost(100) }}"
         env:
           TZ: "{{ common_timezone }}"
         volumes:
           - "{{ config_directory }}/config:/config"
           - /etc/localtime:/etc/localtime:ro
-        ipv4_address: "{{ docker_network.subnet | ansible.utils.nthhost(100) }}"
         traefik:
           -
             name: "{{ application }}-short"
@@ -70,7 +68,6 @@
           weight: 50
           description: "Home automation"
           href: "https://home.{{ common_tld }}"
-        network_mode: "host"
         privileged: true
 
     - name: Wait for config file
@@ -109,8 +106,8 @@
             - "{{ files_directory }}/integrations/*"
 
         - name: Validate configuration
-          community.docker.docker_container_exec:
-            container: "{{ application }}"
+          containers.podman.podman_container_exec:
+            name: "{{ application }}"
             command: python -m homeassistant --script check_config --config /config
           changed_when: false
 
@@ -148,10 +145,10 @@
 
         - name: Create Eufy Security WS container
           ansible.builtin.include_role:
-            name: docker_container
+            name: podman_container
           vars:
-            name: "eufy-security-ws"
-            image: bropat/eufy-security-ws:1.9.3
+            container_name: eufy-security-ws
+            image: docker.io/bropat/eufy-security-ws:1.9.3
             env:
               USERNAME: "{{ application }}{{ common_email_to }}"
               PASSWORD: !vault |
@@ -170,9 +167,9 @@
 
         - name: Create govee2mqtt container
           ansible.builtin.include_role:
-            name: docker_container
+            name: podman_container
           vars:
-            name: govee2mqtt
+            container_name: govee2mqtt
             image: ghcr.io/wez/govee2mqtt:latest
             env:
               GOVEE_EMAIL: govee{{ common_email_to }}
@@ -274,10 +271,10 @@
         - "{{ files_directory }}/ui_lovelace_minimalist/dashboard/pages/*.j2"
 
     - name: Install HACS
-      community.docker.docker_container_exec:
-        container: "{{ application }}"
+      containers.podman.podman_container_exec:
+        name: "{{ application }}"
         command: bash -c "wget -O - https://get.hacs.xyz | bash -"
-        chdir: /config
+        workdir: /config
       notify: Restart
       register: _command_result
       changed_when: "'HACS directory already exist' not in _command_result.stdout"

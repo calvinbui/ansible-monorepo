@@ -1,11 +1,11 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: lubelogger
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create config folder
@@ -41,7 +41,7 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: ghcr.io/hargata/lubelogger:v1.5.1
         env:
@@ -76,6 +76,8 @@
           - "{{ config_directory }}/keys:/root/.aspnet/DataProtection-Keys"
         traefik:
           - port: 8080
+        blackbox:
+          enable: false
         homepage:
           name: LubeLogger
           group: Tools

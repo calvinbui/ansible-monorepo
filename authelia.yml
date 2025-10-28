@@ -1,6 +1,6 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: authelia
@@ -46,15 +46,13 @@
       32316161393737333233616331333837363261303835343638346135383661366565323635623865
       34393337383838346135
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create config folder
@@ -111,6 +109,7 @@
         type: RSA
         size: 4096
         return_content: true
+      no_log: true
       register: _authelia_private_key
 
     - name: Create authelia folder
@@ -128,7 +127,7 @@
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
         mode: "0444"
-        validate: "docker run --rm --name {{ application }}_config_check -v %s:/tmp/config.yml --entrypoint authelia ghcr.io/authelia/authelia:latest validate-config --config /tmp/config.yml"
+        validate: "podman run --rm --name {{ application }}_config_check -v %s:/tmp/config.yml --entrypoint authelia ghcr.io/authelia/authelia:latest validate-config --config /tmp/config.yml"
       notify: Restart
 
     - name: Template users
@@ -142,10 +141,10 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: ghcr.io/authelia/authelia:4.39.10
-        ipv4_address: "{{ docker_network.subnet | ansible.utils.nthhost(3) }}"
+        ip: "{{ container_network.subnet | ansible.utils.nthhost(3) }}"
         env:
           TZ: "{{ common_timezone }}"
         volumes:
@@ -158,10 +157,9 @@
           description: "Authentication and authorization"
         blackbox:
           path: /api/health
+        no_healthcheck: true
         labels:
-          '{
-            "com.centurylinklabs.watchtower.enable": "false",
-            "traefik.http.middlewares.{{ application }}.forwardauth.address": "http://{{ application }}.{{ common_local_tld }}:9091/api/verify?rd=https://{{ application }}.{{ common_tld }}",
-            "traefik.http.middlewares.{{ application }}.forwardauth.trustForwardHeader": "true",
-            "traefik.http.middlewares.{{ application }}.forwardauth.authResponseHeaders": "Remote-User,Remote-Groups,Remote-Name,Remote-Email"
-          }'
+          - com.centurylinklabs.watchtower.enable=false
+          - "traefik.http.middlewares.{{ application }}.forwardauth.address=http://{{ application }}.{{ common_local_tld }}:9091/api/verify?rd=https://{{ application }}.{{ common_tld }}"
+          - "traefik.http.middlewares.{{ application }}.forwardauth.trustForwardHeader=true"
+          - "traefik.http.middlewares.{{ application }}.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email"

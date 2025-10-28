@@ -1,19 +1,17 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: syncthing
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create config folders
@@ -26,10 +24,10 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: ghcr.io/syncthing/syncthing:2.0.9
-        ipv4_address: "{{ docker_network.subnet | ansible.utils.nthhost(5) }}"
+        ip: "{{ container_network.subnet | ansible.utils.nthhost(5) }}"
         env:
           PUID: "{{ common_user_id | ansible.builtin.string }}"
           PGID: "{{ common_group_id | ansible.builtin.string }}"
@@ -101,6 +99,7 @@
         xpath: "/configuration/gui/password"
         value: "{{ _password | ansible.builtin.to_json(vault_to_text=True) | ansible.builtin.from_json | ansible.builtin.password_hash(hashtype='bcrypt') }}"
       changed_when: false
+      no_log: true
       vars:
         _password: !vault |
           $ANSIBLE_VAULT;1.1;AES256

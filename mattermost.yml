@@ -1,19 +1,17 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: mattermost
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create config directory
@@ -54,9 +52,9 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: mattermost/mattermost-team-edition:10.12.0
+        image: docker.io/mattermost/mattermost-team-edition:10.12.0
         volumes:
           - "{{ config_directory }}/config/config:/mattermost/config"
           - "{{ config_directory }}/config/data:/mattermost/data"

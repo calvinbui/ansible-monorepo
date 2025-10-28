@@ -1,11 +1,11 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: thanos
 
-    docker_network: "{{ networks.user }}"
+    container_network: "{{ networks.user }}"
 
     thanos_objstore_config:
       type: FILESYSTEM
@@ -27,14 +27,14 @@
 
     - name: Create sidecar container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        name: "{{ application }}-sidecar"
-        image: quay.io/thanos/thanos:v0.39.2
+        container_name: "{{ application }}-sidecar"
+        image: &thanos_image quay.io/thanos/thanos:v0.39.2
         user: root:root
         command:
           - sidecar
-          - --prometheus.url=http://prometheus.{{ docker_network.name }}:9090
+          - --prometheus.url=http://prometheus.{{ common_local_tld }}:9090
           - --tsdb.path=/prometheus-data
           - --objstore.config={{ thanos_objstore_config | ansible.builtin.to_nice_yaml }}
         volumes:
@@ -45,10 +45,10 @@
 
     - name: Create store container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        name: "{{ application }}-store"
-        image: quay.io/thanos/thanos:v0.39.2
+        container_name: "{{ application }}-store"
+        image: *thanos_image
         command:
           - store
           - --data-dir=/store
@@ -61,10 +61,10 @@
 
     - name: Create compactor container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        name: "{{ application }}-compactor"
-        image: quay.io/thanos/thanos:v0.39.2
+        container_name: "{{ application }}-compactor"
+        image: *thanos_image
         user: root:root
         command:
           - compact
@@ -83,15 +83,15 @@
 
     - name: Create query container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        name: "{{ application }}-query"
-        image: quay.io/thanos/thanos:v0.39.2
+        container_name: "{{ application }}-query"
+        image: *thanos_image
         command:
           - query
 
-          - --endpoint={{ application }}-store.{{ docker_network.name }}:10901
-          - --endpoint={{ application }}-sidecar.{{ docker_network.name }}:10901
+          - --endpoint={{ application }}-store.{{ common_local_tld }}:10901
+          - --endpoint={{ application }}-sidecar.{{ common_local_tld }}:10901
 
           - --alert.query-url=https://{{ application }}.{{ common_tld }}
           - --query.auto-downsampling
@@ -100,13 +100,13 @@
 
     - name: Create query-frontend container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        name: "{{ application }}-query-frontend"
-        image: quay.io/thanos/thanos:v0.39.2
+        container_name: "{{ application }}-query-frontend"
+        image: *thanos_image
         command:
           - query-frontend
-          - --query-frontend.downstream-url=http://{{ application }}-query.{{ docker_network.name }}:10902
+          - --query-frontend.downstream-url=http://{{ application }}-query.{{ common_local_tld }}:10902
         traefik:
           - name: "{{ application }}"
             port: 10902
@@ -120,10 +120,10 @@
 
     - name: Create bucket container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        name: "{{ application }}-bucket-web"
-        image: quay.io/thanos/thanos:v0.39.2
+        container_name: "{{ application }}-bucket-web"
+        image: *thanos_image
         command:
           - tools
           - bucket

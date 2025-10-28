@@ -1,18 +1,18 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: whodb
 
-    docker_network: "{{ networks.pub }}"
+    container_network: "{{ networks.pub }}"
 
   tasks:
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: clidey/whodb
+        image: docker.io/clidey/whodb:0.61.0
         traefik:
           - port: 8080
         homepage:

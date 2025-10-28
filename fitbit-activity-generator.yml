@@ -1,6 +1,6 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: fitbit-activity-generator
@@ -40,7 +40,7 @@
           32376235343737383538623165656534333034356435373838363363323036333534653134316563
           6165623361633935363233343037333936653065363734356337
 
-    docker_network: "{{ networks.granny }}"
+    container_network: "{{ networks.guest }}"
 
   tasks:
     - name: Create config folder
@@ -65,9 +65,9 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        name: "{{ application }}-{{ item.name }}"
+        container_name: "{{ application }}-{{ item.name }}"
         image: ghcr.io/calvinbui/fitbit-activity-generator:master
         volumes:
           - "{{ config_directory }}/{{ item.name }}.json:/usr/src/app/token.json"

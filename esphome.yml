@@ -1,6 +1,6 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: esphome
@@ -33,15 +33,13 @@
         3865386332333038360a376665376130326333616561386538346333646666383462316530626561
         37653936366165333038376137303663666539623063386263636332333830656635
 
-    docker_network: "{{ networks.iot }}"
+    container_network: "{{ networks.iot }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
 
   tasks:
     - name: Create config folder
@@ -65,7 +63,7 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: ghcr.io/esphome/esphome:2025.9.0
         env:
@@ -73,7 +71,6 @@
           - "{{ config_directory }}:/config"
           - /etc/localtime:/etc/localtime:ro
         privileged: true
-        network_mode: "host"
         traefik:
           - port: 6052
             auth: page

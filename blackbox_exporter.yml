@@ -1,6 +1,6 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: blackbox_exporter
@@ -8,19 +8,18 @@
     blackbox_auth_username: "{{ blackbox_htpasswd.username }}"
     blackbox_auth_password: "{{ blackbox_htpasswd.password }}"
 
-    docker_network: "{{ networks.user }}"
+    container_network: "{{ networks.user }}"
 
   handlers:
     - name: Restart
-      community.docker.docker_container:
+      containers.podman.podman_container:
         name: "{{ application }}"
-        restart: true
-        comparisons:
-          '*': ignore
+        force_restart: true
+      failed_when: false
 
     - name: Reload Prometheus
-      community.docker.docker_container_exec:
-        container: prometheus
+      containers.podman.podman_container_exec:
+        name: prometheus
         command: kill -HUP 1
 
   tasks:
@@ -37,14 +36,14 @@
         src: "{{ files_directory }}/config.yml.j2"
         dest: "{{ config_directory }}/config.yml"
         mode: "0440"
-        validate: "docker run --rm --name {{ application }}_config_check -v %s:/tmp/config.yml prom/blackbox-exporter:master --config.check --config.file=/tmp/config.yml"
+        validate: "podman run --rm --name {{ application }}_config_check -v %s:/tmp/config.yml quay.io/prometheus/blackbox-exporter:master --config.check --config.file=/tmp/config.yml"
       notify: Restart
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
-        image: prom/blackbox-exporter:v0.27.0
+        image: quay.io/prometheus/blackbox-exporter:v0.27.0
         volumes:
           - "{{ config_directory }}:/etc/blackbox_exporter"
 
