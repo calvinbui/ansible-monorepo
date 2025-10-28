@@ -30,6 +30,65 @@
         group: "{{ common_group_id }}"
         mode: "0771"
 
+    - name: Create acme.sh folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}/acme.sh"
+        state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_group_id }}"
+        mode: "0771"
+      tags:
+        - acme
+
+    - name: Create acme.sh container
+      ansible.builtin.include_role:
+        name: podman_container
+      vars:
+        container_name: "{{ application }}-acme"
+        image: docker.io/neilpang/acme.sh:3.1.1
+        command: daemon
+        volumes:
+          - "{{ config_directory }}/acme.sh:/acme.sh"
+
+    - name: Issue plex cert
+      containers.podman.podman_container_exec:
+        name: "{{ application }}-acme"
+        argv:
+          - /bin/sh
+          - -c
+          - |
+            acme.sh \
+              --issue \
+              --server letsencrypt \
+              --email letsencrypt{{ common_email_to }} \
+              --dns dns_cf \
+              --domain "${CERT_DOMAIN}" \
+              --keylength ec-384 \
+              --post-hook "acme.sh --toPkcs --domain ${CERT_DOMAIN} --password {{ plex_pfx_password }} --ecc && mv /acme.sh/${CERT_DOMAIN}_ecc/${CERT_DOMAIN}.pfx /acme.sh/${CERT_DOMAIN}_ecc/${CERT_DOMAIN}.p12 && chown 1000:0 /acme.sh/${CERT_DOMAIN}_ecc/${CERT_DOMAIN}.p12"
+        env:
+          CERT_DOMAIN: "{{ application }}.{{ common_tld }}"
+          CF_Token: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            65373761363864376266316264313165663331386666666631336262353930326365336437313730
+            6239353539633765383734626633333066326237623363610a643032393737353566626463306666
+            33383830336533393736366130316238646462366462333165376364323863316564643631316237
+            6634323432366564650a613831646562643965316539303361643532666562636135373864373630
+            37323864616331343634373363346162366162343633396132343036626163333335663366393634
+            3831373938336232353564336335356631393036643739626566
+          CF_Account_ID: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            35303639666236346666646264613132353163393232323234323738303661373635666635626130
+            3531613532363832373532343431346134316230666535640a646561626130336531653431396366
+            62336264346461396431383235393932336236363033363439373432323566343936613364616132
+            3939613939626530320a316334323161356534323864613339323138343162643538393839643239
+            39616233356561316239633935646332343536333639323833346531373431633164373264396664
+            3535663734313063323732616530323830646538323634633337
+      register: _result
+      failed_when: _result.rc not in [0, 2]
+      changed_when: _result.rc == 0
+      tags:
+        - acme
+
     - name: Create container
       ansible.builtin.include_role:
         name: podman_container
@@ -111,7 +170,7 @@
           value: "1"
         -
           attribute: customCertificatePath
-          value: "/config/cert.p12"
+          value: "/config/acme.sh/{{ application }}.{{ common_tld }}_ecc/{{ application }}.{{ common_tld }}.p12"
         -
           attribute: customCertificateDomain
           value: "{{ application }}.{{ common_tld }}"
@@ -138,7 +197,7 @@
           value: "0"
         -
           attribute: customConnections
-          value: "https://{{ application }}.{{ common_tld }},https://{{ application }}.{{ common_tld }}:32400"
+          value: "https://{{ application }}.{{ common_tld }}:32400,https://{{ application }}.{{ common_tld }}:443"
 
         # Transcoder
         -
