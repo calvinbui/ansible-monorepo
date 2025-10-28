@@ -233,7 +233,7 @@
               {
                 "api_key": "{{ prowlarr_api_key }}",
                 "tracker_first": true,
-                "url": "http://prowlarr.{{ docker_network.name }}:9696"
+                "url": "http://prowlarr:9696"
               }
             dest: "{{ config_directory }}/data/nova3/engines/prowlarr.json"
             owner: "{{ common_user }}"

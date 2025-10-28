@@ -152,16 +152,16 @@
           network/forceIpv4First: true
 
           plex/name: plex
-          plex/ip: plex.{{ networks.pub.name }}
+          plex/ip: plex
           plex/webAppUrl: "https://plex.{{ common_tld }}"
 
-          tautulli/hostname: tautulli.{{ networks.pub.name }}
+          tautulli/hostname: tautulli
           tautulli/port: 8181
           tautulli/apiKey: "{{ tautulli_api_key }}"
           tautulli/externalUrl: "https://tautulli.{{ common_tld }}"
 
           radarr/0/name: Radarr
-          radarr/0/hostname: "radarr.{{ networks.pub.name }}"
+          radarr/0/hostname: radarr
           radarr/0/port: 7878
           radarr/0/apiKey: "{{ radarr_api_key }}"
           radarr/0/useSsl: false
@@ -180,7 +180,7 @@
           radarr/0/id: 0
 
           sonarr/0/name: "Sonarr"
-          sonarr/0/hostname: "sonarr.{{ networks.pub.name }}"
+          sonarr/0/hostname: sonarr
           sonarr/0/port: 8989
           sonarr/0/apiKey: "{{ sonarr_api_key }}"
           sonarr/0/useSsl: false
@@ -200,7 +200,7 @@
           sonarr/0/id: 0
 
           sonarr/1/name: "Sonarr Anime"
-          sonarr/1/hostname: "sonarr-anime.{{ networks.pub.name }}"
+          sonarr/1/hostname: sonarr-anime
           sonarr/1/port: 8989
           sonarr/1/apiKey: "{{ sonarr_api_key }}"
           sonarr/1/useSsl: false

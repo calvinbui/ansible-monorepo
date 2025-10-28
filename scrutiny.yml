@@ -95,7 +95,7 @@
         privileged: true
         env:
           COLLECTOR_CRON_SCHEDULE: "0 0 * * *"
-          COLLECTOR_API_ENDPOINT: "http://{{ application }}-web.{{ docker_network.name }}:8080"
+          COLLECTOR_API_ENDPOINT: "http://{{ application }}-web:8080"
         cap_add:
           - SYS_RAWIO
         volumes:

@@ -18,4 +18,4 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: {{ application }}.{{ docker_network.name }}:9115
+        replacement: {{ application }}:9115

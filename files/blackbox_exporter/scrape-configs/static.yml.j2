@@ -8,13 +8,13 @@ scrape_configs:
       module: [http]
     static_configs:
       - targets:
-        {% for service in services %}
-        {% for item in service['items'] %}
-        {% if item.monitor %}
+        {%- for service in services %}
+        {%- for item in service['items'] %}
+        {%- if item.monitor %}
         - {{ item.url }}
-        {% endif %}
-        {% endfor %}
-        {% endfor %}
+        {%- endif %}
+        {%- endfor %}
+        {%- endfor %}
     relabel_configs:
       -
         source_labels: [__address__]
@@ -24,4 +24,4 @@ scrape_configs:
         target_label: instance
       -
         target_label: __address__
-        replacement: {{ application }}.{{ docker_network.name }}:9115
+        replacement: {{ application }}:9115

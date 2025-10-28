@@ -39,7 +39,7 @@
               - PAL_IGNORE
 
             plex:
-              url: "http://plex.{{ networks.pub.name }}:32400"
+              url: "https://plex:32400"
               token: "{{ plex_token }}"
 
             scheduler:
