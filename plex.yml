@@ -135,6 +135,7 @@
         xpath: "/Preferences"
         attribute: "{{ item.attribute }}"
         value: "{{ item.value | ansible.builtin.string }}"
+      notify: Restart
       loop:
         # General
         -
@@ -185,13 +186,13 @@
           value: "3"
         -
           attribute: LanNetworksBandwidth
-          value: "192.168.0.0/16"
+          value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
         -
           attribute: TranscodeCountLimit
           value: "0"
         -
           attribute: TreatWanIpAsLocal
-          value: "1"
+          value: "0"
         -
           attribute: RelayEnabled
           value: "0"
