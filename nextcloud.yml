@@ -67,8 +67,8 @@
             3138613230353462620a383130653733326661386336393737643233396464353061386431316264
             64663865643961313431333430373362353366323836386238623831646139356537
 
-          NEXTCLOUD_TRUSTED_DOMAINS: "{{ application }} {{ application }}.{{ docker_network.name }} {{ application }}.{{ common_local_tld }} {{ application }}.{{ common_tld }}"
-          TRUSTED_PROXIES: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] | ansible.builtin.string }} {{ docker_network.subnet }}"
+          NEXTCLOUD_TRUSTED_DOMAINS: "{{ application }} {{ application }}.{{ common_local_tld }} {{ application }}.{{ common_tld }}"
+          TRUSTED_PROXIES: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] | ansible.builtin.string }} {{ container_network.subnet }}"
           OVERWRITEPROTOCOL: "https"
           OVERWRITEHOST: "{{ application }}.{{ common_tld }}"
           OVERWRITECLIURL: "https://{{ application }}.{{ common_tld }}"
@@ -184,10 +184,10 @@
           value: "https://onlyoffice.{{ common_tld }}/"
         -
           name: DocumentServerInternalUrl
-          value: "http://{{ application }}-onlyoffice.{{ docker_network.name }}/"
+          value: "http://{{ application }}-onlyoffice/"
         -
           name: StorageUrl
-          value: "http://{{ application }}.{{ docker_network.name }}/"
+          value: "http://{{ application }}/"
         -
           name: defFormats
           value: '{\"csv\":\"true\",\"doc\":\"true\",\"docm\":\"true\",\"docx\":\"true\",\"docxf\":\"true\",\"oform\":\"true\",\"dotx\":\"true\",\"epub\":\"false\",\"html\":\"false\",\"odp\":\"true\",\"ods\":\"true\",\"odt\":\"true\",\"otp\":\"true\",\"ots\":\"true\",\"ott\":\"true\",\"pdf\":\"false\",\"potm\":\"true\",\"potx\":\"true\",\"ppsm\":\"true\",\"ppsx\":\"true\",\"ppt\":\"true\",\"pptm\":\"true\",\"pptx\":\"true\",\"rtf\":\"true\",\"txt\":\"true\",\"xls\":\"true\",\"xlsm\":\"true\",\"xlsx\":\"true\",\"xltm\":\"true\",\"xltx\":\"true\"}'
@@ -219,7 +219,7 @@
       containers.podman.podman_container_exec:
         name: "{{ application }}"
         user: www-data
-        command: "php occ config:system:set preview_imaginary_url --value=http://{{ application }}-imaginary.{{ docker_network.name }}:9000"
+        command: "php occ config:system:set preview_imaginary_url --value=http://{{ application }}-imaginary:9000"
       register: _command_result
       failed_when: "'set to string' not in _command_result.stdout"
       changed_when: false
@@ -275,7 +275,7 @@
         entrypoint: /var/www/html/custom_apps/notify_push/bin/x86_64/notify_push
         command: /var/www/html/config/config.php
         env:
-          NEXTCLOUD_URL: "http://{{ application }}.{{ docker_network.name }}" # don't go through the proxy to contact the nextcloud server
+          NEXTCLOUD_URL: "http://{{ application }}" # don't go through the proxy to contact the nextcloud server
         volumes:
           - "{{ config_directory }}/app:/var/www/html:ro"
         traefik:

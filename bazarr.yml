@@ -93,7 +93,7 @@
           general.upgrade_subs: false
 
           general.use_sonarr: true
-          sonarr.ip: "sonarr.{{ docker_network.name }}"
+          sonarr.ip: "sonarr"
           sonarr.apikey: "{{ sonarr_api_key }}"
           general.path_mappings:
             - - /tv
@@ -104,7 +104,7 @@
 
           general.use_radarr: true
           radarr.apikey: "{{ radarr_api_key }}"
-          radarr.ip: "radarr.{{ docker_network.name }}"
+          radarr.ip: "radarr"
           general.path_mappings_movie:
             - - /movies
               - /movies

@@ -73,9 +73,8 @@
                 - source_labels: [__param_target]
                   target_label: instance
                 - target_label: __address__
-                  replacement: {{ application }}.{{ docker_network.name }}:9347
-
+                  replacement: {{ application }}:9347
         dest: "{{ prometheus_scrape_directory }}/{{ application }}.yml"
-        owner: "65534"  # nobody user
+        owner: "65534" # nobody user
         group: "{{ common_group }}"
         mode: "0755"

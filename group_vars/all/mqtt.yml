@@ -1,5 +1,5 @@
 ---
 
-mqtt_host: "emqx.{{ common_local_tld }}"
+mqtt_host: emqx
 mqtt_port: 1883
 mqtt_topic: homeassistant
