@@ -39,7 +39,7 @@ cp -R "$PG_PATH" "${work_dir}/${PG_OLD_VERSION}/data"
 chmod -R 777 "${work_dir}"
 
 echo "Starting upgrade container"
-docker run --rm \
+podman run --rm \
   --name "${APP_NAME}-postgres-${PG_NEW_VERSION}-upgrade" \
   -e PGUSER="${PG_USER}" \
   -e POSTGRES_INITDB_ARGS="-U ${PG_USER}" \

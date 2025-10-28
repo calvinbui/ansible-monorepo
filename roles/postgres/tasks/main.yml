@@ -9,18 +9,11 @@
     mode: "0700"
 
 - name: Create Postgres container
-  community.docker.docker_container:
-    name: "{{ postgres_name }}"
+  ansible.builtin.include_role:
+    name: podman_container
+  vars:
+    container_name: "{{ postgres_name }}"
     image: "{{ postgres_image }}:{{ postgres_version }}"
-
-    state: started
-
-    hostname: "{{ postgres_name }}"
-    published_ports: "{{ postgres_ports | ansible.builtin.default(omit) }}"
-    networks:
-      - name: "{{ docker_network.name | ansible.builtin.default('bridge') }}"
-    network_mode: "{{ docker_network.name | ansible.builtin.default('omit') }}"
-    networks_cli_compatible: "{{ postgres_networks_cli_compatible | ansible.builtin.default(true) }}"
 
     command: "{{ postgres_command | ansible.builtin.default(omit) }}"
 
@@ -37,31 +30,19 @@
       LC_CTYPE: "{{ lc_ctype | ansible.builtin.default(omit) }}"
       POSTGRES_HOST_AUTH_METHOD: "{{ postgres_host_auth_method | ansible.builtin.default(omit) }}"
 
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER}
-      interval: 30s
-      timeout: 20s
-      retries: 3
+    healthcheck: pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER}
+    healthcheck_interval: 30s
+    healthcheck_timeout: 20s
+    healthcheck_retries: 3
 
     labels:
-      traefik.enable: "false"
-
-    restart_policy: unless-stopped
-
-    container_default_behavior: "{{ container_default_behavior | ansible.builtin.default('no_defaults') }}"
-
-    comparisons:
-      env: allow_more_present
-      labels: strict
-      networks: strict
+      - traefik.enable=false
 
   register: postgres_container
 
 - name: Set variables
   ansible.builtin.set_fact:
-    _postgres_hostname: "{{ postgres_name }}.{{ docker_network.name }}"
+    _postgres_hostname: "{{ postgres_name }}"
     _postgres_port: "5432"
     _postgres_username: "{{ postgres_user }}"
     _postgres_password: "{{ postgres_password }}"

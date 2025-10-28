@@ -34,12 +34,9 @@
 
 - name: Create container
   ansible.builtin.include_role:
-    name: docker_container
+    name: podman_container
   vars:
     image: lscr.io/linuxserver/sonarr:version-4.0.15.2941
-    volumes:
-      - "{{ config_directory }}/config:/config"
-      - "{{ common_directory_storage }}:{{ common_mounted_directory }}"
     env:
       PUID: "{{ common_user_id | ansible.builtin.string }}"
       PGID: "{{ common_root_group | ansible.builtin.string }}"
@@ -59,7 +56,9 @@
       SONARR__POSTGRES__LOGDB: "{{ application }}-log"
       SONARR__POSTGRES__USER: "{{ _postgres_username }}"
       SONARR__POSTGRES__PASSWORD: "{{ _postgres_password }}"
-
+    volumes:
+      - "{{ config_directory }}/config:/config"
+      - "{{ common_directory_storage }}:{{ common_mounted_directory }}"
     traefik:
       -
         port: 8989
@@ -69,7 +68,6 @@
         name: "{{ application }}-bypass-auth"
         port: 8989
         rule: Host(`{{ application }}.{{ common_tld }}`) && PathPrefix(`/api/`) && Header(`{{ traefik_bypass_auth_header.key }}`, `{{ traefik_bypass_auth_header.value }}`)
-
     homepage: "{{ homepage_config }}"
     blackbox:
       path: /ping

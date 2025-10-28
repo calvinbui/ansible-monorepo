@@ -9,17 +9,10 @@
     mode: "0775"
 
 - name: Create MariaDB container
-  community.docker.docker_container:
-    name: "{{ mariadb_name }}"
-
-    state: started
-
-    hostname: "{{ mariadb_name }}"
-    published_ports: "{{ mariadb_ports | ansible.builtin.default(omit) }}"
-    networks:
-      - name: "{{ docker_network.name | ansible.builtin.default('bridge') }}"
-    network_mode: "{{ docker_network.name | ansible.builtin.default('omit') }}"
-    networks_cli_compatible: "{{ mariadb_networks_cli_compatible | ansible.builtin.default(true) }}"
+  ansible.builtin.include_role:
+    name: podman_container
+  vars:
+    container_name: "{{ mariadb_name }}"
     image: "public.ecr.aws/docker/library/mariadb:{{ mariadb_version }}"
 
     command: "{{ mariadb_command | ansible.builtin.default(omit) }}"
@@ -34,19 +27,12 @@
       TZ: "{{ common_timezone }}"
 
     labels:
-      traefik.enable: "false"
-
-    restart_policy: unless-stopped
-
-    container_default_behavior: "{{ container_default_behavior | ansible.builtin.default('no_defaults') }}"
-
-    comparisons:
-      networks: strict
-  register: mariadb
+      - traefik.enable=false
+  register: mariadb_container
 
 - name: Set variables
   ansible.builtin.set_fact:
-    _mariadb_hostname: "{{ mariadb_name }}.{{ docker_network.name }}"
+    _mariadb_hostname: "{{ mariadb_name }}"
     _mariadb_port: "3306"
     _mariadb_username: "{{ mariadb_user }}"
     _mariadb_password: "{{ mariadb_password }}"
@@ -55,4 +41,4 @@
 - name: Wait for mariadb to come up
   ansible.builtin.pause:
     seconds: 10
-  when: mariadb.changed
+  when: mariadb_container.changed

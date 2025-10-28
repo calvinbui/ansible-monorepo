@@ -9,18 +9,11 @@
     mode: "0771"
 
 - name: Create Meilisearch container
-  community.docker.docker_container:
-    name: "{{ meilisearch_name }}"
-    image: "getmeili/meilisearch:v{{ meilisearch_version }}"
-
-    state: started
-
-    hostname: "{{ meilisearch_name }}"
-    published_ports: "{{ meilisearch_ports | ansible.builtin.default(omit) }}"
-    networks:
-      - name: "{{ docker_network.name | ansible.builtin.default('bridge') }}"
-    network_mode: "{{ docker_network.name | ansible.builtin.default('omit') }}"
-    networks_cli_compatible: "{{ meilisearch_networks_cli_compatible | ansible.builtin.default(true) }}"
+  ansible.builtin.include_role:
+    name: podman_container
+  vars:
+    container_name: "{{ meilisearch_name }}"
+    image: "docker.io/getmeili/meilisearch:v{{ meilisearch_version }}"
 
     command:
       - /bin/meilisearch
@@ -33,19 +26,11 @@
     volumes: "{{ meilisearch_directory }}:/meili_data"
 
     labels:
-      traefik.enable: "false"
-
-    restart_policy: unless-stopped
-
-    container_default_behavior: "{{ container_default_behavior | ansible.builtin.default('no_defaults') }}"
-
-    comparisons:
-      networks: strict
-  register: meilisearch
+      - traefik.enable=false
 
 - name: Set variables
   ansible.builtin.set_fact:
-    _meilisearch_hostname: "{{ meilisearch_name }}.{{ docker_network.name }}"
+    _meilisearch_hostname: "{{ meilisearch_name }}"
     _meilisearch_port: "7700"
     _meilisearch_password: "{{ meilisearch_password }}"
 

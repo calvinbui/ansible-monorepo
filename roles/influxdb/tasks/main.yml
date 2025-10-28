@@ -2,25 +2,26 @@
 
 - name: Create InfluxDB directory
   ansible.builtin.file:
-    path: "{{ influxdb_directory }}"
+    path: "{{ influxdb_directory }}/{{ item }}"
     state: directory
     owner: "1000"
     group: "1000"
-    mode: "700"
+    mode: "0775"
+  loop:
+    - data
+    - config
 
 - name: Create InfluxDB container
-  community.docker.docker_container:
+  containers.podman.podman_container:
     name: "{{ influxdb_name }}"
     image: "public.ecr.aws/docker/library/influxdb:{{ influxdb_version }}"
 
     state: started
 
     hostname: "{{ influxdb_name }}"
-    published_ports: "{{ influxdb_ports | ansible.builtin.default(omit) }}"
-    networks:
-      - name: "{{ docker_network.name | ansible.builtin.default('bridge') }}"
-    network_mode: "{{ docker_network.name | ansible.builtin.default('omit') }}"
-    networks_cli_compatible: "{{ influxdb_networks_cli_compatible | ansible.builtin.default(true) }}"
+
+    network:
+      - "{{ container_network.name }}"
 
     command: "{{ influxdb_command | ansible.builtin.default(omit) }}"
 
@@ -58,16 +59,11 @@
         "traefik.http.services.{{ influxdb_name }}.loadbalancer.server.port": "8086"
       }'
 
-    restart_policy: unless-stopped
-
-    container_default_behavior: "{{ container_default_behavior | ansible.builtin.default('no_defaults') }}"
-
-    comparisons:
-      networks: strict
+    restart_policy: always
 
 - name: Set variables
   ansible.builtin.set_fact:
-    _influxdb_hostname: "{{ influxdb_name }}.{{ docker_network.name }}"
+    _influxdb_hostname: "{{ influxdb_name }}"
     _influxdb_username: "{{ influxdb_username }}"
     _influxdb_password: "{{ influxdb_password }}"
     _influxdb_token: "{{ influxdb_token | ansible.builtin.default(omit) }}"

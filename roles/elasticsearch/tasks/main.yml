@@ -16,18 +16,11 @@
     sysctl_file: /etc/sysctl.d/99-elasticsearch.conf
 
 - name: Create Elasticsearch container
-  community.docker.docker_container:
-    name: "{{ elasticsearch_name }}"
+  ansible.builtin.include_role:
+    name: podman_container
+  vars:
+    container_name: "{{ elasticsearch_name }}"
     image: "docker.elastic.co/elasticsearch/elasticsearch:{{ elasticsearch_version }}"
-
-    state: started
-
-    hostname: "{{ elasticsearch_name }}"
-    published_ports: "{{ elasticsearch_ports | ansible.builtin.default(omit) }}"
-    networks:
-      - name: "{{ docker_network.name | ansible.builtin.default('bridge') }}"
-    network_mode: "{{ docker_network.name | ansible.builtin.default('omit') }}"
-    networks_cli_compatible: "{{ elasticsearch_networks_cli_compatible | ansible.builtin.default(true) }}"
 
     command: "{{ elasticsearch_command | ansible.builtin.default(omit) }}"
 
@@ -48,18 +41,11 @@
       - "{{ elasticsearch_directory }}:/usr/share/elasticsearch/data"
 
     labels:
-      traefik.enable: "false"
-
-    restart_policy: unless-stopped
-
-    container_default_behavior: "{{ container_default_behavior | ansible.builtin.default('no_defaults') }}"
-
-    comparisons:
-      networks: strict
+      - traefik.enable=false
 
 - name: Set variables
   ansible.builtin.set_fact:
-    _elasticsearch_hostname: "{{ elasticsearch_name }}.{{ docker_network.name }}"
+    _elasticsearch_hostname: "{{ elasticsearch_name }}"
     _elasticsearch_password: "{{ elasticsearch_password }}"
     _elasticsearch_port: 9200
 

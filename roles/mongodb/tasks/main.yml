@@ -1,25 +1,21 @@
 ---
 
-- name: Create MongoDB directory
+- name: Create MongoDB directories
   ansible.builtin.file:
-    path: "{{ mongo_directory }}"
+    path: "{{ mongo_directory }}/{{ item }}"
     state: directory
     owner: 999
     group: 999
     mode: "0700"
+  loop:
+    - dump
+    - db
 
 - name: Create MongoDB container
-  community.docker.docker_container:
-    name: "{{ mongo_name }}"
-
-    state: started
-
-    hostname: "{{ mongo_name }}"
-    published_ports: "{{ mongo_ports | ansible.builtin.default(omit) }}"
-    networks:
-      - name: "{{ docker_network.name | ansible.builtin.default('bridge') }}"
-    network_mode: "{{ docker_network.name | ansible.builtin.default('omit') }}"
-    networks_cli_compatible: "{{ mongo_networks_cli_compatible | ansible.builtin.default(true) }}"
+  ansible.builtin.include_role:
+    name: podman_container
+  vars:
+    container_name: "{{ mongo_name }}"
     image: "public.ecr.aws/docker/library/mongo:{{ mongo_version }}"
 
     command: "{{ mongo_command | ansible.builtin.default(omit) }}"
@@ -34,21 +30,13 @@
       - "{{ mongo_directory }}/db:/data/db"
       - "{{ mongo_directory }}/dump:/dump"
       - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
 
     labels:
-      traefik.enable: "false"
-
-    restart_policy: unless-stopped
-
-    container_default_behavior: "{{ container_default_behavior | ansible.builtin.default('no_defaults') }}"
-
-    comparisons:
-      networks: strict
+      - traefik.enable=false
 
 - name: Set variables
   ansible.builtin.set_fact:
-    _mongo_hostname: "{{ mongo_name }}.{{ docker_network.name }}"
+    _mongo_hostname: "{{ mongo_name }}"
     _mongo_username: "{{ mongo_username }}"
     _mongo_password: "{{ mongo_password }}"
     _mongo_database: "{{ mongo_database }}"
