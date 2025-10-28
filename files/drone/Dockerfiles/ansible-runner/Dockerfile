@@ -1,4 +1,4 @@
-FROM python:3.13.7
+FROM public.ecr.aws/docker/library/python:3.13.7
 LABEL skip.prune=true
 WORKDIR /tmp
 
