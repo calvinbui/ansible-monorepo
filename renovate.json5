@@ -127,11 +127,6 @@
       matchPackageNames: ['/.*\\/tautulli$/'],
       sourceUrl: 'https://github.com/Tautulli/Tautulli',
     },
-    /* overseerr */
-    {
-      matchPackageNames: ['/sctx\\/overseerr$/'],
-      sourceUrl: 'https://github.com/sct/overseerr',
-    },
     /* vscode */
     {
       matchPackageNames: ['/.*\\/code-server$/'],
