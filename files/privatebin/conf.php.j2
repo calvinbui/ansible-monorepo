@@ -84,6 +84,11 @@ languagedefault = "{{ common_language_iso_639 }}"
 ; the documents encryption key.
 urlshortener = "{{ _url_shortener_value }}"
 
+; (optional) Whether to shorten the URL by default when a new document is created.
+; If set to true, the "Shorten URL" functionality will be automatically called.
+; This only works if the "urlshortener" option is set.
+; shortenbydefault = false
+
 ; (optional) Let users create a QR code for sharing the document URL with one click.
 ; It works both when a new document is created and when you view a document.
 qrcode = true
@@ -264,6 +269,17 @@ dir = PATH "data"
 ;region = "eu-central-1"
 ;version = "latest"
 ;bucket = "my-bucket"
+
+;[shlink]
+; - Shlink requires you to make a post call with a generated API key.
+;   use this section to setup the API key and URL. In order to use this section,
+;   "urlshortener" needs to point to the base URL of your PrivateBin
+;   instance with "?shortenviashlink&link=" appended. For example:
+;   urlshortener = "${basepath}?shortenviashlink&link="
+;   This URL will in turn call YOURLS on the server side, using the URL from
+;   "apiurl" and the API Key from the "apikey" parameters below.
+; apiurl = "https://shlink.example.com/rest/v3/short-urls"
+; apikey = "your_api_key"
 
 ;[yourls]
 ; When using YOURLS as a "urlshortener" config item:
