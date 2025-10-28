@@ -56,6 +56,7 @@
               isDefault: true
               jsonData:
                 prometheusType: Thanos
+                timeInterval: {{ prometheus_scrape_interval }}
                 prometheusVersion: 0.31.1
         dest: "{{ config_directory }}/provisioning/datasources/thanos.yml"
         owner: "472"  # grafana user
