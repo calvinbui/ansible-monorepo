@@ -1,0 +1,62 @@
+---
+
+- hosts: homeserver
+
+  vars:
+    application: netavark
+
+
+  handlers:
+    - name: Restart netavark-dhcp-proxy
+      ansible.builtin.systemd:
+        name: netavark-dhcp-proxy.service
+        state: restarted
+        daemon_reload: true
+
+  tasks:
+    # need a newer version to fix a memory leak
+    # https://github.com/containers/netavark/releases/tag/v1.15.2
+    - name: Enable sid
+      ansible.builtin.deb822_repository:
+        name: debian-sid
+        uris: http://deb.debian.org/debian
+        suites:
+          - sid
+        components:
+          - main
+        signed_by: /usr/share/keyrings/debian-archive-keyring.gpg
+
+    - name: Set sid repository priority
+      ansible.builtin.copy:
+        dest: /etc/apt/preferences.d/sid
+        content: |
+          Package: *
+          Pin: release n=sid
+          Pin-Priority: -10
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Install netavark from sid
+      ansible.builtin.apt:
+        name: netavark
+        default_release: sid
+        state: present
+        update_cache: true
+        cache_valid_time: 86400
+
+    - name: Create override directory for netavark-dhcp-proxy
+      ansible.builtin.file:
+        path: /etc/systemd/system/netavark-dhcp-proxy.service.d
+        state: directory
+        mode: "0755"
+
+    - name: Create netavark-dhcp-proxy ExecStart override
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/netavark-dhcp-proxy.service.d/override.conf
+        content: |
+          [Service]
+          ExecStart=
+          ExecStart=/usr/lib/podman/netavark dhcp-proxy
+        mode: "0644"
+      notify: Restart netavark-dhcp-proxy
