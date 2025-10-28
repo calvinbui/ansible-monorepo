@@ -1,0 +1,48 @@
+---
+
+- hosts: homeserver
+
+  handlers:
+    - name: Reboot
+      ansible.builtin.reboot:
+        reboot_timeout: 360
+
+  tasks:
+    - name: Enable non-free
+      ansible.builtin.deb822_repository:
+        name: debian-non-free
+        uris: http://deb.debian.org/debian
+        suites: "{{ ansible_distribution_release }}"
+        components:
+          - non-free
+        signed_by: /usr/share/keyrings/debian-archive-keyring.gpg
+
+    - name: Install firmware and drivers
+      ansible.builtin.apt:
+        name:
+          - firmware-intel-graphics
+          - intel-media-va-driver-non-free
+        state: present
+        update_cache: true
+        cache_valid_time: 86400
+      notify: Reboot
+
+    - name: Install tools
+      ansible.builtin.apt:
+        name:
+          - intel-gpu-tools
+          - nvtop
+        state: present
+        update_cache: true
+        cache_valid_time: 86400
+
+    - name: Create a script to prefix sudo to tools
+      ansible.builtin.copy:
+        content: |
+          # requires sudo to work
+          alias nvtop='sudo nvtop'
+          alias intel_gpu_top='sudo intel_gpu_top'
+        dest: /etc/profile.d/99-igpu_aliases.sh
+        owner: root
+        group: root
+        mode: "0644"
