@@ -1,0 +1,187 @@
+---
+
+- hosts: homeserver
+
+  vars:
+    zfs_pool: files
+    zfs_datasets:
+      -
+        name: Applications
+      -
+        name: Audiobooks
+      -
+        name: Backups
+      -
+        name: Backups/Time Machine
+        recordsize: 1M
+      -
+        name: Books
+      -
+        name: Downloads
+        recordsize: 1M
+      -
+        name: Games
+        recordsize: 1M
+      -
+        name: ISO
+        recordsize: 1M
+      -
+        name: Misc
+      -
+        name: Movies
+        recordsize: 1M
+      -
+        name: Photos
+      -
+        name: TV
+        recordsize: 1M
+      -
+        name: Work
+
+  handlers:
+    - name: Regenerate the kernel initramfs
+      ansible.builtin.command: update-initramfs -u
+      changed_when: true
+
+    - name: Reboot
+      ansible.builtin.reboot:
+        reboot_timeout: 360
+
+    - name: Restart zed
+      ansible.builtin.service:
+        name: zfs-zed
+        state: restarted
+
+  tasks:
+    - name: Enable contrib
+      ansible.builtin.deb822_repository:
+        name: debian-contrib
+        uris: http://deb.debian.org/debian
+        suites: "{{ ansible_distribution_release }}"
+        components:
+          - contrib
+        signed_by: /usr/share/keyrings/debian-archive-keyring.gpg
+
+    # https://openzfs.github.io/openzfs-docs/Getting%20Started/Debian/index.html
+    - name: Install openzfs dependencies
+      ansible.builtin.apt:
+        name:
+          - dpkg-dev
+          - linux-headers-generic
+          - linux-image-generic
+        update_cache: true
+        cache_valid_time: 86400
+
+    # requires contrib
+    - name: Install openzfs
+      ansible.builtin.apt:
+        name:
+          - zfs-dkms
+          - zfsutils-linux
+        update_cache: true
+        cache_valid_time: 86400
+
+    - name: Create zpool
+      community.general.zpool:
+        name: "{{ zfs_pool }}"
+        mountpoint: "{{ common_directory_storage }}"
+        pool_properties:
+          ashift: 12
+        filesystem_properties:
+          compression: lz4
+          atime: false
+          xattr: sa
+          acltype: posixacl
+          recordsize: 1M
+        vdevs:
+          - type: raidz2
+            disks:
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0H2SX
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0HG3N
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0HHGA
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0HYBX
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0LDCL
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0MPKG
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0MW3B
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0NM4E
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0P2HF
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0P9MD
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0PFAJ
+              - /dev/disk/by-id/ata-ST24000NM000C-3WD103_ZXA0RZRY
+      # https://github.com/ansible-collections/community.general/issues/10744
+      register: _zpool_result
+      failed_when: false
+
+    - name: Set correct permissions on the ZFS mount point
+      ansible.builtin.file:
+        path: "{{ common_directory_storage }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0755"
+
+    - name: Create datasets
+      community.general.zfs:
+        name: "{{ zfs_pool }}/{{ item.name }}"
+        state: present
+        extra_zfs_properties: "{{ properties | default(omit) }}"
+      loop: "{{ zfs_datasets }}"
+
+    - name: Set correct permissions on the dataset
+      ansible.builtin.file:
+        path: "{{ common_directory_storage }}/{{ item.name }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0755"
+      loop: "{{ zfs_datasets }}"
+
+    - name: Set ZFS ARC max size
+      ansible.builtin.copy:
+        content: |
+          options zfs zfs_arc_max={{ 128 * 1024 * 1024 * 1024 }}
+        dest: /etc/modprobe.d/zfs-arc-max-size.conf
+        owner: root
+        group: root
+        mode: "0644"
+      notify:
+        - Regenerate the kernel initramfs
+        - Reboot
+
+    - name: Install zfs-zed
+      ansible.builtin.apt:
+        name:
+          - zfs-zed
+          - curl
+        update_cache: true
+        cache_valid_time: 86400
+      tags:
+        - zed
+
+    - name: Configure zed
+      ansible.builtin.lineinfile:
+        path: /etc/zfs/zed.d/zed.rc
+        regexp: "^#?{{ item.key }}="
+        line: "{{ item.key }}={{ item.value }}"
+        state: present
+      loop:
+        -
+          key: ZED_NOTIFY_VERBOSE
+          value: 1
+        -
+          key: ZED_NOTIFY_DATA
+          value: 1
+        -
+          key: ZED_SLACK_WEBHOOK_URL
+          value: "http://mattermost.{{ common_local_tld }}:8065/hooks/{{ zed_mattermost_webhook_id }}"
+      notify: Restart zed
+      vars:
+        zed_mattermost_webhook_id: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          35303164616237393532646438343534616664333737323633626633646538623534303666633434
+          3635356531343533353430633465376663373466633637310a373161333863386139346566643965
+          34373366386564376633353363393437663538663432663232313732613830333462313635333132
+          6232666538303965390a343965633631356333636262633836363965393538366539326666626138
+          31636431383939386163316564303639366438666161303833386662666630666638
+      tags:
+        - zed
