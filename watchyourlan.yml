@@ -44,15 +44,24 @@
         image: ghcr.io/aceberg/watchyourlan:2.1.4
         env:
           TZ: "{{ common_timezone }}"
-          IFACES: "eth0 eth1"
           SHOUTRRR_URL: "mattermost://mattermost.{{ common_tld }}/{{ shoutrrr_mattermost_webhook_id }}"
-          PROMETHEUS_ENABLE: "false"
+
+          IFACES: "eth0 eth1 eth2 eth3 eth4"
+          USE_DB: postgres
           PG_CONNECT: "{{ _postgres_url }}"
+
+          PROMETHEUS_ENABLE: "false"
         volumes:
           - "{{ config_directory }}/config:/data/WatchYourLAN"
+        cap_add:
+          - NET_RAW
+          - NET_ADMIN
         network:
-          - name: "{{ networks.user.name }}"
-          - name: "{{ networks.iot.name }}"
+          - name: "{{ networks.mgmt.name }}" # eth0
+          - name: "{{ networks.user.name }}" # eth1
+          - name: "{{ networks.iot.name }}" # eth2
+          - name: "{{ networks.pub.name }}" # eth3
+          - name: "{{ networks.guest.name }}" # eth4
         traefik:
           - port: 8840
             auth: page
