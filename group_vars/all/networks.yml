@@ -24,9 +24,7 @@ networks:
     dhcp_pool:
       start: 10.127.11.0
       end: 10.127.11.254
-    tftp:
-      server: 10.127.20.30
-      file: netboot.xyz.efi
+    tftp_server: 10.127.20.30
 
   user:
     name: user
@@ -37,9 +35,7 @@ networks:
     dhcp_pool:
       start: 10.127.21.0
       end: 10.127.21.254
-    tftp:
-      server: 10.127.20.30
-      file: netboot.xyz.efi
+    tftp_server: 10.127.20.30
 
   iot:
     name: iot
@@ -70,9 +66,7 @@ networks:
     dhcp_pool:
       start: 10.127.51.0
       end: 10.127.51.254
-    tftp:
-      server: 10.127.50.30
-      file: netboot.xyz.efi
+    tftp_server: 10.127.50.30
 
   vpn_home:
     opnsense_identifier: opt6

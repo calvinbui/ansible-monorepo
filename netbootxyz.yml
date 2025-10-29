@@ -1,11 +1,11 @@
 ---
 
-- hosts: homelab
+- hosts: homeserver
 
   vars:
     application: netbootxyz
 
-    docker_network: "{{ networks.user }}"
+    container_network: "{{ networks.user }}"
 
   tasks:
     - name: Create config folder
@@ -18,7 +18,7 @@
 
     - name: Create container
       ansible.builtin.include_role:
-        name: docker_container
+        name: podman_container
       vars:
         image: ghcr.io/netbootxyz/netbootxyz:0.7.6-nbxyz7
         volumes:
@@ -28,9 +28,11 @@
           - port: 3000
             auth: page
         network:
-          -
-            name: "{{ docker_network.name }}"
-            ipv4_address: "{{ docker_network.subnet | ansible.utils.nthhost(30) }}"
-          -
-            name: "{{ networks.granny.name }}"
-            ipv4_address: "{{ networks.granny.subnet | ansible.utils.nthhost(30) }}"
+          - name: "{{ container_network.name }}"
+            ip: "{{ container_network.subnet | ansible.utils.nthhost(30) }}"
+            description: "{{ application }} ({{ container_network.name }})"
+          - name: "{{ networks.guest.name }}"
+            ip: "{{ networks.guest.subnet | ansible.utils.nthhost(30) }}"
+            description: "{{ application }} ({{ networks.guest.name }})"
+        labels:
+          - "traefik.docker.network={{ container_network.name }}"
