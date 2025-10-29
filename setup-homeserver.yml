@@ -33,6 +33,7 @@
           - git
           - htop
           - neovim
+          - nvme-cli
           - rclone
           - tmux
           - python3-lxml
@@ -100,8 +101,6 @@
           net.core.somaxconn: 65536
           net.core.netdev_max_backlog: 65536
           net.ipv4.tcp_max_syn_backlog: 32768
-          # net.netfilter.nf_conntrack_max: 524288
-          # net.netfilter.nf_conntrack_buckets: 131072
 
           # tcp optimisations
           net.ipv4.tcp_congestion_control: bbr
@@ -119,3 +118,7 @@
           net.core.wmem_default: 262144 # 256KB
           net.ipv4.tcp_rmem: 4096 87380 33554432
           net.ipv4.tcp_wmem: 4096 65536 33554432
+
+          # mdadm
+          dev.raid.speed_limit_min: 100000
+          dev.raid.speed_limit_max: 7000000
