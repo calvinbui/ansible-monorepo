@@ -8,13 +8,6 @@
     group: "1000" # elasticsearch
     mode: "0740"
 
-
-- name: Update vm.max_map_count for elasticsearch
-  ansible.posix.sysctl:
-    name: vm.max_map_count
-    value: 262144
-    sysctl_file: /etc/sysctl.d/99-elasticsearch.conf
-
 - name: Create Elasticsearch container
   ansible.builtin.include_role:
     name: podman_container
@@ -39,6 +32,9 @@
 
     volumes:
       - "{{ elasticsearch_directory }}:/usr/share/elasticsearch/data"
+
+    cap_add:
+      - IPC_LOCK
 
     labels:
       - traefik.enable=false
