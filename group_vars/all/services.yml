@@ -116,10 +116,10 @@ services:
   - group: Remote Access
     items:
       -
-        name: Homelab IPMI
-        url: https://homelab-ipmi.{{ common_local_tld }}
+        name: IPMI
+        url: https://ipmi.{{ common_local_tld }}
         icon: /icons/ipmi.png
-        description: Supermicro IPMI
+        description: ASMB10-iKVM
         weight: 500
         monitor: true
 
