@@ -1,0 +1,85 @@
+---
+
+- hosts: homeserver
+
+  vars:
+    application: ipmi
+
+    ipmi_username: admin
+    ipmi_password: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      36303436333536316238316139343934333533313733306538636137356163386465363361363062
+      6132653831633766623363386132363565373964323733650a656135393161323964633961636266
+      32336461636663386263376661303237303332326339643430643666336231656439306636653939
+      3036623937353738370a636235393735613335313537343461613062623262343439383861316130
+      64383066666332356366313739386639643039613065623032623138363463646264
+
+    container_network: "{{ networks.mgmt }}"
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_group_id }}"
+        mode: "0771"
+
+    - name: Create acme.sh folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}/acme.sh"
+        state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_group_id }}"
+        mode: "0771"
+      tags:
+        - acme
+
+    - name: Create acme.sh container
+      ansible.builtin.include_role:
+        name: podman_container
+      vars:
+        container_name: "{{ application }}-acme"
+        image: docker.io/neilpang/acme.sh:3.1.1
+        command: daemon
+        volumes:
+          - "{{ config_directory }}/acme.sh:/acme.sh"
+
+    - name: Issue cert
+      containers.podman.podman_container_exec:
+        name: "{{ application }}-acme"
+        argv:
+          - /bin/sh
+          - -c
+          - |
+            acme.sh \
+              --issue \
+              --server letsencrypt \
+              --email letsencrypt{{ common_email_to }} \
+              --dns dns_cf \
+              --domain "${CERT_DOMAIN}" \
+              --keylength 2048 \
+              --post-hook 'curl -k -u "{{ ipmi_username }}:{{ ipmi_password }}" -H "Content-Type: application/json" -X POST https://${CERT_DOMAIN}/redfish/v1/CertificateService/Actions/CertificateService.ReplaceCertificate -d "{\"CertificateString\":\"$(cat /acme.sh/${CERT_DOMAIN}/${CERT_DOMAIN}.key /acme.sh/${CERT_DOMAIN}/${CERT_DOMAIN}.cer | awk '\''{printf "%s\\n",$0}'\'')\",\"CertificateUri\":{\"@odata.id\":\"/redfish/v1/Managers/Self/NetworkProtocol/HTTPS/Certificates/1\"},\"CertificateType\":\"PEM\"}"'
+        env:
+          CERT_DOMAIN: "{{ application }}.{{ common_local_tld }}"
+          CF_Token: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            32313636613765643163356436656533613865663966623030386330663638386232373763353230
+            6631366638623632643432393639376463333865633431360a303162316335313766636231386638
+            36636265353962626562616163646632303436313730376639373036393832323439386365386637
+            3461343235336435630a343637356264353634646664353833366666616365333932623136333231
+            31326231663333656438636630363537326435643435366433363262643331643032376565363137
+            3836383461613066663033376662336230323737313464643231
+          CF_Account_ID: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            34333566656263376163396136616436326633363834376434666130363864306464313735306431
+            6161363538646633633165383534313434623937303566380a656363623633363164396333353930
+            31393163653464303536616236613961383034366136363839303437643039376565396161633261
+            6331613861616333660a626638663762656166653432376464323232383464613764306433323465
+            31663439663137396261363630373364663334663030313365366235663937613862343731643134
+            3666633663366234383238373637333932386234333163633635
+      register: _result
+      failed_when: _result.rc not in [0, 2]
+      changed_when: _result.rc == 0
+      tags:
+        - acme
