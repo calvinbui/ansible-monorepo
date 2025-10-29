@@ -481,17 +481,59 @@
         - dnsmasq
         - unbound
 
+    - name: Dnsmasq - DHCP Tags
+      oxlorg.opnsense.dnsmasq_tag:
+        tag: "{{ item }}"
+      notify: Reload dnsmasq
+      loop:
+        - BIOS
+        - EFI
+        - ARM64
+      tags:
+        - dnsmasq
+        - pxe
+
+    - name: Dnsmasq - DHCP options
+      oxlorg.opnsense.dnsmasq_option:
+        type: match
+        option: 93
+        set_tag: "{{ item.tag }}"
+        value: "{{ item.value }}"
+        description: "{{ item.tag }}"
+      notify: Reload dnsmasq
+      loop:
+        - tag: BIOS
+          value: 0
+        - tag: EFI
+          value: 7
+        - tag: ARM64
+          value: 11
+      tags:
+        - dnsmasq
+        - pxe
+
     - name: Dnsmasq - DHCP Boot
       oxlorg.opnsense.dnsmasq_boot:
-        interface: "{{ item.value.opnsense_name }}"
-        filename: "{{ item.value.tftp.file }}"
-        address: "{{ item.value.tftp.server }}"
-        description: "{{ item.value.name }}"
-      loop: "{{ networks | ansible.builtin.dict2items }}"
-      when: item.value.tftp is defined
+        interface: "{{ item.0.value.opnsense_name }}"
+        tag: "{{ item.1.tag }}"
+        filename: "{{ item.1.filename }}"
+        servername: "{{ item.0.value.tftp_server }}"
+        address: "{{ item.0.value.tftp_server }}"
+        description: "{{ item.0.value.name }} {{ item.1.tag }}"
+      loop: "{{ networks | ansible.builtin.dict2items | product(boot_configs) }}"
+      vars:
+        boot_configs:
+          - tag: BIOS
+            filename: netboot.xyz.kpxe
+          - tag: EFI
+            filename: netboot.xyz.efi
+          - tag: ARM64
+            filename: netboot.xyz-arm64.efi
+      when: item.0.value.tftp_server is defined
       notify: Reload dnsmasq
       tags:
         - dnsmasq
+        - pxe
 
     #           _                                    _
     # __      _(_)_ __ ___  __ _ _   _  __ _ _ __ __| |
