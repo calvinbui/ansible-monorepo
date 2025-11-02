@@ -9,7 +9,7 @@ groups:
         for: 5m
         annotations:
           summary: MDADM Array Degraded
-          description: "{{ $labels.device }} has {{ $value }} active disks but requires {{ query \"node_md_disks_required{device='\" $labels.device \"'}\" | first | value }} - array is degraded"
+          description: "{{ $labels.device }} has {{ $value }} active disks - array is degraded"
       -
         alert: MDArrayDiskFailed
         expr: node_md_disks{state="failed"} > 0
@@ -30,7 +30,7 @@ groups:
         for: 5m
         annotations:
           summary: MDADM Array Resyncing
-          description: "{{ $labels.device }} is resyncing ({{ query \"node_md_blocks_synced{device='\" $labels.device \"'}\" | first | value | humanize }} of {{ query \"node_md_blocks{device='\" $labels.device \"'}\" | first | value | humanize }} blocks synced)"
+          description: "{{ $labels.device }} is resyncing"
       -
         alert: MDArrayRecovering
         expr: node_md_state{state="recovering"} == 1
@@ -44,4 +44,4 @@ groups:
         for: 1h
         annotations:
           summary: MDADM Array Not Fully Synced
-          description: "{{ $labels.device }} sync incomplete for over 1 hour ({{ query \"node_md_blocks_synced{device='\" $labels.device \"'}\" | first | value | humanize }} of {{ query \"node_md_blocks{device='\" $labels.device \"'}\" | first | value | humanize }} blocks)"
+          description: "{{ $labels.device }} sync incomplete for over 1 hour"

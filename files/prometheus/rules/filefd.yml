@@ -9,7 +9,7 @@ groups:
         for: 10m
         annotations:
           summary: File Descriptors Exhausting
-          description: "System file descriptor usage is {{ $value | humanizePercentage }} ({{ query \"node_filefd_allocated\" | first | value | humanize }} of {{ query \"node_filefd_maximum\" | first | value | humanize }})"
+          description: "System file descriptor usage is {{ $value | humanizePercentage }}"
       -
         alert: FileDescriptorsCritical
         expr: node_filefd_allocated / node_filefd_maximum > 0.95

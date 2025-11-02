@@ -9,7 +9,7 @@ groups:
         for: 15m
         annotations:
           summary: Filesystem Space Low
-          description: "{{ $labels.mountpoint }} has {{ $value | humanizePercentage }} space remaining ({{ query \"node_filesystem_avail_bytes{mountpoint='\" $labels.mountpoint \"'}\" | first | value | humanize1024 }}B free)"
+          description: "{{ $labels.mountpoint }} has {{ $value | humanizePercentage }} space remaining"
       -
         alert: FilesystemSpaceCritical
         expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) < 0.05

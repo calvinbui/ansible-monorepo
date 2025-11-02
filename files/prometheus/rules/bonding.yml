@@ -9,7 +9,7 @@ groups:
         for: 2m
         annotations:
           summary: Bonding Slave Interface Down
-          description: "{{ $labels.master }} has {{ $value }} active slaves but {{ query \"node_bonding_slaves{master='\" $labels.master \"'}\" | first | value }} configured - one or more interfaces are down"
+          description: "{{ $labels.master }} has {{ $value }} active slaves - one or more interfaces are down"
       -
         alert: BondingAllSlavesDown
         expr: node_bonding_active == 0 and node_bonding_slaves > 0

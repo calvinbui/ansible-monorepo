@@ -9,7 +9,7 @@ groups:
         for: 10m
         annotations:
           summary: Memory Available Low
-          description: "Available memory is {{ $value | humanizePercentage }} ({{ query \"node_memory_MemAvailable_bytes\" | first | value | humanize1024 }}B of {{ query \"node_memory_MemTotal_bytes\" | first | value | humanize1024 }}B)"
+          description: "Available memory is {{ $value | humanizePercentage }}"
       -
         alert: MemoryAvailableCritical
         expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < 0.05
@@ -32,6 +32,13 @@ groups:
           summary: Swap Usage Critical
           description: "Swap usage is {{ $value | humanizePercentage }} - severe memory pressure"
       -
+        alert: MemoryCommitOvercommit
+        expr: node_memory_Committed_AS_bytes > node_memory_CommitLimit_bytes
+        for: 15m
+        annotations:
+          summary: Memory Overcommitted
+          description: "Committed memory exceeds commit limit"
+      -
         alert: MemoryHardwareCorrupted
         expr: node_memory_HardwareCorrupted_bytes > 0
         for: 1m
@@ -44,4 +51,4 @@ groups:
         for: 30m
         annotations:
           summary: High Unreclaimable Slab Memory
-          description: "Unreclaimable slab memory is {{ $value | humanizePercentage }} of total memory ({{ query \"node_memory_SUnreclaim_bytes\" | first | value | humanize1024 }}B) - possible kernel memory leak"
+          description: "Unreclaimable slab memory is {{ $value | humanizePercentage }} of total memory - possible kernel memory leak"
