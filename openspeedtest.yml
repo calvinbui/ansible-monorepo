@@ -1,0 +1,21 @@
+---
+
+- hosts: homeserver
+
+  vars:
+    application: openspeedtest
+
+    container_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create container
+      ansible.builtin.include_role:
+        name: podman_container
+      vars:
+        image: docker.io/openspeedtest/latest:v2.0.6
+        homepage:
+          name: OpenSpeedTest
+          group: Networking
+          href: "https://{{ application }}.{{ common_local_tld }}:3000"
+          weight: 460
+          description: "Speed test"
