@@ -795,6 +795,17 @@
               - "{{ networks.iot.opnsense_identifier }}"
               - "{{ networks.pub.opnsense_identifier }}"
             action: pass
+            protocol: UDP
+            source_net: "{{ networks.iot.opnsense_identifier }},{{ networks.pub.opnsense_identifier }}"
+            destination_net: traefik
+            destination_port: 123
+            description: Allow Traefik NTP
+          -
+            sequence: 7
+            interface:
+              - "{{ networks.iot.opnsense_identifier }}"
+              - "{{ networks.pub.opnsense_identifier }}"
+            action: pass
             source_net: bypass_vpn
             destination_invert: true
             destination_net: "rfc1918"
