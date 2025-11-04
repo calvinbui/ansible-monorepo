@@ -51,12 +51,6 @@
       vars:
         ansible_ssh_pipelining: false
 
-    - name: Update apt cache
-      ansible.builtin.apt:
-        update_cache: true
-        cache_valid_time: 86400
-      changed_when: false
-
     - name: Set authorized keys
       ansible.posix.authorized_key:
         user: "{{ item }}"
@@ -91,6 +85,8 @@
           - avrdude
           - python3-yaml
         state: present
+        update_cache: true
+        cache_valid_time: 86400
 
     - name: Remove packages
       ansible.builtin.apt:
@@ -132,10 +128,19 @@
               - xinit
               - libgtk-3-0
               - xdotool
+            state: present
+            update_cache: true
+            cache_valid_time: 86400
+
+        - name: Download OctoDash
+          ansible.builtin.get_url:
+            url: "https://github.com/UnchartedBull/OctoDash/releases/download/v2.6.4/octodash_2.6.4_armv7l.deb"
+            dest: /tmp/octodash.deb
+            mode: "0644"
 
         - name: Install OctoDash
           ansible.builtin.apt:
-            deb: "https://github.com/UnchartedBull/OctoDash/releases/download/v2.3.1/octodash_2.3.1_armv7l.deb"
+            deb: /tmp/octodash.deb
           notify: Reboot
 
         - name: Enable Console Autologin
@@ -358,7 +363,7 @@
               gcodeRunCmdOff: ''
               gcodeRunCmdOn: ''
               icon: icon-print
-              ip: {{ networks.iot.subnet | ansible.utils.nthhost(32) }}/3
+              ip: "{{ networks.iot.subnet | ansible.utils.nthhost(32) }}/3"
               label: Printer & Lights
               sysCmdOff: false
               sysCmdOffDelay: 0
