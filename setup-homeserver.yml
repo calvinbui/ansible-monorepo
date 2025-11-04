@@ -6,6 +6,20 @@
 
 - hosts: homeserver
 
+  handlers:
+    - name: Reload sysctl
+      ansible.builtin.command:
+        cmd: /sbin/sysctl --system
+      changed_when: true
+
+    - name: Reboot
+      ansible.builtin.reboot:
+        reboot_timeout: 360
+
+    - name: Reload systemd
+      ansible.builtin.systemd_service:
+        daemon_reexec: true
+
   tasks:
     - name: No password sudo
       community.general.sudoers:
@@ -79,8 +93,9 @@
         name: "{{ item.key }}"
         value: "{{ item.value }}"
         sysctl_file: /etc/sysctl.d/99-tuning.conf
-        ignoreerrors: true
+        reload: false
       loop: "{{ sysctl_settings | ansible.builtin.dict2items }}"
+      notify: Reload sysctl
       vars:
         sysctl_settings:
           # file limits/inotify
@@ -89,8 +104,8 @@
           fs.inotify.max_user_instances: 8192
 
           # memory management
-          vm.dirty_background_bytes: 4294967296 # 512MB
-          vm.dirty_bytes: 2147483648 # 2GB
+          vm.dirty_background_bytes: 4294967296 # 4GB
+          vm.dirty_bytes: 8589934592 # 8GB
           vm.max_map_count: 524288 # for some databases like ES, TSDB
 
           # kernel
@@ -122,3 +137,61 @@
           # mdadm
           dev.raid.speed_limit_min: 100000
           dev.raid.speed_limit_max: 7000000
+
+    - name: Increase pam limits
+      community.general.pam_limits:
+        domain: "root"
+        limit_type: "{{ item.type }}"
+        limit_item: "{{ item.item }}"
+        value: "{{ item.value }}"
+        comment: "Managed by Ansible"
+        dest: "/etc/security/limits.d/99-tuning.conf"
+      notify: Reboot
+      loop:
+        -
+          type: soft
+          item: nofile
+          value: 65536
+        -
+          type: hard
+          item: nofile
+          value: 131072
+        -
+          type: soft
+          item: nproc
+          value: 16384
+        -
+          type: hard
+          item: nproc
+          value: 32768
+
+    - name: Create systemd config drop-in directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      loop:
+        - /etc/systemd/system.conf.d
+        - /etc/systemd/user.conf.d
+
+    - name: Configure systemd service limits
+      community.general.ini_file:
+        path: "{{ item.0 }}"
+        section: Manager
+        option: "{{ item.1.option }}"
+        value: "{{ item.1.value }}"
+        mode: "0644"
+        create: true
+      loop: "{{ systemd_configs | ansible.builtin.product(systemd_limits) | ansible.builtin.list }}"
+      notify: Reload systemd
+      vars:
+        systemd_configs:
+          - /etc/systemd/system.conf.d/99-limits.conf
+          - /etc/systemd/user.conf.d/99-limits.conf
+        systemd_limits:
+          -
+            option: DefaultLimitNOFILE
+            value: 131072
+          -
+            option: DefaultLimitNPROC
+            value: 32768
