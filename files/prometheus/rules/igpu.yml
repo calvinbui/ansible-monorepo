@@ -1,0 +1,12 @@
+---
+
+groups:
+  - name: iGPU
+    rules:
+      -
+        alert: iGPUMissing
+        expr: (gpu_power_package <= 0) or absent(gpu_power_package)
+        for: 10m
+        annotations:
+          summary: iGPU Missing
+          description: "No metrics can be found"

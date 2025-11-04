@@ -2,6 +2,9 @@
 
 - hosts: homeserver
 
+  vars:
+    container_network: "{{ networks.pub }}"
+
   handlers:
     - name: Reboot
       ansible.builtin.reboot:
@@ -46,3 +49,16 @@
         owner: root
         group: root
         mode: "0644"
+
+    - name: Create exporter container
+      ansible.builtin.include_role:
+        name: podman_container
+      vars:
+        container_name: intel-igpu-exporter
+        image: ghcr.io/spotdemo4/intel-gpu-exporter:0.1.1
+        privileged: true
+        pid_mode: host
+        volumes:
+          - /dev/dri:/dev/dri
+        metrics:
+          - port: 8080
