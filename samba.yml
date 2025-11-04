@@ -79,4 +79,4 @@
         cap_add:
           - NET_ADMIN
           - NET_RAW
-        stop_timeout: 1
+        stop_signal: "{{ signal_map['SIGKILL'] }}"

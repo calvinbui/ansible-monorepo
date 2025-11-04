@@ -13,6 +13,7 @@
         name: podman_container
       vars:
         image: docker.io/openspeedtest/latest:v2.0.6
+        stop_signal: "{{ signal_map['SIGKILL'] }}"
         homepage:
           name: OpenSpeedTest
           group: Networking

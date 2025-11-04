@@ -76,7 +76,7 @@
         name: podman_container
       vars:
         image: ghcr.io/esphome/esphome:2025.9.0
-        env:
+        stop_signal: "{{ signal_map['SIGKILL'] }}"
         volumes:
           - "{{ config_directory }}:/config"
           - /etc/localtime:/etc/localtime:ro
