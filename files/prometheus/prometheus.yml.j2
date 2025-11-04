@@ -43,6 +43,9 @@ scrape_configs:
         regex: (.+)
         source_labels: [__meta_docker_container_label_prometheus_path]
         target_label: __metrics_path__
+    metric_relabel_configs:
+      - regex: '(instance|path|port|scheme)'
+        action: labeldrop
 
   - job_name: systemd_exporter
     static_configs:
