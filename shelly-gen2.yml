@@ -56,7 +56,7 @@
             - light
             - light # still works if there isnt a 2nd relay
         sntp:
-          server: "ntp.{{ common_tld }}"
+          server: "ntp.{{ common_local_tld }}"
 
       auth:
         user: admin

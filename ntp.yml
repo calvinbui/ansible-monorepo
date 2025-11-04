@@ -58,7 +58,7 @@
         dest: /etc/systemd/timesyncd.conf.d/custom-ntp.conf
         content: |
           [Time]
-          NTP=ntp.{{ common_tld }}
+          NTP=ntp.{{ common_local_tld }}
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
         mode: "0644"
