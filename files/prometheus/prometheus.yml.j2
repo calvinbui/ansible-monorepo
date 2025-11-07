@@ -43,8 +43,12 @@ scrape_configs:
         regex: (.+)
         source_labels: [__meta_docker_container_label_prometheus_path]
         target_label: __metrics_path__
+      - # Hardcode the instance label to the server
+        action: replace
+        replacement: {{ inventory_hostname }}
+        target_label: instance
     metric_relabel_configs:
-      - regex: '(instance|path|port|scheme)'
+      - regex: '(enable|path|port|scheme)'
         action: labeldrop
 
   - job_name: systemd_exporter
