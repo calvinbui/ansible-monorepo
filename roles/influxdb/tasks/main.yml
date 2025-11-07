@@ -17,16 +17,11 @@
     mode: "0775"
 
 - name: Create InfluxDB container
-  containers.podman.podman_container:
-    name: "{{ influxdb_name }}"
+  ansible.builtin.include_role:
+    name: podman_container
+  vars:
+    container_name: "{{ influxdb_name }}"
     image: "public.ecr.aws/docker/library/influxdb:{{ influxdb_version }}"
-
-    state: started
-
-    hostname: "{{ influxdb_name }}"
-
-    network:
-      - "{{ container_network.name }}"
 
     command: "{{ influxdb_command | ansible.builtin.default(omit) }}"
 
@@ -43,28 +38,23 @@
       - "{{ influxdb_directory }}/config:/etc/influxdb2"
 
     labels:
-      '{
-        "homepage.name": "{{ influxdb_homepage.name | ansible.builtin.default(omit) }}",
-        "homepage.group": "{{ influxdb_homepage.group | ansible.builtin.default(omit) }}",
-        "homepage.description": "{{ influxdb_homepage.description | ansible.builtin.default(omit) }}",
-        "homepage.href": "{{ influxdb_homepage.href | ansible.builtin.default("https://" + influxdb_name + "." + common_tld) if influxdb_homepage.enable else omit }}",
-        "homepage.weight": "{{ influxdb_homepage.weight | ansible.builtin.default(omit) }}",
-        "homepage.icon": "{{ "/icons/influxdb.svg" if influxdb_homepage.enable else omit }}",
-
-        "traefik.enable": "{{ influxdb_homepage.enable | ansible.builtin.default(false) | ansible.builtin.string }}",
-        "traefik.http.routers.{{ influxdb_name }}-secure.entrypoints": "web-secure",
-        "traefik.http.routers.{{ influxdb_name }}-secure.rule": "Host(`{{ influxdb_name }}.{{ common_tld }}`)",
-        "traefik.http.routers.{{ influxdb_name }}-secure.service": "{{ influxdb_name }}",
-        "traefik.http.routers.{{ influxdb_name }}-secure.tls": "true",
-        "traefik.http.routers.{{ influxdb_name }}-secure.tls.certresolver": "letsencrypt",
-        "traefik.http.routers.{{ influxdb_name }}.entrypoints": "web",
-        "traefik.http.routers.{{ influxdb_name }}.middlewares": "redirect@file",
-        "traefik.http.routers.{{ influxdb_name }}.rule": "Host(`{{ influxdb_name }}.{{ common_tld }}`)",
-        "traefik.http.routers.{{ influxdb_name }}.service": "{{ influxdb_name }}",
-        "traefik.http.services.{{ influxdb_name }}.loadbalancer.server.port": "8086"
-      }'
-
-    restart_policy: always
+      - "homepage.name={{ influxdb_homepage.name | ansible.builtin.default(omit) }}"
+      - "homepage.group={{ influxdb_homepage.group | ansible.builtin.default(omit) }}"
+      - "homepage.description={{ influxdb_homepage.description | ansible.builtin.default(omit) }}"
+      - "homepage.href={{ influxdb_homepage.href | ansible.builtin.default('https://' + influxdb_name + '.' + common_tld) if influxdb_homepage.enable else omit }}"
+      - "homepage.weight={{ influxdb_homepage.weight | ansible.builtin.default(omit) }}"
+      - "homepage.icon={{ '/icons/influxdb.svg' if influxdb_homepage.enable else omit }}"
+      - "traefik.enable={{ influxdb_homepage.enable | ansible.builtin.default(false) | ansible.builtin.string }}"
+      - "traefik.http.routers.{{ influxdb_name }}-secure.entrypoints=web-secure"
+      - "traefik.http.routers.{{ influxdb_name }}-secure.rule=Host(`{{ influxdb_name }}.{{ common_tld }}`)"
+      - "traefik.http.routers.{{ influxdb_name }}-secure.service={{ influxdb_name }}"
+      - "traefik.http.routers.{{ influxdb_name }}-secure.tls=true"
+      - "traefik.http.routers.{{ influxdb_name }}-secure.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.{{ influxdb_name }}.entrypoints=web"
+      - "traefik.http.routers.{{ influxdb_name }}.middlewares=redirect@file"
+      - "traefik.http.routers.{{ influxdb_name }}.rule=Host(`{{ influxdb_name }}.{{ common_tld }}`)"
+      - "traefik.http.routers.{{ influxdb_name }}.service={{ influxdb_name }}"
+      - "traefik.http.services.{{ influxdb_name }}.loadbalancer.server.port=8086"
 
 - name: Set variables
   ansible.builtin.set_fact:
