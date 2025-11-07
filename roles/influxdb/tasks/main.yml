@@ -1,15 +1,20 @@
 ---
 
-- name: Create InfluxDB directory
+- name: Create data directory
   ansible.builtin.file:
-    path: "{{ influxdb_directory }}/{{ item }}"
+    path: "{{ influxdb_directory }}/data"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: "0700"
+
+- name: Create config directory
+  ansible.builtin.file:
+    path: "{{ influxdb_directory }}/config"
     state: directory
     owner: "1000"
     group: "1000"
     mode: "0775"
-  loop:
-    - data
-    - config
 
 - name: Create InfluxDB container
   containers.podman.podman_container:
