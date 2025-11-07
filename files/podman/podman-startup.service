@@ -26,6 +26,7 @@ sleep 10'
 # Phase 2: Core infrastructure (sequential start)
 ExecStart=-/bin/bash -c '\
 echo "=== Phase 2: Starting core services ==="; \
+podman start ntp; \
 podman start authelia; \
 sleep 30; \
 podman start traefik; \
