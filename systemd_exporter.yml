@@ -6,7 +6,6 @@
     application: systemd-exporter
 
     systemd_exporter_processes:
-      - nut-driver.service
       - nut-monitor.service
       - netavark-dhcp-proxy.service
 
@@ -36,13 +35,13 @@
         metrics:
           - port: 9558
 
-- hosts: nvr
+- hosts:
+    - nut
+    - nvr
 
   vars:
     systemd_exporter_version: 0.7.0
     systemd_exporter_install_dir: /usr/local/bin
-    systemd_exporter_processes:
-      - nut-monitor.service
 
   handlers:
     - name: Restart

@@ -1,0 +1,4 @@
+---
+
+systemd_exporter_processes:
+  - nut-monitor.service

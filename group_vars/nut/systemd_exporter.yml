@@ -1,0 +1,6 @@
+---
+
+systemd_exporter_processes:
+  - nut-driver@.*\.service
+  - nut-monitor.service
+  - nut-server.service

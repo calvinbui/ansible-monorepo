@@ -55,6 +55,7 @@ scrape_configs:
     static_configs:
       - targets:
           - nvr.{{ common_local_tld }}:9558
+          - nut.{{ common_local_tld }}:9558
 
 alerting:
   alertmanagers:
