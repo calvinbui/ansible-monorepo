@@ -7,7 +7,7 @@
     traefik_labels: {}
     homepage_labels: {}
     blackbox_labels: {}
-    watchtower_labels: {}
+    # watchtower_labels: {}
 
 - name: Generate network for the container
   ansible.builtin.include_tasks: networking.yml
@@ -74,16 +74,16 @@
     combined_labels: "{{ combined_labels | ansible.builtin.combine(blackbox_labels, recursive=True) }}"
   when: blackbox_labels is defined
 
-- name: Generate Watchtower labels
-  ansible.builtin.include_tasks: watchtower.yml
-  when: _postgres_hostname is defined or _valkey_hostname is defined or _mariadb_hostname is defined or _mongo_hostname is defined
+# - name: Generate Watchtower labels
+#   ansible.builtin.include_tasks: watchtower.yml
+#   when: _postgres_hostname is defined or _valkey_hostname is defined or _mariadb_hostname is defined or _mongo_hostname is defined
 
-- name: Merge generated Watchtower and container labels
-  ansible.builtin.set_fact:
-    combined_labels: "{{ combined_labels | ansible.builtin.combine(watchtower_labels, recursive=True) }}"
-  when:
-    - watchtower_labels is defined
-    - watchtower_labels | ansible.builtin.length > 0
+# - name: Merge generated Watchtower and container labels
+#   ansible.builtin.set_fact:
+#     combined_labels: "{{ combined_labels | ansible.builtin.combine(watchtower_labels, recursive=True) }}"
+#   when:
+#     - watchtower_labels is defined
+#     - watchtower_labels | ansible.builtin.length > 0
 
 - name: "Create podman container for {{ container_name | ansible.builtin.default(application) }}"
   containers.podman.podman_container:
