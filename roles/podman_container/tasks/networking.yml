@@ -9,33 +9,37 @@
   ansible.builtin.set_fact:
     networks_enriched: "{{ networks_enriched + [final_item] }}"
   loop: "{{ network }}"
+  loop_control:
+    loop_var: network_item
   vars:
     calculated_values:
       mac: "{{ '0a:0a:%02d:%02d:%02d:%02d' | ansible.builtin.format(
-                (networks[item.name].vlan | ansible.builtin.int),
-                ((item.ip | ansible.builtin.split('.'))[2] | ansible.builtin.int),
-                ((item.ip | ansible.builtin.split('.'))[3] | ansible.builtin.int) // 100,
-                ((item.ip | ansible.builtin.split('.'))[3] | ansible.builtin.int) % 100
-              ) | upper if item.ip is defined else omit }}"
-    final_item: "{{ item | combine(calculated_values) }}"
+                (networks[network_item.name].vlan | ansible.builtin.int),
+                ((network_item.ip | ansible.builtin.split('.'))[2] | ansible.builtin.int),
+                ((network_item.ip | ansible.builtin.split('.'))[3] | ansible.builtin.int) // 100,
+                ((network_item.ip | ansible.builtin.split('.'))[3] | ansible.builtin.int) % 100
+              ) | upper if network_item.ip is defined else omit }}"
+    final_item: "{{ network_item | combine(calculated_values) }}"
 
 - name: Create OPNsense DHCP reservation for MAC address
   oxlorg.opnsense.dnsmasq_host:
     host: "{{ container_name | default(application) }}"
     local: true
     ip:
-      - "{{ item.ip }}"
-    hardware_addr: "{{ item.mac }}"
-    description: "{{ item.description | default(container_name) | default(application) }} - Podman"
+      - "{{ network_entry.ip }}"
+    hardware_addr: "{{ network_entry.mac }}"
+    description: "{{ network_entry.description | default(container_name) | default(application) }} - Podman"
     reload: true
   module_defaults:
     group/oxlorg.opnsense.all: "{{ oxlorg_opnsense_module_defaults }}"
   delegate_to: localhost
   become: false
   loop: "{{ networks_enriched }}"
+  loop_control:
+    loop_var: network_entry  # Changed from the default 'item'
   when:
-    - item.ip is defined
-    - item.mac is defined
+    - network_entry.ip is defined
+    - network_entry.mac is defined
 
 - name: Create OPNsense alias for container IP
   oxlorg.opnsense.alias:
@@ -55,7 +59,9 @@
     container_network_list: >-
       {{
         (container_network_list | default([]))
-        + [ (item.name ~ ':mac=' ~ item.mac) if (item.mac is defined) else item.name ]
+        + [ (enriched_net.name ~ ':mac=' ~ enriched_net.mac) if (enriched_net.mac is defined) else enriched_net.name ]
       }}
   loop: "{{ networks_enriched }}"
+  loop_control:
+    loop_var: enriched_net
   when: networks_enriched is defined
