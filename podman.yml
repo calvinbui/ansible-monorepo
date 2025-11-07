@@ -5,6 +5,13 @@
   vars:
     application: podman
 
+  handlers:
+    - name: Restart podman
+      ansible.builtin.systemd:
+        name: podman
+        state: restarted
+        daemon_reload: true
+
   tasks:
     - name: Install podman
       ansible.builtin.apt:
@@ -41,6 +48,24 @@
         state: started
         enabled: true
 
+    - name: Create override directory for podman.service service
+      ansible.builtin.file:
+        path: /etc/systemd/system/podman.service.d/
+        state: directory
+        mode: "0755"
+
+    - name: Override podman.service
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/podman.service.d/override.conf
+        content: |
+          [Service]
+          # Clear the existing LOGGING variable
+          Environment=LOGGING=
+          # Set the new LOGGING variable
+          Environment=LOGGING="--log-level=warn"
+        mode: "0644"
+      notify: Restart podman
+
     - name: Copy podman-startup.service systemd unit
       ansible.builtin.copy:
         src: "{{ files_directory }}/podman-startup.service"
@@ -48,6 +73,17 @@
         owner: root
         group: root
         mode: "0644"
+
+    - name: Create containers.conf
+      ansible.builtin.copy:
+        content: |
+          [engine]
+          healthcheck_events = false
+        dest: /etc/containers/containers.conf
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart podman
 
     - name: Enable podman-startup service
       ansible.builtin.systemd_service:
