@@ -209,6 +209,10 @@
               - "{{ networks.pub.subnet | ansible.utils.nthhost(4) }}"   # plex
               - "{{ networks.pub.subnet | ansible.utils.nthhost(8) }}"   # jdownloader
               - "{{ networks.pub.subnet | ansible.utils.nthhost(9) }}"   # changedetection
+          -
+            name: nut_host
+            content:
+              - "{{ nut_host }}"
       tags:
         - alias
 
@@ -757,18 +761,27 @@
             sequence: 2
             interface: []
             action: pass
+            protocol: TCP
+            source_net: any
+            destination_net: "nut_host"
+            destination_port: 3493
+            description: NUT access
+          -
+            sequence: 3
+            interface: []
+            action: pass
             source_net: homepage
             destination_net: homepage_targets
             description: Homepage Widgets
           -
-            sequence: 3
+            sequence: 4
             interface: []
             action: pass
             source_net: home_assistant
             destination_net: home_assistant_targets
             description: Home Assistant Integrations
           -
-            sequence: 4
+            sequence: 5
             interface:
               - "{{ networks.iot.opnsense_identifier }}"
               - "{{ networks.pub.opnsense_identifier }}"
@@ -779,7 +792,7 @@
             destination_port: 443
             description: Allow Traefik HTTPS
           -
-            sequence: 5
+            sequence: 6
             interface:
               - "{{ networks.iot.opnsense_identifier }}"
               - "{{ networks.pub.opnsense_identifier }}"
@@ -790,7 +803,7 @@
             destination_port: 80
             description: Allow Traefik HTTP
           -
-            sequence: 6
+            sequence: 7
             interface:
               - "{{ networks.iot.opnsense_identifier }}"
               - "{{ networks.pub.opnsense_identifier }}"
@@ -801,7 +814,7 @@
             destination_port: 123
             description: Allow Traefik NTP
           -
-            sequence: 7
+            sequence: 8
             interface:
               - "{{ networks.iot.opnsense_identifier }}"
               - "{{ networks.pub.opnsense_identifier }}"

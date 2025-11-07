@@ -1,8 +1,6 @@
 ---
 
-# override these for the master/server. the defaults are set for the slave/client
-
-nut_host: "homelab.{{ common_local_tld }}"
+nut_host: "{{ networks.mgmt.subnet | ansible.utils.nthhost(12) }}"
 
 nut_mode: netclient
 
