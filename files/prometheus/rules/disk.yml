@@ -5,7 +5,7 @@ groups:
     rules:
       -
         alert: DiskIOUtilizationHigh
-        expr: rate(node_disk_io_time_seconds_total[5m]) > 0.85
+        expr: rate(node_disk_io_time_seconds_total[5m]) > 0.85 and on() zfs_pool_scrub_in_progress == 0
         for: 15m
         annotations:
           summary: High Disk I/O Utilization
