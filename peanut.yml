@@ -57,6 +57,9 @@
           INFLUX_ORG: {{ _influxdb_org }}
           INFLUX_BUCKET: {{ _influxdb_bucket }}
           INFLUX_INTERVAL: 10
+          DATE_FORMAT: DD/MM/YYYY
+          TIME_FORMAT: 12-hour
+          DISABLE_VERSION_CHECK: true
           WEB_HOST: 0.0.0.0
           WEB_PORT: 8080
       notify: Restart
