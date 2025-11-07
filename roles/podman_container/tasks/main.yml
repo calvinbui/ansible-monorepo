@@ -134,6 +134,7 @@
     healthcheck_timeout: "{{ healthcheck_timeout | ansible.builtin.default(omit) }}"
     healthcheck_retries: "{{ healthcheck_retries | ansible.builtin.default(omit) }}"
 
+    log_driver: "k8s-file"
     log_options:
       max_size: "1m"
 
