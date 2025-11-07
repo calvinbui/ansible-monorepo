@@ -1,0 +1,12 @@
+---
+
+groups:
+  - name: NUT
+    rules:
+      -
+        alert: NUTUPSMissing
+        expr: sum(network_ups_tools_ups_status) == 0 or absent(network_ups_tools_ups_status)
+        for: 10m
+        annotations:
+          summary: NUT Server cannot be reached
+          description: "No metrics can be found"

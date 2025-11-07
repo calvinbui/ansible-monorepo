@@ -1,0 +1,29 @@
+---
+
+- hosts: homeserver
+
+  vars:
+    application: nut-exporter
+
+    container_network: "{{ networks.user }}"
+
+  handlers:
+    - name: Restart
+      containers.podman.podman_container:
+        name: "{{ application }}"
+        force_restart: true
+
+  tasks:
+    - name: Create container
+      ansible.builtin.include_role:
+        name: podman_container
+      vars:
+        image: ghcr.io/druggeri/nut_exporter:3.2.2
+        env:
+          NUT_EXPORTER_SERVER: "{{ nut_host }}"
+          NUT_EXPORTER_USERNAME: "{{ nut_user['slave'].name }}"
+          NUT_EXPORTER_PASSWORD: "{{ nut_user['slave'].password }}"
+          NUT_EXPORTER_VARIABLES: "battery.runtime,battery.charge,ups.load,ups.status"
+        metrics:
+          - port: 9199
+            path: /ups_metrics
