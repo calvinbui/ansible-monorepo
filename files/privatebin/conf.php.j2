@@ -82,7 +82,8 @@ languagedefault = "{{ common_language_iso_639 }}"
 ; (optional) URL shortener address to offer after a new document is created.
 ; It is suggested to only use this with self-hosted shorteners as this will leak
 ; the documents encryption key.
-urlshortener = "{{ _url_shortener_value }}"
+; urlshortener = "https://shortener.example.com/api?link="
+urlshortener = "${basepath}?shortenviashlink&link="
 
 ; (optional) Whether to shorten the URL by default when a new document is created.
 ; If set to true, the "Shorten URL" functionality will be automatically called.
@@ -280,6 +281,9 @@ dir = PATH "data"
 ;   "apiurl" and the API Key from the "apikey" parameters below.
 ; apiurl = "https://shlink.example.com/rest/v3/short-urls"
 ; apikey = "your_api_key"
+[shlink]
+apiurl = "https://{{ shlink_domain }}/rest/v3/short-urls"
+apikey = "{{ shlink_api_key }}"
 
 ;[yourls]
 ; When using YOURLS as a "urlshortener" config item:
