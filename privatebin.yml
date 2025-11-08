@@ -10,14 +10,6 @@
   tasks:
     - name: Create config folders
       ansible.builtin.file:
-        path: "{{ config_directory }}"
-        state: directory
-        mode: "0700"
-        owner: nobody
-        group: "82"  # nobody in alpine
-
-    - name: Create folders
-      ansible.builtin.file:
         path: "{{ config_directory }}/{{ item }}"
         state: directory
         mode: "0700"
