@@ -1,0 +1,140 @@
+---
+
+- hosts: homeserver
+
+  vars:
+    application: shlink
+
+    shlink_mercure_jwt: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      30633037313935336635646134333830663034336163643138306432383131306663343265346638
+      6339363165623336616665326636643332626536393965320a633562386535366139343666373862
+      30353265333562306133383539306133323365633938323563663137353266326665346336356531
+      6239366230396432610a393364373662626336383535366233653836326262646363346363653838
+      62326336613239613335323838336663326131656636386435326636393230396236356234393565
+      63373464383265353265363233323565323735326335316266373164643630393836393432333437
+      32633137343233313532313666343636613864306661336532653831376566303239643164373835
+      30653461636135326431
+
+    container_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create config directory
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user_id }}"
+        group: "{{ common_root_group }}"
+        mode: "0640"
+
+    - name: Create postgres container
+      ansible.builtin.include_role:
+        name: postgres
+      vars:
+        postgres_version: 17.6
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          37323566376538323161373534303235656630386631626663633161636635316630383438313364
+          3730643362393131626463663239613132383939653032330a333562346130323762396263613964
+          66366562313666393931313134666464383131626137303763663566633664333730313330393039
+          3035653632653832660a633934643538643464343330323734316462626434333265353764333761
+          32386166663235613666646235363962376561333461643762386265306432656137
+
+    - name: Create valkey container
+      ansible.builtin.include_role:
+        name: valkey
+      vars:
+        valkey_version: 9.0.0
+        valkey_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          66326533313830633564373739346634383435373730623033303431346130346337313864336563
+          3533643039303065336663303166613431323234663034340a633337346331393836353238383365
+          63333133323032353862316161353565336565356664653535323835316463313561616533376364
+          3938313034613738660a356566653763663439366261323733653339333665613565303939316566
+          65613435313931353237326664643365333166646238636537356131393065623562
+
+    - name: Create mercure container
+      ansible.builtin.include_role:
+        name: podman_container
+      vars:
+        container_name: "{{ application }}-mercure"
+        image: docker.io/dunglas/mercure:v0.20.2
+        env:
+          SERVER_NAME: ":80"
+          MERCURE_PUBLISHER_JWT_KEY: "{{ shlink_mercure_jwt }}"
+          MERCURE_SUBSCRIBER_JWT_KEY: "{{ shlink_mercure_jwt }}"
+          MERCURE_EXTRA_DIRECTIVES: "cors_origins https://{{ application }}.{{ common_tld }}"
+        traefik:
+          - port: 80
+            rule: "Host(`{{ application }}-mercure.{{ common_tld }}`)"
+
+    - name: Create shlink container
+      ansible.builtin.include_role:
+        name: podman_container
+      vars:
+        container_name: shlink
+        image: ghcr.io/shlinkio/shlink:4.6.0
+        env:
+          # General
+          DEFAULT_DOMAIN: "{{ shlink_domain }}"
+          IS_HTTPS_ENABLED: "true"
+          GEOLITE_LICENSE_KEY: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            66343664303239353732613932366338653335396666386239666262623865313266306539636564
+            3032616163663862346562383866663266643630326138340a343563656264353737383433323537
+            36376339643136633431333965366633326264663739663562306533353664653866616161613464
+            3937666636316130640a373962663530666130626662626565353966666664383132306330326231
+            34343061333731663064343035313735623365613862333035376530386663633432303333343836
+            3730643135633432613266393430386635633462663066323239
+          TIMEZONE: "{{ common_timezone }}"
+
+          # URL shortening
+          DEFAULT_SHORT_CODES_LENGTH: "4"
+
+          # Database
+          DB_DRIVER: "postgres"
+          DB_NAME: "{{ _postgres_database }}"
+          DB_USER: "{{ _postgres_username }}"
+          DB_PASSWORD: "{{ _postgres_password }}"
+          DB_HOST: "{{ _postgres_hostname }}"
+          DB_PORT: "{{ _postgres_port | string }}"
+
+          # Visits tracking
+          ANONYMIZE_REMOTE_ADDR: "false"
+
+          # Redis integration
+          REDIS_SERVERS: "{{ _valkey_url }}"
+
+          # Mercure hub integration
+          MERCURE_ENABLED: "true"
+          MERCURE_PUBLIC_HUB_URL: "https://{{ application }}-mercure.{{ common_tld }}"
+          MERCURE_INTERNAL_HUB_URL: "http://{{ application }}-mercure"
+          MERCURE_JWT_SECRET: "{{ shlink_mercure_jwt }}"
+
+          # Specific for the docker image
+          INITIAL_API_KEY: "{{ shlink_api_key }}"
+        traefik:
+          - port: 8080
+            rule: "Host(`{{ shlink_domain }}`)"
+        blackbox:
+          path: /rest/health
+
+    - name: Create shlink-web-client container
+      ansible.builtin.include_role:
+        name: podman_container
+      vars:
+        container_name: "{{ application }}-web"
+        image: ghcr.io/shlinkio/shlink-web-client:4.5.1
+        env:
+          SHLINK_SERVER_URL: "https://{{ shlink_domain }}"
+          SHLINK_SERVER_API_KEY: "{{ shlink_api_key }}"
+        traefik:
+          - port: 8080
+            rule: "Host(`{{ application }}.{{ common_tld }}`)"
+            auth: page
+        homepage:
+          name: Shlink
+          group: Sharing
+          weight: 690
+          description: "URL shortener"
+          href: "https://{{ application }}.{{ common_tld }}"
