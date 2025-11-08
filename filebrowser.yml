@@ -32,6 +32,8 @@
             port: 8080
             sources:
               - path: "/srv"
+                config:
+                  disableIndexing: true
             externalUrl: "https://{{ application }}.{{ common_tld }}"
             internalUrl: "http://{{ application }}.{{ common_local_tld }}"
 
