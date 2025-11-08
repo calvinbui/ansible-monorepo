@@ -7,12 +7,6 @@
 
     container_network: "{{ networks.pub }}"
 
-  handlers:
-    - name: Restart
-      containers.podman.podman_container:
-        name: "{{ application }}"
-        force_restart: true
-
   tasks:
     - name: Create config folders
       ansible.builtin.file:
@@ -40,7 +34,6 @@
         mode: "0644"
         owner: nobody
         group: "82"  # nobody in alpine
-      notify: Restart
 
     - name: Create container
       ansible.builtin.include_role:
