@@ -80,59 +80,11 @@
       ansible.builtin.wait_for:
         path: "{{ config_directory }}/config/settings.json"
 
-    - name: Initialise Sonarr array
-      block:
-        - name: Check Sonarr array
-          json_patch:
-            src: "{{ config_directory }}/config/settings.json"
-            operations:
-              - op: test
-                path: sonarr/0/id
-                value: 0
-              - op: test
-                path: sonarr/1/id
-                value: 1
-          register: _jellyseerr_sonarr_exists
-
-        - name: Add Sonarr array
-          json_patch:
-            src: "{{ config_directory }}/config/settings.json"
-            operations:
-              - op: add
-                path: sonarr/-
-                value:
-                  id: 0
-              - op: add
-                path: sonarr/-
-                value:
-                  id: 1
-          when: not _jellyseerr_sonarr_exists.tested
-
-    - name: Initialise Radarr array
-      block:
-        - name: Check Radarr array
-          json_patch:
-            src: "{{ config_directory }}/config/settings.json"
-            operations:
-              - op: test
-                path: radarr/0/id
-                value: 0
-          register: _jellyseerr_radarr_exists
-
-        - name: Add Radarr array
-          json_patch:
-            src: "{{ config_directory }}/config/settings.json"
-            operations:
-              - op: add
-                path: radarr/-
-                value:
-                  id: 0
-          when: not _jellyseerr_radarr_exists.tested
-
     - name: Configure
       json_patch: # noqa fqcn[action]
         src: "{{ config_directory }}/config/settings.json"
         pretty: true
+        create_parents: true
         operations:
           - op: add
             path: "{{ item.key }}"
