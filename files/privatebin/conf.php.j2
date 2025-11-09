@@ -10,6 +10,7 @@
 ; The full URL, with the domain name and directories that point to the
 ; PrivateBin files, including an ending slash (/). This URL is essential to
 ; allow Opengraph images to be displayed on social networks.
+; basepath = "https://privatebin.example.com/"
 basepath = "https://{{ application }}.{{ common_tld }}/"
 
 ; enable or disable the discussion feature, defaults to true
@@ -61,7 +62,7 @@ availabletemplates[] = "bootstrap-compact-page"
 ; which can be combined with "-dark" and "-compact" for "bootstrap-dark-page",
 ; "bootstrap-compact-page" - previews at:
 ; https://privatebin.info/screenshots.html
-template = "bootstrap5"
+; template = "bootstrap5"
 
 ; (optional) info text to display
 ; use single, instead of double quotes for HTML attributes
@@ -77,6 +78,7 @@ languageselection = false
 
 ; set the language your installs defaults to, defaults to English
 ; if this is set and language selection is disabled, this will be the only language
+; languagedefault = "en"
 languagedefault = "{{ common_language_iso_639 }}"
 
 ; (optional) URL shortener address to offer after a new document is created.
@@ -92,10 +94,12 @@ urlshortener = "${basepath}?shortenviashlink&link="
 
 ; (optional) Let users create a QR code for sharing the document URL with one click.
 ; It works both when a new document is created and when you view a document.
+; qrcode = true
 qrcode = true
 
 ; (optional) Let users send an email sharing the document URL with one click.
 ; It works both when a new document is created and when you view a document.
+; email = true
 email = false
 
 ; (optional) IP based icons are a weak mechanism to detect if a comment was from
@@ -277,7 +281,7 @@ dir = PATH "data"
 ;   "urlshortener" needs to point to the base URL of your PrivateBin
 ;   instance with "?shortenviashlink&link=" appended. For example:
 ;   urlshortener = "${basepath}?shortenviashlink&link="
-;   This URL will in turn call YOURLS on the server side, using the URL from
+;   This URL will in turn call Shlink on the server side, using the URL from
 ;   "apiurl" and the API Key from the "apikey" parameters below.
 ; apiurl = "https://shlink.example.com/rest/v3/short-urls"
 ; apikey = "your_api_key"
