@@ -226,18 +226,7 @@
           notifications/agents/webhook/enabled: true
           notifications/agents/webhook/types: 146
           notifications/agents/webhook/options/webhookUrl: "https://mattermost.{{ common_tld }}/hooks/{{ _jellyseerr_mattermost_webhook_id }}"
-          # the json webhook requires:
-          # - a starting and ending quote
-          # - single backslashes on double quotes
-          notifications/agents/webhook/options/jsonPayload: >-
-            {{
-              _jellyseerr_webhook_payload
-              | ansible.builtin.to_json
-              | ansible.builtin.regex_replace('"', '\\"')
-              | ansible.builtin.regex_replace('^', '"')
-              | ansible.builtin.regex_replace('$', '"')
-              | ansible.builtin.b64encode
-            }}
+          notifications/agents/webhook/options/jsonPayload: "{{ _jellyseerr_webhook_payload | ansible.builtin.to_json | ansible.builtin.b64encode }}"
 
         _jellyseerr_mattermost_webhook_id: !vault |
           $ANSIBLE_VAULT;1.1;AES256
