@@ -263,7 +263,7 @@
       notify: Restart OctoPrint
 
     - name: Check if config is ready for updating
-      yedit: # noqa fqcn[action]
+      local.utils.yedit:
         src: "/home/{{ common_user }}/.octoprint/config.yaml"
         key: appearance.color
         state: list
@@ -275,7 +275,7 @@
       when: _octoprint_config_ready.result != "black"
 
     - name: Configure OctoPrint
-      yedit: # noqa fqcn[action]
+      local.utils.yedit:
         src: "/home/{{ common_user }}/.octoprint/config.yaml"
         key: "{{ item.key }}"
         value: "{{ item.value }}"

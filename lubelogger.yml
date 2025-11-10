@@ -102,7 +102,7 @@
             fields: '["serviceRecords", "reminders", "nextReminder"]'
 
     - name: Configure
-      json_patch: # noqa fqcn[action]
+      local.utils.json_patch:
         src: "{{ config_directory }}/data/config/userConfig.json"
         pretty: true
         operations:

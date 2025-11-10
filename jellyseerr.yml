@@ -81,7 +81,7 @@
         path: "{{ config_directory }}/config/settings.json"
 
     - name: Configure
-      json_patch: # noqa fqcn[action]
+      local.utils.json_patch:
         src: "{{ config_directory }}/config/settings.json"
         pretty: true
         create_parents: true
@@ -208,7 +208,7 @@
         search_regex: '"initialized": true'
 
     - name: Configure Plex libraries
-      json_patch: # noqa fqcn[action]
+      local.utils.json_patch:
         src: "{{ config_directory }}/config/settings.json"
         pretty: true
         operations:

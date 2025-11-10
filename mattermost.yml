@@ -75,7 +75,7 @@
           path: /api/v4/system/ping
 
     - name: Configure
-      json_patch: # noqa fqcn[action]
+      local.utils.json_patch:
         src: "{{ config_directory }}/config/config/config.json"
         pretty: true
         operations:

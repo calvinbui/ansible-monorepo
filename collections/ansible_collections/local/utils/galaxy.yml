@@ -1,0 +1,9 @@
+---
+
+namespace: local
+name: utils
+version: 1.0.0
+readme: "README.md"
+authors:
+  - Calvin Bui
+description: Local utility modules

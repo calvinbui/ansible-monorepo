@@ -76,7 +76,7 @@
         state: present
 
     - name: Configure
-      yedit: # noqa fqcn[action]
+      local.utils.yedit:
         src: "{{ config_directory }}/config/config/config.yaml"
         key: "{{ item.key }}"
         value: "{{ item.value }}"
