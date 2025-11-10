@@ -314,8 +314,7 @@
             39376566333961386464383061386365386532663237656161353233343965616261663166366463
             3030616430653433360a643763383535376230633438386461353136666365636165636334323662
             3961
-        elasticsearch_environment:
-          ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+        elasticsearch_memory: "512m"
 
     - name: Install fulltextsearch app
       containers.podman.podman_container_exec:
@@ -349,7 +348,7 @@
             '{"search_platform":"OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticSearchPlatform"}'
         -
           app: fulltextsearch_elasticsearch
-          value: '{\"elastic_host\":\"http://elastic:{{ _elasticsearch_password }}@{{ _elasticsearch_hostname }}:{{ _elasticsearch_port }}\",\"elastic_index\":\"{{ application }}\"}'
+          value: '{\"elastic_host\":\"{{ _elasticsearch_url }}\",\"elastic_index\":\"{{ application }}\"}'
         -
           app: files_fulltextsearch
           value: '{\"files_pdf\":\"1\",\"files_office\":\"1\"}'

@@ -15,29 +15,21 @@
     container_name: "{{ elasticsearch_name }}"
     image: "docker.elastic.co/elasticsearch/elasticsearch:{{ elasticsearch_version }}"
 
-    command: "{{ elasticsearch_command | ansible.builtin.default(omit) }}"
+    env:
+      ELASTIC_PASSWORD: "{{ elasticsearch_password }}"
+      ES_JAVA_OPTS: "-Xms{{ elasticsearch_memory }} -Xmx{{ elasticsearch_memory }}"
 
-    memory: "{{ elasticsearch_memory | ansible.builtin.default('1G') }}"
-
-    env: "{{
-        {
-          'ELASTIC_PASSWORD': elasticsearch_password,
-          'ES_SETTING_CLUSTER_NAME': elasticsearch_name,
-          'ES_SETTING_DISCOVERY_TYPE': 'single-node',
-          'ES_SETTING_XPACK_SECURITY_ENABLED': 'false',
-          'ES_SETTING_BOOTSTRAP_MEMORY__LOCK': 'true',
-          'ES_SETTING_LOGGER_ORG_ELASTICSEARCH': 'WARN'
-        } | ansible.builtin.combine(elasticsearch_environment)
-      }}"
+      cluster.name: "{{ elasticsearch_name }}"
+      discovery.type: single-node
+      bootstrap.memory_lock: "true"
+      logger.org.elasticsearch: WARN
+      xpack.security.http.ssl.enabled: "false"
 
     volumes:
       - "{{ elasticsearch_directory }}:/usr/share/elasticsearch/data"
 
     cap_add:
       - IPC_LOCK
-
-    labels:
-      - traefik.enable=false
 
 - name: Set variables
   ansible.builtin.set_fact:
