@@ -41,7 +41,9 @@
     _mongo_password: "{{ mongo_password }}"
     _mongo_database: "{{ mongo_database }}"
     _mongo_port: 27017
+  no_log: true
 
 - name: Set connection URL variable
   ansible.builtin.set_fact:
     _mongo_url: "mongodb://{{ _mongo_username }}:{{ _mongo_password }}@{{ _mongo_hostname }}:{{ _mongo_port }}/{{ _mongo_database }}?authSource=admin"
+  no_log: true

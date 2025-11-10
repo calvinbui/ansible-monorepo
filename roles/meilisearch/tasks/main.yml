@@ -33,7 +33,9 @@
     _meilisearch_hostname: "{{ meilisearch_name }}"
     _meilisearch_port: "7700"
     _meilisearch_password: "{{ meilisearch_password }}"
+  no_log: true
 
 - name: Set connection URL variable
   ansible.builtin.set_fact:
     _meilisearch_url: "http://{{ _meilisearch_hostname }}:{{ _meilisearch_port }}"
+  no_log: true

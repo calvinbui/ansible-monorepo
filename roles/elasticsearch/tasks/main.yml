@@ -36,7 +36,9 @@
     _elasticsearch_hostname: "{{ elasticsearch_name }}"
     _elasticsearch_password: "{{ elasticsearch_password }}"
     _elasticsearch_port: 9200
+  no_log: true
 
 - name: Set connection URL variable
   ansible.builtin.set_fact:
     _elasticsearch_url: "http://elastic:{{ _elasticsearch_password }}@{{ _elasticsearch_hostname }}:{{ _elasticsearch_port }}"
+  no_log: true

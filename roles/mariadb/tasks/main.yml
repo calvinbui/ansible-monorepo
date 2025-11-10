@@ -37,6 +37,7 @@
     _mariadb_username: "{{ mariadb_user }}"
     _mariadb_password: "{{ mariadb_password }}"
     _mariadb_database: "{{ mariadb_database }}"
+  no_log: true
 
 - name: Wait for mariadb to come up
   ansible.builtin.pause:

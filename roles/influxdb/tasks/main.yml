@@ -65,3 +65,4 @@
     _influxdb_org: "{{ influxdb_org }}"
     _influxdb_bucket: "{{ influxdb_bucket }}"
     _influxdb_port: 8086
+  no_log: true
