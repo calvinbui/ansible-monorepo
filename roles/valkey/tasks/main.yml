@@ -56,7 +56,9 @@
     _valkey_hostname: "{{ valkey_name }}"
     _valkey_port: "6379"
     _valkey_password: "{{ valkey_password }}"
+  no_log: true
 
 - name: Set connection URL variable
   ansible.builtin.set_fact:
     _valkey_url: "redis://:{{ _valkey_password }}@{{ _valkey_hostname }}:{{ _valkey_port }}"
+  no_log: true
