@@ -1,0 +1,249 @@
+---
+
+- hosts: homeserver
+
+  vars:
+    application: forgejo
+
+    container_network: "{{ networks.pub }}"
+
+  tasks:
+    - name: Create data folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}/data"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Create postgres container
+      ansible.builtin.include_role:
+        name: postgres
+      vars:
+        postgres_version: 17.6
+        postgres_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          61343333353734383736653837366562643461333136616136343137343762336361613038343662
+          3938343633353465303438356335376331663765376435320a343835386261636163356166343361
+          62656439656431393136616533626265363738313864626464643334373663653166393137396638
+          3763626466613631310a656366336136653036393139626133613264643938353333663264373665
+          63383862376364343634656635666261393062363136333239656634663132316233656537343265
+          3232646432666434363733383764653137633363313234316263
+
+    - name: Create elasticsearch container
+      ansible.builtin.include_role:
+        name: elasticsearch
+      vars:
+        elasticsearch_version: 9.1.6
+        elasticsearch_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          39653039613434366630613065626636336233303734653665663232646235396130363334373531
+          6138396162303266646330613736376464393231346536320a333430643061646331626438323561
+          64653034333438343863656530363032323961373362396538316334653932653465666233623935
+          3764353262626531610a313233363166653031313834656332613164386234313733373930643735
+          34383433313639646533366265386364366631326236313664393537326136333031
+        elasticsearch_memory: 1g
+
+    - name: Create valkey container
+      ansible.builtin.include_role:
+        name: valkey
+      vars:
+        valkey_version: 9.0.0
+        valkey_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          31306138326332306633643032386439356634346662343236323937353138643038313337636337
+          3865333464346330333337336238663737623733666636350a613938326633633134653933353461
+          64643861613861383039356533633139623532653633303332636132363664643163303232636536
+          3734656636663265360a333563653634623562343632346362643462313339623762363763393630
+          66396434643938626434303733343831663730343136333237343633663235343564333266653536
+          3562316636363934333034366238353539363431636238373866
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: podman_container
+      vars:
+        image: codeberg.org/forgejo/forgejo:13.0.2
+        volumes:
+          - "{{ config_directory }}/data:/data"
+          - /etc/localtime:/etc/localtime:ro
+        env:
+          TZ: "{{ common_timezone }}"
+
+          USER_UID: "{{ common_user_id | ansible.builtin.string }}"
+          USER_GID: "{{ common_group_id | ansible.builtin.string }}"
+
+          # https://forgejo.org/docs/latest/admin/config-cheat-sheet/
+          FORGEJO__repository__FORCE_PRIVATE: "true"
+          FORGEJO__repository__DEFAULT_PRIVATE: "private"
+          FORGEJO__repository__ENABLE_PUSH_CREATE_USER: "true"
+          FORGEJO__repository__DISABLED_REPO_UNITS: "repo.ext_issues,repo.wiki,repo.ext_wiki,repo.projects,repo.packages,repo.actions"
+          FORGEJO__repository__DEFAULT_REPO_UNITS: "repo.code,repo.issues,repo.pulls,repo.actions"
+          FORGEJO__repository__DISABLE_MIGRATIONS: "true"
+          FORGEJO__repository__DEFAULT_BRANCH: "master"
+          FORGEJO__repository__DISABLE_STARS: "true"
+
+          FORGEJO__badges__ENABLED: "false"
+
+          FORGEJO__markdown__ENABLE_MATH: "false"
+
+          FORGEJO__server__PROTOCOL: "http"
+          FORGEJO__server__DOMAIN: "{{ application }}.{{ common_tld }}"
+          FORGEJO__server__ROOT_URL: "https://{{ application }}.{{ common_tld }}"
+          FORGEJO__server__DISABLE_SSH: "true"
+          FORGEJO__server__OFFLINE_MODE: "true"
+          FORGEJO__server__ENABLE_GZIP: "true"
+          FORGEJO__server__LANDING_PAGE: "/user/login"
+
+          FORGEJO__database__DB_TYPE: postgres
+          FORGEJO__database__HOST: "{{ _postgres_hostname }}:{{ _postgres_port | ansible.builtin.string }}"
+          FORGEJO__database__NAME: "{{ _postgres_database }}"
+          FORGEJO__database__USER: "{{ _postgres_username }}"
+          FORGEJO__database__PASSWD: "{{ _postgres_password }}"
+
+          FORGEJO__indexer__ISSUE_INDEXER_TYPE: "elasticsearch"
+          FORGEJO__indexer__ISSUE_INDEXER_CONN_STR: "{{ _elasticsearch_url }}"
+          FORGEJO__indexer__REPO_INDEXER_ENABLED: "true"
+          FORGEJO__indexer__REPO_INDEXER_TYPE: "elasticsearch"
+          FORGEJO__indexer__REPO_INDEXER_CONN_STR: "{{ _elasticsearch_url }}"
+
+          FORGEJO__queue__TYPE: "redis"
+          FORGEJO__queue__CONN_STR: "{{ _valkey_url }}/0"
+
+          FORGEJO__admin__DISABLE_REGULAR_ORG_CREATION: "true"
+          FORGEJO__admin__SEND_NOTIFICATION_EMAIL_ON_NEW_USER: "true"
+
+          FORGEJO__security__INSTALL_LOCK: "true"
+          FORGEJO__security__SECRET_KEY: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            38613761373261613137623966393031636663313465646336316331366262663937646234343731
+            6430636464376231303335343134373430363431643635630a646563373133636234393566346265
+            32346637393138306337663236646635646538393636613562336533343336363539316163383163
+            3463613061633934300a616262333134646237643535656363393632313765343862613333343232
+            31626564633630386535326233326564346561393265663237353737663832396237356562386131
+            35616465623539313030626532653465633532373562303432356238346338636433663962613161
+            66613665666564646366376165373833303738343637306635666365323934326266626436643638
+            65643933393930643762
+          FORGEJO__security__DISABLE_QUERY_AUTH_TOKEN: "true"
+
+          FORGEJO__openid__ENABLE_OPENID_SIGNIN: "false"
+          FORGEJO__openid__ENABLE_OPENID_SIGNUP: "false"
+          FORGEJO__openid__WHITELISTED_URIS: "{{ oidc_base_url }}"
+
+          FORGEJO__oauth2_client__OPENID_CONNECT_SCOPES: "email profile"
+          FORGEJO__oauth2_client__ENABLE_AUTO_REGISTRATION: "true"
+
+          FORGEJO__service__ACTIVE_CODE_LIVE_MINUTES: "5"
+          FORGEJO__service__RESET_PASSWD_CODE_LIVE_MINUTES: "5"
+          FORGEJO__service__DISABLE_REGISTRATION: "true"
+          FORGEJO__service__REQUIRE_SIGNIN_VIEW: "true"
+          FORGEJO__service__ENABLE_NOTIFY_MAIL: "true"
+          FORGEJO__service__ENABLE_BASIC_AUTHENTICATION: "false"
+          FORGEJO__service__ENABLE_INTERNAL_SIGNIN: "false"
+          FORGEJO__service__DEFAULT_KEEP_EMAIL_PRIVATE: "true"
+          FORGEJO__service__DEFAULT_ALLOW_CREATE_ORGANIZATION: "false"
+          FORGEJO__service__ENABLE_USER_HEATMAP: "false"
+          FORGEJO__service__ENABLE_TIMETRACKING: "false"
+          FORGEJO__service__DEFAULT_ENABLE_TIMETRACKING: "false"
+          FORGEJO__service__SHOW_REGISTRATION_BUTTON: "false"
+          FORGEJO__service__SHOW_MILESTONES_DASHBOARD_PAGE: "false"
+          FORGEJO__service__AUTO_WATCH_NEW_REPOS: "false"
+          FORGEJO__service__AUTO_WATCH_ON_CHANGES: "false"
+          FORGEJO__service__DEFAULT_USER_VISIBILITY: "private"
+          FORGEJO__service__ALLOWED_USER_VISIBILITY_MODES: "private"
+          FORGEJO__service__DEFAULT_ORG_VISIBILITY: "private"
+          FORGEJO__service__ALLOW_ONLY_EXTERNAL_REGISTRATION: "true"
+          FORGEJO__service__NO_REPLY_ADDRESS: "noreply.{{ application }}"
+
+          FORGEJO__service.explore__REQUIRE_SIGNIN_VIEW: "true"
+
+          FORGEJO__mailer__ENABLED: "true"
+          FORGEJO__mailer__PROTOCOL: "smtp+starttls"
+          FORGEJO__mailer__SMTP_ADDR: "{{ common_email_server }}"
+          FORGEJO__mailer__SMTP_PORT: "{{ common_email_port | ansible.builtin.string }}"
+          FORGEJO__mailer__USER: "{{ common_email_username }}"
+          FORGEJO__mailer__PASSWD: "{{ common_email_password }}"
+          FORGEJO__mailer__FROM: "{{ application }}{{ common_email_to }}"
+
+          FORGEJO__cache__ADAPTER: "redis"
+          FORGEJO__cache__HOST: "{{ _valkey_url }}/1"
+
+          FORGEJO__session__PROVIDER: "redis"
+          FORGEJO__session__PROVIDER_CONFIG: "{{ _valkey_url }}/2"
+
+          FORGEJO__log__LOGGER_ROUTER_MODE: ""
+          FORGEJO__log__LOGGER_XORM_MODE: ""
+
+          FORGEJO__api__ENABLE_SWAGGER: "false"
+
+          FORGEJO__time__DEFAULT_UI_LOCATION: "{{ common_timezone }}"
+
+          FORGEJO__packages__ENABLED: "false"
+
+          FORGEJO__actions__ENABLED: "false"
+
+          FORGEJO__other__SHOW_FOOTER_VERSION: "false"
+          FORGEJO__other__SHOW_FOOTER_TEMPLATE_LOAD_TIME: "false"
+          FORGEJO__other__SHOW_FOOTER_POWERED_BY: "false"
+          FORGEJO__other__ENABLE_SITEMAP: "false"
+          FORGEJO__other__ENABLE_FEED: "false"
+        traefik:
+          - port: 3000
+            middlewares:
+              - "{{ application }}-buffering"
+        homepage:
+          group: Programming
+          weight: 100
+          description: "Git service"
+        blackbox:
+          path: /api/healthz
+        labels:
+          - "traefik.http.middlewares.{{ application }}-buffering.buffering.maxRequestBodyBytes=0"
+          - "traefik.http.middlewares.{{ application }}-buffering.buffering.maxResponseBodyBytes=0"
+          - "traefik.http.middlewares.{{ application }}-buffering.buffering.memRequestBodyBytes=0"
+          - "traefik.http.middlewares.{{ application }}-buffering.buffering.memResponseBodyBytes=0"
+
+    - name: Add OIDC source
+      containers.podman.podman_container_exec:
+        name: "{{ application }}"
+        user: 1000
+        command: >-
+          forgejo admin auth add-oauth
+            --name {{ oidc_provider | ansible.builtin.title }}
+            --provider openidConnect
+            --key {{ application }}
+            --secret {{ oidc_auth.forgejo.secret }}
+            --auto-discover-url {{ oidc_discovery_url }}
+      register: _command_result
+      failed_when:
+        - ('Command error' in _command_result.stderr)
+        - ('login source already exists' not in _command_result.stderr)
+      changed_when: ('login source already exists' not in _command_result.stderr)
+
+    - name: Get OIDC source ID
+      containers.podman.podman_container_exec:
+        name: "{{ application }}"
+        user: 1000
+        command: forgejo admin auth list
+      register: _forgejo_auth_sources
+      failed_when: ('Command error' in _forgejo_auth_sources.stderr)
+      changed_when: false
+
+    - name: Set source id
+      ansible.builtin.set_fact:
+        _forgejo_auth_id: "{{ _forgejo_auth_sources.stdout_lines[1] | ansible.builtin.split('\t') | ansible.builtin.first }}"
+
+    - name: Update OIDC source
+      containers.podman.podman_container_exec:
+        name: "{{ application }}"
+        user: 1000
+        command: >-
+          forgejo admin auth update-oauth
+            --id {{ _forgejo_auth_id }}
+            --name {{ oidc_provider | ansible.builtin.title }}
+            --provider openidConnect
+            --key {{ application }}
+            --secret {{ oidc_auth.forgejo.secret }}
+            --auto-discover-url {{ oidc_discovery_url }}
+      register: _command_result
+      failed_when: ('Command error' in _command_result.stderr)
+      changed_when: true # nothing is returned so we'll always assume changed
