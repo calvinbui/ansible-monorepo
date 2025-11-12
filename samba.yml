@@ -14,13 +14,40 @@
         force_restart: true
 
   tasks:
-    - name: Create config folder
+    - name: Create data folder
       ansible.builtin.file:
-        path: "{{ config_directory }}"
+        path: "{{ config_directory }}/data"
         state: directory
         owner: "{{ common_user }}"
         group: "{{ common_root_group }}"
         mode: "0750"
+
+    - name: Create dfree script
+      ansible.builtin.copy:
+        content: |
+          #!/bin/sh
+
+          # Total size from the main mount (/files)
+          total=$(df --output=avail /files | tail -1)
+
+          # Initialize used counter
+          used=0
+
+          # Read mounts safely without creating a subshell
+          while IFS= read -r mp; do
+            u=$(df --output=used "$mp" | tail -1)
+            used=$((used + u))
+          done < <(df --output=target | grep '^/files')
+
+          # Available = total - used
+          avail=$((total - used))
+
+          # Output for Samba
+          echo "$total $avail"
+        dest: "{{ config_directory }}/dfree.sh"
+        owner: "{{ common_user }}"
+        group: "{{ common_root_group }}"
+        mode: "0755"
 
     - name: Create config.yml
       ansible.builtin.copy:
@@ -49,7 +76,7 @@
               guestok: no
               validusers: "{{ common_user }}"
               writelist: "{{ common_user }}"
-        dest: "{{ config_directory }}/config.yml"
+        dest: "{{ config_directory }}/config/config.yml"
         owner: "{{ common_user }}"
         group: "{{ common_root_group }}"
         mode: "0640"
@@ -74,8 +101,9 @@
           SAMBA_LOG_LEVEL: "1"
           SAMBA_HOSTS_ALLOW: "{{ networks.user.subnet | ansible.utils.ipaddr('subnet') }}"
         volumes:
-          - "{{ config_directory }}:/data"
+          - "{{ config_directory }}/config:/data"
           - "{{ common_directory_storage }}:/files"
+          - "{{ config_directory }}/dfree.sh:/etc/samba/dfree.sh"
         cap_add:
           - NET_ADMIN
           - NET_RAW
