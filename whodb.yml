@@ -13,6 +13,8 @@
         name: podman_container
       vars:
         image: docker.io/clidey/whodb:0.61.0
+        env:
+          WHODB_OPENAI_API_KEY: "{{ openai_api_key }}"
         traefik:
           - port: 8080
         homepage:
