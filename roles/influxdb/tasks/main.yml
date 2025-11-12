@@ -22,9 +22,6 @@
   vars:
     container_name: "{{ influxdb_name }}"
     image: "public.ecr.aws/docker/library/influxdb:{{ influxdb_version }}"
-
-    command: "{{ influxdb_command | ansible.builtin.default(omit) }}"
-
     env:
       DOCKER_INFLUXDB_INIT_MODE: "setup"
       DOCKER_INFLUXDB_INIT_USERNAME: "{{ influxdb_username }}"
@@ -32,11 +29,9 @@
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "{{ influxdb_token | ansible.builtin.default(omit) }}"
       DOCKER_INFLUXDB_INIT_ORG: "{{ influxdb_org }}"
       DOCKER_INFLUXDB_INIT_BUCKET: "{{ influxdb_bucket }}"
-
     volumes:
       - "{{ influxdb_directory }}/data:/var/lib/influxdb2"
       - "{{ influxdb_directory }}/config:/etc/influxdb2"
-
     labels:
       - "homepage.name={{ influxdb_homepage.name | ansible.builtin.default(omit) }}"
       - "homepage.group={{ influxdb_homepage.group | ansible.builtin.default(omit) }}"

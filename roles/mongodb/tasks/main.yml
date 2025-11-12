@@ -17,22 +17,16 @@
   vars:
     container_name: "{{ mongo_name }}"
     image: "public.ecr.aws/docker/library/mongo:{{ mongo_version }}"
-
     command: "{{ mongo_command | ansible.builtin.default(omit) }}"
-
     env:
       MONGO_INITDB_ROOT_USERNAME: "{{ mongo_username }}"
       MONGO_INITDB_ROOT_PASSWORD: "{{ mongo_password }}"
       MONGO_INITDB_DATABASE: "{{ mongo_database }}"
       TZ: "{{ common_timezone }}"
-
     volumes:
       - "{{ mongo_directory }}/db:/data/db"
       - "{{ mongo_directory }}/dump:/dump"
       - /etc/localtime:/etc/localtime:ro
-
-    labels:
-      - traefik.enable=false
 
 - name: Set variables
   ansible.builtin.set_fact:

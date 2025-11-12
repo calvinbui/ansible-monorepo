@@ -14,29 +14,16 @@
   vars:
     container_name: "{{ postgres_name }}"
     image: "{{ postgres_image }}:{{ postgres_version }}"
-
-    command: "{{ postgres_command | ansible.builtin.default(omit) }}"
-
-    volumes: "{{ postgres_directories }}"
-
-    # https://github.com/docker-library/docs/blob/master/postgres/README.md#environment-variables
     env:
       POSTGRES_USER: "{{ postgres_user }}"
       POSTGRES_PASSWORD: "{{ postgres_password }}"
       POSTGRES_DB: "{{ postgres_database }}"
       TZ: "{{ common_timezone }}"
-      POSTGRES_INITDB_ARGS: "{{ postgres_initdb_args | ansible.builtin.default(omit) }}"
-      LC_COLLATE: "{{ lc_collate | ansible.builtin.default(omit) }}"
-      LC_CTYPE: "{{ lc_ctype | ansible.builtin.default(omit) }}"
-      POSTGRES_HOST_AUTH_METHOD: "{{ postgres_host_auth_method | ansible.builtin.default(omit) }}"
-
+    volumes: "{{ postgres_directories }}"
     healthcheck: pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER}
     healthcheck_interval: 30s
     healthcheck_timeout: 20s
     healthcheck_retries: 3
-
-    labels:
-      - traefik.enable=false
 
   register: postgres_container
 

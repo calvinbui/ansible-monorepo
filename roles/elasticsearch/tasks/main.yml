@@ -14,7 +14,6 @@
   vars:
     container_name: "{{ elasticsearch_name }}"
     image: "docker.elastic.co/elasticsearch/elasticsearch:{{ elasticsearch_version }}"
-
     env:
       ELASTIC_PASSWORD: "{{ elasticsearch_password }}"
       ES_JAVA_OPTS: "-Xms{{ elasticsearch_memory }} -Xmx{{ elasticsearch_memory }}"
@@ -24,10 +23,8 @@
       bootstrap.memory_lock: "true"
       logger.org.elasticsearch: WARN
       xpack.security.http.ssl.enabled: "false"
-
     volumes:
       - "{{ elasticsearch_directory }}:/usr/share/elasticsearch/data"
-
     cap_add:
       - IPC_LOCK
 

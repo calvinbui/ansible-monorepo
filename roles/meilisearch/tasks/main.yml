@@ -14,19 +14,13 @@
   vars:
     container_name: "{{ meilisearch_name }}"
     image: "docker.io/getmeili/meilisearch:v{{ meilisearch_version }}"
-
     command:
       - /bin/meilisearch
       - --experimental-dumpless-upgrade
-
     env:
       MEILI_NO_ANALYTICS: "true"
       MEILI_MASTER_KEY: "{{ meilisearch_password }}"
-
     volumes: "{{ meilisearch_directory }}:/meili_data"
-
-    labels:
-      - traefik.enable=false
 
 - name: Set variables
   ansible.builtin.set_fact:

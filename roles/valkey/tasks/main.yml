@@ -29,27 +29,20 @@
   vars:
     container_name: "{{ valkey_name }}"
     image: "ghcr.io/valkey-io/valkey:{{ valkey_version }}"
-
     command:
       - valkey-server
       - /usr/local/etc/valkey/valkey.conf
-
     env:
       TZ: "{{ common_timezone }}"
       VALKEY_PASSWORD: "{{ valkey_password }}"
-
     volumes:
       - "{{ valkey_directory }}/valkey.conf:/usr/local/etc/valkey/valkey.conf"
       - "{{ valkey_directory }}/data:/data"
-
     healthcheck: "valkey-cli -a $VALKEY_PASSWORD ping | grep -i pong"
     healthcheck_start_period: 30s
     healthcheck_interval: 10s
     healthcheck_timeout: 30s
     healthcheck_retries: 3
-
-    labels:
-      - traefik.enable=false
 
 - name: Set variables
   ansible.builtin.set_fact:

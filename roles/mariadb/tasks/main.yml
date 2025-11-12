@@ -14,20 +14,13 @@
   vars:
     container_name: "{{ mariadb_name }}"
     image: "public.ecr.aws/docker/library/mariadb:{{ mariadb_version }}"
-
-    command: "{{ mariadb_command | ansible.builtin.default(omit) }}"
-
     volumes: "{{ mariadb_directories }}"
-
     env:
       MARIADB_USER: "{{ mariadb_user }}"
       MARIADB_PASSWORD: "{{ mariadb_password }}"
       MARIADB_DATABASE: "{{ mariadb_database }}"
       MARIADB_RANDOM_ROOT_PASSWORD: "true"
       TZ: "{{ common_timezone }}"
-
-    labels:
-      - traefik.enable=false
   register: mariadb_container
 
 - name: Set variables
