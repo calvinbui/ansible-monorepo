@@ -1,0 +1,53 @@
+---
+
+- hosts: homeserver
+
+  vars:
+    application: rustfs
+
+    container_network: "{{ networks.pub }}"
+
+  handlers:
+    - name: Restart
+      containers.podman.podman_container:
+        name: "{{ application }}"
+        force_restart: true
+
+  tasks:
+    - name: Create config folder
+      ansible.builtin.file:
+        path: "{{ config_directory }}"
+        state: directory
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0771"
+
+    - name: Create container
+      ansible.builtin.include_role:
+        name: podman_container
+      vars:
+        image: docker.io/rustfs/rustfs:1.0.0-alpha.68
+        env:
+          RUSTFS_ACCESS_KEY: "{{ common_user }}"
+          RUSTFS_SECRET_KEY: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            35633465613133356431626337623938386665613363643164616163376163663365303662356538
+            3264666237613366313764356162393066386435623634370a663536373034373936383264636366
+            37623135646534653533326335386336666166393130386663393736653539666163336162626435
+            6464333863626263310a366565313338666132616666633932353063323235653831343637643662
+            31313332326434363239316634663639373666636437316137653566336332383662633337656563
+            3366666466366163336163323431663439323832643235363934
+        volumes:
+          - "{{ config_directory }}:/data"
+        traefik:
+          - name: api
+            port: 9000
+            rule: Host(`s3.{{ common_tld }}`)
+          - name: console
+            port: 9001
+            rule: Host(`{{ application }}.{{ common_tld }}`)
+        homepage:
+          name: RustFS
+          group: Storage
+          weight: 400
+          description: "Object storage"
