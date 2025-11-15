@@ -71,6 +71,7 @@
         user: "{{ common_user }}"
         state: present
         key: https://github.com/calvinbui.keys
+        comment: github
 
     - name: Set hostname
       ansible.builtin.hostname:
