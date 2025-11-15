@@ -92,6 +92,10 @@
           # https://docs.mattermost.com/configure/environment-configuration-settings.html#web-server-listen-address
           ServiceSettings/ListenAddress: ":8065"
 
+          # https://docs.mattermost.com/administration-guide/configure/integrations-configuration-settings.html
+          ServiceSettings/EnablePostUsernameOverride: true
+          ServiceSettings/EnablePostIconOverride: true
+
           # https://docs.mattermost.com/configure/experimental-configuration-settings.html#enable-local-mode-for-mmctl
           ServiceSettings/EnableLocalMode: true
 
