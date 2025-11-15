@@ -79,6 +79,9 @@
         content: |
           [engine]
           healthcheck_events = false
+
+          [containers]
+          base_hosts_file = "image"
         dest: /etc/containers/containers.conf
         owner: root
         group: root
