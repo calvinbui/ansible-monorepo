@@ -2,7 +2,7 @@ FROM quay.io/woodpeckerci/woodpecker-agent:v3.11.0 AS woodpecker
 FROM quay.io/woodpeckerci/plugin-git:2.7.0 AS plugin-git
 FROM quay.io/woodpeckerci/plugin-s3:v1.1.0 as plugin-s3
 FROM ghcr.io/opentofu/opentofu:1.10.7-minimal AS opentofu
-FROM ghcr.io/terraform-linters/tflint:v0.59.1 AS tflint
+FROM ghcr.io/terraform-linters/tflint:v0.60.0 AS tflint
 FROM ghcr.io/aquasecurity/tfsec-scratch:v1.28.14 AS tfsec
 
 FROM public.ecr.aws/docker/library/python:3.13.7-slim
