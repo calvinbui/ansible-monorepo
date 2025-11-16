@@ -40,6 +40,9 @@
           SYSTEM_DEFAULTLOCALE: "{{ common_language_iso_639 }}-{{ common_country_iso_3166 }}"
           SYSTEM_SHOWUPDATE: "false"
 
+          SYSTEM_ENABLEANALYTICS: "false"
+          SYSTEM_ENABLESCARF: "false"
+
           METRICS_ENABLED: "false"
         volumes:
           - "{{ config_directory }}/trainingData:/usr/share/tessdata"
