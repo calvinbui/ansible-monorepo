@@ -24,3 +24,6 @@ passlib==1.7.4
 
 # community.dns.lookup
 dnspython==2.8.0
+
+# pending https://github.com/ansible/ansible/issues/86082
+bcrypt==4.3.0
