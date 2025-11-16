@@ -5,7 +5,6 @@
     "ansible",
     "ansible-galaxy",
     "dockerfile",
-    "github-actions",
   ],
 
   branchConcurrentLimit: 0,
