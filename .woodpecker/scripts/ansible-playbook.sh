@@ -5,11 +5,18 @@ set -eo pipefail
 allplaybooks=( )
 
 # playbook updates
-mapfile -t allplaybooks < <(echo "$CI_PIPELINE_FILES" | jq -r '.[]' | grep -E '^[^/]+\.yml$' | grep -v '^requirements\.yml$')
+mapfile -t allplaybooks < <(
+  echo "$CI_PIPELINE_FILES" \
+  | jq -r '.[]' \
+  | grep -E '^[^/]+\.yml$' \
+  | grep -v '^requirements\.yml$'
+)
+allplaybooks=($(for f in "${allplaybooks[@]}"; do [[ -f "$f" ]] && echo "$f"; done))
 echo "Playbooks changed: ${allplaybooks[*]}"
 
 # role updates
 mapfile -t roles < <(echo "$CI_PIPELINE_FILES" | jq -r '.[]' | grep -E "^roles/(\w|-|_)+/.*" | cut -d "/" -f2)
+roles=($(for r in "${roles[@]}"; do [[ -d "roles/$r" ]] && echo "$r"; done))
 echo "Roles changed: ${roles[*]}"
 if (( ${#roles[@]} != 0 )); then
   for role in "${roles[@]}"; do

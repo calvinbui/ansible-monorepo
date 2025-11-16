@@ -2,7 +2,14 @@
 
 set -eo pipefail
 
-mapfile -t allplaybooks < <(echo "$CI_PIPELINE_FILES" | jq -r '.[]' | grep -E '^[^/]+\.yml$' | grep -v '^requirements\.yml$')
+mapfile -t allplaybooks < <(
+  echo "$CI_PIPELINE_FILES" \
+  | jq -r '.[]' \
+  | grep -E '^[^/]+\.yml$' \
+  | grep -v '^requirements\.yml$'
+)
+
+allplaybooks=($(for f in "${allplaybooks[@]}"; do [[ -f "$f" ]] && echo "$f"; done))
 
 if [[ "${#allplaybooks[@]}" -eq 0 ]]; then
   echo "No playbooks changed"
