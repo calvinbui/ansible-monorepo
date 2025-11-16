@@ -40,7 +40,7 @@
 
 - name: Merge generated Traefik and container labels
   ansible.builtin.set_fact:
-    combined_labels: "{{ combined_labels | ansible.builtin.combine(traefik_labels, recursive=True) }}"
+    combined_labels: "{{ {'traefik.enable': 'true', 'traefik.docker.allownonrunning': 'true'} | ansible.builtin.combine(combined_labels, recursive=True) | ansible.builtin.combine(traefik_labels, recursive=True) }}"
   when: traefik is defined
 
 - name: Disable Traefik labels

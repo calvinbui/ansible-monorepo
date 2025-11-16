@@ -5,6 +5,7 @@ global:
 providers:
   docker:
     defaultRule: 'Host(`{% raw %}{{ normalize .Name }}{% endraw %}.{{ common_tld }}`)'
+    allowEmptyServices: true
   file:
     filename: /dynamic_conf.yaml
 
