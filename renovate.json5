@@ -397,6 +397,11 @@
       matchPackageNames: ['/.*\\/watchyourlan$/'],
       sourceUrl: 'https://github.com/aceberg/WatchYourLAN',
     },
+    /* traefik */
+    {
+      matchPackageNames: ['/.*\\/traefik$/'],
+      sourceUrl: 'https://github.com/traefik/traefik',
+    },
   ],
 
   prBodyTemplate: '{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}',
