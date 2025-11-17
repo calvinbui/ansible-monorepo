@@ -5,11 +5,11 @@ groups:
     rules:
       -
         alert: MDArrayDegraded
-        expr: node_md_disks{state="active"} < node_md_disks_required
+        expr: node_md_degraded == 1
         for: 5m
         annotations:
           summary: MDADM Array Degraded
-          description: "{{ $labels.device }} has {{ $value }} active disks - array is degraded"
+          description: "{{ $labels.device }} is degraded - one or more disks have failed"
       -
         alert: MDArrayDiskFailed
         expr: node_md_disks{state="failed"} > 0
