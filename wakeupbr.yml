@@ -12,7 +12,7 @@
       ansible.builtin.include_role:
         name: podman_container
       vars:
-        image: docker.io/aecampos/wakeupbr:latest
+        image: docker.io/aecampos/wakeupbr:latest@sha256:820af5db1c4f27c5e7b8235edc7bcd64bb7b6327e59c06da0901d895846c46cb
         command:
           - -o
           - "{{ networks.user.subnet | ansible.utils.nthhost(31) }}"
