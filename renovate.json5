@@ -5,6 +5,7 @@
     "ansible",
     "ansible-galaxy",
     "dockerfile",
+    "pip_requirements",
   ],
 
   branchConcurrentLimit: 0,
