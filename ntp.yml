@@ -18,12 +18,7 @@
       ansible.builtin.include_role:
         name: podman_container
       vars:
-        image: docker.io/cturra/ntp:latest
-        read_only: true
-        tmpfs:
-          /etc/chrony: rw,mode=1750
-          /run/chrony: rw,mode=1750
-          /var/lib/chrony: rw,mode=1750
+        image: ghcr.io/dockur/chrony:4.8
         env:
           NTP_SERVERS: |-
             {{
