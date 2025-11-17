@@ -387,6 +387,11 @@
       matchPackageNames: ['/.*\\/traefik$/'],
       sourceUrl: 'https://github.com/traefik/traefik',
     },
+    /* whodb */
+    {
+      matchPackageNames: ['/.*\\/whodb$/'],
+      sourceUrl: 'https://github.com/clidey/whodb',
+    },
   ],
 
   prBodyTemplate: '{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}',
