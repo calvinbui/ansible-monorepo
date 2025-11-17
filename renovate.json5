@@ -29,17 +29,7 @@
 
   separateMajorMinor: false,
 
-  /*
-    Renovate will evaluate all packageRules and not stop once it gets a first match
-    You should order your packageRules in order of importance so that later rules can override settings from earlier rules if needed.
-  */
   packageRules: [
-    /* Ignore latest and localhost tags */
-    {
-      matchDatasources: ['docker'],
-      matchCurrentVersion: '/localhost|latest/',
-      enabled: false,
-    },
     /*
       override Docker datasource defaults
       https://docs.renovatebot.com/modules/datasource/#docker-datasource
