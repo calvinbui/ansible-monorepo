@@ -327,11 +327,6 @@
       matchPackageNames: ['/.*\\/audiobookshelf$/'],
       sourceUrl: 'https://github.com/advplyr/audiobookshelf',
     },
-    /* act_runner */
-    {
-      matchPackageNames: ['/.*\\/act_runner$/'],
-      sourceUrl: 'https://gitea.com/gitea/act_runner',
-    },
     /* zigbee2mqtt */
     {
       matchPackageNames: ['/koenkk\\/zigbee2mqtt$/'],
