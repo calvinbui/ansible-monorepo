@@ -73,7 +73,7 @@
         name: podman_container
       vars:
         container_name: "{{ application }}-logrotate"
-        image: ghcr.io/vegardit/traefik-logrotate:latest
+        image: ghcr.io/vegardit/traefik-logrotate:latest@sha256:9048febead424a919b18e6ffb68b8ecea30c1b77f48fdc98fe549d0a5780423c
         volumes:
           - /run/podman/podman.sock:/var/run/docker.sock # required to send USR1 signal to Traefik after log rotation
           - "{{ config_directory }}/logs:/var/log/traefik"
