@@ -15,9 +15,15 @@
   tasks:
     - name: Install podman
       ansible.builtin.apt:
-        name:
-          - podman
-          - python3-podman
+        name: podman
+        state: present
+        default_release: sid
+        update_cache: true
+        cache_valid_time: 86400
+
+    - name: Install python3-podman
+      ansible.builtin.apt:
+        name: python3-podman
         state: present
         update_cache: true
         cache_valid_time: 86400
