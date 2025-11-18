@@ -8,7 +8,7 @@
     container_network: "{{ networks.pub }}"
 
   tasks:
-    # currently, podman container are recreated the same way they were configured
+    # podman container are not recreated the same way they were configured
     # for example, dns settings would be missing
     #
     # - name: Create container
