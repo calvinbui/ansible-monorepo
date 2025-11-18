@@ -65,6 +65,7 @@
           - "{{ config_directory }}/traefik.yaml:/etc/traefik/traefik.yaml"
           - "{{ config_directory }}/acme.json:/acme.json"
           - "{{ config_directory }}/dynamic_conf.yaml:/dynamic_conf.yaml"
+          - "{{ config_directory }}/plugins-storage:/plugins-storage"
 
           - "{{ config_directory }}/logs:/var/log/traefik"
 
