@@ -21,10 +21,10 @@
         name: podman_container
       vars:
         image: ghcr.io/recyclarr/recyclarr:7.4.1
-        volumes:
-          - "{{ config_directory }}:/config"
         env:
           TZ: "{{ common_timezone }}"
+        volumes:
+          - "{{ config_directory }}:/config"
 
     - name: Wait for config folder
       ansible.builtin.wait_for:

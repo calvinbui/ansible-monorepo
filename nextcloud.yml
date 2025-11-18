@@ -47,8 +47,6 @@
         name: podman_container
       vars:
         image: docker.io/nextcloud:32.0.1
-        volumes:
-          - "{{ config_directory }}/app:/var/www/html"
         env:
           # some vars need to be updated manually in config.php after first startup
           # https://github.com/nextcloud/docker/issues/2224
@@ -86,6 +84,12 @@
           PHP_MEMORY_LIMIT: "10000M"
           PHP_UPLOAD_LIMIT: "10000M"
           APACHE_BODY_LIMIT: "0"
+        volumes:
+          - "{{ config_directory }}/app:/var/www/html"
+        traefik:
+          - port: 80
+            middlewares:
+              - "{{ application }}-dav"
         homepage:
           group: Favourites
           weight: 100
@@ -108,10 +112,6 @@
             fields: '["numshares"]'
         blackbox:
           path: /status.php
-        traefik:
-          - port: 80
-            middlewares:
-              - "{{ application }}-dav"
         labels:
           - "traefik.http.middlewares.{{ application }}-dav.redirectregex.permanent=true"
           - "traefik.http.middlewares.{{ application }}-dav.redirectregex.regex=https://(.*)/.well-known/(card|cal)dav"
@@ -142,11 +142,6 @@
         container_name: "{{ application }}-onlyoffice"
         image: docker.io/onlyoffice/documentserver:9.1.0
         stop_signal: "{{ signal_map['SIGKILL'] }}"
-        volumes:
-          - "{{ config_directory }}/onlyoffice/logs:/var/log/onlyoffice"
-          - "{{ config_directory }}/onlyoffice/data:/var/www/onlyoffice/Data"
-          - "{{ config_directory }}/onlyoffice/lib:/var/lib/onlyoffice"
-          - "{{ config_directory }}/onlyoffice/db:/var/lib/postgresql"
         env:
           JWT_ENABLED: "true"
           JWT_SECRET: "{{ onlyoffice_jwt_secret }}"
@@ -155,7 +150,11 @@
 
           ALLOW_META_IP_ADDRESS: "tru"
           ALLOW_PRIVATE_IP_ADDRESS: "true"
-
+        volumes:
+          - "{{ config_directory }}/onlyoffice/logs:/var/log/onlyoffice"
+          - "{{ config_directory }}/onlyoffice/data:/var/www/onlyoffice/Data"
+          - "{{ config_directory }}/onlyoffice/lib:/var/lib/onlyoffice"
+          - "{{ config_directory }}/onlyoffice/db:/var/lib/postgresql"
         traefik:
           - port: 80
             rule: Host(`onlyoffice.{{ common_tld }}`)

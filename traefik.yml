@@ -52,13 +52,6 @@
           CF_API_KEY: "{{ cloudflare_api }}"
 
           TZ: "{{ common_timezone }}"
-        homepage:
-          group: Networking
-          weight: 300
-          description: "Reverse proxy"
-          widget:
-            username: "{{ htpasswd.username }}"
-            password: "{{ htpasswd.password }}"
         volumes:
           - /run/podman/podman.sock:/var/run/docker.sock
 
@@ -68,6 +61,13 @@
           - "{{ config_directory }}/plugins-storage:/plugins-storage"
 
           - "{{ config_directory }}/logs:/var/log/traefik"
+        homepage:
+          group: Networking
+          weight: 300
+          description: "Reverse proxy"
+          widget:
+            username: "{{ htpasswd.username }}"
+            password: "{{ htpasswd.password }}"
 
     - name: Create logrotate container
       ansible.builtin.include_role:
@@ -75,9 +75,6 @@
       vars:
         container_name: "{{ application }}-logrotate"
         image: ghcr.io/vegardit/traefik-logrotate:latest@sha256:9048febead424a919b18e6ffb68b8ecea30c1b77f48fdc98fe549d0a5780423c
-        volumes:
-          - /run/podman/podman.sock:/var/run/docker.sock # required to send USR1 signal to Traefik after log rotation
-          - "{{ config_directory }}/logs:/var/log/traefik"
         env:
           TZ: "{{ common_timezone }}"
 
@@ -90,3 +87,6 @@
           CRON_LOG_LEVEL: "8"
 
           TRAEFIK_CONTAINER_ID_COMMAND: docker ps --no-trunc --quiet --filter label=org.opencontainers.image.title=Traefik
+        volumes:
+          - /run/podman/podman.sock:/var/run/docker.sock # required to send USR1 signal to Traefik after log rotation
+          - "{{ config_directory }}/logs:/var/log/traefik"

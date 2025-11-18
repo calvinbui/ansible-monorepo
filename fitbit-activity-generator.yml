@@ -69,12 +69,12 @@
       vars:
         container_name: "{{ application }}-{{ item.name }}"
         image: ghcr.io/calvinbui/fitbit-activity-generator:master
-        volumes:
-          - "{{ config_directory }}/{{ item.name }}.json:/usr/src/app/token.json"
         env:
           CLIENT_ID: "{{ item.client_id }}"
           CLIENT_SECRET: "{{ item.client_secret }}"
 
           INTERVAL: "120"
           TZ: "{{ common_timezone }}"
+        volumes:
+          - "{{ config_directory }}/{{ item.name }}.json:/usr/src/app/token.json"
       loop: "{{ fitbit_apps }}"

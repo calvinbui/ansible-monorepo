@@ -61,7 +61,7 @@
         name: podman_container
       vars:
         image: ghcr.io/journeydocker/plex-auto-languages:1.3.16
-        volumes:
-          - "{{ config_directory }}:/config"
         env:
           TZ: "{{ common_timezone }}"
+        volumes:
+          - "{{ config_directory }}:/config"

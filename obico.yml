@@ -101,18 +101,6 @@
           - sh
           - -c
           - "python manage.py migrate && python manage.py collectstatic -v 2 --noinput && daphne -b 0.0.0.0 -p 3334 config.routing:application"
-        traefik:
-          - port: 3334
-            rule: Host(`{{ application }}.{{ common_tld }}`)
-        homepage:
-          group: 3D Printing
-          weight: 600
-          description: "3D printing failure detection"
-        blackbox:
-          path: /hc/
-        volumes: &web_volumes
-          - "{{ config_directory }}/repo/backend:/app"
-          - "{{ config_directory }}/repo/frontend:/frontend"
         env: &web_env
           EMAIL_HOST: "{{ common_email_server }}"
           EMAIL_HOST_USER: "{{ common_email_username }}"
@@ -144,6 +132,18 @@
             6331663432366334380a623739636130366264343133313236323466313961613233356662623263
             30343133326136633133303236613165303436333165373434353436393462323463626263356239
             3266376561333337353632303564663966366466646666313335
+        volumes: &web_volumes
+          - "{{ config_directory }}/repo/backend:/app"
+          - "{{ config_directory }}/repo/frontend:/frontend"
+        traefik:
+          - port: 3334
+            rule: Host(`{{ application }}.{{ common_tld }}`)
+        homepage:
+          group: 3D Printing
+          weight: 600
+          description: "3D printing failure detection"
+        blackbox:
+          path: /hc/
         labels:
           - com.centurylinklabs.watchtower.enable=false
 
@@ -157,8 +157,8 @@
           - sh
           - -c
           - "celery -A config worker --beat -l info -c 2 -Q realtime,celery"
-        volumes: *web_volumes
         env: *web_env
+        volumes: *web_volumes
         labels:
           - com.centurylinklabs.watchtower.enable=false
 

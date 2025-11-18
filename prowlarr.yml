@@ -58,8 +58,6 @@
         name: podman_container
       vars:
         image: lscr.io/linuxserver/prowlarr:2.1.5
-        volumes:
-          - "{{ config_directory }}/config:/config"
         env:
           PUID: "{{ common_user_id | ansible.builtin.string }}"
           PGID: "{{ common_root_group | ansible.builtin.string }}"
@@ -79,7 +77,8 @@
           PROWLARR__POSTGRES__LOGDB: "{{ application }}-log"
           PROWLARR__POSTGRES__USER: "{{ _postgres_username }}"
           PROWLARR__POSTGRES__PASSWORD: "{{ _postgres_password }}"
-
+        volumes:
+          - "{{ config_directory }}/config:/config"
         traefik:
           -
             port: 9696

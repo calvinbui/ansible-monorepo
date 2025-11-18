@@ -16,8 +16,6 @@
     #     name: podman_container
     #   vars:
     #     image: ghcr.io/nicholas-fedor/watchtower:1.12.1
-    #     volumes:
-    #       - /run/podman/podman.sock:/var/run/docker.sock
     #     env:
     #       TZ: "{{ common_timezone }}"
     #       WATCHTOWER_SCHEDULE: "0 0 4 * * *"
@@ -28,5 +26,7 @@
 
     #       WATCHTOWER_INCLUDE_STOPPED: "true"
     #       WATCHTOWER_REVIVE_STOPPED: "true"
+    #     volumes:
+    #       - /run/podman/podman.sock:/var/run/docker.sock
     #     labels:
     #       - com.centurylinklabs.watchtower.enable=false

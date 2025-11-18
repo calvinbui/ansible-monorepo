@@ -63,8 +63,6 @@
         name: podman_container
       vars:
         image: docker.io/outlinewiki/outline:1.1.0
-        volumes:
-          - "{{ config_directory }}/storage:/var/lib/outline/data"
         env:
           # https://github.com/outline/outline/blob/main/.env.sample
           SECRET_KEY: !vault |
@@ -119,6 +117,8 @@
           SMTP_SECURE: "false"
 
           RATE_LIMITER_ENABLED: "false"
+        volumes:
+          - "{{ config_directory }}/storage:/var/lib/outline/data"
         traefik:
           - port: 3000
         homepage:

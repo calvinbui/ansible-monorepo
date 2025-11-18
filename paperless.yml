@@ -75,11 +75,6 @@
         name: podman_container
       vars:
         image: ghcr.io/paperless-ngx/paperless-ngx:2.19.6
-        volumes:
-          - "{{ config_directory }}/data:/usr/src/paperless/data"
-          - "{{ config_directory }}/media:/usr/src/paperless/media"
-          - "{{ config_directory }}/export:/usr/src/paperless/export"
-          - "{{ config_directory }}/consume:/usr/src/paperless/consume"
         env:
           USERMAP_UID: "{{ common_user_id | ansible.builtin.string }}"
           USERMAP_GID: "{{ common_group_id | ansible.builtin.string }}"
@@ -142,6 +137,11 @@
           PAPERLESS_EMAIL_HOST_PASSWORD: "{{ common_email_password }}"
           PAPERLESS_EMAIL_USE_TLS: "{{ 'true' if common_email_protocol == 'tls' else 'false' }}"
           PAPERLESS_EMAIL_USE_SSL: "{{ 'false' if common_email_protocol == 'tls' else 'true' }}"
+        volumes:
+          - "{{ config_directory }}/data:/usr/src/paperless/data"
+          - "{{ config_directory }}/media:/usr/src/paperless/media"
+          - "{{ config_directory }}/export:/usr/src/paperless/export"
+          - "{{ config_directory }}/consume:/usr/src/paperless/consume"
         traefik:
           - port: 8000
         homepage:

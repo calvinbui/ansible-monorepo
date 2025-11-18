@@ -158,6 +158,10 @@
       vars:
         container_name: "borgmatic-{{ item.name }}"
         image: ghcr.io/borgmatic-collective/borgmatic:2.0.11
+        env:
+          TZ: "{{ common_timezone }}"
+          BORG_PASSPHRASE: "{{ borgmatic_pass }}"
+          BORG_CHECK_I_KNOW_WHAT_I_AM_DOING: "true"
         volumes:
           # data to backup. mount as rw when a restore is needed
           - "{{ item.source }}:/mnt/source:ro"
@@ -169,10 +173,6 @@
           - "{{ config_directory }}/{{ item.name }}/config/borg:/root/.config/borg"
           - "{{ config_directory }}/{{ item.name }}/ssh:/root/.ssh"
           - "{{ config_directory }}/{{ item.name }}/cache/borg:/root/.cache/borg"
-        env:
-          TZ: "{{ common_timezone }}"
-          BORG_PASSPHRASE: "{{ borgmatic_pass }}"
-          BORG_CHECK_I_KNOW_WHAT_I_AM_DOING: "true"
       loop: "{{ borgmatic_backups }}"
 
     - name: Create backup locations

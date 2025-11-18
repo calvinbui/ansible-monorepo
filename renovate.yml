@@ -33,15 +33,6 @@
         command:
           - -c
           - renovate --version > /tmp/renovate.log && /bin/tail -f /tmp/renovate.log
-        volumes:
-          - "{{ config_directory }}:/base"
-        labels:
-          - "ofelia.enabled=true"
-          - "ofelia.job-exec.{{ application }}-cron.schedule=0 17 * * *"
-          - "ofelia.job-exec.{{ application }}-cron.command=/usr/local/sbin/renovate-entrypoint.sh renovate"
-          - "ofelia.job-exec.{{ application }}-cron.user=12021"
-          - "ofelia.job-exec.{{ application }}-cron.tty=true"
-          - "ofelia.job-exec.{{ application }}-cron.no-overlap=true"
         env:
           RENOVATE_BASE_DIR: "/base"
 
@@ -110,3 +101,12 @@
 
           LOG_LEVEL: debug
           LOG_FILE: /tmp/renovate.log
+        volumes:
+          - "{{ config_directory }}:/base"
+        labels:
+          - "ofelia.enabled=true"
+          - "ofelia.job-exec.{{ application }}-cron.schedule=0 17 * * *"
+          - "ofelia.job-exec.{{ application }}-cron.command=/usr/local/sbin/renovate-entrypoint.sh renovate"
+          - "ofelia.job-exec.{{ application }}-cron.user=12021"
+          - "ofelia.job-exec.{{ application }}-cron.tty=true"
+          - "ofelia.job-exec.{{ application }}-cron.no-overlap=true"

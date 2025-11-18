@@ -54,6 +54,8 @@
         name: podman_container
       vars:
         image: docker.io/mattermost/mattermost-team-edition:11.1.0
+        env:
+          TZ: "{{ common_timezone }}"
         volumes:
           - "{{ config_directory }}/config/config:/mattermost/config"
           - "{{ config_directory }}/config/data:/mattermost/data"
@@ -61,8 +63,6 @@
           - "{{ config_directory }}/config/plugins:/mattermost/plugins"
           - "{{ config_directory }}/config/client-plugins:/mattermost/client/plugins"
           - /etc/localtime:/etc/localtime:ro
-        env:
-          TZ: "{{ common_timezone }}"
         traefik:
           - port: 8065
         homepage:

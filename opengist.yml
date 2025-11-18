@@ -47,8 +47,6 @@
         name: podman_container
       vars:
         image: ghcr.io/thomiceli/opengist:1.11.1
-        volumes:
-          - "{{ config_directory }}/app:/opengist"
         env:
           OG_EXTERNAL_URL: "https://{{ application }}.{{ common_tld }}"
 
@@ -75,11 +73,13 @@
           OG_OIDC_DISCOVERY_URL: "{{ oidc_discovery_url }}"
           OG_OIDC_CLIENT_KEY: "{{ application }}"
           OG_OIDC_SECRET: "{{ oidc_auth.opengist.secret }}"
+        volumes:
+          - "{{ config_directory }}/app:/opengist"
         traefik:
           - port: 6157
-        blackbox:
-          path: /healthcheck
         homepage:
           group: Programming
           weight: 200
           description: "Code Snippets"
+        blackbox:
+          path: /healthcheck

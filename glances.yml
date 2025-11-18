@@ -13,12 +13,12 @@
         name: podman_container
       vars:
         image: docker.io/nicolargo/glances:ubuntu-4.4.1-full
-        volumes:
-          - /run/podman/podman.sock:/var/run/docker.sock:ro
-          - /etc/os-release:/etc/os-release:ro
         env:
           GLANCES_OPT: "-w"
           TZ: "{{ common_timezone }}"
+        volumes:
+          - /run/podman/podman.sock:/var/run/docker.sock:ro
+          - /etc/os-release:/etc/os-release:ro
         traefik:
           - port: 61208
             auth: page
