@@ -43,6 +43,14 @@
           6237663938316164370a343734613964356231636462623536323066616138363532373265336439
           63366338393162616361346139303364643263663261346266393435313165343834
 
+    - name: Template config
+      ansible.builtin.template:
+        src: "{{ files_directory }}/immich-config.json.j2"
+        dest: "{{ config_directory }}/immich-config.json"
+        owner: "{{ common_user_id }}"
+        group: "{{ common_group_id }}"
+        mode: "0644"
+
     - name: Create server container
       ansible.builtin.include_role:
         name: podman_container
@@ -51,7 +59,9 @@
         image: ghcr.io/immich-app/immich-server:v2.2.3
         group_add:
           - 992 # 'render'
-        env: &immich_shared_env
+        env:
+          IMMICH_CONFIG_FILE: /immich-config.json
+
           DB_HOSTNAME: "{{ _postgres_hostname }}"
           DB_PORT: "{{ _postgres_port | ansible.builtin.string }}"
           DB_USERNAME: "{{ _postgres_username }}"
@@ -68,8 +78,9 @@
 
           TZ: "{{ common_timezone }}"
         volumes:
+          - "{{ config_directory }}/immich-config.json:/immich-config.json"
           - &immich_upload_volume "{{ common_directory_photos }}/Immich:/usr/src/app/upload"
-          - &immich_localtime_volume /etc/localtime:/etc/localtime:ro
+          - /etc/localtime:/etc/localtime:ro
         device:
           - /dev/dri:/dev/dri
         traefik:
@@ -99,7 +110,6 @@
         image: ghcr.io/immich-app/immich-machine-learning:v2.2.3-openvino
         group_add:
           - 992 # 'render'
-        env: *immich_shared_env
         volumes:
           - *immich_upload_volume
           - "{{ config_directory }}/ml-cache:/cache"
