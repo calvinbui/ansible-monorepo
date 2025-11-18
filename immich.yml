@@ -96,7 +96,7 @@
         name: podman_container
       vars:
         container_name: "{{ application }}-machine-learning"
-        image: ghcr.io/immich-app/immich-machine-learning:v2.2.3-cuda
+        image: ghcr.io/immich-app/immich-machine-learning:v2.2.3-openvino
         group_add:
           - 992 # 'render'
         env: *immich_shared_env
