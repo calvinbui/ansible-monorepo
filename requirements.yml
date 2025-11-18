@@ -3,7 +3,3 @@
 collections:
   - name: oxlorg.opnsense
     version: 25.7.7
-
-roles:
-  - name: mrlesmithjr.netplan
-    version: v0.4.2
