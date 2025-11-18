@@ -14,25 +14,24 @@
         force_restart: true
 
   tasks:
-    - name: Create config folder
+    - name: Create config folders
       ansible.builtin.file:
-        path: "{{ config_directory }}"
+        path: "{{ config_directory }}/{{ item }}"
         state: directory
         owner: "{{ common_root_id }}"
         group: "{{ common_root_group }}"
         mode: "0771"
+      loop:
+        - local
+        - config
 
     - name: Create container
       ansible.builtin.include_role:
         name: podman_container
       vars:
-        image: lscr.io/linuxserver/code-server:4.105.1
+        image: ghcr.io/coder/code-server:4.105.1
+        user: "{{ common_root_id | ansible.builtin.string }}:{{ common_root_group | ansible.builtin.string }}"
         env:
-          PUID: "{{ common_root_id | ansible.builtin.string }}"
-          PGID: "{{ common_root_group | ansible.builtin.string }}"
-          TZ: "{{ common_timezone }}"
-
-          PROXY_DOMAIN: "{{ application }}.{{ common_tld }}"
           PASSWORD: &vscode_password !vault |
             $ANSIBLE_VAULT;1.1;AES256
             66333461326163353033646637636638383934633433613039323939303133333134396638336538
@@ -40,16 +39,14 @@
             35323566303038303862313862336434633531363462343962353261393830353931623239623939
             3530323432323535390a376135623232653165323762313933323464666232363736353766636536
             64393833313232623936626662363130313137623465626661373830613938663661
-          SUDO_PASSWORD: *vscode_password
-
-          DEFAULT_WORKSPACE: "/home-assistant"
 
           CS_DISABLE_GETTING_STARTED_OVERRIDE: "true"
         volumes:
-          - "{{ config_directory }}:/config"
-          - "{{ common_directory }}/home-assistant/config/:/home-assistant"
+          - "{{ config_directory }}/local:/root/.local"
+          - "{{ config_directory }}/config:/root/.config"
+          - "{{ common_directory }}/home-assistant/config/:/root/project"
         traefik:
-          - port: 8443
+          - port: 8080
         homepage:
           name: VS Code
           group: Programming
@@ -63,21 +60,21 @@
       block:
         - name: Create download directory
           ansible.builtin.file:
-            path: "{{ config_directory }}/vsix/"
+            path: "{{ config_directory }}/local/share/code-server/CachedExtensionVSIXs"
             state: directory
             owner: "{{ common_root_id }}"
             group: "{{ common_root_group }}"
-            mode: "0771"
+            mode: "0755"
 
         - name: Download vscode.extensions file
           ansible.builtin.get_url:
             url: https://raw.githubusercontent.com/hassio-addons/addon-vscode/master/vscode/vscode.extensions
-            dest: "{{ config_directory }}/vsix/vscode.extensions"
+            dest: "{{ config_directory }}/local/share/code-server/vscode.extensions"
             mode: "0644"
 
         - name: Read extension list
           ansible.builtin.slurp:
-            src: "{{ config_directory }}/vsix/vscode.extensions"
+            src: "{{ config_directory }}/local/share/code-server/vscode.extensions"
           register: vscode_extensions_file
 
         - name: Set extension list fact
@@ -87,7 +84,7 @@
         - name: Download extensions
           ansible.builtin.get_url:
             url: "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/{{ item.split('.')[0] }}/vsextensions/{{ item.split('.')[1].split('#')[0] }}/{{ item.split('#')[1] }}/vspackage"
-            dest: "{{ config_directory }}/vsix/{{ item.split('#')[0] }}-{{ item.split('#')[1] }}.vsix"
+            dest: "{{ config_directory }}/local/share/code-server/CachedExtensionVSIXs/{{ item.split('#')[0] }}-{{ item.split('#')[1] }}.vsix"
             mode: "0640"
             http_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"
             headers:
@@ -98,25 +95,12 @@
           retries: 5
           delay: 5
 
-        - name: Create extension directories
-          ansible.builtin.file:
-            path: "{{ config_directory }}/extensions/{{ item.split('#')[0] }}-{{ item.split('#')[1] }}"
-            state: directory
-            owner: "{{ common_root_id }}"
-            group: "{{ common_root_group }}"
-            mode: "0771"
+        - name: Install extensions
+          containers.podman.podman_container_exec:
+            name: "{{ application }}"
+            user: "{{ common_root_id }}"
+            command: code-server --install-extension /root/.local/share/code-server/CachedExtensionVSIXs/{{ item.split('#')[0] }}-{{ item.split('#')[1] }}.vsix
           loop: "{{ home_assistant_vscode_extensions }}"
-
-        - name: Install bsdtar
-          ansible.builtin.apt:
-            name: libarchive-tools
-            state: present
-            update_cache: true
-            cache_valid_time: 86400
-
-        - name: Unpack extensions
-          ansible.builtin.command: "bsdtar --strip-components=1 -xf {{ config_directory }}/vsix/{{ item.split('#')[0] }}-{{ item.split('#')[1] }}.vsix -C {{ config_directory }}/extensions/{{ item.split('#')[0] }}-{{ item.split('#')[1] }} extension"
-          args:
-            creates: "{{ config_directory }}/extensions/{{ item.split('#')[0] }}-{{ item.split('#')[1] }}/README.md"
-          loop: "{{ home_assistant_vscode_extensions }}"
-          notify: Restart
+          register: _command_result
+          failed_when: "'was successfully installed.' not in _command_result.stdout"
+          changed_when: false # output is always the same
