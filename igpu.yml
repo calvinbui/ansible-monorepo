@@ -11,15 +11,6 @@
         reboot_timeout: 360
 
   tasks:
-    - name: Enable non-free
-      ansible.builtin.deb822_repository:
-        name: debian-non-free
-        uris: http://deb.debian.org/debian
-        suites: "{{ ansible_distribution_release }}"
-        components:
-          - non-free
-        signed_by: /usr/share/keyrings/debian-archive-keyring.gpg
-
     - name: Install firmware and drivers
       ansible.builtin.apt:
         name:

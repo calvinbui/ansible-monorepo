@@ -16,27 +16,6 @@
   tasks:
     # need a newer version to fix a memory leak
     # https://github.com/containers/netavark/releases/tag/v1.15.2
-    - name: Enable sid
-      ansible.builtin.deb822_repository:
-        name: debian-sid
-        uris: http://deb.debian.org/debian
-        suites:
-          - sid
-        components:
-          - main
-        signed_by: /usr/share/keyrings/debian-archive-keyring.gpg
-
-    - name: Set sid repository priority
-      ansible.builtin.copy:
-        dest: /etc/apt/preferences.d/sid
-        content: |
-          Package: *
-          Pin: release n=sid
-          Pin-Priority: -10
-        owner: root
-        group: root
-        mode: "0644"
-
     - name: Install netavark from sid
       ansible.builtin.apt:
         name: netavark

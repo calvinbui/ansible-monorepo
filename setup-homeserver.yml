@@ -59,6 +59,41 @@
         update_cache: true
         cache_valid_time: 86400
 
+    - name: Enable additional Debian repositories
+      ansible.builtin.deb822_repository:
+        name: "{{ item.name }}"
+        uris: http://deb.debian.org/debian
+        suites: "{{ item.suites }}"
+        components: "{{ item.components }}"
+        signed_by: /usr/share/keyrings/debian-archive-keyring.gpg
+      loop:
+        -
+          name: debian-contrib
+          suites: "{{ ansible_distribution_release }}"
+          components:
+            - contrib
+        -
+          name: debian-non-free
+          suites: "{{ ansible_distribution_release }}"
+          components:
+            - non-free
+        -
+          name: debian-sid
+          suites: sid
+          components:
+            - main
+
+    - name: Set sid repository priority
+      ansible.builtin.copy:
+        dest: /etc/apt/preferences.d/sid
+        content: |
+          Package: *
+          Pin: release n=sid
+          Pin-Priority: -10
+        owner: root
+        group: root
+        mode: "0644"
+
     - name: Generate SSH keypairs
       community.crypto.openssh_keypair:
         path: "/home/{{ common_user }}/.ssh/id_ed25519"

@@ -53,15 +53,6 @@
         state: restarted
 
   tasks:
-    - name: Enable contrib
-      ansible.builtin.deb822_repository:
-        name: debian-contrib
-        uris: http://deb.debian.org/debian
-        suites: "{{ ansible_distribution_release }}"
-        components:
-          - contrib
-        signed_by: /usr/share/keyrings/debian-archive-keyring.gpg
-
     # https://openzfs.github.io/openzfs-docs/Getting%20Started/Debian/index.html
     - name: Install openzfs dependencies
       ansible.builtin.apt:
