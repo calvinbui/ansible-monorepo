@@ -41,12 +41,12 @@ http:
           logFilePath: "/var/log/traefik/bouncer.log"
 
           crowdsecMode: stream
-          crowdsecLapiHost: crowdsec:8080
+          crowdsecLapiHost: "crowdsec:8080"
           crowdsecLapiKey: "{{ traefik_bouncer_key }}"
           updateMaxFailure: -1
 
           crowdsecAppsecEnabled: true
-          crowdsecAppsecHost: crowdsec:7422
+          crowdsecAppsecHost: "crowdsec:7422"
           crowdsecAppsecFailureBlock: false
           crowdsecAppsecUnreachableBlock: false
 
