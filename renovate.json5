@@ -197,8 +197,8 @@
     /* radarr */
     {
       matchPackageNames: ['/.*\\/radarr$/'],
-      versionCompatibility: '^(?<compatibility>.*)-(?<version>.*)$',
-      changelogUrl: 'https://github.com/Radarr/Radarr/releases/tag/v{{newVersion}}',
+      versionCompatibility: '^version-(?<version>.*)$',
+      sourceUrl: 'https://github.com/Radarr/Radarr',
     },
     /* gotenberg */
     {
