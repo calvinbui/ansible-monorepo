@@ -49,7 +49,6 @@
           - "/mnt/source/plex/Library/Application Support/Plex Media Server/Cache"
           - "/mnt/source/renovate"
           - "/mnt/source/immich/ml-cache"
-          - "/mnt/source/nvidia"
           - "/mnt/source/vscode/repos"
           - "/mnt/source/obico/repo"
           - "/mnt/source/esphome"
