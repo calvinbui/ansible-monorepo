@@ -374,6 +374,12 @@
       matchPackageNames: ['/.*\\/whodb$/'],
       sourceUrl: 'https://github.com/clidey/whodb',
     },
+        /* woodpecker */
+    {
+      groupName: 'woodpecker',
+      matchPackageNames: ['/.*\\/woodpecker-.*$/'],
+      sourceUrl: 'https://github.com/woodpecker-ci/woodpecker',
+    },
   ],
 
   prBodyTemplate: '{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}',
