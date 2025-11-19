@@ -237,8 +237,9 @@
     /* sonarr */
     {
       matchPackageNames: ['/.*\\/sonarr$/'],
-      versionCompatibility: '^(?<compatibility>.*)-(?<version>.*)$',
-      changelogUrl: 'https://services.sonarr.tv/v1/update/stable/changes?version=4',
+      versionCompatibility: '^version-(?<version>.*)$',
+      sourceUrl: 'https://github.com/Sonarr/Sonarr',
+      changelogUrl: 'https://services.sonarr.tv/v1/update/stable/changes?version={{newMajor}}',
     },
     /* esphome */
     {
