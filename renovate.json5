@@ -206,12 +206,6 @@
       matchPackageNames: ['/.*\\/gotenberg$/'],
       sourceUrl: 'https://github.com/gotenberg/gotenberg',
     },
-    /* languagetool */
-    {
-      matchPackageNames: ['/.*\\/.*languagetool$/'],
-      sourceUrl: 'https://github.com/silvio/docker-languagetool',
-      changelogUrl: 'https://github.com/languagetool-org/languagetool/blob/master/languagetool-standalone/CHANGES.md',
-    },
     /* scrutiny */
     {
       matchPackageNames: ['/.*\\/scrutiny$/'],

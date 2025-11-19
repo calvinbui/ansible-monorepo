@@ -46,7 +46,6 @@
         repository: ssh://{{ borgmatic_hetzner_storage_box_host }}:{{ borgmatic_hetzner_storage_box_port }}/./borg/apps
         exclude_patterns:
           - "/mnt/source/nextcloud/app/data/*/cache"
-          - "/mnt/source/languagetool"
           - "/mnt/source/plex/Library/Application Support/Plex Media Server/Cache"
           - "/mnt/source/renovate"
           - "/mnt/source/immich/ml-cache"
