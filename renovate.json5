@@ -354,8 +354,8 @@
     /* filebrowser */
     {
       matchPackageNames: ['/.*\\/filebrowser$/'],
+      versioning: 'regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-stable$',
       sourceUrl: 'https://github.com/gtsteffaniak/filebrowser',
-      changelogUrl: 'https://github.com/gtsteffaniak/filebrowser/blob/main/CHANGELOG.md',
     },
     /* watchyourlan */
     {
