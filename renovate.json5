@@ -62,10 +62,7 @@
     /* umami */
     {
       matchPackageNames: ['/.*\\/umami$/'],
-      versionCompatibility: '^(?<compatibility>.*)-(?<version>.*)$',
-      versioning: 'semver',
       sourceUrl: 'https://github.com/umami-software/umami',
-      changelogUrl: 'https://github.com/umami-software/umami/releases',
     },
     /* bazarr */
     {
