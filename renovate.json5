@@ -236,19 +236,6 @@
       automerge: true,
       ignoreTests: true,
     },
-    /* omada */
-    {
-      matchPackageNames: ['/mbentley\\/omada-controller$/'],
-      changelogUrl: 'https://community.tp-link.com/en/business/forum/topic/245226',
-    },
-    /* nvidia dcgm-exporter */
-    {
-      matchPackageNames: ['/.*\\/dcgm-exporter$/'],
-      versioning: 'loose',
-      versionCompatibility: '^(?<version>.*)-(?<compatibility>.*)$',
-      sourceUrl: 'https://github.com/NVIDIA/dcgm-exporter',
-      prBodyNotes: '[GitHub Releases](https://github.com/NVIDIA/dcgm-exporter/releases)\n[DCGM Changelog](https://docs.nvidia.com/datacenter/dcgm/latest/release-notes/changelog.html)',
-    },
     /* sonarr */
     {
       matchPackageNames: ['/.*\\/sonarr$/'],
@@ -280,11 +267,6 @@
     {
       matchPackageNames: ['/.*\\/wizarr$/'],
       sourceUrl: 'https://github.com/Wizarrrr/wizarr',
-    },
-    /* typesense */
-    {
-      matchPackageNames: ['/.*\\/typesense$/'],
-      sourceUrl: 'https://github.com/typesense/typesense',
     },
     /* castsponsorskip */
     {
