@@ -77,7 +77,8 @@
     /* prowlarr */
     {
       matchPackageNames: ['/.*\\/prowlarr$/'],
-      changelogUrl: 'https://github.com/Prowlarr/Prowlarr/releases',
+      versionCompatibility: '^version-(?<version>.*)$',
+      sourceUrl: 'https://github.com/Prowlarr/Prowlarr',
     },
     /* renovate */
     {
