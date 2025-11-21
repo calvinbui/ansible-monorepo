@@ -46,6 +46,7 @@
           - curl
           - git
           - htop
+          - jq
           - neovim
           - nvme-cli
           - rclone
