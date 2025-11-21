@@ -7,6 +7,12 @@
 
     container_network: "{{ networks.pub }}"
 
+  handlers:
+    - name: Restart
+      containers.podman.podman_container:
+        name: "{{ application }}-server"
+        force_restart: true
+
   tasks:
     - name: Create config folder
       ansible.builtin.file:
@@ -50,6 +56,7 @@
         owner: "{{ common_user_id }}"
         group: "{{ common_group_id }}"
         mode: "0644"
+      notify: Restart
 
     - name: Create server container
       ansible.builtin.include_role:
