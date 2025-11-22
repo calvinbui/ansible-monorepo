@@ -67,6 +67,20 @@
           3537633236333663340a646261303839383862613065373930643065653238333437346432323635
           36386138653962373432353364343762653931363661356537323139343561303365
 
+    - name: Create valkey container
+      ansible.builtin.include_role:
+        name: valkey
+      vars:
+        valkey_version: 8
+        valkey_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          31363137373531666231613134656662313238306131643764363638336533333363326566353837
+          6664646135393634633630333437636662346636396639310a663961636434653737666165386663
+          38356130646333643462373135303136336533636161396333613333316261313337633663616533
+          3930616333386366300a656265336261326131636435373732353863626239356663323364643163
+          39333839303935626466366262623934326366363565313661326462333962326364356239313432
+          3865303930363433613037313461626362386435346332326537
+
     - name: Create rag api container
       ansible.builtin.include_role:
         name: podman_container
@@ -192,6 +206,10 @@
           OPENID_BUTTON_LABEL: "Log in with {{ oidc_provider | ansible.builtin.title }}"
           OPENID_IMAGE_URL: "https://minio.{{ common_tld }}/public/authelia-logo-cropped.png"
           OPENID_AUTO_REDIRECT: "false"
+
+          USE_REDIS: "true"
+          REDIS_URI: "{{ _valkey_url }}"
+
         volumes:
           - "{{ config_directory }}/librechat.yaml:/app/librechat.yaml"
           - "{{ config_directory }}/images:/app/client/public/images"
