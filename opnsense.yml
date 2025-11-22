@@ -486,6 +486,17 @@
         - dnsmasq
         - unbound
 
+    - name: Unbound - Reverse DNS Lookup
+      oxlorg.opnsense.unbound_forward:
+        domain: "{{ network_reverse_dns_lookup_coverage | ansible.builtin.split('.') | ansible.builtin.reverse | ansible.builtin.join('.') }}.in-addr.arpa"
+        server: 127.0.0.1
+        port: 53053
+        description: Reverse DNS Lookup
+      notify: Reload Unbound
+      tags:
+        - dnsmasq
+        - unbound
+
     - name: Dnsmasq - DHCP Tags
       oxlorg.opnsense.dnsmasq_tag:
         tag: "{{ item }}"

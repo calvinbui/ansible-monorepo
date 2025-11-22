@@ -1,5 +1,7 @@
 ---
 
+network_reverse_dns_lookup_coverage: "10.127"
+
 networks:
   lan:
     name: lan
