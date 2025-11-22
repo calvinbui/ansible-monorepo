@@ -4,6 +4,7 @@
   enabledManagers: [
     "ansible",
     "ansible-galaxy",
+    "custom.regex",
     "dockerfile",
     "pip_requirements",
   ],
@@ -368,11 +369,100 @@
       matchPackageNames: ['/.*\\/whodb$/'],
       sourceUrl: 'https://github.com/clidey/whodb',
     },
-        /* woodpecker */
+    /* woodpecker */
     {
       groupName: 'woodpecker',
       matchPackageNames: ['/.*\\/woodpecker-.*$/'],
       sourceUrl: 'https://github.com/woodpecker-ci/woodpecker',
+    },
+  ],
+
+  customManagers: [
+    /* postgres */
+    {
+      customType: "regex",
+      managerFilePatterns: ['/^.*\\.ya?ml$/'],
+      matchStrings: ['postgres_version: (?<currentValue>\\d+\\.\\d+)$'],
+      depNameTemplate: "public.ecr.aws/docker/library/postgres",
+      datasourceTemplate: "docker",
+    },
+
+    /* valkey */
+    {
+      customType: "regex",
+      managerFilePatterns: ['/^.*\\.ya?ml$/'],
+      matchStrings: ['valkey_version: (?<currentValue>.*)'],
+      depNameTemplate: "ghcr.io/valkey-io/valkey",
+      datasourceTemplate: "docker",
+      versioningTemplate: "semver",
+    },
+
+    /* elasticsearch */
+    {
+      customType: "regex",
+      managerFilePatterns: ['/^.*\\.ya?ml$/'],
+      matchStrings: ['elasticsearch_version: (?<currentValue>.*)'],
+      depNameTemplate: "docker.elastic.co/elasticsearch/elasticsearch",
+      datasourceTemplate: "docker",
+      versioningTemplate: "semver",
+    },
+
+    /* influxdb */
+    {
+      customType: "regex",
+      managerFilePatterns: ['/^.*\\.ya?ml$/'],
+      matchStrings: ['influxdb_version: (?<currentValue>.*)'],
+      depNameTemplate: "public.ecr.aws/docker/library/influxdb",
+      datasourceTemplate: "docker",
+      versioningTemplate: "semver",
+    },
+
+    /* mongo */
+    {
+      customType: "regex",
+      managerFilePatterns: ['/^.*\\.ya?ml$/'],
+      matchStrings: ['mongo_version: (?<currentValue>.*)'],
+      depNameTemplate: "public.ecr.aws/docker/library/mongo",
+      datasourceTemplate: "docker",
+      versioningTemplate: "semver",
+    },
+
+    /* immich postgres */
+    {
+      customType: "regex",
+      fileMatch: ['^immich\\.ya?ml$'],
+      matchStrings: ['postgres_version: (?<currentValue>.*)'],
+      depNameTemplate: "ghcr.io/immich-app/postgres",
+      datasourceTemplate: "docker",
+      versioningTemplate: "regex:^(?<major>\\d+)-vectorchord(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)-\\w+\\d+\\.\\d+\\.\\d+$",
+    },
+    {
+      customType: "regex",
+      fileMatch: ['^immich\\.ya?ml$'],
+      matchStrings: ['postgres_version: (?<currentValue>\\d+)-vectorchord\\d+\\.\\d+\\.\\d+-\\w+\\d+\\.\\d+\\.\\d+'],
+      depNameTemplate: "ghcr.io/immich-app/postgres",
+      datasourceTemplate: "docker",
+      versioningTemplate: "loose",
+      extractVersionTemplate: "^(?<version>\\d+)-vectorchord\\d+\\.\\d+\\.\\d+-\\w+\\d+\\.\\d+\\.\\d+$",
+    },
+
+    /* librechat postgres */
+    {
+      customType: "regex",
+      fileMatch: ['^librechat\\.ya?ml$'],
+      matchStrings: ['postgres_version: (?<currentValue>.*)'],
+      depNameTemplate: "pgvector/pgvector",
+      datasourceTemplate: "docker",
+      versioningTemplate: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-pg(?<compatibility>\\d+)$",
+    },
+    {
+      customType: "regex",
+      fileMatch: ['^librechat\\.ya?ml$'],
+      matchStrings: ['postgres_version: (?<extensionVersion>\\d+\\.\\d+\\.\\d+)-pg(?<currentValue>\\d+)'],
+      depNameTemplate: "pgvector/pgvector",
+      datasourceTemplate: "docker",
+      versioningTemplate: "loose",
+      extractVersionTemplate: "^\\d+\\.\\d+\\.\\d+-pg(?<version>\\d+)$",
     },
   ],
 
