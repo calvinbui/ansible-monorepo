@@ -30,7 +30,7 @@
       ansible.builtin.include_role:
         name: mongodb
       vars:
-        mongo_version: 8.0
+        mongo_version: 8.2.1
         mongo_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           37303330326665623962396535636234373439313438393837306236313465356633373231623430
@@ -44,7 +44,7 @@
       ansible.builtin.include_role:
         name: meilisearch
       vars:
-        meilisearch_version: 1.14.0
+        meilisearch_version: 1.26.0
         meilisearch_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           39373565323531383237613133326338666231313932626337646535303537313363363466333565
@@ -57,8 +57,8 @@
       ansible.builtin.include_role:
         name: postgres
       vars:
-        postgres_image: pgvector/pgvector
-        postgres_version: 0.8.0-pg17
+        postgres_image: docker.io/pgvector/pgvector
+        postgres_version: 0.8.1-pg18
         postgres_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           63626431336239643665633437343739666638366534353439616335623539623935353565643161
@@ -109,7 +109,7 @@
       ansible.builtin.include_role:
         name: podman_container
       vars:
-        image: ghcr.io/danny-avila/librechat:v0.7.9
+        image: ghcr.io/danny-avila/librechat:v0.8.0
         user: "{{ common_user_id }}:{{ common_group_id }}"
         env:
           HOST: "0.0.0.0"
