@@ -7,6 +7,12 @@
 
     container_network: "{{ networks.pub }}"
 
+  handlers:
+    - name: Restart
+      containers.podman.podman_container:
+        name: "{{ application }}"
+        force_restart: true
+
   tasks:
     - name: Create config folder
       ansible.builtin.file:
@@ -74,6 +80,16 @@
           POSTGRES_USER: "{{ _postgres_username }}"
           POSTGRES_PASSWORD: "{{ _postgres_password }}"
           RAG_OPENAI_API_KEY: "{{ openai_api_key }}"
+
+    - name: Create configuration
+      ansible.builtin.copy:
+        content: |
+          version: 1.3.0
+        dest: "{{ config_directory }}/librechat.yaml"
+        owner: "{{ common_user }}"
+        group: "{{ common_group }}"
+        mode: "0600"
+      notify: Restart
 
     - name: Create container
       ansible.builtin.include_role:
@@ -177,6 +193,7 @@
           OPENID_IMAGE_URL: "https://minio.{{ common_tld }}/public/authelia-logo-cropped.png"
           OPENID_AUTO_REDIRECT: "false"
         volumes:
+          - "{{ config_directory }}/librechat.yaml:/app/librechat.yaml"
           - "{{ config_directory }}/images:/app/client/public/images"
           - "{{ config_directory }}/uploads:/app/uploads"
           - "{{ config_directory }}/logs:/app/api/logs"
