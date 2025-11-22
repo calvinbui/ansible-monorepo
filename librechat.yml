@@ -114,31 +114,6 @@
         env:
           HOST: "0.0.0.0"
 
-          MONGO_URI: "{{ _mongo_url }}"
-
-          DOMAIN_CLIENT: "https://{{ application }}.{{ common_tld }}"
-          DOMAIN_SERVER: "https://{{ application }}.{{ common_tld }}"
-
-          DEBUG_LOGGING: "false"
-
-          UID: "{{ common_user_id | ansible.builtin.string }}"
-          GID: "{{ common_group_id | ansible.builtin.string }}"
-
-          OPENAI_API_KEY: "{{ openai_api_key }}"
-          # GPT-4.1: more input tokens and precise text work
-          # o4-mini: reasoning, better for math, coding and visual tasks
-          OPENAI_MODELS: |
-            {{
-              [
-                "gpt-4.1-mini",
-                "o4-mini",
-              ] | ansible.builtin.join(",")
-            }}
-
-          IMAGE_GEN_OAI_API_KEY: "{{ openai_api_key }}"
-
-          DEBUG_PLUGINS: "false"
-
           CREDS_KEY: !vault |
             $ANSIBLE_VAULT;1.1;AES256
             39306263646231626635353433396532333734646634396333373564363863623566613732303038
@@ -157,6 +132,43 @@
             3065646366653561360a613631383039316632313531316239663735386337613265633632356136
             33613864303065636235313732363466666533626234623761613134373461376633646262663132
             6633666165613232323032303531333530616561656235346461
+
+          MONGO_URI: "{{ _mongo_url }}"
+
+          DOMAIN_CLIENT: "https://{{ application }}.{{ common_tld }}"
+          DOMAIN_SERVER: "https://{{ application }}.{{ common_tld }}"
+
+          NO_INDEX: "true"
+
+          DEBUG_LOGGING: "false"
+
+          UID: "{{ common_user_id | ansible.builtin.string }}"
+          GID: "{{ common_group_id | ansible.builtin.string }}"
+
+          OPENAI_API_KEY: "{{ openai_api_key }}"
+          OPENAI_MODELS: |
+            {{
+              [
+                "gpt-5.1",
+              ] | ansible.builtin.join(",")
+            }}
+          OPENAI_SUMMARIZE: "true"
+          OPENAI_SUMMARY_MODEL: "gpt-5-nano"
+
+          DEBUG_PLUGINS: "false"
+
+          IMAGE_GEN_OAI_API_KEY: "{{ openai_api_key }}"
+
+          SEARCH: "true"
+          MEILI_NO_ANALYTICS: "true"
+          MEILI_HOST: "{{ _meilisearch_url }}"
+          MEILI_MASTER_KEY: "{{ _meilisearch_password }}"
+
+          ALLOW_EMAIL_LOGIN: "false"
+          ALLOW_REGISTRATION: "false"
+          ALLOW_SOCIAL_LOGIN: "true"
+          ALLOW_SOCIAL_REGISTRATION: "true"
+
           JWT_SECRET: !vault |
             $ANSIBLE_VAULT;1.1;AES256
             38373462643362633730626661366164363531306435353534346364363565646134306362613763
@@ -178,17 +190,6 @@
             64353937623261373138363238313132626461653361613036316230613666383332343939356237
             66356230633539323461
 
-          SEARCH: "true"
-          MEILI_HOST: "{{ _meilisearch_url }}"
-          MEILI_MASTER_KEY: "{{ _meilisearch_password }}"
-
-          RAG_API_URL: "http://{{ application }}-rag-api:8000"
-
-          ALLOW_EMAIL_LOGIN: "false"
-          ALLOW_REGISTRATION: "false"
-          ALLOW_SOCIAL_LOGIN: "true"
-          ALLOW_SOCIAL_REGISTRATION: "true"
-
           OPENID_CLIENT_ID: "{{ application }}"
           OPENID_CLIENT_SECRET: "{{ oidc_auth.librechat.secret }}"
           OPENID_ISSUER: "{{ oidc_discovery_url }}"
@@ -204,12 +205,14 @@
           OPENID_USERNAME_CLAIM: preferred_username
           OPENID_NAME_CLAIM: name
           OPENID_BUTTON_LABEL: "Log in with {{ oidc_provider | ansible.builtin.title }}"
-          OPENID_IMAGE_URL: "https://minio.{{ common_tld }}/public/authelia-logo-cropped.png"
+          OPENID_IMAGE_URL: "https://s3.{{ common_tld }}/public/authelia-logo-cropped.png"
           OPENID_AUTO_REDIRECT: "false"
 
           USE_REDIS: "true"
           REDIS_URI: "{{ _valkey_url }}"
 
+          RAG_API_URL: "http://{{ application }}-rag-api:8000"
+          RAG_OPENAI_API_KEY: "{{ openai_api_key }}"
         volumes:
           - "{{ config_directory }}/librechat.yaml:/app/librechat.yaml"
           - "{{ config_directory }}/images:/app/client/public/images"
