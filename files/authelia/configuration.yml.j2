@@ -98,70 +98,57 @@ identity_providers:
         id_token: ['name']
 
     clients:
-      {% for k, v in oidc_auth.items() %}
-      - client_id: {{ k }}
+      {%- for k, v in oidc_auth.items() %}
+      -
+        client_id: {{ k }}
         client_name: {{ k | ansible.builtin.title }}
-        {% if 'secret' in v %}
+        {%- if 'secret' in v %}
         client_secret: "{{ v.secret | ansible.builtin.string | argon2(authelia_salt) }}"
         public: false
-        {% else %}
+        {%- else %}
         public: true
-        {% endif %}
+        {%- endif %}
         authorization_policy: one_factor
         consent_mode: implicit
         redirect_uris:
-          {% for r in v.redirect_uris %}
+          {%- for r in v.redirect_uris %}
           - {{ r }}
-          {% endfor %}
+          {%- endfor %}
         scopes:
           - openid
           - profile
           - email
-        {% if k in ["mealie", "nextcloud"] %}
+        {%- if k in ["mealie", "nextcloud"] %}
           - groups
-        {% endif %}
-
-        {% if k in ["outline"] %}
+        {%- elif k in ["outline"] %}
           - offline_access
-        token_endpoint_auth_method: client_secret_post
-        response_types:
-          - code
-        {% endif %}
+        {%- endif %}
 
-        {% if k in ["lubelogger", "mealie", "nextcloud"] %}
+        {%- if k in ["lubelogger", "mealie", "nextcloud"] %}
         require_pkce: true
         pkce_challenge_method: 'S256'
-        {% endif %}
+        {%- endif %}
 
         userinfo_signed_response_alg: none
 
-        {% if k == "mealie" %}
+        {%- if k == "mealie" %}
         grant_types:
           - authorization_code
-        {% endif %}
+        {%- endif %}
 
-        {% if k in ["lubelogger", "immich"] %}
+        {%- if k in ["immich", "librechat", "lubelogger", "outline"] %}
         token_endpoint_auth_method: client_secret_post
+        {%- endif %}
+
+        {%- if k in ["immich", "lubelogger", "outline"] %}
         response_types:
           - code
-        {% endif %}
+        {%- endif %}
 
-        {% if k in ["karakeep"] %}
-        claims_policy: karakeep_claims_policy
-        {% endif %}
-
-        {% if k in ["lubelogger"] %}
-        claims_policy: lubelogger_claims_policy
-        {% endif %}
-
-        {% if k in ["nextcloud"] %}
-        claims_policy: nextcloud_claims_policy
-        {% endif %}
-
-        {% if k in ["otf"] %}
-        claims_policy: otf_claims_policy
-        {% endif %}
-      {% endfor %}
+        {%- if k in ["karakeep", "lubelogger", "nextcloud", "otf"] %}
+        claims_policy: {{ k }}_claims_policy
+        {%- endif %}
+      {%- endfor %}
 
 ntp:
   address: "udp://ntp.{{ common_local_tld }}:123"
