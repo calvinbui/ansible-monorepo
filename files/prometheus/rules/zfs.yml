@@ -152,14 +152,14 @@ groups:
           description: "High rate of memory reclaim operations"
       -
         alert: ZFSDirectMemoryReclaim
-        expr: node_zfs_arc_memory_direct_count > 0
+        expr: rate(node_zfs_arc_memory_direct_count[5m]) > 0
         for: 15m
         annotations:
           summary: ZFS Direct Memory Reclaim
           description: "{{ $value }} direct memory reclaim events - system under memory pressure"
       -
         alert: ZFSIndirectMemoryReclaim
-        expr: node_zfs_arc_memory_indirect_count > 0
+        expr: rate(node_zfs_arc_memory_indirect_count[5m]) > 0
         for: 15m
         annotations:
           summary: ZFS Indirect Memory Reclaim

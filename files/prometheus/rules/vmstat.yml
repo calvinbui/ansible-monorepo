@@ -19,7 +19,7 @@ groups:
           description: "System experiencing {{ $value | humanize }} major page faults per second - possible memory pressure or excessive paging"
       -
         alert: SwapActivityDetected
-        expr: rate(node_vmstat_pswpin[5m]) > 0 or rate(node_vmstat_pswpout[5m]) > 0
+        expr: rate(node_vmstat_pswpin[5m]) > 2048 or rate(node_vmstat_pswpout[5m]) > 2048
         for: 10m
         annotations:
           summary: Swap Activity Detected
